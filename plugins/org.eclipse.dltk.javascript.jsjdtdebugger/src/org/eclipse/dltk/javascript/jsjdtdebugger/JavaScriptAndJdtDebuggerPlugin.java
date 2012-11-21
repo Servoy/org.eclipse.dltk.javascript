@@ -65,18 +65,19 @@ public class JavaScriptAndJdtDebuggerPlugin extends AbstractUIPlugin implements
 		// These preferences should be remembered but whatever i try its
 		// impossible (ToggleStates, AbstractHandlerWithState, Action that is
 		// pulldown)
-		prefs
-				.setValue(
-						IJavaScriptAndJdtDebuggerPreferenceConstants.PREF_BREAK_ON_METHOD_ENTRY,
-						false);
-		prefs
-				.setValue(
-						IJavaScriptAndJdtDebuggerPreferenceConstants.PREF_BREAK_ON_METHOD_EXIT,
-						false);
-		prefs
-				.setValue(
-						IJavaScriptAndJdtDebuggerPreferenceConstants.PREF_BREAK_ON_EXCEPTION,
-						false);
+		// Only a Toolbar button seems to work..
+		// prefs
+		// .setValue(
+		// IJavaScriptAndJdtDebuggerPreferenceConstants.PREF_BREAK_ON_METHOD_ENTRY,
+		// false);
+		// prefs
+		// .setValue(
+		// IJavaScriptAndJdtDebuggerPreferenceConstants.PREF_BREAK_ON_METHOD_EXIT,
+		// false);
+		// prefs
+		// .setValue(
+		// IJavaScriptAndJdtDebuggerPreferenceConstants.PREF_BREAK_ON_EXCEPTION,
+		// false);
 	}
 
 	/*

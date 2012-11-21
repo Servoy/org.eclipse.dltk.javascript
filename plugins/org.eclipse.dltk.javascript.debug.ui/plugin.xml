@@ -27,11 +27,12 @@
   
   <extension point="org.eclipse.dltk.ui.editorTextHovers">
     <hover
-      label="%javascriptVariabl1eHoverLabel"
-      description="%javaVariableHoverDescription"
-      nature="org.eclipse.dltk.javascript.core.nature"
-      class="org.eclipse.dltk.javascript.internal.debug.ui.JavaScriptDebugHover"
-      id="org.eclipse.dltk.javascript.internal.debug.ui.JavaScriptDebugHover">
+          activate="true"
+          class="org.eclipse.dltk.javascript.internal.debug.ui.JavaScriptDebugHover"
+          description="%javaVariableHoverDescription"
+          id="org.eclipse.dltk.javascript.internal.debug.ui.JavaScriptDebugHover"
+          label="%javascriptVariabl1eHoverLabel"
+          nature="org.eclipse.dltk.javascript.core.nature">
     </hover>
   </extension>
 
@@ -230,9 +231,6 @@
           <instanceof
                 value="org.eclipse.dltk.debug.ui.ScriptDebugConsole">
           </instanceof>
-          <test
-            property="org.eclipse.debug.ui.processTypeTest"
-            value="javascriptInterpreter" />
        </enablement>
     </consolePatternMatchListener>
   </extension>

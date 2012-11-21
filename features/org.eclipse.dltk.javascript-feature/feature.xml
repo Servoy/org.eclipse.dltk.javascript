@@ -15,7 +15,7 @@
  */
 -->
 <feature
-      id="org.eclipse.dltk.javascript"
+      id="org.eclipse.dltk.javascript.servoy"
       label="%featureName"
       version="5.0.0.qualifier"
       provider-name="%providerName"
@@ -37,8 +37,14 @@ http://www.eclipse.org/legal/epl-v10.html
       %license
    </license>
 
+   <url>
+      <update label="Servoy Update Site" url="http://www.servoy.com/developer/5xx_updates"/>
+      <discovery label="Servoy Update Site" url="http://www.servoy.com/developer/5xx_updates"/>
+   </url>
+
    <requires>
-      <import feature="org.eclipse.dltk.core" version="5.0.0" match="compatible"/>
+      <import feature="org.eclipse.dltk.core.servoy" version="5.0.0" match="compatible"/>
+      <import feature="org.eclipse.jdt" version="3.5.0.v20090527-2000-7r88FEeFJePyvYeA33DjZ_c1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -63,28 +69,7 @@ http://www.eclipse.org/legal/epl-v10.html
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.dltk.javascript.jdt.integration"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.dltk.javascript.launching"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.dltk.javascript.rhino"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.dltk.javascript.rhino.dbgp"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -125,4 +110,10 @@ http://www.eclipse.org/legal/epl-v10.html
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.antlr.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 </feature>

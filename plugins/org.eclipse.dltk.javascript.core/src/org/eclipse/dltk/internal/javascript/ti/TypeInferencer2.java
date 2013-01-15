@@ -28,8 +28,8 @@ import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.internal.core.ThreadTypeSystemImpl;
 import org.eclipse.dltk.javascript.parser.JSProblem;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
-import org.eclipse.dltk.javascript.typeinference.IFunctionValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
+import org.eclipse.dltk.javascript.typeinference.IValueParent;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinfo.AttributeKey;
@@ -709,23 +709,40 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 	}
 
 	public IRIValueType getIValueType(String name) {
+		if (visitor == null)
+			return null;
+		IValueReference result = null;
 		IValueCollection currentCollection = currentCollection();
-		while (currentCollection != null) {
-			IValueReference child = currentCollection.getChild(name);
-			if (child.exists() && child.getKind() == ReferenceKind.FUNCTION) {
-				if (child instanceof IValueProvider) {
-					IFunctionValueCollection value = (IFunctionValueCollection) ((IValueProvider) child)
-							.getValue().getAttribute(
-									IReferenceAttributes.FUNCTION_SCOPE, false);
-					if (value != null) {
-						return RTypes.create(this, name,
-								((IValueProvider) value.getThis()).getValue());
-					}
-				}
-			} else {
-				currentCollection = currentCollection.getParent();
+		if (name.indexOf('.') != -1) {
+			String[] scopes = name.split("\\.");
+			IValueParent child = currentCollection;
+			for (String scope : scopes) {
+				child = child.getChild(scope);
 			}
+			result = (IValueReference) child;
+		} else {
+			while (currentCollection != null) {
+				IValueReference child = currentCollection.getChild(name);
+				if (child.exists()) {
+					result = child;
+					break;
+				} else {
+					currentCollection = currentCollection.getParent();
+				}
 
+			}
+		}
+		if (result instanceof IValueProvider
+				&& result.getKind() == ReferenceKind.FUNCTION) {
+			IValue functionValue = ((IValueProvider) result).getValue();
+			IValueCollection value = (IValueCollection) functionValue
+					.getAttribute(IReferenceAttributes.FUNCTION_SCOPE, false);
+			if (value != null) {
+				IValue thisValue = ((IValueProvider) value.getThis())
+						.getValue();
+				return RTypes.create(this, name, thisValue,
+						functionValue.getLocation());
+			}
 		}
 		return null;
 	}

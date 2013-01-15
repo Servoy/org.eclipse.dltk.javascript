@@ -29,6 +29,7 @@ import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.internal.core.RRecordMember;
 import org.eclipse.dltk.javascript.internal.core.TypeSystems;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
+import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinfo.model.JSType;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
@@ -359,8 +360,8 @@ public class RTypes {
 	}
 
 	public static IRIValueType create(ITypeSystem typeSystem, String name,
-			IValue value) {
-		return new RIValueType(typeSystem, name, value);
+			IValue value, ReferenceLocation referenceLocation) {
+		return new RIValueType(typeSystem, name, value, referenceLocation);
 	}
 
 	@Deprecated

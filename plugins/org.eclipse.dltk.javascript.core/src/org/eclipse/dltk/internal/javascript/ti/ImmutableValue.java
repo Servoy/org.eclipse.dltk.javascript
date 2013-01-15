@@ -249,6 +249,10 @@ public class ImmutableValue implements IValue, IValue2 {
 		} else {
 			result.addAll(children.keySet());
 		}
+		if (getDeclaredType() instanceof IRIValueType) {
+			result.addAll(((IRIValueType) getDeclaredType()).getValue()
+					.getDirectChildren());
+		}
 		JSTypeSet typeSet = getTypes();
 		for (IRType irType : typeSet) {
 			if (irType instanceof IRIValueType) {

@@ -92,7 +92,6 @@ import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
-import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.internal.core.RRecordMember;
 import org.eclipse.dltk.javascript.parser.ISuppressWarningsState;
 import org.eclipse.dltk.javascript.parser.JSParser;
@@ -142,7 +141,6 @@ import org.eclipse.dltk.javascript.typeinfo.model.MapType;
 import org.eclipse.dltk.javascript.typeinfo.model.Parameter;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterizedType;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
-import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelFactory;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeVariableClassType;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeVariableReference;
@@ -1082,12 +1080,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					String className = PropertyExpressionUtils
 							.getPath(objectClass);
 					if (className != null) {
-						Type type = TypeInfoModelFactory.eINSTANCE.createType();
-						type.setSuperType(Types.OBJECT);
-						type.setKind(TypeKind.JAVASCRIPT);
-						type.setName(className);
-						result.value.setDeclaredType(RTypes.simple(context,
-								type));
+						result.value.setDeclaredType(RTypes.create(context,
+								className,
+								((IValueProvider) ((IValueCollection) fs)
+										.getThis()).getValue(),
+								result.typeValue.getLocation()));
 					} else {
 						result.value.setDeclaredType(RTypes.OBJECT);
 					}

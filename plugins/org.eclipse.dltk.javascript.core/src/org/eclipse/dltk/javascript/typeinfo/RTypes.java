@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.dltk.annotations.Nullable;
+import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.core.Types;
@@ -355,6 +356,11 @@ public class RTypes {
 	public static IRArrayType arrayOf(ITypeSystem typeSystem,
 			final IRType itemType) {
 		return new RArrayType(typeSystem, itemType);
+	}
+
+	public static IRIValueType create(ITypeSystem typeSystem, String name,
+			IValue value) {
+		return new RIValueType(typeSystem, name, value);
 	}
 
 	@Deprecated

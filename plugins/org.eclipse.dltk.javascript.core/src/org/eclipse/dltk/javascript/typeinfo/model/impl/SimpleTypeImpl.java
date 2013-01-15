@@ -11,7 +11,9 @@
  */
 package org.eclipse.dltk.javascript.typeinfo.model.impl;
 
+import org.eclipse.dltk.javascript.typeinfo.IRIValueType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
+import org.eclipse.dltk.javascript.typeinfo.ITypeInfoContext;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
@@ -127,6 +129,11 @@ public class SimpleTypeImpl extends MinimalEObjectImpl implements SimpleType {
 		Type t = getTarget();
 		if (t == null) {
 			return RTypes.any();
+		}
+		if (typeSystem instanceof ITypeInfoContext) {
+			IRIValueType valueType = ((ITypeInfoContext) typeSystem).getIValueType(t.getName());
+			if (valueType != null)
+				return valueType;
 		}
 		if (t.isProxy() && typeSystem != null) {
 			t = typeSystem.resolveType(t);

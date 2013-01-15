@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
+import org.eclipse.dltk.javascript.typeinfo.IRIValueType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
@@ -242,13 +243,20 @@ public class ImmutableValue implements IValue, IValue2 {
 	}
 
 	public Set<String> getDirectChildren() {
+		final Set<String> result = new HashSet<String>();
 		if (hasReferences()) {
-			final Set<String> result = new HashSet<String>();
 			execute(this, GET_DIRECT_CHILDREN, result, new HashSet<IValue>());
-			return result;
 		} else {
-			return children.keySet();
+			result.addAll(children.keySet());
 		}
+		JSTypeSet typeSet = getTypes();
+		for (IRType irType : typeSet) {
+			if (irType instanceof IRIValueType) {
+				result.addAll(((IRIValueType) irType).getValue()
+						.getDirectChildren());
+			}
+		}
+		return result;
 	}
 
 	public Set<String> getDeletedChildren() {

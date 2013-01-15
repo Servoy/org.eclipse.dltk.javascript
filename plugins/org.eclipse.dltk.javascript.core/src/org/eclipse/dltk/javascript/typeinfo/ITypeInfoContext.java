@@ -123,4 +123,12 @@ public interface ITypeInfoContext extends ITypeSystem {
 	 * the value of {@link #CONTEXTUALIZE_WITH} attribute.
 	 */
 	IRType contextualize(JSType type);
+
+	/**
+	 * looks if it can generate an IValue type from the given JSType
+	 * 
+	 * @param type
+	 * @return
+	 */
+	IRIValueType getIValueType(String name);
 }

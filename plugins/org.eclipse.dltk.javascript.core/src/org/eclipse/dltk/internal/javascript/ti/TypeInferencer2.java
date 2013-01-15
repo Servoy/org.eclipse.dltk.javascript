@@ -28,6 +28,7 @@ import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.internal.core.ThreadTypeSystemImpl;
 import org.eclipse.dltk.javascript.parser.JSProblem;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
+import org.eclipse.dltk.javascript.typeinference.IFunctionValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
@@ -36,6 +37,7 @@ import org.eclipse.dltk.javascript.typeinfo.IElementResolver;
 import org.eclipse.dltk.javascript.typeinfo.ILocalTypeReference;
 import org.eclipse.dltk.javascript.typeinfo.IMemberEvaluator;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder;
+import org.eclipse.dltk.javascript.typeinfo.IRIValueType;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
@@ -704,5 +706,27 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		} else {
 			return null;
 		}
+	}
+
+	public IRIValueType getIValueType(String name) {
+		IValueCollection currentCollection = currentCollection();
+		while (currentCollection != null) {
+			IValueReference child = currentCollection.getChild(name);
+			if (child.exists() && child.getKind() == ReferenceKind.FUNCTION) {
+				if (child instanceof IValueProvider) {
+					IFunctionValueCollection value = (IFunctionValueCollection) ((IValueProvider) child)
+							.getValue().getAttribute(
+									IReferenceAttributes.FUNCTION_SCOPE, false);
+					if (value != null) {
+						return RTypes.create(this, name,
+								((IValueProvider) value.getThis()).getValue());
+					}
+				}
+			} else {
+				currentCollection = currentCollection.getParent();
+			}
+
+		}
+		return null;
 	}
 }

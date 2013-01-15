@@ -14,6 +14,7 @@ package org.eclipse.dltk.internal.javascript.ti;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRArrayType;
 import org.eclipse.dltk.javascript.typeinfo.IRClassType;
 import org.eclipse.dltk.javascript.typeinfo.IRElement;
 import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
+import org.eclipse.dltk.javascript.typeinfo.IRIValueType;
 import org.eclipse.dltk.javascript.typeinfo.IRMapType;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
@@ -205,6 +207,8 @@ public abstract class ElementValue implements IValue {
 							selection.toArray(new IRMember[selection.size()]));
 				}
 			}
+		} else if (type instanceof IRIValueType) {
+			return ((IRIValueType) type).getValue().getChild(name, resolve);
 		} else {
 			final IRTypeDeclaration t = TypeUtil.extractType(context, type);
 			if (t != null) {
@@ -341,6 +345,19 @@ public abstract class ElementValue implements IValue {
 		public TypeValue(ITypeSystem context, JSTypeSet types) {
 			super(context);
 			this.types = types;
+		}
+
+		@Override
+		public final Set<String> getDirectChildren() {
+			Set<String> set = new HashSet<String>();
+			JSTypeSet typeSet = getTypes();
+			for (IRType irType : typeSet) {
+				if (irType instanceof IRIValueType) {
+					set.addAll(((IRIValueType) irType).getValue()
+							.getDirectChildren());
+				}
+			}
+			return set;
 		}
 
 		@Override
@@ -942,7 +959,7 @@ public abstract class ElementValue implements IValue {
 	public final void setAttribute(String key, Object value) {
 	}
 
-	public final Set<String> getDirectChildren() {
+	public Set<String> getDirectChildren() {
 		return Collections.emptySet();
 	}
 

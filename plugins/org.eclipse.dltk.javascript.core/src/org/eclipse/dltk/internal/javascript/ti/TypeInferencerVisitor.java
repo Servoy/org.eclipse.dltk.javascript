@@ -1081,10 +1081,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							.getPath(objectClass);
 					if (className != null) {
 						result.value.setDeclaredType(RTypes.create(context,
-								className,
-								((IValueProvider) ((IValueCollection) fs)
-										.getThis()).getValue(),
-								result.typeValue.getLocation()));
+								className, result.typeValue));
 					} else {
 						result.value.setDeclaredType(RTypes.OBJECT);
 					}

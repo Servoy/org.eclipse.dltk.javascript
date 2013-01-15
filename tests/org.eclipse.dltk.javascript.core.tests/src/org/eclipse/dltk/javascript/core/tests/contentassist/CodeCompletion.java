@@ -726,8 +726,6 @@ public class CodeCompletion extends AbstractCompletionTest {
 	}
 	
 	public void testVariableTypedAsCustomTypeArrayThroughDoc() {
-		if (notYetImplemented(this))
-			return;
 		final StringList code = new StringList();
 		code.add("function MyObject() {");
 		code.add(" this.num = 10;");
@@ -744,8 +742,6 @@ public class CodeCompletion extends AbstractCompletionTest {
 	}
 	
 	public void testVariableTypedAsCustomTypeReferecingItselfArrayThroughDoc() {
-		if (notYetImplemented(this))
-			return;
 		final StringList code = new StringList();
 		code.add("function MyObject() {");
 		code.add(" this.num = 10;");

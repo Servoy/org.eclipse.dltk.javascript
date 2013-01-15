@@ -2676,9 +2676,6 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 	}
 
 	public void testReturnWith2NewInstances() throws Exception {
-		if (notYetImplemented(this)) {
-			return;
-		}
 		StringList code = new StringList();
 		code.add("function myObject() { this.me = 'myself'; }");
 		code.add("function createMyObject(myParam) {");
@@ -2690,9 +2687,6 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 	}
 
 	public void testReturnWith1NewInstanceAnd1CallInstance() throws Exception {
-		if (notYetImplemented(this)) {
-			return;
-		}
 		StringList code = new StringList();
 		code.add("function myObject() { this.me = 'myself'; }");
 		code.add("function getMyObject() {");
@@ -2707,9 +2701,6 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 	}
 
 	public void testReturnWith2CallInstance() throws Exception {
-		if (notYetImplemented(this)) {
-			return;
-		}
 		StringList code = new StringList();
 		code.add("function myObject() { this.me = 'myself'; }");
 		code.add("function getMyObject() {");
@@ -2728,9 +2719,6 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 
 	public void testReturnWith1CallJSDocInstanceAnd1NewInstance()
 			throws Exception {
-		if (notYetImplemented(this)) {
-			return;
-		}
 		StringList code = new StringList();
 		code.add("function myObject() { this.me = 'myself'; }");
 		code.add("/**");
@@ -2748,9 +2736,6 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 	}
 
 	public void testReturnWith2CallJSDocInstance() throws Exception {
-		if (notYetImplemented(this)) {
-			return;
-		}
 		StringList code = new StringList();
 		code.add("function myObject() { this.me = 'myself'; }");
 		code.add("/**");
@@ -2840,8 +2825,6 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 	}
 
 	public void testVariableTypedAsCustomTypeReferecingItselfArrayThroughDocWrongCall() {
-		if (notYetImplemented(this))
-			return;
 		final StringList code = new StringList();
 		code.add("function MyObject() {");
 		code.add(" this.num = 10;");

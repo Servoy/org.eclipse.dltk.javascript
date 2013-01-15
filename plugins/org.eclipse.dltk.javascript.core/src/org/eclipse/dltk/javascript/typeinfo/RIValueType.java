@@ -3,39 +3,58 @@ package org.eclipse.dltk.javascript.typeinfo;
 import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IValidationStatus;
-import org.eclipse.dltk.internal.javascript.ti.IValue;
+import org.eclipse.dltk.internal.javascript.ti.ChildReference;
+import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
+import org.eclipse.dltk.internal.javascript.ti.IValueProvider;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
+import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 
 class RIValueType extends RType implements IRIValueType {
 
-	private final IValue value;
+	private final IValueReference functionValue;
 	private final String name;
-	private final ReferenceLocation referenceLocation;
 
-	RIValueType(ITypeSystem typeSystem, String name, IValue value,
-			ReferenceLocation referenceLocation) {
+	RIValueType(ITypeSystem typeSystem, String name,
+			IValueReference functionValue) {
 		super(typeSystem);
 		this.name = name;
-		this.value = value;
-		this.referenceLocation = referenceLocation;
+		this.functionValue = functionValue;
 
 	}
 
-	public IValue getValue() {
-		return value;
+	public IValueReference getValue() {
+		IValueCollection value = (IValueCollection) functionValue.getAttribute(
+				IReferenceAttributes.FUNCTION_SCOPE, false);
+		if (value != null) {
+			return value.getThis();
+		}
+		// back up shouldn't happen
+		return new ChildReference((IValueProvider) functionValue, name);
 	}
 
 	public ReferenceLocation getReferenceLocation() {
-		return referenceLocation;
+		return functionValue.getLocation();
+	}
+
+	@Override
+	public TypeCompatibility isAssignableFrom(IRType type) {
+		if (type instanceof IRIValueType) {
+			if (getReferenceLocation().equals(
+					((IRIValueType) type).getReferenceLocation())) {
+				return TypeCompatibility.TRUE;
+			}
+		}
+		return super.isAssignableFrom(type);
 	}
 
 	public IValidationStatus isAssignableFrom(IValueReference argument) {
 		Set<IRType> types = JavaScriptValidations.getTypes(argument);
 		for (IRType irType : types) {
 			if (irType instanceof IRIValueType) {
-				if (referenceLocation.equals(((IRIValueType) irType)
+				if (getReferenceLocation().equals(
+						((IRIValueType) irType)
 						.getReferenceLocation())) {
 					return TypeCompatibility.TRUE;
 				}

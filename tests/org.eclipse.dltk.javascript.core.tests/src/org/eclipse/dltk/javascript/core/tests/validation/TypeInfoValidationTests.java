@@ -2867,4 +2867,25 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 		final List<IProblem> problems = validate("var test = new Test");
 		assertEquals(problems.toString(), 1, problems.size());
 	}
+	
+	public void testLazyFunctionTypeInFunctionAndVariableDoc() {
+		final StringList code = new StringList();
+		code.add("/**");
+		code.add(" * @type {Array<RuntimeProperty>}");
+		code.add(" */");
+		code.add("var runtimeProperties = null;");
+		code.add("/**");
+		code.add("* @return {Array<RuntimeProperty>} properties");
+		code.add("*/");
+		code.add("function getRuntimeProperties() {");
+		code.add("/** @type {Array<RuntimeProperty>} */");
+		code.add("var result = null;");
+		code.add("return result;");
+		code.add("}");
+		code.add("function RuntimeProperty() {");
+		code.add("this.test = 10;");
+		code.add("}");
+		List<IProblem> validate = validate(code.toString());
+		assertEquals(0, validate.size());
+	}	
 }

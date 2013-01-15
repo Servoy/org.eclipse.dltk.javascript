@@ -20,6 +20,7 @@ import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.SimpleType;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelPackage;
+import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -130,13 +131,14 @@ public class SimpleTypeImpl extends MinimalEObjectImpl implements SimpleType {
 		if (t == null) {
 			return RTypes.any();
 		}
-		if (typeSystem instanceof ITypeInfoContext) {
+		if (t.isProxy() && typeSystem != null) {
+			t = typeSystem.resolveType(t);
+		}
+		if (typeSystem instanceof ITypeInfoContext
+				&& t.getKind() == TypeKind.UNKNOWN) {
 			IRIValueType valueType = ((ITypeInfoContext) typeSystem).getIValueType(t.getName());
 			if (valueType != null)
 				return valueType;
-		}
-		if (t.isProxy() && typeSystem != null) {
-			t = typeSystem.resolveType(t);
 		}
 		return RTypes.simple(typeSystem, t);
     }

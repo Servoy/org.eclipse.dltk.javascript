@@ -15,9 +15,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
+import org.eclipse.dltk.javascript.typeinfo.IRIValueType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
 
@@ -244,11 +246,10 @@ public abstract class AbstractReference implements IValueReference,
 					if (!finalResolve && !typeResolved) {
 						typeResolved = true;
 						IValueReference parent = reference.getParent();
-						while (parent instanceof IValueProvider) {
-							value = ((IValueProvider) parent).getValue();
-							if (value != null) {
-								resolvedToType = !value.getTypes().isEmpty()
-										|| !value.getDeclaredTypes().isEmpty();
+						while (parent != null) {
+							IRType type = JavaScriptValidations.typeOf(parent);
+							if (type != null) {
+								resolvedToType = !(type instanceof IRIValueType);
 								break;
 							}
 							parent = parent.getParent();

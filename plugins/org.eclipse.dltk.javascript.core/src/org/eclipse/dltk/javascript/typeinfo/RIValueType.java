@@ -21,7 +21,6 @@ class RIValueType extends RType implements IRIValueType {
 		super(typeSystem);
 		this.name = name;
 		this.functionValue = functionValue;
-
 	}
 
 	public IValueReference getValue() {

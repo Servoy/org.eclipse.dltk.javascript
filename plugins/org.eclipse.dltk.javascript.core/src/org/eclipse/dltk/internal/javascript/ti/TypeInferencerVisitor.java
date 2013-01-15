@@ -112,6 +112,7 @@ import org.eclipse.dltk.javascript.typeinfo.IMemberEvaluator;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMethod;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IParameter;
+import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilderExtension;
 import org.eclipse.dltk.javascript.typeinfo.IRArrayType;
 import org.eclipse.dltk.javascript.typeinfo.IRClassType;
@@ -631,13 +632,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		reference.setLocation(ReferenceLocation.create(getSource(),
 				declaration.sourceStart(), declaration.sourceEnd(),
 				identifier.sourceStart(), identifier.sourceEnd()));
-		final IRVariable rvar = RModelBuilder.create(getContext(), variable);
-		reference.setAttribute(IReferenceAttributes.R_VARIABLE, rvar);
-		if (rvar.getType() != null) {
-			setIRType(reference, rvar.getType(), true);
-			// typed - make sure it wasn't initialized with the phantom value.
-			reference.removeReference(PhantomValueReference.REFERENCE);
-		}
 
 		return reference;
 	}
@@ -775,8 +769,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		function.setKind(ReferenceKind.FUNCTION);
 		function.setDeclaredType(RTypes.FUNCTION);
 		function.setAttribute(IReferenceAttributes.METHOD, method);
-		function.setAttribute(IReferenceAttributes.R_METHOD,
-				RModelBuilder.create(getContext(), method));
 		function.setAttribute(IReferenceAttributes.RESOLVING, Boolean.TRUE);
 	}
 
@@ -793,6 +785,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			method = createMethod(node);
 			result = new AnonymousValue();
 			initializeFunction(method, result);
+			result.setAttribute(IReferenceAttributes.R_METHOD,
+					RModelBuilder.create(getContext(), method));
 		}
 		final ThisValue thisValue = new ThisValue();
 		thisValue.setDeclaredType(this.context.contextualize(method
@@ -1319,6 +1313,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	}
 
 	private void handleDeclarations(JSScope scope) {
+		ArrayList<IValueReference> variables = new ArrayList<IValueReference>();
 		final IValueCollection context = peekContext();
 		for (JSDeclaration declaration : scope.getDeclarations()) {
 			if (declaration instanceof FunctionStatement) {
@@ -1337,8 +1332,28 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				if (varDeclaration.getParent() instanceof ConstStatement) {
 					var.setAttribute(IAssignProtection.ATTRIBUTE, PROTECT_CONST);
 				}
+				variables.add(var);
 			}
 		}
+		for (ForwardDeclaration decl : forwardDeclarations.values()) {
+			decl.reference.setAttribute(IReferenceAttributes.R_METHOD,
+					RModelBuilder.create(getContext(), decl.method));
+		}
+
+		for (IValueReference reference : variables) {
+			final IRVariable rvar = RModelBuilder.create(getContext(),
+					(IVariable) reference
+							.getAttribute(IReferenceAttributes.VARIABLE));
+			reference.setAttribute(IReferenceAttributes.R_VARIABLE, rvar);
+			if (rvar.getType() != null) {
+				setIRType(reference, rvar.getType(), true);
+				// typed - make sure it wasn't initialized with the phantom
+				// value.
+				reference.removeReference(PhantomValueReference.REFERENCE);
+			}
+
+		}
+
 	}
 
 	@Override

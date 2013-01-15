@@ -3,7 +3,6 @@ package org.eclipse.dltk.internal.javascript.ti;
 import java.util.StringTokenizer;
 
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
-import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
@@ -11,8 +10,6 @@ import org.eclipse.dltk.javascript.typeinfo.IRClassType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
-import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelFactory;
-import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
 
 public class LazyTypeReference extends AbstractReference {
 
@@ -47,26 +44,15 @@ public class LazyTypeReference extends AbstractReference {
 				IValueCollection collection = (IValueCollection) createChild
 						.getAttribute(IReferenceAttributes.FUNCTION_SCOPE);
 				if (collection != null && collection.getThis() != null) {
-					createChild = collection.getThis();
-				}
-
-				IValue src = ((IValueProvider) createChild).getValue();
-				// if i enable this then the type added below takes
-				// precedance some time
-				// for example a toString() on a javasccript object will
-				// then return the toString of Object
-				// if (src instanceof Value) {
-				// this.references.add((Value) src);
-				// } else
-				if (src != null) {
-					addValue(src);
+					addValue(((IValueProvider) collection.getThis()).getValue());
+				} else {
+					IValue src = ((IValueProvider) createChild).getValue();
+					if (src != null) {
+						addValue(src);
+					}
 				}
 				setKind(ReferenceKind.TYPE);
-				Type type = TypeInfoModelFactory.eINSTANCE.createType();
-				type.setSuperType(Types.OBJECT);
-				type.setKind(TypeKind.JAVASCRIPT);
-				type.setName(className);
-				setDeclaredType(RTypes.simple(context, type));
+				setDeclaredType(RTypes.create(context, className, createChild));
 				resolved = true;
 			} else if (className.indexOf('.') != -1) {
 				StringTokenizer st = new StringTokenizer(className, ".");
@@ -97,14 +83,8 @@ public class LazyTypeReference extends AbstractReference {
 									.getValue());
 						else
 							addValue(src);
-						// also set it as a declared type, because
-						// LazyTypeReference is used to evaluate jsdoc type
-						// tags, which should be set as a declared type.
-						Type type = TypeInfoModelFactory.eINSTANCE.createType();
-						type.setSuperType(Types.OBJECT);
-						type.setKind(TypeKind.JAVASCRIPT);
-						type.setName(className);
-						setDeclaredType(RTypes.simple(context, type));
+						setDeclaredType(RTypes.create(context, className,
+ child));
 					}
 					setKind(ReferenceKind.TYPE);
 					resolved = true;

@@ -732,8 +732,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 
 			}
 		}
-		if (result instanceof IValueReference
-				&& result.getKind() == ReferenceKind.FUNCTION) {
+		if (result != null && result.getKind() == ReferenceKind.FUNCTION) {
 			return RTypes.create(this, name, result);
 		}
 		return null;

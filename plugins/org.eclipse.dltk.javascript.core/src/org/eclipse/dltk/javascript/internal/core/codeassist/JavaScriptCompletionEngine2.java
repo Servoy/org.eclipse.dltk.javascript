@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.ast.ASTNode;
+import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.codeassist.ScriptCompletionEngine;
 import org.eclipse.dltk.compiler.CharOperation;
 import org.eclipse.dltk.compiler.env.IModuleSource;
@@ -34,11 +35,16 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.internal.javascript.ti.FunctionMethod;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.ITypeInferenceContext;
+import org.eclipse.dltk.internal.javascript.ti.JSDocSupport;
 import org.eclipse.dltk.internal.javascript.ti.PositionReachedException;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencer2;
 import org.eclipse.dltk.internal.javascript.typeinference.CompletionPath;
 import org.eclipse.dltk.internal.javascript.validation.MemberValidationEvent;
+import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
+import org.eclipse.dltk.javascript.ast.JSDeclaration;
+import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.ast.JSScope;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
 import org.eclipse.dltk.javascript.core.JavaScriptKeywords;
@@ -48,6 +54,8 @@ import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.internal.core.codeassist.JavaScriptCompletionUtil.ExpressionContext;
 import org.eclipse.dltk.javascript.internal.core.codeassist.JavaScriptCompletionUtil.ExpressionType;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
+import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTag;
+import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTags;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueParent;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
@@ -160,8 +168,48 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 		final TypeInferencer2 inferencer2 = new TypeInferencer2();
 		inferencer2.setModelElement(module);
 		setSourceRange(offset - prefix.length(), offset);
-		doCompletionOnType(mode, new Reporter(inferencer2, prefix, offset,
-				Collections.<IValidatorExtension> emptyList()));
+		Reporter reporter = new Reporter(inferencer2, prefix, offset,
+				Collections.<IValidatorExtension> emptyList());
+		doCompletionOnType(mode, reporter);
+		if (mode == TypeMode.JSDOC) {
+			String lowerCasePrefix = prefix.toLowerCase();
+			final Script script = JavaScriptParserUtil.parse(module, null);
+			FunctionFinder nodeFinder = new FunctionFinder(offset);
+			try {
+				script.traverse(nodeFinder);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			JSNode node = nodeFinder.getFunctionStatement();
+
+			inferencer2.doInferencing(script);
+			while (node instanceof JSNode) {
+				if (node instanceof JSScope) {
+					List<JSDeclaration> declarations = ((JSScope) node)
+							.getDeclarations();
+					for (JSDeclaration declaration : declarations) {
+						if (declaration.getIdentifier().getName().toLowerCase()
+								.startsWith(lowerCasePrefix)
+								&& declaration instanceof FunctionStatement
+								&& ((FunctionStatement) declaration)
+										.getDocumentation() != null) {
+							JSDocTags tags = JSDocSupport
+									.parse(((FunctionStatement) declaration)
+											.getDocumentation());
+							if (tags.count(JSDocTag.CONSTRUCTOR) > 0) {
+								Type type = inferencer2.getType(declaration
+										.getIdentifier().getName());
+								if (type != null) {
+									reporter.reportTypeRef(type);
+								}
+							}
+						}
+					}
+				}
+				node = node.getParent();
+			}
+		}
+
 	}
 
 	public void completeGlobals(ISourceModule module, final String prefix,
@@ -225,6 +273,7 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 				reporter.reportTypeRef(type);
 			}
 		}
+
 	}
 
 	private static boolean exists(IValueParent item) {
@@ -716,4 +765,27 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 		findKeywords(prefix.toCharArray(), keywords, true);
 	}
 
+	private static class FunctionFinder extends ASTVisitor {
+		private final int start;
+		private FunctionStatement functionStatement = null;
+
+		FunctionFinder(int start) {
+			this.start = start;
+
+		}
+
+		public FunctionStatement getFunctionStatement() {
+			return functionStatement;
+		}
+
+		@Override
+		public boolean visitGeneral(ASTNode node) throws Exception {
+			if (node instanceof FunctionStatement) {
+				functionStatement = (FunctionStatement) node;
+			}
+			if (node.start() > start)
+				return false;
+			return true;
+		}
+	}
 }

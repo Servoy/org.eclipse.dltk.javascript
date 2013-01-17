@@ -12,11 +12,20 @@ import java.util.List;
 import org.eclipse.dltk.codeassist.ICompletionEngine;
 import org.eclipse.dltk.compiler.env.IModuleSource;
 import org.eclipse.dltk.core.CompletionProposal;
+import org.eclipse.dltk.core.ISourceModule;
+import org.eclipse.dltk.core.tests.ProjectSetup;
 import org.eclipse.dltk.core.tests.util.StringList;
 import org.eclipse.dltk.javascript.ast.Keywords;
 import org.eclipse.dltk.javascript.core.JavaScriptKeywords;
+import org.eclipse.dltk.javascript.core.tests.AllTests;
+import org.eclipse.dltk.javascript.core.tests.search.SearchFieldTests;
 import org.eclipse.dltk.javascript.internal.core.codeassist.JSCompletionEngine;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
+import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
+import org.eclipse.dltk.javascript.typeinfo.TypeMode;
+import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelLoader;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 @SuppressWarnings("restriction")
 public class CodeCompletion extends AbstractCompletionTest {
@@ -779,4 +788,26 @@ public class CodeCompletion extends AbstractCompletionTest {
 		int position = lastPositionInFile(".", module);
 		basicTest(module, position, names);
 	}
+	
+	
+	@ClassRule
+	public static final ProjectSetup PROJECT = new ProjectSetup(
+			AllTests.WORKSPACE, "completion",
+			ProjectSetup.Option.WAIT_INDEXES_READY);
+	
+	@Test
+	public void testLocalTypeCompletion() throws Throwable
+	{
+		ProjectSetup.create(PROJECT);
+		ISourceModule module = PROJECT.getSourceModule("src", "localtypescompletion.js");
+		int position = module.getSource().indexOf("type {") + 6;
+		StringList retValue = basicTypeTest(module, TypeMode.JSDOC, position);
+		assertEquals(true,retValue.contains("MyObject"));
+		assertEquals(true,retValue.contains("Node"));
+
+		position = module.getSource().lastIndexOf("type {") + 6;
+		retValue = basicTypeTest(module, TypeMode.JSDOC, position);
+		assertEquals(true,retValue.contains("MyObject"));
+		assertEquals(false,retValue.contains("Node"));
+}
 }

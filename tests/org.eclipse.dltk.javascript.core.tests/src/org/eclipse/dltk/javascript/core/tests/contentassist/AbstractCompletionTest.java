@@ -28,6 +28,7 @@ import org.eclipse.dltk.codeassist.ICompletionEngine;
 import org.eclipse.dltk.compiler.env.IModuleSource;
 import org.eclipse.dltk.core.CompletionProposal;
 import org.eclipse.dltk.core.DLTKLanguageManager;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.tests.TestCompletionRequestor;
 import org.eclipse.dltk.core.tests.util.StringList;
 import org.eclipse.dltk.javascript.core.JavaScriptNature;
@@ -37,6 +38,7 @@ import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
 import org.eclipse.dltk.javascript.typeinfo.MemberPredicate;
 import org.eclipse.dltk.javascript.typeinfo.MemberPredicates;
 import org.eclipse.dltk.javascript.typeinfo.TypeMemberQuery;
+import org.eclipse.dltk.javascript.typeinfo.TypeMode;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelLoader;
@@ -169,6 +171,14 @@ public abstract class AbstractCompletionTest extends AbstractContentAssistTest {
 			assertEquals(new StringList(compNames).sort().toString(),
 					exractProposalNames(results, false).sort().toString());
 		}
+	}
+	
+	protected StringList basicTypeTest(ISourceModule module, TypeMode mode,int position) {
+		List<CompletionProposal> results = new ArrayList<CompletionProposal>();
+		JSCompletionEngine c = (JSCompletionEngine) createEngine(results,
+				JSCompletionEngine.OPTION_NONE);
+		c.completeTypes(module,mode,"", position);
+		return exractProposalNames(results, false);
 	}
 
 	protected void testWithKinds(IModuleSource module, int position,

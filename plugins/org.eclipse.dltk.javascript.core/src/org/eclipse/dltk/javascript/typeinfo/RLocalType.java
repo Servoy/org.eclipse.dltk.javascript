@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Servoy
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Servoy - initial API and Implementation (Johan Compagner)
+ *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.Set;
@@ -11,12 +22,15 @@ import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 
-class RIValueType extends RType implements IRIValueType {
+/**
+ * @author jcompagner
+ */
+class RLocalType extends RType implements IRLocalType {
 
 	private final IValueReference functionValue;
 	private final String name;
 
-	RIValueType(ITypeSystem typeSystem, String name,
+	RLocalType(ITypeSystem typeSystem, String name,
 			IValueReference functionValue) {
 		super(typeSystem);
 		this.name = name;
@@ -39,9 +53,9 @@ class RIValueType extends RType implements IRIValueType {
 
 	@Override
 	public TypeCompatibility isAssignableFrom(IRType type) {
-		if (type instanceof IRIValueType) {
+		if (type instanceof IRLocalType) {
 			if (getReferenceLocation().equals(
-					((IRIValueType) type).getReferenceLocation())) {
+					((IRLocalType) type).getReferenceLocation())) {
 				return TypeCompatibility.TRUE;
 			}
 		}
@@ -51,9 +65,9 @@ class RIValueType extends RType implements IRIValueType {
 	public IValidationStatus isAssignableFrom(IValueReference argument) {
 		Set<IRType> types = JavaScriptValidations.getTypes(argument);
 		for (IRType irType : types) {
-			if (irType instanceof IRIValueType) {
+			if (irType instanceof IRLocalType) {
 				if (getReferenceLocation().equals(
-						((IRIValueType) irType)
+						((IRLocalType) irType)
 						.getReferenceLocation())) {
 					return TypeCompatibility.TRUE;
 				}

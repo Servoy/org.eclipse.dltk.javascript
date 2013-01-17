@@ -130,5 +130,5 @@ public interface ITypeInfoContext extends ITypeSystem {
 	 * @param type
 	 * @return
 	 */
-	IRIValueType getIValueType(String name);
+	IRLocalType resolveLocalType(String name);
 }

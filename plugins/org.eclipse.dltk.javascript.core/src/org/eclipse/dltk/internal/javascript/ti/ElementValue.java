@@ -34,7 +34,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRArrayType;
 import org.eclipse.dltk.javascript.typeinfo.IRClassType;
 import org.eclipse.dltk.javascript.typeinfo.IRElement;
 import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
-import org.eclipse.dltk.javascript.typeinfo.IRIValueType;
+import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
 import org.eclipse.dltk.javascript.typeinfo.IRMapType;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
@@ -207,8 +207,8 @@ public abstract class ElementValue implements IValue {
 							selection.toArray(new IRMember[selection.size()]));
 				}
 			}
-		} else if (type instanceof IRIValueType) {
-			IValue value = ((IValueProvider) ((IRIValueType) type).getValue().getChild(
+		} else if (type instanceof IRLocalType) {
+			IValue value = ((IValueProvider) ((IRLocalType) type).getValue().getChild(
 					name)).getValue();
 			if (value != null)
 				return value;
@@ -356,8 +356,8 @@ public abstract class ElementValue implements IValue {
 			Set<String> set = new HashSet<String>();
 			JSTypeSet typeSet = getTypes();
 			for (IRType irType : typeSet) {
-				if (irType instanceof IRIValueType) {
-					set.addAll(((IRIValueType) irType).getValue()
+				if (irType instanceof IRLocalType) {
+					set.addAll(((IRLocalType) irType).getValue()
 							.getDirectChildren());
 				}
 			}

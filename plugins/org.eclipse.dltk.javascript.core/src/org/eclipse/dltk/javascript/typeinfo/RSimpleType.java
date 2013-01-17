@@ -86,7 +86,7 @@ public class RSimpleType extends RType implements IRSimpleType {
 			final IRTypeDeclaration other = ((RSimpleType) type)
 					.getDeclaration();
 			return declaration.isAssignableFrom(other);
-		} else if (type instanceof IRIValueType
+		} else if (type instanceof IRLocalType
 				&& getTarget().getKind() == TypeKind.UNKNOWN
 				&& type.getName().equals(getName())) {
 			// if this RSimpleType was a result of an IRIValueType not being

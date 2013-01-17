@@ -357,9 +357,9 @@ public class RTypes {
 		return new RArrayType(typeSystem, itemType);
 	}
 
-	public static IRIValueType create(ITypeSystem typeSystem, String name,
+	public static IRLocalType create(ITypeSystem typeSystem, String name,
 			IValueReference value) {
-		return new RIValueType(typeSystem, name, value);
+		return new RLocalType(typeSystem, name, value);
 	}
 
 	@Deprecated

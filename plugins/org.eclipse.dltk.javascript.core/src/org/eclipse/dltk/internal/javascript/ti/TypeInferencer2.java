@@ -37,7 +37,7 @@ import org.eclipse.dltk.javascript.typeinfo.IElementResolver;
 import org.eclipse.dltk.javascript.typeinfo.ILocalTypeReference;
 import org.eclipse.dltk.javascript.typeinfo.IMemberEvaluator;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder;
-import org.eclipse.dltk.javascript.typeinfo.IRIValueType;
+import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
@@ -708,7 +708,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		}
 	}
 
-	public IRIValueType getIValueType(String name) {
+	public IRLocalType resolveLocalType(String name) {
 		if (visitor == null)
 			return null;
 		IValueReference result = null;
@@ -734,7 +734,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		}
 		if (result instanceof IValueReference
 				&& result.getKind() == ReferenceKind.FUNCTION) {
-				return RTypes.create(this, name, (IValueReference)result);
+			return RTypes.create(this, name, result);
 		}
 		return null;
 	}

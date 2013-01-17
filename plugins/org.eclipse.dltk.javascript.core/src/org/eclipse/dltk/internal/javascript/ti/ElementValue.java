@@ -208,8 +208,11 @@ public abstract class ElementValue implements IValue {
 				}
 			}
 		} else if (type instanceof IRIValueType) {
-			return ((IValueProvider) ((IRIValueType) type).getValue().getChild(
+			IValue value = ((IValueProvider) ((IRIValueType) type).getValue().getChild(
 					name)).getValue();
+			if (value != null)
+				return value;
+			return findMember(context, RTypes.OBJECT, name);
 		} else {
 			final IRTypeDeclaration t = TypeUtil.extractType(context, type);
 			if (t != null) {

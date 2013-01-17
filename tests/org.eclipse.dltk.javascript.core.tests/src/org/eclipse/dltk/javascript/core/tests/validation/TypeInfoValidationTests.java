@@ -2887,5 +2887,32 @@ public class TypeInfoValidationTests extends AbstractValidationTest {
 		code.add("}");
 		List<IProblem> validate = validate(code.toString());
 		assertEquals(0, validate.size());
+	}
+	
+	public void testDefaultObjectMethodOnLocalType() {
+		final StringList code = new StringList();
+		code.add("function test() {");
+		code.add("var y = new MyObject();");
+		code.add("y.toString();");
+		code.add("}");
+		code.add("function MyObject() {");
+		code.add("}");
+		List<IProblem> validate = validate(code.toString());
+		assertEquals(0, validate.size());
+	}
+	
+	public void testLocalTypeConstructorCallWithArgument() {
+		final StringList code = new StringList();
+		code.add("function test() {");
+		code.add("var y = new MyObject();");
+		code.add("y.toString();");
+		code.add("}");
+		code.add("/**");
+		code.add("* @param {String} x");
+		code.add("*/");
+		code.add("function MyObject(x) {");
+		code.add("}");
+		List<IProblem> validate = validate(code.toString());
+		assertEquals(1, validate.size());
 	}	
 }

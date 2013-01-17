@@ -990,7 +990,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 			}
 			final Object attrRMethod = reference.getAttribute(R_METHOD, true);
 			if (attrRMethod instanceof IRMethod) {
-				validateCallExpressionRMethod(node, reference, arguments,
+				validateCallExpressionRMethod(reference, arguments,
 						methodNode, (IRMethod) attrRMethod);
 				return;
 			}
@@ -998,7 +998,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 					.typeOf(reference);
 			if (expressionType != null) {
 				if (expressionType instanceof IRFunctionType) {
-					validateCallExpressionRMethod(node, reference, arguments,
+					validateCallExpressionRMethod(reference, arguments,
 							methodNode, new RMethodFunctionWrapper(
 									(IRFunctionType) expressionType));
 					return;
@@ -1114,7 +1114,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 			}
 		}
 
-		private void validateCallExpressionRMethod(CallExpression node,
+		private void validateCallExpressionRMethod(
 				final IValueReference reference, IValueReference[] arguments,
 				final Expression methodNode, IRMethod method) {
 			if (method.isDeprecated()) {
@@ -2118,12 +2118,24 @@ public class TypeInfoValidator implements IBuildParticipant,
 					}
 				}
 			} else {
-				final String lazyName = ValueReferenceUtil
-						.getLazyName(reference);
-				if (lazyName != null) {
-					reportUnknownType(JavaScriptProblems.WRONG_TYPE_EXPRESSION,
-							ValidationMessages.UndefinedJavascriptType, node,
-							lazyName);
+				if (typeReference.getKind() == ReferenceKind.FUNCTION) {
+					final Object attrRMethod = typeReference.getAttribute(
+							R_METHOD,
+							true);
+					if (attrRMethod instanceof IRMethod) {
+						validateCallExpressionRMethod(reference, arguments,
+								problemNode, (IRMethod) attrRMethod);
+						return;
+					}
+				} else {
+					final String lazyName = ValueReferenceUtil
+							.getLazyName(reference);
+					if (lazyName != null) {
+						reportUnknownType(
+								JavaScriptProblems.WRONG_TYPE_EXPRESSION,
+								ValidationMessages.UndefinedJavascriptType,
+								node, lazyName);
+					}
 				}
 			}
 		}

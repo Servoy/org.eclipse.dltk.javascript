@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Localization: plugin
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.dltk.javascript.core.manipulation;singleton:=true
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.1.qualifier
 Bundle-Activator: org.eclipse.dltk.internal.javascript.core.manipulation.JavascriptManipulationPlugin
 Bundle-Vendor: %pluginProvider
 Require-Bundle: org.eclipse.core.runtime,

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JavaScript Tests Plug-in
 Bundle-SymbolicName: org.eclipse.dltk.javascript.formatter.tests;singleton:=true
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.dltk.core;bundle-version="0.0.0",
  org.eclipse.dltk.formatter.tests,

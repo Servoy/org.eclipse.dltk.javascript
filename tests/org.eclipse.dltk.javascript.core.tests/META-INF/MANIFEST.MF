@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JavaScript core Tests Plug-in
 Bundle-SymbolicName: org.eclipse.dltk.javascript.core.tests;singleton:=true
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.1.qualifier
 Require-Bundle: org.junit;bundle-version="4.10.0",
  org.eclipse.dltk.javascript.core,
  org.eclipse.dltk.javascript.core.manipulation,

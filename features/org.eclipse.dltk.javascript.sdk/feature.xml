@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.dltk.javascript.sdk"
       label="%featureName"
-      version="5.1.0.qualifier"
+      version="5.1.1.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="1.0.1.qualifier"

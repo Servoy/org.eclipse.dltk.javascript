@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JavaScript Parser Ttests
 Bundle-SymbolicName: org.eclipse.dltk.javascript.parser.tests
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.1.qualifier
 Bundle-Activator: org.eclipse.dltk.javascript.parser.tests.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.junit,

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DLTK JavaScript Dbgp
 Bundle-SymbolicName: org.eclipse.dltk.javascript.rhino.dbgp
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.1.qualifier
 Require-Bundle: org.eclipse.dltk.javascript.rhino
 Bundle-Vendor: %pluginProvider
 Bundle-Localization: plugin

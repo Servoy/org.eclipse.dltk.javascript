@@ -4,13 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
   	<groupId>org.eclipse.dltk.javascript</groupId>
-  	<artifactId>javascript</artifactId>
-  	<version>1.0.0-SNAPSHOT</version>
-  	<relativePath>../..</relativePath>
+  	<artifactId>javascript.tests</artifactId>
+  	<version>5.1.0-SNAPSHOT</version>
+  	<relativePath>../pom.xml</relativePath>
   </parent>
-  <groupId>org.eclipse.dltk.javascript</groupId>
   <artifactId>org.eclipse.dltk.javascript.ui.tests</artifactId>
-  <version>5.1.0-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <profiles>
@@ -51,7 +49,7 @@
 						<artifact>
 							<groupId>org.eclipse.dltk.core</groupId>
 							<artifactId>org.eclipse.dltk.core.targetplatform</artifactId>
-							<version>5.1.0-SNAPSHOT</version>
+							<version>${project.version}</version>
 						</artifact>
 					</target>
 				</configuration>

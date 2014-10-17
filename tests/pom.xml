@@ -4,14 +4,12 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.eclipse.dltk</groupId>
-		<artifactId>parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../../org.eclipse.dltk.releng/build/parent/pom.xml</relativePath>
+		<groupId>org.eclipse.dltk.javascript</groupId>
+		<artifactId>javascript</artifactId>
+		<version>5.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<groupId>org.eclipse.dltk.javascript</groupId>
 	<artifactId>javascript.tests</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.eclipse.dltk.javascript.core.tests</module>

@@ -88,7 +88,7 @@ class RLocalType extends RType implements IRLocalType {
 			}
 			IValueReference fromChild = getChildFromDeclaredTypes(name,
 					declaredValue.getDeclaredTypes(), set);
-			if (fromChild == null) {
+			if (fromChild == null && !PROTOTYPE_PROPERTY.equals(name)) {
 				IValueReference prototype = irType.functionValue
 						.getChild(PROTOTYPE_PROPERTY);
 				fromChild = prototype.getChild(name);

@@ -408,7 +408,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 										RTypes.localType(name, context
 												.getParent().getChild(name)));
 							}
-						}
+						} 
 						else {
 							left.setKind(ReferenceKind.FIELD);
 							final Comment comment = JSDocSupport
@@ -536,8 +536,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			if (methods != null && methods.size() == 1) {
 				final IRMethod method = methods.get(0);
 				IValueReference ref = checkSpecialJavascriptFunctionCalls(
-						reference,
-						arguments, method);
+						reference, arguments, method);
 				if (ref != null)
 					return ref;
 				if (method.isGeneric()) {
@@ -597,10 +596,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				}
 			} else if (method.getName().equals("create")
 					&& RTypes.OBJECT.getDeclaration().equals(
-							method.getDeclaringType()) && arguments.length > 0) {
+							method.getDeclaringType()) && arguments.length > 0
+					&& arguments[0] != null) {
 				AnonymousValue value = new AnonymousValue();
 				IValue argumentValue = ((IValueProvider) arguments[0])
 						.getValue();
+
 				if (argumentValue != null)
 					value.getValue().addValue(argumentValue);
 				if (arguments.length == 2) {
@@ -616,9 +617,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 											.getType()).getMember("value");
 									if (valueMember != null) {
 										newMembers.add(new RRecordMember(member
-												.getName(), valueMember
+														.getName(), valueMember
 														.getType(), member
-												.getSource()));
+														.getSource()));
 									}
 									valueMember = ((IRRecordType) member
 											.getType()).getMember("get");
@@ -639,7 +640,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							}
 							if (newMembers.size() > 0) {
 								value.addValue(ConstantValue.of(RTypes
-									.recordType(newMembers)), true);
+										.recordType(newMembers)), true);
 							}
 						}
 					}

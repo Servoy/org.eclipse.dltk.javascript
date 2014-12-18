@@ -1367,5 +1367,14 @@ public class TypeInferenceTests extends TestCase implements ITypeNames {
 		assertEquals(20, location.getNameStart());
 		assertEquals(26, location.getNameEnd());
 	}
+	
+	public void testObjectCreateCallWithNull() {
+		final StringList code = new StringList();
+		code.add("var p = Object.create(null)");
+		final IValueCollection collection = inference(code.toString());
+		IValueReference func = collection.getChild("p").getChild("hasOwnProperty");
+		assertTrue(func.exists());
+		
+	}
 
 }

@@ -92,7 +92,9 @@ public class RMember<E extends Member> implements IRMember {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + member.hashCode();
-		result = prime * result + typeDeclaration.hashCode();
+		result = prime * result;
+		if (typeDeclaration != null)
+			result += typeDeclaration.hashCode();
 		return result;
 	}
 

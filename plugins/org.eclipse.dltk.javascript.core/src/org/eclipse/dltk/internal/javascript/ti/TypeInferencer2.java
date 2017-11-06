@@ -545,6 +545,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 
 	private Map<String, IRMember> elements = new HashMap<String, IRMember>();
 
+	@Override
 	public IRMember resolve(String name) {
 		if (name == null)
 			return null;
@@ -572,6 +573,50 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Set<IRMember> resolveAll(String name) {
+		Set<IRMember> result = new HashSet<IRMember>();
+		if (name == null)
+			return null;
+		{
+			if (elements.get(name) == null) {
+				for (IRMember element : elements.values()) {
+					if (element != null && element.getName().startsWith(name)) {
+						result.add(element);
+					}
+				}
+			} else {
+				result.add(elements.get(name));
+			}
+			if (!result.isEmpty())
+				return result;
+		}
+		Member element = TypeInfoModelLoader.getInstance().getMember(name);
+		if (element != null) {
+			final IRMember r = convertMember(element, null);
+			elements.put(name, r);
+			result.add(r);
+			return result;
+		}
+		if (resolve) {
+			for (IElementResolver resolver : TypeInfoManager
+					.getElementResolvers()) {
+				Set<Member> members = resolver.resolveElements(this, name);
+				if (members != null) {
+					IRMember r = null;
+					for (Member member : members) {
+						r = convertMember(member, null);
+						if (r != null) {
+							result.add(r);
+							elements.put(r.toString(), r);
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override

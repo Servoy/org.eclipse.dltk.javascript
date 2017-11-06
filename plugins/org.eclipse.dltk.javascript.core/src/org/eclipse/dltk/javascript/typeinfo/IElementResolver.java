@@ -18,6 +18,11 @@ import org.eclipse.dltk.javascript.typeinfo.model.Member;
 
 @ConfigurationElement("resolver")
 public interface IElementResolver {
+	/**
+	 * @since 5.1
+	 */
+	Set<Member> resolveElements(ITypeInfoContext context, String name);
+
 	Member resolveElement(ITypeInfoContext context, String name);
 
 	/**

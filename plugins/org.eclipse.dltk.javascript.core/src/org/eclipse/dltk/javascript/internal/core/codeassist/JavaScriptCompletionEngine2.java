@@ -297,9 +297,11 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 		final Set<String> globals = context.listGlobals(reporter.getPrefix());
 		for (String global : globals) {
 			if (reporter.canReport(global)) {
-				IRMember element = context.resolve(global);
-				if (element != null && element.isVisible()) {
-					reporter.report(global, element);
+				Set<IRMember> elements = context.resolveAll(global);
+				for (IRMember element : elements) {
+					if (element != null && element.isVisible()) {
+						reporter.report(global, element);
+					}
 				}
 			} else if (global.lastIndexOf('.') != -1) {
 				Type type = context.getType(global);
@@ -353,7 +355,8 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 		}
 
 		public void report(String name, IRElement element) {
-			if (element instanceof IRMember && processed.add(name)) {
+			if (element instanceof IRMember
+					&& processed.add(element.toString())) {
 				reportMember((IRMember) element, name, false);
 			}
 		}

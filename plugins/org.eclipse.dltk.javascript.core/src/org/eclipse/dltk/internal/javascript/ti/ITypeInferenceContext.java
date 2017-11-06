@@ -25,6 +25,8 @@ public interface ITypeInferenceContext extends ITypeInfoContext, IAdaptable {
 
 	IRMember resolve(String name);
 
+	Set<IRMember> resolveAll(String name);
+
 	Set<String> listGlobals(String prefix);
 
 	Set<String> listTypes(TypeMode mode, String prefix);

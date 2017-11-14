@@ -13,11 +13,13 @@ package org.eclipse.dltk.internal.javascript.ti;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.annotations.Internal;
@@ -39,6 +41,7 @@ import org.eclipse.dltk.javascript.typeinfo.IMemberEvaluator;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
+import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRRecordType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
@@ -577,7 +580,19 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 
 	@Override
 	public Set<IRMember> resolveAll(String name) {
-		Set<IRMember> result = new HashSet<IRMember>();
+		Set<IRMember> result = new TreeSet<IRMember>(
+				new Comparator<IRMember>() {
+					@Override
+					public int compare(IRMember m1, IRMember m2) {
+						if (m1 instanceof IRMethod && m2 instanceof IRMethod) {
+							return ((IRMethod) m1)
+									.getParameterCount() >=
+				((IRMethod) m2).getParameterCount()
+							? 1 :-1;
+						}
+						return 0;
+					}
+				});
 		if (name == null)
 			return null;
 		{

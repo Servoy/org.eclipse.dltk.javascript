@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-class RUnionType extends RType implements IRUnionType {
+public class RUnionType extends RType implements IRUnionType {
 
 	final Set<IRType> targets = new LinkedHashSet<IRType>();
 

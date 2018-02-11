@@ -594,7 +594,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				} else if ("bind".equals(method.getName())) {
 					return reference.getParent();
 				}
-			} else if (method.getName().equals("create")
+			} else if ((method.getName().equals("create")
+					|| method.getName().equals("freeze")
+					|| method.getName().equals("seal"))
 					&& RTypes.OBJECT.getDeclaration().equals(
 							method.getDeclaringType()) && arguments.length > 0
 					&& arguments[0] != null) {

@@ -28,6 +28,13 @@ public final class ActionMessages extends NLS {
 	public static String MemberFilterActionGroup_hide_classes_label;
 	public static String MemberFilterActionGroup_hide_classes_tooltip;
 	public static String MemberFilterActionGroup_hide_classes_description;
+	public static String MemberFilterActionGroup_hide_non_public_label;
+	public static String MemberFilterActionGroup_hide_non_public_tooltip;
+	public static String MemberFilterActionGroup_hide_non_public_description;
+
+	public static String CollapsAllAction_label;
+	public static String CollapsAllAction_tooltip;
+	public static String CollapsAllAction_description;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);

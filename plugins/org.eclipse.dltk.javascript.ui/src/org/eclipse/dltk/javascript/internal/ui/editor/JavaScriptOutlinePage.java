@@ -12,42 +12,78 @@ package org.eclipse.dltk.javascript.internal.ui.editor;
 import java.util.ArrayList;
 
 import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.internal.javascript.parser.JSModifiers;
 import org.eclipse.dltk.internal.ui.editor.ScriptEditor;
 import org.eclipse.dltk.internal.ui.editor.ScriptOutlinePage;
 import org.eclipse.dltk.ui.DLTKPluginImages;
 import org.eclipse.dltk.ui.actions.MemberFilterActionGroup;
 import org.eclipse.dltk.ui.viewsupport.MemberFilterAction;
 import org.eclipse.dltk.ui.viewsupport.ModelElementFilter;
+import org.eclipse.dltk.ui.viewsupport.ModelElementFlagsFilter;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IActionBars;
-
+import org.eclipse.ui.handlers.CollapseAllHandler;
 
 public class JavaScriptOutlinePage extends ScriptOutlinePage {
+
+	class CollapseAllAction extends Action {
+
+		private final ScriptOutlineViewer tree;
+
+		/**
+		 * Create the CollapseAll action.
+		 *
+		 * @param aViewer
+		 *            The viewer to be collapsed.
+		 */
+		public CollapseAllAction(ScriptOutlineViewer view) {
+			super(ActionMessages.CollapsAllAction_label);
+			setToolTipText(ActionMessages.CollapsAllAction_tooltip);
+			setActionDefinitionId(CollapseAllHandler.COMMAND_ID);
+			tree = view;
+		}
+
+		@Override
+		public void run() {
+			if (tree != null) {
+				tree.collapseAll();
+			}
+		}
+	}
 
 	public JavaScriptOutlinePage(ScriptEditor editor, IPreferenceStore store) {
 		super(editor, store);		
 	}
 	
-
 	protected void registerSpecialToolbarActions(IActionBars actionBars) {
 		IToolBarManager toolBarManager = actionBars.getToolBarManager();
+		CollapseAllAction collapseAllAction = new CollapseAllAction(
+				fOutlineViewer);
+		DLTKPluginImages.setLocalImageDescriptors(collapseAllAction,
+				"collapseall.gif");
+
+		toolBarManager.insertBefore(toolBarManager.getItems()[0].getId(),
+				collapseAllAction);
 
 		MemberFilterActionGroup fMemberFilterActionGroup= new MemberFilterActionGroup(fOutlineViewer, fStore); //$NON-NLS-1$
 
 		String title, helpContext;
-		ArrayList<MemberFilterAction> actions = new ArrayList<MemberFilterAction>(3);
+		ArrayList<MemberFilterAction> actions = new ArrayList<MemberFilterAction>(
+				4);
 
 		// fill-in actions
 
 		// variables
 		
-
 		title = ActionMessages.MemberFilterActionGroup_hide_variables_label;
 		// TODO help support
 		helpContext = "";// IDLTKHelpContextIds.FILTER_FIELDS_ACTION;
 		MemberFilterAction hideVariables = new MemberFilterAction(fMemberFilterActionGroup, title,
-				new ModelElementFilter(IModelElement.FIELD), helpContext, true);
+				new ModelElementFilter(IModelElement.FIELD), helpContext, true); // also
+																					// filter
+																					// IModelElement.LOCAL_VARIABLE?
 		hideVariables
 				.setDescription(ActionMessages.MemberFilterActionGroup_hide_variables_description);
 		hideVariables
@@ -78,7 +114,12 @@ public class JavaScriptOutlinePage extends ScriptOutlinePage {
 		// TODO help support
 		helpContext = "";// IDLTKHelpContextIds.FILTER_PUBLIC_ACTION;
 		MemberFilterAction hideNamespaces = new MemberFilterAction(fMemberFilterActionGroup, title,
-				new ModelElementFilter(IModelElement.TYPE), helpContext, true);
+				new ModelElementFilter(IModelElement.TYPE), helpContext, true); // When
+																				// does
+																				// IModelElement.TYPE
+																				// happen
+																				// in
+																				// JS?
 		hideNamespaces
 				.setDescription(ActionMessages.MemberFilterActionGroup_hide_classes_description);
 		hideNamespaces
@@ -86,6 +127,25 @@ public class JavaScriptOutlinePage extends ScriptOutlinePage {
 		DLTKPluginImages.setLocalImageDescriptors(hideNamespaces,
 				"filter_classes.gif"); //$NON-NLS-1$
 		actions.add(hideNamespaces);
+
+		// Visibility
+		title = ActionMessages.MemberFilterActionGroup_hide_non_public_label;
+		// TODO help support
+		helpContext = "";// IDLTKHelpContextIds.FILTER_FIELDS_ACTION;
+		MemberFilterAction hideNonPublic = new MemberFilterAction(
+				fMemberFilterActionGroup, title,
+				new ModelElementFlagsFilter(
+						JSModifiers.PROTECTED | JSModifiers.PRIVATE), // Should
+																		// be
+																		// inverted
+				helpContext, true);
+		hideNonPublic.setDescription(
+				ActionMessages.MemberFilterActionGroup_hide_non_public_description);
+		hideNonPublic.setToolTipText(
+				ActionMessages.MemberFilterActionGroup_hide_non_public_tooltip);
+		DLTKPluginImages.setLocalImageDescriptors(hideNonPublic,
+				"public_co.gif"); //$NON-NLS-1$
+		actions.add(hideNonPublic);
 
 		// order corresponds to order in toolbar
 		MemberFilterAction[] fFilterActions = actions
@@ -96,6 +156,4 @@ public class JavaScriptOutlinePage extends ScriptOutlinePage {
 		fMemberFilterActionGroup.contributeToToolBar(toolBarManager);
 		
 	}
-	
-
 }

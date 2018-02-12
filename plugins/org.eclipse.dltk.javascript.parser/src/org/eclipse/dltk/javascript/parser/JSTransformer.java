@@ -2098,6 +2098,7 @@ public class JSTransformer {
 
 	protected ASTNode visitConst(Tree node) {
 		ConstStatement declaration = new ConstStatement(getParent());
+		locateDocumentation(declaration, node);
 		declaration.setConstKeyword(createKeyword(node, Keywords.CONST));
 
 		processVariableDeclarations(node, declaration, SymbolKind.CONST);

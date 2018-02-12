@@ -19,10 +19,11 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.internal.parser.JSLiterals;
 
-public class ConstStatement extends Statement implements IVariableStatement {
+public class ConstStatement extends Statement implements IVariableStatement, Documentable {
 
 	private Keyword constKeyword;
 	private final List<VariableDeclaration> consts = new ArrayList<VariableDeclaration>();
+	private Comment documentation;
 	private int semic = -1;
 
 	public ConstStatement(JSNode parent) {
@@ -90,6 +91,15 @@ public class ConstStatement extends Statement implements IVariableStatement {
 		buffer.append(";\n");
 
 		return buffer.toString();
+	}
+
+	@Override
+	public Comment getDocumentation() {
+		return documentation;
+	}
+
+	public void setDocumentation(Comment documentation) {
+		this.documentation = documentation;
 	}
 
 }

@@ -598,7 +598,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		{
 			if (elements.get(name) == null) {
 				for (IRMember element : elements.values()) {
-					if (element != null && element.getName().startsWith(name)) {
+					if (element != null && element.getName().equals(name)) {
 						result.add(element);
 					}
 				}

@@ -427,6 +427,7 @@
     <members xsi:type="ref:Method" name="toString" directType="String" description="Returns a String value for this object."/>
     <members xsi:type="ref:Method" name="toTimeString" directType="String" description="Returns the time portion of a Date object in readable form."/>
     <members xsi:type="ref:Method" name="toUTCString" directType="String" description="Converts a Date object, according to universal time, to a string."/>
+    <members xsi:type="ref:Method" name="toISOString" directType="String" description="Returns the Date object as a string in simplified extended ISO format."/>
   </ref:Type>
   <ref:Type name="Number" kind="PREDEFINED" superType="Object">
     <staticConstructor name="Number" directType="Number">

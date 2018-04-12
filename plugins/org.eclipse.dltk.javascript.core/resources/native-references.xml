@@ -241,7 +241,9 @@
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
-    <members xsi:type="ref:Method" name="shift" description="Removes and returns the first element of an array."/>
+    <members xsi:type="ref:Method" name="shift" description="Removes and returns the first element of an array.">
+    	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+    </members>
     <members xsi:type="ref:Method" name="slice" description="Returns selected elements from an existing array.">
       <parameters name="start" directType="Number"/>
       <parameters name="end" directType="Number" kind="OPTIONAL"/>

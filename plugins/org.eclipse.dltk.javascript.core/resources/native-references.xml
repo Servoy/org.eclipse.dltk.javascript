@@ -108,7 +108,10 @@
     <members xsi:type="ref:Method" name="assign" directType="Object" description="Copy the values of all enumerable own properties from one or more source objects to a target object." static="true">
     	<parameters name="target" directType="Object"/>
     	<parameters name="sources" directType="Object" kind="VARARGS"/>
-    	<type xsi:type="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="is" directType="Boolean" description="Determines whether two values are the same value." static="true">
+    	<parameters name="value1" directType="Object"/>
+    	<parameters name="value2" directType="Object"/>
     </members>
   </ref:Type>
   <ref:TypeAlias source="regexp" target="RegExp"/>

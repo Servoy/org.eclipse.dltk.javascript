@@ -563,6 +563,7 @@
     <members xsi:type="ref:Method" name="toString" directType="String" description="Returns a String value for this object."/>
     <members xsi:type="ref:Method" name="toUpperCase" directType="String" description="Returns a string in uppercase letters."/>
     <members xsi:type="ref:Method" name="valueOf" directType="String" description="Returns the primitive value of a String object."/>
+    <members xsi:type="ref:Method" name="trim" directType="String" description="Returns the string stripped of whitespace from both ends."/>
   </ref:Type>
   <ref:TypeAlias source="string" target="String"/>
   <ref:Type name="XML" kind="PREDEFINED">

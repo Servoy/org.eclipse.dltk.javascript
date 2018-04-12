@@ -506,8 +506,11 @@
         <members xsi:type="ref:Method" name="localeCompare" directType="Number" description="This method returns a number indicating whether a reference string comes before or after or is the same as the given string in sort order.">
       <parameters name="otherString"/>
     </members>
-    <members xsi:type="ref:Method" name="match" directType="String" description="Searches for a specified value in a string.">
+    <members xsi:type="ref:Method" name="match" description="Searches for a specified value in a string.">
       <parameters name="searchvalue"/>
+      <type xsi:type="ref:ArrayType">
+			<itemType xsi:type="ref:SimpleType" target="String"/>
+	  </type>
     </members>
     <members xsi:type="ref:Method" name="replace" directType="String" description="Replaces some characters with some other characters in a string.">
       <parameters name="findString">

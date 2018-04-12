@@ -105,6 +105,11 @@
     <members xsi:type="ref:Method" name="propertyIsEnumerable" description="Returns a boolean indicating if the internal ECMAScript DontEnum attribute is set.">
     	<parameters name="prop" directType="String"/>
     </members>
+    <members xsi:type="ref:Method" name="assign" directType="Object" description="Copy the values of all enumerable own properties from one or more source objects to a target object." static="true">
+    	<parameters name="target" directType="Object"/>
+    	<parameters name="sources" directType="Object" kind="VARARGS"/>
+    	<type xsi:type="Object"/>
+    </members>
   </ref:Type>
   <ref:TypeAlias source="regexp" target="RegExp"/>
   <ref:Type name="RegExp" kind="PREDEFINED" superType="Object">
@@ -247,6 +252,15 @@
     <members xsi:type="ref:Method" name="slice" description="Returns selected elements from an existing array.">
       <parameters name="start" directType="Number"/>
       <parameters name="end" directType="Number" kind="OPTIONAL"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
+    </members>
+    <members xsi:type="ref:Method" name="reduce" description="Reduces the array to a single value by executing a provided function for each value of the array (from left-to-right).">
+      <parameters name="function(total, currentValue, [index] , [arr])" directType="Function"/>
+      <parameters name="initialValue" kind="OPTIONAL">
+         <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </parameters>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>

@@ -111,7 +111,7 @@ class RRecordType extends RType implements IRRecordType, IRTypeExtension {
 
 	private TypeCompatibility assignableFromRecordType(RRecordType other) {
 		final Map<String, IRRecordMember> others = other.members;
-		if (members.size() == 0 && others.size() == 0) {
+		if (members.isEmpty() && others.isEmpty()) {
 			return TypeCompatibility.TRUE;
 		}
 		int hits = 0;

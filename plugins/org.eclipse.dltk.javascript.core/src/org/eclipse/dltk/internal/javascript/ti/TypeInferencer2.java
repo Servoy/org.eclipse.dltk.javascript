@@ -79,7 +79,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 
 	private void initializeVisitor() {
 		if (visitor == null) {
-			visitor = new TypeInferencerVisitor(this);
+			visitor = new TypeInferencerVisitor(this, visitFunctionBody);
 		}
 		visitor.initialize();
 	}
@@ -545,6 +545,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 	private final TypeResourceSet typeRS = new TypeResourceSet();
 
 	private boolean resolve = true;
+	private boolean visitFunctionBody = true;
 
 	private Map<String, IRMember> elements = new HashMap<String, IRMember>();
 
@@ -836,5 +837,9 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 			return RTypes.localType(name, result);
 		}
 		return null;
+	}
+
+	public void setVisitFunctionBody(boolean visitFunctionBody) {
+		this.visitFunctionBody = visitFunctionBody;
 	}
 }

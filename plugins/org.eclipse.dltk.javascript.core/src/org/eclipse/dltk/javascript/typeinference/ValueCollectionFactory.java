@@ -98,7 +98,7 @@ public class ValueCollectionFactory {
 	 * @return The {@link IValueCollection} of the parsed/inference'd file
 	 */
 	public static IValueCollection createValueCollection(IFile file,
-			boolean resolve) {
+			boolean resolve, boolean visitFunctionBody) {
 		if (file.exists()) {
 			ISourceModule sourceModule = DLTKCore.createSourceModuleFrom(file);
 			Script script = JavaScriptParserUtil.parse(sourceModule);
@@ -106,6 +106,7 @@ public class ValueCollectionFactory {
 				TypeInferencer2 inferencer = new TypeInferencer2();
 				inferencer.setModelElement(sourceModule);
 				inferencer.setDoResolve(resolve);
+				inferencer.setVisitFunctionBody(visitFunctionBody);
 				inferencer.doInferencing(script);
 				IValueCollection collection = inferencer.getCollection();
 				inferencer.setVisitor(null);

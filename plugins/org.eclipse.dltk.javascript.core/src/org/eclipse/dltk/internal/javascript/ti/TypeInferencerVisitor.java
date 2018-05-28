@@ -164,8 +164,16 @@ import org.xml.sax.InputSource;
 
 public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
+	private boolean visitFunctionBody;
+
 	public TypeInferencerVisitor(ITypeInferenceContext context) {
+		this(context, true);
+	}
+
+	public TypeInferencerVisitor(ITypeInferenceContext context,
+			boolean visitFunctionBody) {
 		super(context);
+		this.visitFunctionBody = visitFunctionBody;
 	}
 
 	private static class ForwardDeclaration {
@@ -1084,8 +1092,19 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	}
 
 	public void visitFunctionBody(FunctionStatement node) {
+		boolean visitBody = visitFunctionBody;
+		if (!visitBody && node.getDocumentation() != null
+				&& node.getDocumentation().getText() != null) {
+			visitBody = node.getDocumentation().getText()
+					.contains("@constructor");
+		}
 		handleDeclarations(node);
-		visit(node.getBody());
+		if (visitBody) {
+			visit(node.getBody());
+		}
+		// else {
+		// System.err.println("skipped " + node);
+		// }
 	}
 
 	public void setType(IValueReference value, JSType type, boolean lazyEnabled) {

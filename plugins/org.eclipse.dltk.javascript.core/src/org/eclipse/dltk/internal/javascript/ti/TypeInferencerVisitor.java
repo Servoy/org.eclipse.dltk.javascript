@@ -1096,15 +1096,13 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		if (!visitBody && node.getDocumentation() != null
 				&& node.getDocumentation().getText() != null) {
 			visitBody = node.getDocumentation().getText()
-					.contains("@constructor");
+					.contains("@constructor")
+					|| node.getDocumentation().getText().contains("@parse");
 		}
 		handleDeclarations(node);
 		if (visitBody) {
 			visit(node.getBody());
 		}
-		// else {
-		// System.err.println("skipped " + node);
-		// }
 	}
 
 	public void setType(IValueReference value, JSType type, boolean lazyEnabled) {

@@ -1873,7 +1873,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 																	// prototype
 					} else {
 						directChildren = reference.getParent()
-								.getDirectChildren(IValue.NO_LOCAL_TYPES);
+								.getDirectChildren(
+							IValue.NO_LOCAL_TYPES);
 					}
 				if (directChildren == null
 						|| directChildren.contains(reference.getName())) {

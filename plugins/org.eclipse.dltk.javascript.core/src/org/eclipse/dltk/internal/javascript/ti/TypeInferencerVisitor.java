@@ -1001,9 +1001,21 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				Set<String> directChildren = ((IRLocalType) thisType)
 						.getDirectChildren();
 				for (String child : directChildren) {
-					prototype.createChild(child).setDeclaredType(
-							context.getType(ITypeNames.FUNCTION).toRType(
-									context));
+					IValueReference protoChild = prototype.createChild(child);
+					IValueReference localChild = ((IRLocalType) thisType)
+							.getDirectChild(child);
+					protoChild.setKind(localChild.getKind());
+					protoChild.setLocation(localChild.getLocation());
+					if (localChild.getDeclaredType() != null) {
+						protoChild
+								.setDeclaredType(localChild.getDeclaredType());
+					} else if (localChild.getKind() == ReferenceKind.FUNCTION) {
+						protoChild.setDeclaredType(context
+								.getType(ITypeNames.FUNCTION).toRType(context));
+					}
+					JSTypeSet types = localChild.getTypes();
+					protoChild.getTypes().addAll(types);
+
 				}
 			}
 

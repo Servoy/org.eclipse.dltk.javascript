@@ -11,6 +11,13 @@
  */
 package org.eclipse.dltk.javascript.typeinfo.model.impl;
 
+import java.util.StringTokenizer;
+
+import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
+import org.eclipse.dltk.internal.javascript.ti.JSVariable;
+import org.eclipse.dltk.javascript.typeinference.IValueCollection;
+import org.eclipse.dltk.javascript.typeinference.IValueReference;
+import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
 import org.eclipse.dltk.javascript.typeinfo.IRRecordType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
@@ -145,6 +152,45 @@ public class SimpleTypeImpl extends MinimalEObjectImpl implements SimpleType {
 			if (recordType != null) {
 				return recordType;
 			}
+
+			String className = t.getName();
+			if (className.indexOf('.') != -1) {
+				IValueCollection collection = ((ITypeInfoContext) typeSystem)
+						.currentCollection();
+				StringTokenizer st = new StringTokenizer(className, ".");
+				IValueReference child = null;
+				while (st.hasMoreTokens()) {
+					String token = st.nextToken();
+					if (child == null)
+						child = collection.getChild(token);
+					else {
+						if (child.getKind() == ReferenceKind.FUNCTION) {
+							IValueCollection function = (IValueCollection) child
+									.getAttribute(
+											IReferenceAttributes.FUNCTION_SCOPE);
+							if (function != null)
+								child = function.getThis();
+						}
+						child = child.getChild(token);
+					}
+					if (!child.exists()) {
+						child = null;
+						break;
+					}
+				}
+				// if the child is not null, it was found.
+				if (child != null) {
+					Object attribute = child
+							.getAttribute(IReferenceAttributes.VARIABLE);
+					if (attribute instanceof JSVariable
+							&& ((JSVariable) attribute).getTypeDef() != null) {
+						return ((JSVariable) attribute).getTypeDef()
+								.toRType(typeSystem);
+					}
+				}
+
+			}
+
 		}
 		return RTypes.simple(typeSystem, t);
     }

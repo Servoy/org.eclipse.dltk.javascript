@@ -398,7 +398,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						.getLeftExpression();
 				if (property.getProperty() instanceof Identifier
 						&& !left.exists()) {
-					if (property.getObject() instanceof ThisExpression) {
+					final IValueReference leftParent = left.getParent();
+					if (property.getObject() instanceof ThisExpression
+							|| (leftParent != null && Boolean.TRUE.equals(
+									leftParent.getAttribute(IReferenceAttributes.THIS_VALUE,
+											true)))) {
 						if (isFunctionDeclaration(property)) {
 							left.setKind(ReferenceKind.FUNCTION);
 							// this functions is part of an object ('this'
@@ -450,7 +454,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 								property.getProperty().sourceStart(), property
 										.getProperty().sourceEnd()));
 					} else {
-						final IValueReference leftParent = left.getParent();
 						if (leftParent != null) {
 							final IRType declaredType = leftParent
 									.getDeclaredType();

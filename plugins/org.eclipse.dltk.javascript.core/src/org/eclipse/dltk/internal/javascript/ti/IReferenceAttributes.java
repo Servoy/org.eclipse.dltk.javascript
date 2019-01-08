@@ -26,4 +26,6 @@ public interface IReferenceAttributes {
 	String PHANTOM = "PHANTOM";
 	String ACCESS = IReferenceAttributes.class.getName() + "#ACCESS";
 	String LOCAL_TYPE_LOCATION = "LOCAL_TYPE_LOCATION";
+
+	String THIS_VALUE = "THIS_VALUE";
 }

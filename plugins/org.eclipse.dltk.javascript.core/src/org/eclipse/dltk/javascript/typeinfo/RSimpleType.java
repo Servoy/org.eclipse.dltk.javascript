@@ -13,8 +13,10 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.javascript.core.Types;
+import org.eclipse.dltk.javascript.typeinfo.model.SimpleType;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
+import org.eclipse.dltk.javascript.typeinfo.model.impl.TypeInfoModelFactoryImpl;
 
 public class RSimpleType extends RType implements IRSimpleType {
 
@@ -85,6 +87,15 @@ public class RSimpleType extends RType implements IRSimpleType {
 			// function doc, and that Node is not there yet.
 			// see also RLocalType.isAssignableFrom
 			return TypeCompatibility.TRUE;
+		}
+		else if (type instanceof IRRecordType) {
+			SimpleType simple = TypeInfoModelFactoryImpl.eINSTANCE
+					.createSimpleType();
+			simple.setTarget(getTarget());
+			IRType rType = simple.toRType(ITypeSystem.CURRENT.get());
+			if (rType instanceof IRRecordType) {
+				return rType.isAssignableFrom(type);
+			}
 		}
 		return testAssignableTo(type);
 	}

@@ -1,0 +1,11 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+	<groupId>org.eclipse.dltk.javascript</groupId>
+	<artifactId>javascript</artifactId>
+	<version>5.1.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.eclipse.dltk.javascript.site</artifactId>
+	<packaging>eclipse-repository</packaging>
+</project>

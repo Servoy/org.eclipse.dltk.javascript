@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.dltk.core.servoy_5.1.1.qualifier.jar" id="org.eclipse.dltk.core.servoy" version="5.1.1.qualifier">
+      <category name="dltk.servoy"/>
+   </feature>
+   <feature url="features/org.eclipse.dltk.javascript.servoy_5.1.1.qualifier.jar" id="org.eclipse.dltk.javascript.servoy" version="5.1.1.qualifier">
+      <category name="dltk.servoy"/>
+   </feature>
+   <category-def name="dltk.servoy" label="Javascript DLTK"/>
+</site>

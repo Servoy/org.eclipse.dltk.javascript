@@ -110,7 +110,7 @@ public class CompletionString {
 					// "::" is part of XML expressions
 					--i;
 					continue;
-				} else {
+				} else if (inBrackStack.isEmpty()) {
 					// label, object literal, etc.
 					start = i + 1;
 					break;

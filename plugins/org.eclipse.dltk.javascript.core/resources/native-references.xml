@@ -466,6 +466,9 @@
     <members xsi:type="ref:Method" name="anchor" directType="String" description="Creates an HTML anchor.">
       <parameters name="anchorname" directType="String"/>
     </members>
+    <members xsi:type="ref:Method" name="includes" directType="Boolean" description="Determines whether one string may be found within another string.">
+      <parameters name="searchValue" directType="String"/>
+    </members>
     <members xsi:type="ref:Method" name="big" directType="String" description="Returns a string in a big font."/>
     <members xsi:type="ref:Method" name="blink" directType="String" description="Returns a blinking string."/>
     <members xsi:type="ref:Method" name="bold" directType="String" description="Returns a string in bold."/>

@@ -11,14 +11,24 @@ package org.eclipse.dltk.javascript.scriptdoc;
 
 import java.io.Reader;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.core.IBuffer;
 import org.eclipse.dltk.core.IMember;
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.IOpenable;
+import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.core.ModelException;
+import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
+import org.eclipse.dltk.javascript.ui.IJsExtendsForm;
 
 class BufferJavaDocCommentReader extends JavaDocCommentReader {
 
@@ -56,6 +66,7 @@ class BufferJavaDocCommentReader extends JavaDocCommentReader {
  */
 public class ScriptdocContentAccess {
 
+	private static IJsExtendsForm jsExtendsForm = null;
 	// private static final String JAVADOC_END = "*/";
 
 	private ScriptdocContentAccess() {
@@ -114,7 +125,7 @@ public class ScriptdocContentAccess {
 					if (reader == null) {
 						return null;
 					}
-					if (!reader.containsOnlyInheritDoc()) {
+					if (!reader.containsInheritDoc()) {
 						reader.reset();
 						return reader;
 					}
@@ -122,7 +133,10 @@ public class ScriptdocContentAccess {
 
 				if (allowInherited
 						&& (member.getElementType() == IModelElement.METHOD)) {
-					return findDocInHierarchy((IMethod) member);
+					IMember parentMember = findDocInHierarchy((IMethod) member);
+					if (parentMember != null) {
+						return getContentReader(parentMember, true);
+					}
 				}
 			} catch (ModelException e) {
 				return null;
@@ -200,9 +214,97 @@ public class ScriptdocContentAccess {
 		return getHTMLContentReader(member, allowInherited, false);
 	}
 
-	private static Reader findDocInHierarchy(IMethod method)
+	private static IMember findDocInHierarchy(IMember method)
 			throws ModelException {
+
+		initialiseJsExtendsForm();
+		if (jsExtendsForm != null && method instanceof IMethod) {
+			// methodPath: full path for the method location in solution
+			IPath methodPath = method.getPath();
+			String formName = methodPath.lastSegment();
+			String extendsFormName = jsExtendsForm.getExtendsForm(
+					formName.substring(0, formName.length() - 3));
+			if (extendsFormName != null) {
+				extendsFormName += ".js";
+				// scriptFolderPath: method's parent source module
+				IPath scriptFolderPath = methodPath.removeLastSegments(1);
+				IScriptFolder methodScriptFolder = null;
+				// iterate for getting parent source module's container
+				for (IScriptFolder scriptFolder : method.getScriptProject()
+						.getScriptFolders()) {
+					if (scriptFolderPath.equals(scriptFolder.getPath())) {
+						methodScriptFolder = scriptFolder;
+						break;
+					}
+				}
+				// get source module for the parent form
+				ISourceModule sourceModule = (ISourceModule) getElement(
+						methodScriptFolder.getChildren(), extendsFormName,
+						IModelElement.SOURCE_MODULE);
+				// retrieving the method of the parent's source module
+				if (sourceModule != null) {
+					return (IMember) getElement(
+							sourceModule.getChildren(), method.getElementName(),
+							IModelElement.METHOD);
+				}
+			}
+		}
 		return null;
+	}
+
+	private static IModelElement getElement(IModelElement[] elements,
+			String name, int type) {
+		for (IModelElement element : elements) {
+			if (element.getElementName().equals(name)
+					&& element.getElementType() == type) {
+				return element;
+			}
+		}
+		return null;
+	}
+
+	private static void initialiseJsExtendsForm() {
+		// if the instance name is given, make sure that that one is created.
+		if (jsExtendsForm == null) {
+			IExtensionRegistry reg = Platform.getExtensionRegistry();
+			IExtensionPoint ep = reg
+					.getExtensionPoint(IJsExtendsForm.EXTENSION_ID);
+			IExtension[] extensions = ep.getExtensions();
+
+			if (extensions == null || extensions.length == 0) {
+				JavaScriptUI.log(new Exception(
+						"Could not find servoy model provider extension (extension point "
+								+ IJsExtendsForm.EXTENSION_ID + ")"));
+			} else {
+				IExtension extension = extensions[0];
+				IConfigurationElement[] ce = extension
+						.getConfigurationElements();
+				if (ce == null || ce.length == 0) {
+					JavaScriptUI.log(new Exception(
+							"Could not read servoy model provider extension element (extension point "
+									+ IJsExtendsForm.EXTENSION_ID + ")"));
+				} else {
+					if (ce.length > 1) {
+						JavaScriptUI.log(new Exception(
+								"Multiple servoy model provider extension elements found (extension point "
+										+ IJsExtendsForm.EXTENSION_ID
+										+ ")"));
+					}
+					try {
+						jsExtendsForm = (IJsExtendsForm) ce[0]
+								.createExecutableExtension("class");
+						if (jsExtendsForm == null) {
+							JavaScriptUI.log(new Exception(
+									"Could not load servoy model provider (extension point "
+											+ IJsExtendsForm.EXTENSION_ID
+											+ ")"));
+						}
+					} catch (CoreException e) {
+						JavaScriptUI.log(e);
+					}
+				}
+			}
+		}
 	}
 
 }

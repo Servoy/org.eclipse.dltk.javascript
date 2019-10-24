@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.dltk.javascript.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.dltk.javascript.ui" id="jsDocProvider" name="jsDocProvider"/>
+         <meta.schema plugin="org.eclipse.dltk.javascript.ui" id="org.eclipse.dltk.javascript.ui.extendsScope" name="extendedScope"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -17,17 +17,11 @@
          </appInfo>
       </annotation>
       <complexType>
-         <sequence>
-            <element ref="jsExtendsForm" minOccurs="1" maxOccurs="unbounded"/>
-         </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
-               <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.dltk.javascript.scriptdoc.IJsDocProvider"/>
-               </appInfo>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
@@ -44,21 +38,6 @@
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="jsExtendsForm">
-      <complexType>
-         <attribute name="class" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.dltk.javascript.ui.IJsExtendsForm"/>
                </appInfo>
             </annotation>
          </attribute>

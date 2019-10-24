@@ -28,7 +28,7 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
-import org.eclipse.dltk.javascript.ui.IJsExtendsForm;
+import org.eclipse.dltk.javascript.ui.IJsExtendsScope;
 
 class BufferJavaDocCommentReader extends JavaDocCommentReader {
 
@@ -66,7 +66,7 @@ class BufferJavaDocCommentReader extends JavaDocCommentReader {
  */
 public class ScriptdocContentAccess {
 
-	private static IJsExtendsForm jsExtendsForm = null;
+	private static IJsExtendsScope jsExtendsScope = null;
 	// private static final String JAVADOC_END = "*/";
 
 	private ScriptdocContentAccess() {
@@ -218,11 +218,11 @@ public class ScriptdocContentAccess {
 			throws ModelException {
 
 		initialiseJsExtendsForm();
-		if (jsExtendsForm != null && method instanceof IMethod) {
+		if (jsExtendsScope != null && method instanceof IMethod) {
 			// methodPath: full path for the method location in solution
 			IPath methodPath = method.getPath();
 			String formName = methodPath.lastSegment();
-			String extendsFormName = jsExtendsForm.getExtendsForm(
+			String extendsFormName = jsExtendsScope.getExtendsScope(
 					formName.substring(0, formName.length() - 3));
 			if (extendsFormName != null) {
 				extendsFormName += ".js";
@@ -265,38 +265,34 @@ public class ScriptdocContentAccess {
 
 	private static void initialiseJsExtendsForm() {
 		// if the instance name is given, make sure that that one is created.
-		if (jsExtendsForm == null) {
+		if (jsExtendsScope == null) {
 			IExtensionRegistry reg = Platform.getExtensionRegistry();
 			IExtensionPoint ep = reg
-					.getExtensionPoint(IJsExtendsForm.EXTENSION_ID);
+					.getExtensionPoint(IJsExtendsScope.EXTENSION_ID);
 			IExtension[] extensions = ep.getExtensions();
 
-			if (extensions == null || extensions.length == 0) {
-				JavaScriptUI.log(new Exception(
-						"Could not find servoy model provider extension (extension point "
-								+ IJsExtendsForm.EXTENSION_ID + ")"));
-			} else {
+			if (extensions != null && extensions.length > 0) {
 				IExtension extension = extensions[0];
 				IConfigurationElement[] ce = extension
 						.getConfigurationElements();
 				if (ce == null || ce.length == 0) {
 					JavaScriptUI.log(new Exception(
-							"Could not read servoy model provider extension element (extension point "
-									+ IJsExtendsForm.EXTENSION_ID + ")"));
+							"Could not read model provider extension element (extension point "
+									+ IJsExtendsScope.EXTENSION_ID + ")"));
 				} else {
 					if (ce.length > 1) {
 						JavaScriptUI.log(new Exception(
-								"Multiple servoy model provider extension elements found (extension point "
-										+ IJsExtendsForm.EXTENSION_ID
+								"Multiple model provider extension elements found (extension point "
+										+ IJsExtendsScope.EXTENSION_ID
 										+ ")"));
 					}
 					try {
-						jsExtendsForm = (IJsExtendsForm) ce[0]
+						jsExtendsScope = (IJsExtendsScope) ce[0]
 								.createExecutableExtension("class");
-						if (jsExtendsForm == null) {
+						if (jsExtendsScope == null) {
 							JavaScriptUI.log(new Exception(
-									"Could not load servoy model provider (extension point "
-											+ IJsExtendsForm.EXTENSION_ID
+									"Could not load model provider (extension point "
+											+ IJsExtendsScope.EXTENSION_ID
 											+ ")"));
 						}
 					} catch (CoreException e) {

@@ -1114,8 +1114,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					.contains("@constructor")
 					|| node.getDocumentation().getText().contains("@parse");
 		}
-		handleDeclarations(node);
 		if (visitBody) {
+			handleDeclarations(node);
 			visit(node.getBody());
 		}
 	}

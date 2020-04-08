@@ -20,7 +20,6 @@ import java.util.Set;
 import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.internal.core.RMethod;
 import org.eclipse.dltk.javascript.internal.core.RParameter;
-import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
@@ -188,12 +187,6 @@ public class TopValueCollection extends ValueCollection {
 	public TopValueCollection(final ITypeInferenceContext context) {
 		super(null, new TopValue(context));
 		this.thisValue = new TopValueThis(this);
-
-		IValueCollection topValueCollection = context.getTopValueCollection();
-		if (topValueCollection instanceof IValueProvider) {
-			getValue().addValue(
-					((IValueProvider) topValueCollection).getValue());
-		}
 	}
 
 	private final TopValueThis thisValue;

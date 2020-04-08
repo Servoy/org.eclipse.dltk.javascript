@@ -70,6 +70,8 @@ public interface IValue {
 
 	void addValue(IValue src);
 
+	void mergeValue(IValue src);
+
 	void addReference(IValue src);
 
 	void removeReference(IValue value);

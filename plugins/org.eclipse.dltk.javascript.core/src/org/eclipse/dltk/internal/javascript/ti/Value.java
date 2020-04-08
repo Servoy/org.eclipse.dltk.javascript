@@ -229,6 +229,40 @@ public class Value extends ImmutableValue {
 		}
 	}
 
+	@Override
+	public void mergeValue(IValue src) {
+		if (src instanceof ImmutableValue) {
+			ImmutableValue val = (ImmutableValue) src;
+			if (val.attributes != null && val.attributes.size() > 0) {
+				if (this.attributes == null) {
+					this.attributes = new HashMap<String, Object>(
+							val.attributes);
+				} else {
+					this.attributes.putAll(val.attributes);
+				}
+			}
+			if (val.deletedChildren != null && val.deletedChildren.size() > 0) {
+				if (this.deletedChildren == null) {
+					this.deletedChildren = new HashSet<String>(
+							val.deletedChildren);
+				} else {
+					this.deletedChildren.addAll(val.deletedChildren);
+				}
+			}
+
+			this.children.putAll(val.children);
+			this.inherited.putAll(val.inherited);
+			this.references.addAll(val.references);
+			this.types.addAll(val.types);
+			this.declaredType = val.declaredType;
+			this.kind = val.kind;
+			this.location = val.location;
+
+		} else {
+			addValue(src);
+		}
+	}
+
 	private static boolean isPrimitiveValue(IRType type) {
 		if (type instanceof IRSimpleType) {
 			final Type target = ((IRSimpleType) type).getTarget();
@@ -298,6 +332,9 @@ public class Value extends ImmutableValue {
 				attributes.put(IReferenceAttributes.LOCAL_TYPE_LOCATION,
 						src.location);
 			}
+		}
+		else {
+			mergeValue(src);
 		}
 	}
 

@@ -87,6 +87,9 @@ public enum PhantomValue implements IValue {
 	public void addValue(IValue src) {
 	}
 
+	public void mergeValue(IValue src) {
+	}
+
 	public void addReference(IValue src) {
 	}
 

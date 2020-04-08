@@ -967,6 +967,9 @@ public abstract class ElementValue implements IValue {
 	public final void addValue(IValue src) {
 	}
 
+	public final void mergeValue(IValue src) {
+	}
+
 	public final void addReference(IValue src) {
 	}
 

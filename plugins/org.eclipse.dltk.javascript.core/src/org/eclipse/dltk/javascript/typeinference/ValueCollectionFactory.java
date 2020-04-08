@@ -9,7 +9,9 @@ import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.ti.IValueProvider;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValue;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValueCollection;
+import org.eclipse.dltk.internal.javascript.ti.TopValueCollection;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencer2;
+import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.internal.javascript.ti.Value;
 import org.eclipse.dltk.internal.javascript.ti.ValueCollection;
 import org.eclipse.dltk.javascript.ast.Script;
@@ -97,13 +99,22 @@ public class ValueCollectionFactory {
 	 *            want to avoid circular references.
 	 * @return The {@link IValueCollection} of the parsed/inference'd file
 	 */
-	public static IValueCollection createValueCollection(IFile file,
-			boolean resolve, boolean visitFunctionBody) {
+	public static IValueCollection createValueCollection(final IFile file,
+			boolean resolve, boolean visitFunctionBody,
+			final IPreStart preStart) {
 		if (file.exists()) {
 			ISourceModule sourceModule = DLTKCore.createSourceModuleFrom(file);
 			Script script = JavaScriptParserUtil.parse(sourceModule);
 			if (script != null) {
 				TypeInferencer2 inferencer = new TypeInferencer2();
+				inferencer.setVisitor(new TypeInferencerVisitor(inferencer,
+						visitFunctionBody) {
+					protected void initializeCollection(
+							TopValueCollection topCollection) {
+						super.initializeCollection(topCollection);
+						preStart.aboutToStart(file, topCollection);
+					}
+				});
 				inferencer.setModelElement(sourceModule);
 				inferencer.setDoResolve(resolve);
 				inferencer.setVisitFunctionBody(visitFunctionBody);
@@ -140,13 +151,7 @@ public class ValueCollectionFactory {
 				&& source instanceof IValueProvider) {
 			IValue targetValue = ((IValueProvider) target).getValue();
 			IValue sourceValue = ((IValueProvider) source).getValue();
-			if (targetValue instanceof Value
-					&& sourceValue instanceof ImmutableValue) {
-				((Value) targetValue).copyChilds((ImmutableValue) sourceValue);
-			} else {
-				targetValue.addValue(((IValueProvider) source).getValue());
-			}
-
+			targetValue.mergeValue(sourceValue);
 		}
 	}
 }

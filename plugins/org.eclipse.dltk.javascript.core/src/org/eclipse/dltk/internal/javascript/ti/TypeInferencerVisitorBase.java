@@ -87,7 +87,8 @@ public abstract class TypeInferencerVisitorBase extends
 
 	public void initialize() {
 		contexts.clear();
-		contexts.push(new TopValueCollection(context));
+		TopValueCollection topCollection = new TopValueCollection(context);
+		contexts.push(topCollection);
 		listeners = null;
 		final List<ITypeInferenceHandler> handlers = createHandlers();
 		if (handlers != null && !handlers.isEmpty()) {
@@ -95,6 +96,15 @@ public abstract class TypeInferencerVisitorBase extends
 					.size()]);
 		} else {
 			this.handlers = null;
+		}
+		initializeCollection(topCollection);
+	}
+
+	protected void initializeCollection(TopValueCollection topCollection) {
+		IValueCollection topValueCollection = context.getTopValueCollection();
+		if (topValueCollection instanceof IValueProvider) {
+			topCollection.getValue().mergeValue(
+					((IValueProvider) topValueCollection).getValue());
 		}
 	}
 

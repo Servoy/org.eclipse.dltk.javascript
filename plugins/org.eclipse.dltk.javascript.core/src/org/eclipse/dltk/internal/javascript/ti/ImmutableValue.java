@@ -394,6 +394,9 @@ public class ImmutableValue implements IValue, IValue2 {
 	public void addValue(IValue src) {
 	}
 
+	public void mergeValue(IValue src) {
+	}
+
 	public void addReference(IValue src) {
 	}
 

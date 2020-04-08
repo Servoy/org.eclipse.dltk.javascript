@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.annotations.NonNull;
@@ -45,6 +46,7 @@ import org.eclipse.dltk.core.builder.IBuildContext;
 import org.eclipse.dltk.core.builder.IBuildParticipant;
 import org.eclipse.dltk.core.builder.IBuildParticipantExtension;
 import org.eclipse.dltk.core.builder.IBuildParticipantExtension4;
+import org.eclipse.dltk.core.builder.IBuildState;
 import org.eclipse.dltk.internal.javascript.parser.JSDocValidatorFactory.TypeChecker;
 import org.eclipse.dltk.internal.javascript.ti.ConstantValue;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
@@ -88,6 +90,7 @@ import org.eclipse.dltk.javascript.typeinference.PhantomValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinference.ValueReferenceUtil;
+import org.eclipse.dltk.javascript.typeinfo.IMemberEvaluator;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
 import org.eclipse.dltk.javascript.typeinfo.IRArrayType;
 import org.eclipse.dltk.javascript.typeinfo.IRClassType;
@@ -166,6 +169,17 @@ public class TypeInfoValidator implements IBuildParticipant,
 				reporter, inconsistentReturns, hasDependents);
 		inferencer.setVisitor(visitor);
 		inferencer.doInferencing(script);
+
+		for (IMemberEvaluator evaluator : TypeInfoManager
+				.getMemberEvaluators()) {
+			Collection<IFile> files = evaluator
+					.getDependencies(context.getSourceModule());
+			for (IFile file : files) {
+				context.recordDependency(file.getFullPath(),
+						IBuildState.CONTENT);
+			}
+		}
+
 		if (hasDependents) {
 			inferencer.resetLocalState();
 			context.set(TypeInfoValidator.ATTR_BINDINGS, visitor.bindings);

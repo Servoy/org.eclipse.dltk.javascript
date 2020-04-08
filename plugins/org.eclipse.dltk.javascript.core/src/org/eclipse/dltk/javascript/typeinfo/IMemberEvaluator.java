@@ -11,7 +11,11 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
+import java.util.Collection;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.dltk.annotations.ConfigurationElement;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
 
@@ -25,5 +29,7 @@ public interface IMemberEvaluator {
 	IValueCollection valueOf(ITypeInfoContext context, Element member);
 
 	IValueCollection getTopValueCollection(ITypeInfoContext context);
+
+	Collection<IFile> getDependencies(ISourceModule sourceModule);
 
 }

@@ -23,5 +23,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Export-Package: org.eclipse.dltk.javascript.console,
  org.eclipse.dltk.javascript.launching,
  org.eclipse.dltk.javascript.internal.launching
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

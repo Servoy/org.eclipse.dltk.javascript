@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.dltk.javascript.parser,
  org.eclipse.emf.ecore.change,
  org.eclipse.text
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.ibm.icu.text
 Export-Package: org.eclipse.dltk.internal.javascript.corext.refactoring,

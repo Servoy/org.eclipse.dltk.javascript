@@ -1147,7 +1147,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		if (rt instanceof IRSimpleType) {
 			final Type t = ((IRSimpleType) rt).getTarget();
 			if (t.getKind() != TypeKind.UNKNOWN) {
-				value.setDeclaredType(rt);
 				if (value instanceof IValueProvider) {
 					for (IMemberEvaluator evaluator : TypeInfoManager
 							.getMemberEvaluators()) {
@@ -1155,13 +1154,15 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 								context, t);
 						if (collection != null) {
 							if (collection instanceof IValueProvider) {
-								((IValueProvider) value).getValue().addValue(
-										((IValueProvider) collection)
+								((IValueProvider) value).getValue()
+										.addReference(
+												((IValueProvider) collection)
 												.getValue());
 							}
 						}
 					}
 				}
+				value.setDeclaredType(rt);
 			} else if (lazyEnabled) {
 				value.addValue(new LazyTypeReference(context, t.getName(),
 						peekContext()), false);

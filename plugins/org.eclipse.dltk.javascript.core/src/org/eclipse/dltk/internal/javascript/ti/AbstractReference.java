@@ -55,7 +55,7 @@ public abstract class AbstractReference implements IValueReference,
 					|| value.isParentOf(this)) {
 				val.addReference(src);
 			} else {
-				val.addValue(src);
+				val.mergeValue(src);
 			}
 		}
 	}

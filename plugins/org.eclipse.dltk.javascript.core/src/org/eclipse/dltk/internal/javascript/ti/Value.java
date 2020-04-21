@@ -254,9 +254,12 @@ public class Value extends ImmutableValue {
 			this.inherited.putAll(val.inherited);
 			this.references.addAll(val.references);
 			this.types.addAll(val.types);
-			this.declaredType = val.declaredType;
-			this.kind = val.kind;
-			this.location = val.location;
+			if (this.declaredType == null)
+				this.declaredType = val.declaredType;
+			if (this.kind == ReferenceKind.UNKNOWN)
+				this.kind = val.kind;
+			if (this.location == ReferenceLocation.UNKNOWN)
+				this.location = val.location;
 
 		} else {
 			addValue(src);

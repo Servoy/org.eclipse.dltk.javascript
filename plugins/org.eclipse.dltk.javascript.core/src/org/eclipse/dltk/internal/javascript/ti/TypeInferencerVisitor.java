@@ -111,7 +111,6 @@ import org.eclipse.dltk.javascript.typeinference.ValueReferenceUtil;
 import org.eclipse.dltk.javascript.typeinfo.CommonSuperTypeFinder;
 import org.eclipse.dltk.javascript.typeinfo.E4XTypes;
 import org.eclipse.dltk.javascript.typeinfo.GenericMethodTypeInferencer;
-import org.eclipse.dltk.javascript.typeinfo.IMemberEvaluator;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMethod;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IParameter;
@@ -137,7 +136,6 @@ import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
 import org.eclipse.dltk.javascript.typeinfo.RModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.ReferenceSource;
-import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
 import org.eclipse.dltk.javascript.typeinfo.TypeMode;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.ArrayType;
@@ -1148,19 +1146,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			final Type t = ((IRSimpleType) rt).getTarget();
 			if (t.getKind() != TypeKind.UNKNOWN) {
 				if (value instanceof IValueProvider) {
-					for (IMemberEvaluator evaluator : TypeInfoManager
-							.getMemberEvaluators()) {
-						final IValueCollection collection = evaluator.valueOf(
-								context, t);
-						if (collection != null) {
-							if (collection instanceof IValueProvider) {
-								((IValueProvider) value).getValue()
-										.addReference(
-												((IValueProvider) collection)
-												.getValue());
-							}
-						}
-					}
+					((IValueProvider) value).getValue()
+							.addReference(new LazyEvaluatorValue(context, t));
 				}
 				value.setDeclaredType(rt);
 			} else if (lazyEnabled) {

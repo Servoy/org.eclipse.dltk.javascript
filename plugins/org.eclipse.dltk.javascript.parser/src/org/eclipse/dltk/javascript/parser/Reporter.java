@@ -164,6 +164,15 @@ public class Reporter extends LineTracker implements IProblemReporter,
 		reportProblem(new DefaultProblem(message, id, null, severity, start,
 				end, getLineNumberOfOffset(start)));
 	}
+	@Override
+	public void reportProblem(IProblemIdentifier id, String message,
+			int start, int end, String... args) {
+		if (isSuppressed(id)) {
+			return;
+		}
+		reportProblem(new DefaultProblem(message, id, args, severity, start,
+				end, getLineNumberOfOffset(start)));
+	}
 
 	private boolean isSuppressed(IProblemIdentifier identifier) {
 		return suppressed != null && suppressed.contains(identifier);
@@ -244,5 +253,4 @@ public class Reporter extends LineTracker implements IProblemReporter,
 	public void restoreSuppressWarnings(ISuppressWarningsState sup) {
 		suppressed = (SuppressWarningsSet) sup;
 	}
-
 }

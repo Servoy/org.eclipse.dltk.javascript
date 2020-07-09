@@ -33,4 +33,7 @@ public interface JSProblemReporter extends ProblemReporter, IProblemReporter {
 	 */
 	void restoreSuppressWarnings(ISuppressWarningsState state);
 
+	void reportProblem(IProblemIdentifier deprecatedMethod, String bind,
+			int sourceStart, int sourceEnd, String... args);
+
 }

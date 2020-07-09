@@ -86,6 +86,12 @@ public class JavaScriptDeprecationHighlightVisitor extends ValidationVisitor
 		}
 	}
 
+	@Override
+	public void reportProblem(IProblemIdentifier identifier, String message,
+			int start, int end, String... args) {
+		reportProblem(identifier, message, start, end);
+	}
+
 	public void pushSuppressWarnings(Collection<IProblemIdentifier> suppressed) {
 	}
 

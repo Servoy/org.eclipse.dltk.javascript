@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.annotations.Nullable;
 import org.eclipse.dltk.ast.ASTNode;
+import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.dltk.compiler.problem.IProblemIdentifier;
 import org.eclipse.dltk.compiler.problem.IValidationStatus;
 import org.eclipse.dltk.compiler.problem.ValidationMultiStatus;
@@ -120,6 +121,7 @@ import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.TypeCompatibility;
 import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
+import org.eclipse.dltk.javascript.typeinfo.model.Element;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
 import org.eclipse.dltk.javascript.typeinfo.model.Property;
@@ -1391,17 +1393,29 @@ public class TypeInfoValidator implements IBuildParticipant,
 
 		private void reportDeprecatedMethod(ASTNode methodNode,
 				IValueReference reference, IRMethod method) {
+
+			String[] args = null;
+			Object source = method.getSource();
+			if (source instanceof Element) {
+				String description = ((Element) source).getDescription();
+				if (description != null) {
+					args = new String[] { description.startsWith(
+							IProblem.DESCRIPTION_ARGUMENT_PREFIX) ? description
+									: IProblem.DESCRIPTION_ARGUMENT_PREFIX
+											+ description };
+				}
+			}
 			if (method.getDeclaringType() != null) {
 				reporter.reportProblem(
 						JavaScriptProblems.DEPRECATED_METHOD,
 						NLS.bind(ValidationMessages.DeprecatedMethod, reference
 								.getName(), method.getDeclaringType().getName()),
-						methodNode.sourceStart(), methodNode.sourceEnd());
+						methodNode.sourceStart(), methodNode.sourceEnd(), args);
 			} else {
 				reporter.reportProblem(JavaScriptProblems.DEPRECATED_METHOD,
 						NLS.bind(ValidationMessages.DeprecatedTopLevelMethod,
 								reference.getName()), methodNode.sourceStart(),
-						methodNode.sourceEnd());
+						methodNode.sourceEnd(), args);
 			}
 		}
 

@@ -69,7 +69,9 @@ public class RSimpleType extends RType implements IRSimpleType {
 		if (super.isAssignableFrom(type).ok()) {
 			return TypeCompatibility.TRUE;
 		} else if (Types.OBJECT == this.declaration.getSource()) {
-			return TypeCompatibility.valueOf(type.isJavaScriptObject());
+			return type instanceof IJavaScriptLikeObject
+					? TypeCompatibility.TRUE
+					: TypeCompatibility.valueOf(type.isJavaScriptObject());
 		} else if (Types.FUNCTION == this.declaration.getSource()
 				&& type instanceof IRFunctionType) {
 			return TypeCompatibility.TRUE;

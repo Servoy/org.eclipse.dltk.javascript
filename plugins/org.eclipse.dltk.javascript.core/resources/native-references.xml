@@ -481,6 +481,10 @@
     <members xsi:type="ref:Method" name="concat" directType="String" description="Joins two or more strings.">
       <parameters name="strings" directType="String" kind="VARARGS"/>
     </members>
+    <members xsi:type="ref:Method" name="endsWith" directType="Boolean" description="Determines whether a string ends with the characters of a specified string, returning true or false as appropriate.">
+      <parameters name="searchString" directType="String"/>
+      <parameters name="length " directType="Number" kind="OPTIONAL"/>
+    </members>
     <members xsi:type="ref:Method" name="equals" directType="Boolean">
       <parameters name="object"/>
     </members>
@@ -507,7 +511,7 @@
     <members xsi:type="ref:Method" name="link" directType="String" description="Returns a string as a hyperlink.">
       <parameters name="url"/>
     </members>
-        <members xsi:type="ref:Method" name="localeCompare" directType="Number" description="This method returns a number indicating whether a reference string comes before or after or is the same as the given string in sort order.">
+    <members xsi:type="ref:Method" name="localeCompare" directType="Number" description="This method returns a number indicating whether a reference string comes before or after or is the same as the given string in sort order.">
       <parameters name="otherString"/>
     </members>
     <members xsi:type="ref:Method" name="match" description="Searches for a specified value in a string.">
@@ -515,6 +519,12 @@
       <type xsi:type="ref:ArrayType">
 			<itemType xsi:type="ref:SimpleType" target="String"/>
 	  </type>
+    </members>
+    <members xsi:type="ref:Method" name="normalize" directType="String" description="Returns the Unicode Normalization Form of the string.">
+      <parameters name="form" kind="OPTIONAL"/>
+    </members>
+    <members xsi:type="ref:Method" name="repeat" directType="String" description="Constructs and returns a new string which contains the specified number of copies of the string on which it was called, concatenated together.">
+      <parameters name="count" directType="Number"/>
     </members>
     <members xsi:type="ref:Method" name="replace" directType="String" description="Replaces some characters with some other characters in a string.">
       <parameters name="findString">
@@ -537,6 +547,10 @@
 		</targets>
 		</type>
 	  </parameters>
+    </members>
+    <members xsi:type="ref:Method" name="startsWith" directType="Boolean" description="Determines whether a string begins with the characters of a specified string, returning true or false as appropriate.">
+      <parameters name="searchString" directType="String"/>
+      <parameters name="position" directType="Number" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="search" directType="Number" description="Searches a string for a specified value.">
       <parameters name="regexp"/>

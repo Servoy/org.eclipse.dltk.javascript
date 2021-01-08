@@ -109,8 +109,9 @@ class RFunctionType extends RType implements IRFunctionType {
 								IRParameter funcParam = funcType
 										.getParameters().get(i);
 								if (funcParam.getType() != null) {
-									if (funcParam.getType().isAssignableFrom(
-											parameter.getType()) == TypeCompatibility.FALSE) {
+									if (parameter.getType()
+											.isAssignableFrom(funcParam
+													.getType()) == TypeCompatibility.FALSE) {
 										paramsType = TypeCompatibility.FALSE;
 										break;
 									}

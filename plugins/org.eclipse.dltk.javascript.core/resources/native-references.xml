@@ -261,9 +261,7 @@
     </members>
     <members xsi:type="ref:Method" name="reduce" description="Reduces the array to a single value by executing a provided function for each value of the array (from left-to-right).">
       <parameters name="function(total, currentValue, [index] , [arr])" directType="Function"/>
-      <parameters name="initialValue" kind="OPTIONAL">
-         <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
-      </parameters>
+      <parameters name="initialValue" kind="OPTIONAL" directType="Object"/>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>

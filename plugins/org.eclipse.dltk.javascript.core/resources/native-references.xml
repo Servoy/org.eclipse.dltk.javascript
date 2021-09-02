@@ -276,6 +276,12 @@
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
+    <members xsi:type="ref:Method" name="find" directType="Object" description="Returns the value of the first element in the provided array that satisfies the provided testing function. If no values satisfy the testing function, undefined is returned.The callback function can invoked with three arguments: the element value, the element index(optional), the array being traversed (optional).">
+      <parameters name="callback" directType="Function"/>
+    </members>
+    <members xsi:type="ref:Method" name="findIndex" directType="Number" description="Returns the index of the first element in the provided array which satisfies the provided testing function. If no values satisfy the testing function, -1 is returned. The callback function can invoked with three arguments: the element value, the element index (optional), the array being traversed (optional).">
+      <parameters name="callback" directType="Function"/>
+    </members>
     <members xsi:type="ref:Method" name="splice" description="Removes and adds new elements to an array. Returns the removed elements as an Array">
       <parameters name="index" directType="Number"/>
       <parameters name="howmany" directType="Number"/>

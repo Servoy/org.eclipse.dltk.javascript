@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 xored software, Inc.
+ * Copyright (c) 2011 xored software, Inc.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,21 +9,20 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
-import java.util.List;
+import org.eclipse.dltk.ast.ASTNode;
+import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.javascript.ast.JSNode;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
+public interface NodeTransformer {
 
-public interface JSTokenStream extends TokenStream {
+	public interface Factory {
 
-	List<Token> getTokens();
+		NodeTransformer create(IModelElement element, JSProblemReporter reporter);
 
-	int getMode();
+	}
 
-	void setMode(int value);
+	ASTNode transform(ASTNode node, JSNode parent);
 
-	//TODO error reporting is done differently in v4
-	//void setReporter(Reporter reporter);
 }

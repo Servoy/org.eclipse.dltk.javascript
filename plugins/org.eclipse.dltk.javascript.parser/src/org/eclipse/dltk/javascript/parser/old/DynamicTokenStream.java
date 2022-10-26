@@ -25,17 +25,15 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenSource;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenSource;
+import org.antlr.runtime.TokenStream;
 import org.eclipse.dltk.utils.IntList;
 
 public class DynamicTokenStream implements TokenStream, JSTokenStream {
@@ -87,7 +85,7 @@ public class DynamicTokenStream implements TokenStream, JSTokenStream {
 	 */
 	private final boolean fetchToken() {
 		CommonToken t = (CommonToken) tokenSource.nextToken();
-		if (t.getType() != JSParser.EOF) {
+		if (t != Token.EOF_TOKEN) {
 			int index = tokens.size();
 			t.setTokenIndex(index);
 			tokens.add(t);
@@ -212,7 +210,7 @@ public class DynamicTokenStream implements TokenStream, JSTokenStream {
 		}
 		fill(p + k - 1);
 		if (p + k - 1 >= tokens.size()) {
-			return Token.EOF_TOKEN; //TODO use factory to create the EOF token?
+			return Token.EOF_TOKEN;
 		}
 		int i = p;
 		// skip k-1 tokens
@@ -221,14 +219,12 @@ public class DynamicTokenStream implements TokenStream, JSTokenStream {
 			i = skipOffTokenChannels(i + 1); // leave p on valid token
 		}
 		if (i >= tokens.size()) {
-			return Token.EOF_TOKEN; //TODO use factory to create the EOF token?
+			return Token.EOF_TOKEN;
 		}
 		return tokens.get(i);
 	}
 
-	/** Look backwards k tokens on-channel tokens 
-	 * @since 6.0
-	 s*/
+	/** Look backwards k tokens on-channel tokens */
 	protected Token LB(int k) {
 		assert k != 0;
 		if (p < k) {
@@ -318,9 +314,6 @@ public class DynamicTokenStream implements TokenStream, JSTokenStream {
 		return buf.toString();
 	}
 
-	/**
-	 * @since 6.0
-	 */
 	public String toString(Token start, Token stop) {
 		if (start != null && stop != null) {
 			return toString(start.getTokenIndex(), stop.getTokenIndex());
@@ -355,38 +348,7 @@ public class DynamicTokenStream implements TokenStream, JSTokenStream {
 		}
 	}
 
-	//TODO check err reporting in v4
 	public void setReporter(Reporter reporter) {
 		tokenSource.setReporter(reporter);
-	}
-
-	@Override
-	public String getSourceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getText(Interval interval) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getText() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getText(RuleContext ctx) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getText(Token start, Token stop) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

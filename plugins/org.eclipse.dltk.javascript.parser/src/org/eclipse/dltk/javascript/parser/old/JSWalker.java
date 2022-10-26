@@ -1,4 +1,4 @@
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
 // $ANTLR 3.0.1 /home/bell/workspace.js/org.eclipse.dltk.javascript.formatter/src/org/eclipse/dltk/javascript/parser/JSWalker.g 2009-04-09 16:22:10
 

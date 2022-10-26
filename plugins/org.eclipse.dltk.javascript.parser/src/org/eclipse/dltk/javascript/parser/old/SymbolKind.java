@@ -9,7 +9,7 @@
  * Contributors:
  *     NumberFour AG - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
 public enum SymbolKind {
 	PARAM(JavaScriptParserProblems.DUPLICATE_PARAMETER, null),

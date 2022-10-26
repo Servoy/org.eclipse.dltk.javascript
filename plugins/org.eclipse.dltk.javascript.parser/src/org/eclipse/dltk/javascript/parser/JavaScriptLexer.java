@@ -11,15 +11,18 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser;
 
-import org.antlr.runtime.BitSet;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.IntStream;
-import org.antlr.runtime.MismatchedTokenException;
-import org.antlr.runtime.RecognitionException;
+import java.util.BitSet;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.IntStream;
+//TODO check import org.antlr.runtime.MismatchedTokenException;
+import org.antlr.v4.runtime.RecognitionException;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 
 public class JavaScriptLexer extends JSLexer {
 
+	/**
+	 * @since 6.0
+	 */
 	public JavaScriptLexer(CharStream input) {
 		super(input);
 	}
@@ -37,41 +40,43 @@ public class JavaScriptLexer extends JSLexer {
 		/*
 		 * recover() is called TWICE! first in match(), then in nextToken().
 		 */
-		if (re instanceof MismatchedTokenException) {
-			if (re.index <= lastRecoveryIndex) {
-				return;
-			}
-			lastRecoveryIndex = re.index;
-		}
+//TODO check MismatchedTokenException
+//		if (re instanceof MismatchedTokenException) {
+//			if (re.index <= lastRecoveryIndex) {
+//				return;
+//			}
+//			lastRecoveryIndex = re.index;
+//		}
 		super.recover(re);
 	}
 
-	@Override
-	public void displayRecognitionError(String[] tokenNames,
-			RecognitionException e) {
-		if (reporter == null)
-			return;
-		int start;
-		int end;
-		if (e instanceof NoIdentifierException) {
-			e.c = input.LA(1);
-			start = input.index();
-			end = start + 1;
-		} else {
-			start = lastToken != null ? reporter.getOffset(lastToken)
-					+ reporter.length(lastToken) : 0;
-			end = reporter.getOffset(e.line, e.charPositionInLine);
-			if (end < start) {
-				end = start + 1;
-			}
-		}
-		final String msg = getErrorMessage(e, tokenNames);
-		reporter.setMessage(JavaScriptParserProblems.LEXER_ERROR, msg);
-		reporter.setSeverity(ProblemSeverity.ERROR);
-		reporter.setRange(start, end);
-		reporter.setLine(e.line - 1);
-		reporter.report();
-	}
+//TODO use error listener
+//	@Override
+//	public void displayRecognitionError(String[] tokenNames,
+//			RecognitionException e) {
+//		if (reporter == null)
+//			return;
+//		int start;
+//		int end;
+//		if (e instanceof NoIdentifierException) {
+//			e.c = input.LA(1);
+//			start = input.index();
+//			end = start + 1;
+//		} else {
+//			start = lastToken != null ? reporter.getOffset(lastToken)
+//					+ reporter.length(lastToken) : 0;
+//			end = reporter.getOffset(e.line, e.charPositionInLine);
+//			if (end < start) {
+//				end = start + 1;
+//			}
+//		}
+//		final String msg = getErrorMessage(e, tokenNames);
+//		reporter.setMessage(JavaScriptParserProblems.LEXER_ERROR, msg);
+//		reporter.setSeverity(ProblemSeverity.ERROR);
+//		reporter.setRange(start, end);
+//		reporter.setLine(e.line - 1);
+//		reporter.report();
+//	}
 
 	@Override
 	public String getCharErrorDisplay(int c) {
@@ -83,22 +88,22 @@ public class JavaScriptLexer extends JSLexer {
 		}
 	}
 
-	@Override
-	public void recoverFromMismatchedToken(IntStream input,
-			RecognitionException e, int ttype, BitSet follow)
-			throws RecognitionException {
-		// if next token is what we are looking for then "delete" this token
-		if (input.LA(2) == ttype) {
-			reportError(e);
-			beginResync();
-			input.consume(); // simply delete extra token
-			endResync();
-			input.consume(); // move past ttype token as if all were ok
-			return;
-		}
-		if (!recoverFromMismatchedElement(input, e, follow)) {
-			throw e;
-		}
-	}
+//	@Override
+//	public void recoverFromMismatchedToken(IntStream input,
+//			RecognitionException e, int ttype, BitSet follow)
+//			throws RecognitionException {
+//		// if next token is what we are looking for then "delete" this token
+//		if (input.LA(2) == ttype) {
+//			reportError(e);
+//			beginResync();
+//			input.consume(); // simply delete extra token
+//			endResync();
+//			input.consume(); // move past ttype token as if all were ok
+//			return;
+//		}
+//		if (!recoverFromMismatchedElement(input, e, follow)) {
+//			throw e;
+//		}
+//	}
 
 }

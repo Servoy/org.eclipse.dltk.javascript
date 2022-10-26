@@ -13,7 +13,7 @@ package org.eclipse.dltk.javascript.parser.util;
 
 import java.text.ParseException;
 
-import org.antlr.runtime.CharStream;
+import org.antlr.v4.runtime.CharStream;
 
 public class CharStreamUtil {
 

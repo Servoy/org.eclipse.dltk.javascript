@@ -9,7 +9,7 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
 import org.eclipse.dltk.ast.parser.IModuleDeclaration;
 import org.eclipse.dltk.compiler.env.IModuleSource;
@@ -17,7 +17,6 @@ import org.eclipse.dltk.compiler.problem.IProblemReporter;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.javascript.ast.Script;
-import org.eclipse.dltk.javascript.parser.JavaScriptParser;
 
 public class JavaScriptParserUtil {
 

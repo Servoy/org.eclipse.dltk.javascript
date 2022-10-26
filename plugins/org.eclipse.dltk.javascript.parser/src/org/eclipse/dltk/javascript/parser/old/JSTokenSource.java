@@ -9,21 +9,22 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
-import java.util.List;
+import org.antlr.runtime.TokenSource;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
+public interface JSTokenSource extends TokenSource {
 
-public interface JSTokenStream extends TokenStream {
-
-	List<Token> getTokens();
+	int MODE_JS = 0;
+	int MODE_XML = 1;
+	int MODE_EXPRESSION = 2;
 
 	int getMode();
 
-	void setMode(int value);
+	void setMode(int mode);
 
-	//TODO error reporting is done differently in v4
-	//void setReporter(Reporter reporter);
+	/**
+	 * Set the input cursor to the character position indicated by index.
+	 **/
+	void seek(int index);
 }

@@ -9,21 +9,31 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
-import java.util.List;
+public class JSParserState {
+	final JSParserState parent;
+	final JSParserRule rule;
+	private int errorCount = 0;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
+	public JSParserState(JSParserState parent, JSParserRule rule) {
+		this.parent = parent;
+		this.rule = rule;
+	}
 
-public interface JSTokenStream extends TokenStream {
+	public boolean hasErrors() {
+		return errorCount != 0;
+	}
 
-	List<Token> getTokens();
+	public void incrementErrorCount() {
+		JSParserState state = this;
+		for (;;) {
+			++state.errorCount;
+			state = state.parent;
+			if (state == null) {
+				break;
+			}
+		}
+	}
 
-	int getMode();
-
-	void setMode(int value);
-
-	//TODO error reporting is done differently in v4
-	//void setReporter(Reporter reporter);
 }

@@ -9,9 +9,9 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
-import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.runtime.RecognitionException;
 import org.eclipse.dltk.compiler.problem.DefaultProblem;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 
@@ -27,7 +27,7 @@ public class JSProblem extends DefaultProblem {
 				ProblemSeverity.ERROR,
 				-1,
 				-1,
-				cause instanceof RecognitionException ? ((RecognitionException) cause).getOffendingToken().getLine()
+				cause instanceof RecognitionException ? ((RecognitionException) cause).line
 						: -1);
 		this.cause = cause;
 	}

@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser;
 
-import org.antlr.runtime.TokenSource;
+import org.antlr.v4.runtime.TokenSource;
 
 public interface JSTokenSource extends TokenSource {
 

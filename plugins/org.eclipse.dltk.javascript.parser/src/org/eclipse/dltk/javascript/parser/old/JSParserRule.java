@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 xored software, Inc.
+ * Copyright (c) 2010 xored software, Inc.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,20 +9,8 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
-import org.eclipse.dltk.ast.ASTNode;
-import org.eclipse.dltk.core.IModelElement;
-import org.eclipse.dltk.javascript.ast.JSNode;
-
-public interface NodeTransformer {
-
-	public interface Factory {
-
-		NodeTransformer create(IModelElement element, JSProblemReporter reporter);
-
-	}
-
-	ASTNode transform(ASTNode node, JSNode parent);
-
+public enum JSParserRule {
+	PROGRAM, EXPRESSION, FUNCTION_BODY, LEFT_HAND_SIDE_EXPRESSION
 }

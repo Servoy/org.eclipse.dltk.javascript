@@ -9,7 +9,7 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.parser;
+package org.eclipse.dltk.javascript.parser.old;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,13 +46,13 @@ public class JSParserMessages {
 
 	public JSParserMessages() {
 		messages.put(new Key(JSParserRule.LEFT_HAND_SIDE_EXPRESSION,
-				JSParser.Dot), "missing name after . operator");
-		tokenNames.put(JSParser.CloseBrace, "}");
-		tokenNames.put(JSParser.OpenBrace, "{");
-		tokenNames.put(JSParser.CloseParen, ")");
-		tokenNames.put(JSParser.OpenParen, "(");
-		tokenNames.put(JSParser.OpenBracket, "[");
-		tokenNames.put(JSParser.CloseBracket, "]");
+				JSParser.DOT), "missing name after . operator");
+		tokenNames.put(JSParser.RBRACE, "}");
+		tokenNames.put(JSParser.LBRACE, "{");
+		tokenNames.put(JSParser.RPAREN, ")");
+		tokenNames.put(JSParser.LPAREN, "(");
+		tokenNames.put(JSParser.LBRACK, "[");
+		tokenNames.put(JSParser.RBRACK, "]");
 
 	}
 

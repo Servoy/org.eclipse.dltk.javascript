@@ -11,12 +11,9 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser;
 
-import java.util.BitSet;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.IntStream;
 //TODO check import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.v4.runtime.RecognitionException;
-import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 
 public class JavaScriptLexer extends JSLexer {
 

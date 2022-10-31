@@ -30,6 +30,7 @@ package org.eclipse.dltk.javascript.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
@@ -212,7 +213,7 @@ public class DynamicTokenStream implements TokenStream, JSTokenStream {
 		}
 		fill(p + k - 1);
 		if (p + k - 1 >= tokens.size()) {
-			return Token.EOF_TOKEN; //TODO use factory to create the EOF token?
+			return new CommonToken(CharStream.EOF);
 		}
 		int i = p;
 		// skip k-1 tokens
@@ -221,7 +222,7 @@ public class DynamicTokenStream implements TokenStream, JSTokenStream {
 			i = skipOffTokenChannels(i + 1); // leave p on valid token
 		}
 		if (i >= tokens.size()) {
-			return Token.EOF_TOKEN; //TODO use factory to create the EOF token?
+			return new CommonToken(CharStream.EOF);
 		}
 		return tokens.get(i);
 	}

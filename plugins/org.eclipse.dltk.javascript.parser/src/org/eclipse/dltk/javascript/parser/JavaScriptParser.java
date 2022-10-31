@@ -13,12 +13,11 @@ package org.eclipse.dltk.javascript.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.BitSet;
+import java.nio.charset.Charset;
+import java.util.BitSet; //TODO check, missing in v4
 import java.util.Stack;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-//TODO remove, not there in v4 import org.antlr.runtime.ANTLRStringStream;
-// TODO remove? import org.antlr.v4.runtime.BitSet;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.IntStream;
 //TODO check, missing in v4
@@ -224,21 +223,21 @@ public class JavaScriptParser implements ISourceParser {
 
 		protected void syncToSet() {
 			final BitSet follow = following[_fsp];
-			int mark = input.mark();
+			int mark = _input.mark();
 			try {
 				Token first = null;
 				Token last = null;
-				while (!follow.member(input.LA(1))) {
-					if (input.LA(1) == Token.EOF) {
-						input.rewind();
+				while (!follow.member(_input.LA(1))) {
+					if (_input.LA(1) == Token.EOF) {
+						_input.seek(mark);
 						mark = -1;
 						return;
 					}
-					last = input.LT(1);
+					last = _input.LT(1);
 					if (first == null) {
 						first = last;
 					}
-					input.consume();
+					_input.consume();
 				}
 				if (first != null && reporter != null) {
 					final ISourceRange end = convert(last);
@@ -252,7 +251,7 @@ public class JavaScriptParser implements ISourceParser {
 				}
 			} finally {
 				if (mark != -1) {
-					input.release(mark);
+					_input.release(mark);
 				}
 			}
 		}
@@ -307,8 +306,8 @@ public class JavaScriptParser implements ISourceParser {
 //		}
 
 		protected void reportRuleError(RecognitionException re) {
-			reportError(re);
-			recover(input, re);
+			reportError(re.getMessage(), re.getOffendingToken());
+			recover(_input, re);
 		}
 
 		private final Stack<JSParserState> states = new Stack<JSParserState>();
@@ -387,7 +386,7 @@ public class JavaScriptParser implements ISourceParser {
 			final Reporter reporter = new Reporter(
 					TextUtils.createLineTracker(source), _reporter);
 			final JSTokenStream stream = createTokenStream(source);
-			stream.setReporter(reporter);
+			//TODO add error listener stream.setReporter(reporter);
 			final JSParser parser = createTreeParser(stream, reporter);
 			final standaloneExpression_return root = parser
 					.standaloneExpression();
@@ -408,8 +407,9 @@ public class JavaScriptParser implements ISourceParser {
 	public JSParser createTreeParser(final JSTokenStream stream,
 			final Reporter reporter) {
 		final JSParser parser = new JSParser(stream);
-		parser.reporter = reporter;
-		parser.xmlEnabled = xmlEnabled;
+		//TODO add error listener parser.reporter = reporter;
+		// TODO add xmlEnabled to the parser
+//		parser.xmlEnabled = xmlEnabled;
 		return parser;
 	}
 
@@ -421,7 +421,7 @@ public class JavaScriptParser implements ISourceParser {
 	protected Script parse(IModelElement element, JSTokenStream stream,
 			Reporter reporter) {
 		try {
-			stream.setReporter(reporter);
+			//TODO error listener stream.setReporter(reporter);
 			JSParser parser = createTreeParser(stream, reporter);
 			final program_return root = parser.program();
 			final NodeTransformer[] transformers = NodeTransformerManager
@@ -445,12 +445,12 @@ public class JavaScriptParser implements ISourceParser {
 	}
 
 	public JSTokenStream createTokenStream(char[] source) {
-		CharStream charStream = new ANTLRStringStream(source, source.length);
+		CharStream charStream = CharStreams.fromString(new String(source));
 		return createTokenStream(charStream);
 	}
 
 	public JSTokenStream createTokenStream(String source) {
-		CharStream charStream = new ANTLRStringStream(source);
+		CharStream charStream = CharStreams.fromString(source);
 		return createTokenStream(charStream);
 	}
 
@@ -462,7 +462,7 @@ public class JavaScriptParser implements ISourceParser {
 	 */
 	public JSTokenStream createTokenStream(InputStream input, String encoding)
 			throws IOException {
-		CharStream charStream = new ANTLRInputStream(input, encoding);
+		CharStream charStream = CharStreams.fromStream(input, Charset.forName(encoding));
 		return createTokenStream(charStream);
 	}
 

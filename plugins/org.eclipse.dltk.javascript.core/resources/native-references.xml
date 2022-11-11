@@ -742,6 +742,66 @@
       <parameters name="space" kind="OPTIONAL"/>
     </members>
  </ref:Type>
+ <ref:GenericType name="Map" kind="PREDEFINED" superType="Object" description="The Map object holds key-value pairs and remembers the original insertion order of the keys. Any value (both objects and primitive values) may be used as either a key or a value">
+     <members xsi:type="ref:Property" name="size" directType="Number" description="The size accessor property returns the number of elements in a Map object."/>  
+    <members xsi:type="ref:Method" name="set" directType="Map" description="The set() method adds or updates an entry in a Map object with a specified key and a value." static="false">
+      <parameters name="key" directType="Object"/>
+      <parameters name="value" directType="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="get" directType="Object" description="The get() method returns a specified element from a Map object. If the value that is associated to the provided key is an object, then you will get a reference to that object and any change made to that object will effectively modify it inside the Map object." static="false">
+      <parameters name="key" directType="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="clear" description="The clear() method removes all elements from a Map object." static="false">
+    </members>
+    <members xsi:type="ref:Method" name="delete" directType="Boolean" description="The delete() method removes the specified element from a Map object by key." static="false">
+      <parameters name="key" directType="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="entries" directType="Iterator" description="The entries() method returns a new iterator object that contains the [key, value] pairs for each element in the Map object in insertion order. In this particular case, this iterator object is also an iterable, so the for-of loop can be used." static="false">
+    </members>
+    <members xsi:type="ref:Method" name="forEach" description="The forEach() method executes a provided function once per each key/value pair in the Map object, in insertion order." static="false">
+      <parameters name="callback" directType="Function"/>
+      <parameters name="thisArg" kind="OPTIONAL"/>
+    </members>
+    <members xsi:type="ref:Method" name="has" directType="Boolan" description="The has() method returns a boolean indicating whether an element with the specified key exists or not." static="false">
+      <parameters name="key" directType="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method returns a new iterator object that contains the keys for each element in the Map object in insertion order. In this particular case, this iterator object is also an iterable, so a for...of loop can be used." static="false">
+    </members>
+    <members xsi:type="ref:Method" name="values" directType="Iterator" description="The values() method returns a new iterator object that contains the values for each element in the Map object in insertion order." static="false">
+    </members>
+ </ref:GenericType>
+ <ref:GenericType name="Set" kind="PREDEFINED" superType="Object" description="The Set object lets you store unique values of any type, whether primitive values or object references">
+     <members xsi:type="ref:Property" name="size" directType="Number" description="The size accessor property returns the number of elements in a Set object."/>  
+    <members xsi:type="ref:Method" name="add" directType="Set" description="The add() method inserts a new element with a specified value in to a Set object, if there isn't an element with the same value already in the Set" static="false">
+      <parameters name="value" directType="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="clear" description="The clear() method removes all elements from a Set object." static="false">
+    </members>
+    <members xsi:type="ref:Method" name="delete" directType="Boolean" description="The delete() method removes a specified value from a Set object, if it is in the set. Returns true if value was already in Set; otherwise false." static="false">
+      <parameters name="value" directType="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="entries" directType="Iterator" description="The entries() method returns a new Iterator object that contains an array of [value, value] for each element in the Set object, in insertion order. For Set objects there is no key like in Map objects. However, to keep the API similar to the Map object, each entry has the same value for its key and value here, so that an array [value, value] is returned" static="false">
+    </members>
+    <members xsi:type="ref:Method" name="forEach" description="The forEach() method executes a provided function once for each value in the Set object, in insertion order." static="false">
+      <parameters name="callback" directType="Function"/>
+      <parameters name="thisArg" kind="OPTIONAL"/>
+    </members>
+    <members xsi:type="ref:Method" name="has" directType="Boolan" description="The has() method returns a boolean indicating whether an element with the specified value exists in a Set object or not" static="false">
+      <parameters name="value" directType="Object"/>
+    </members>
+    <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method is an alias for the values() method." static="false">
+    </members>
+    <members xsi:type="ref:Method" name="values" directType="Iterator" description="The values() method returns a new Iterator object that contains the values for each element in the Set object in insertion order" static="false">
+    </members>
+ </ref:GenericType>
+  <ref:GenericType name="Iterator" kind="PREDEFINED" superType="Object" description="An iterator is an object which defines a sequence and potentially a return value upon its termination">  
+    <members xsi:type="ref:Method" name="next" directType="IterableValue" description="Returns the next IterableValue  for this Iterable" static="false">
+    </members>
+ </ref:GenericType>
+  <ref:GenericType name="IterableValue" kind="PREDEFINED" superType="Object" description="A value object that the Iterator.next() object will return">  
+    <members xsi:type="ref:Property" name="value" directType="Object" description="the value for this iterable object" static="false"/>
+    <members xsi:type="ref:Property" name="done" directType="Boolean" description="a boolean telling if this was the last one (true) or not (false)" static="false"/>
+ </ref:GenericType>
  	<ref:TypeLiteral target="Error"/>
 	<ref:TypeLiteral target="EvalError"/>
 	<ref:TypeLiteral target="RangeError"/>
@@ -763,4 +823,8 @@
 	<ref:TypeLiteral target="Namespace"/>
 	<ref:TypeLiteral target="QName"/>
 	<ref:TypeLiteral target="JSON"/>
+	<ref:TypeLiteral target="Set"/>
+	<ref:TypeLiteral target="Map"/>
+	<ref:TypeLiteral target="Iterator"/>
+	<ref:TypeLiteral target="IterableValue"/>
 </xmi:XMI>

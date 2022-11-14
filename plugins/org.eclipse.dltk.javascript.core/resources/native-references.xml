@@ -201,14 +201,44 @@
     <members xsi:type="ref:Method" name="isArray" directType="Boolean" description="Returns true if an object is an array, false if it is not." static="true">
       <parameters name="object" directType="Object"/>
     </members>
+    <members xsi:type="ref:Method" name="of" description="Creates a new Array instance from a variable number of arguments." static="true">
+      <parameters name="value" directType="VARARGS"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
+    </members>
+    <members xsi:type="ref:Method" name="from" description="Creates a new, shallow-copied Array instance from an iterable or array-like object." static="true">
+      <parameters name="arrayLike" directType="Object"/>
+      <parameters name="mapFunction" directType="Function" kind="OPTIONAL"/>
+      <parameters name="thisObject" directType="Object" kind="OPTIONAL"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
+    </members>
     <members xsi:type="ref:Method" name="concat" description="Joins two or more arrays and returns the result.">
       <parameters name="array" kind="VARARGS"/>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
+    <members xsi:type="ref:Method" name="copyWithin" description="Shallow copies part of an array to another location in the same array and returns it without modifying its length.">
+      <parameters name="target" directType="Number"/>
+      <parameters name="start" directType="Number" kind="OPTIONAL"/>
+      <parameters name="end" directType="Number" kind="OPTIONAL"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
+    </members>
     <members xsi:type="ref:Method" name="every" directType="Boolean" description="Tests whether all elements in the array pass the test implemented by the provided function. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray).">
       <parameters name="callback" directType="Function"/>
+    </members>
+    <members xsi:type="ref:Method" name="fill" description="Changes all elements in an array to a static value, from a start index (default 0) to an end index (default array.length). It returns the modified array.">
+      <parameters name="value" directType="Object"/>
+      <parameters name="start" directType="Number" kind="OPTIONAL"/>
+      <parameters name="end" directType="Number" kind="OPTIONAL"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
     </members>
     <members xsi:type="ref:Method" name="filter" description="Creates a new array with all elements that pass the test implemented by the provided function. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray).">
       <parameters name="callback" directType="Function"/>
@@ -219,6 +249,10 @@
     <members xsi:type="ref:Method" name="forEach" description="Calls a function for each element in the array. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
       <parameters name="callback" directType="Function"/>
       <parameters name="thisArg" kind="OPTIONAL"/>
+    </members>
+    <members xsi:type="ref:Method" name="includes" directType="Boolean" description="Determines whether an array includes a certain value among its entries, returning true or false as appropriate.">
+      <parameters name="searchElement" directType="Object"/>
+      <parameters name="start" directType="Number" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="indexOf" directType="Number" description="Returns the first index at which a given element can be found in the array, or -1 if it is not present.">
       <parameters name="searchElement"/>

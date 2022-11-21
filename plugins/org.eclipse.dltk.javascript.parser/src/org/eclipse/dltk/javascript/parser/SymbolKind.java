@@ -23,8 +23,8 @@ public enum SymbolKind {
 	FUNCTION(JavaScriptParserProblems.DUPLICATE_FUNCTION,
 			JavaScriptParserProblems.FUNCTION_DUPLICATES_OTHER);
 
-	final JSProblemIdentifier duplicateProblem;
-	final JSProblemIdentifier hideProblem;
+	public final JSProblemIdentifier duplicateProblem;
+	public final JSProblemIdentifier hideProblem;
 
 	SymbolKind(JSProblemIdentifier duplicateProblem,
 			JSProblemIdentifier hideProblem) {

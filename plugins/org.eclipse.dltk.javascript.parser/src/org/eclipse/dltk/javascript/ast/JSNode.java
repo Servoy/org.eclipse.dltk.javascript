@@ -38,7 +38,8 @@ public abstract class JSNode extends ASTNode {
 		return node != null ? node.toSourceString(indentationString) : "?";
 	}
 
-	private final JSNode parent;
+	private JSNode parent;
+	private int lineno;
 
 	public JSNode(JSNode parent) {
 		this.parent = parent;
@@ -48,6 +49,10 @@ public abstract class JSNode extends ASTNode {
 
 	public JSNode getParent() {
 		return this.parent;
+	}
+	
+	public void setParent(JSNode parent) {
+		this.parent = parent;
 	}
 
 	/**
@@ -90,6 +95,14 @@ public abstract class JSNode extends ASTNode {
 
 	public ISourceRange getRange() {
 		return new SourceRange(sourceStart(), sourceEnd() - sourceStart());
+	}
+
+	public void setLineno(int lineno) {
+		this.lineno = lineno;
+	}
+	
+	public int getLineno() {
+		return lineno;
 	}
 
 }

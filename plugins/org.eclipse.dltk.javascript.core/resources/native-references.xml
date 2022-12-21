@@ -202,7 +202,7 @@
       <parameters name="object" directType="Object"/>
     </members>
     <members xsi:type="ref:Method" name="of" description="Creates a new Array instance from a variable number of arguments." static="true">
-      <parameters name="value" directType="VARARGS"/>
+      <parameters name="value" kind="VARARGS" directType="Object"/>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>

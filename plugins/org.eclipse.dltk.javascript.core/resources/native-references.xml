@@ -796,7 +796,7 @@
       <parameters name="callback" directType="Function"/>
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
-    <members xsi:type="ref:Method" name="has" directType="Boolan" description="The has() method returns a boolean indicating whether an element with the specified key exists or not." static="false">
+    <members xsi:type="ref:Method" name="has" directType="Boolean" description="The has() method returns a boolean indicating whether an element with the specified key exists or not." static="false">
       <parameters name="key" directType="Object"/>
     </members>
     <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method returns a new iterator object that contains the keys for each element in the Map object in insertion order. In this particular case, this iterator object is also an iterable, so a for...of loop can be used." static="false">
@@ -820,7 +820,7 @@
       <parameters name="callback" directType="Function"/>
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
-    <members xsi:type="ref:Method" name="has" directType="Boolan" description="The has() method returns a boolean indicating whether an element with the specified value exists in a Set object or not" static="false">
+    <members xsi:type="ref:Method" name="has" directType="Boolean" description="The has() method returns a boolean indicating whether an element with the specified value exists in a Set object or not" static="false">
       <parameters name="value" directType="Object"/>
     </members>
     <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method is an alias for the values() method." static="false">

@@ -11,10 +11,13 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser;
 
-import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.runtime.RecognitionException;
 import org.eclipse.dltk.compiler.problem.DefaultProblem;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 
+/**
+ * @since 6.0
+ */
 public class JSProblem extends DefaultProblem {
 
 	private final Throwable cause;
@@ -27,7 +30,7 @@ public class JSProblem extends DefaultProblem {
 				ProblemSeverity.ERROR,
 				-1,
 				-1,
-				cause instanceof RecognitionException ? ((RecognitionException) cause).getOffendingToken().getLine()
+				cause instanceof RecognitionException ? ((RecognitionException) cause).line
 						: -1);
 		this.cause = cause;
 	}

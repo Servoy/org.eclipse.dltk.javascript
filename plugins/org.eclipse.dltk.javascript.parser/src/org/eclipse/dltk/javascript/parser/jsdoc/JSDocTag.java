@@ -13,6 +13,9 @@ package org.eclipse.dltk.javascript.parser.jsdoc;
 
 import org.eclipse.dltk.core.ISourceNode;
 
+/**
+ * @since 6.0
+ */
 public class JSDocTag implements ISourceNode {
 
 	public static String[] getTags() {

@@ -19,6 +19,9 @@ import java.util.List;
 
 import org.eclipse.dltk.utils.ArrayIterator;
 
+/**
+ * @since 6.0
+ */
 public class JSDocTags implements Iterable<JSDocTag> {
 
 	public static final JSDocTags EMPTY = new JSDocTags(new JSDocTag[0]);

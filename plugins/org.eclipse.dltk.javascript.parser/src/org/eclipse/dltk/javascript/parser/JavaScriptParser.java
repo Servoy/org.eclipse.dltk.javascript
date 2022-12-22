@@ -13,23 +13,20 @@ package org.eclipse.dltk.javascript.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.BitSet; //TODO check, missing in v4
 import java.util.Stack;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.IntStream;
-//TODO check, missing in v4
-//import org.antlr.runtime.MismatchedSetException;
-//import org.antlr.runtime.MismatchedTokenException;
-import org.antlr.v4.runtime.NoViableAltException;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.BitSet;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.IntStream;
+import org.antlr.runtime.MismatchedSetException;
+import org.antlr.runtime.MismatchedTokenException;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.Parser;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.parser.ISourceParser;
 import org.eclipse.dltk.compiler.env.IModuleSource;
@@ -45,8 +42,8 @@ import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.internal.parser.JSCommonTokenStream;
 import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
-// TODO import org.eclipse.dltk.javascript.parser.JSParser.program_return;
-// TODO import org.eclipse.dltk.javascript.parser.JSParser.standaloneExpression_return;
+import org.eclipse.dltk.javascript.parser.JSParser.program_return;
+import org.eclipse.dltk.javascript.parser.JSParser.standaloneExpression_return;
 import org.eclipse.dltk.utils.TextUtils;
 
 public class JavaScriptParser implements ISourceParser {
@@ -108,71 +105,70 @@ public class JavaScriptParser implements ISourceParser {
 			return super.getTokenErrorDisplay(t);
 		}
 
-// TODO use the error listener
-//		@Override
-//		public void displayRecognitionError(String[] tokenNames,
-//				RecognitionException re) {
-//			peekState().incrementErrorCount();
-//			if (reporter == null)
-//				return;
-//			String message;
-//			ISourceRange range;
-//			if (re instanceof NoViableAltException) {
-//				range = convert(re.token);
-//				final Token token = getLastToken(re.token);
-//				message = getMessages().get(peekState().rule, token.getType());
-//				if (message == null) {
-//					message = "Unexpected " + getTokenErrorDisplay(re.token);
-//				}
-//			} else if (re instanceof MismatchedTokenException) {
-//				MismatchedTokenException mte = (MismatchedTokenException) re;
-//				if (re.token == Token.EOF_TOKEN) {
-//					message = getTokenName(mte.expecting) + " expected";
-//				} else {
-//					message = "Mismatched input "
-//							+ getTokenErrorDisplay(re.token);
-//					if (mte.expecting >= 0 && mte.expecting < tokenNames.length) {
-//						message += ", " + getTokenName(mte.expecting)
-//								+ " expected";
-//					}
-//				}
-//				range = convert(re.token);
-//				if (range.getLength() + range.getOffset() >= inputLength()) {
-//					int stop = inputLength() - 1;
-//					int start = Math.min(stop - 1, range.getOffset() - 2);
-//					range = new SourceRange(start, stop - start);
-//				}
-//			} else if (re instanceof MismatchedSetException) {
-//				MismatchedSetException mse = (MismatchedSetException) re;
-//				message = "Mismatched input " + getTokenErrorDisplay(re.token);
-//				if (mse.expecting != null) {
-//					message += " expecting set " + mse.expecting;
-//				}
-//				range = convert(re.token);
-//			} else {
-//				message = "Syntax Error:" + re.getMessage();
-//				range = convert(re.token);
-//				// stop = start + 1;}
-//			}
-//			reporter.setMessage(JavaScriptParserProblems.SYNTAX_ERROR, message);
-//			reporter.setSeverity(ProblemSeverity.ERROR);
-//			if (range != null) {
-//				reporter.setRange(range.getOffset(),
-//						range.getOffset() + range.getLength());
-//			}
-//			reporter.setLine(re.line - 1);
-//			reporter.report();
-//		}
+		@Override
+		public void displayRecognitionError(String[] tokenNames,
+				RecognitionException re) {
+			peekState().incrementErrorCount();
+			if (reporter == null)
+				return;
+			String message;
+			ISourceRange range;
+			if (re instanceof NoViableAltException) {
+				range = convert(re.token);
+				final Token token = getLastToken(re.token);
+				message = getMessages().get(peekState().rule, token.getType());
+				if (message == null) {
+					message = "Unexpected " + getTokenErrorDisplay(re.token);
+				}
+			} else if (re instanceof MismatchedTokenException) {
+				MismatchedTokenException mte = (MismatchedTokenException) re;
+				if (re.token == Token.EOF_TOKEN) {
+					message = getTokenName(mte.expecting) + " expected";
+				} else {
+					message = "Mismatched input "
+							+ getTokenErrorDisplay(re.token);
+					if (mte.expecting >= 0 && mte.expecting < tokenNames.length) {
+						message += ", " + getTokenName(mte.expecting)
+								+ " expected";
+					}
+				}
+				range = convert(re.token);
+				if (range.getLength() + range.getOffset() >= inputLength()) {
+					int stop = inputLength() - 1;
+					int start = Math.min(stop - 1, range.getOffset() - 2);
+					range = new SourceRange(start, stop - start);
+				}
+			} else if (re instanceof MismatchedSetException) {
+				MismatchedSetException mse = (MismatchedSetException) re;
+				message = "Mismatched input " + getTokenErrorDisplay(re.token);
+				if (mse.expecting != null) {
+					message += " expecting set " + mse.expecting;
+				}
+				range = convert(re.token);
+			} else {
+				message = "Syntax Error:" + re.getMessage();
+				range = convert(re.token);
+				// stop = start + 1;}
+			}
+			reporter.setMessage(JavaScriptParserProblems.SYNTAX_ERROR, message);
+			reporter.setSeverity(ProblemSeverity.ERROR);
+			if (range != null) {
+				reporter.setRange(range.getOffset(),
+						range.getOffset() + range.getLength());
+			}
+			reporter.setLine(re.line - 1);
+			reporter.report();
+		}
 
 		private Token getLastToken(Token token) {
-			if (token.getType() == JSParser.EOF) { //TODO check
+			if (token == Token.EOF_TOKEN) {
 				final TokenStream stream = getTokenStream();
 				int index = stream.index();
 				while (index > 0) {
 					--index;
 					final Token prevToken = stream.get(index);
-					if (prevToken.getType() != JSParser.WhiteSpaces
-							&& prevToken.getType() != JSParser.LineTerminator) {
+					if (prevToken.getType() != JSParser.WhiteSpace
+							&& prevToken.getType() != JSParser.EOL) {
 						token = prevToken;
 						break;
 					}
@@ -183,7 +179,7 @@ public class JavaScriptParser implements ISourceParser {
 
 		private ISourceRange convert(Token token) {
 			token = getLastToken(token);
-			if (token.getType() == JSParser.EOF) { //TODO check
+			if (token == Token.EOF_TOKEN) {
 				return null;
 			}
 			return reporter.toSourceRange(token);
@@ -197,47 +193,46 @@ public class JavaScriptParser implements ISourceParser {
 		 * Standard implementation contains forgotten debug System.err.println()
 		 * and we don't need it at all.
 		 */
-// TODO check
-//		@Override
-//		public void recoverFromMismatchedToken(IntStream input,
-//				RecognitionException e, int ttype, BitSet follow)
-//				throws RecognitionException {
-//			// if next token is what we are looking for then "delete" this token
-//			if (input.LA(2) == ttype) {
-//				reportError(e);
-//				beginResync();
-//				input.consume(); // simply delete extra token
-//				endResync();
-//				input.consume(); // move past ttype token as if all were ok
-//				return;
-//			}
-//			// insert "}" if expected
-//			if (ttype == JSParser.CloseBrace) {
-//				//TODO should we still use? displayRecognitionError(getTokenNames(), e);
-//				return;
-//			}
-//			if (!recoverFromMismatchedElement(input, e, follow)) {
-//				throw e;
-//			}
-//		}
+		@Override
+		public void recoverFromMismatchedToken(IntStream input,
+				RecognitionException e, int ttype, BitSet follow)
+				throws RecognitionException {
+			// if next token is what we are looking for then "delete" this token
+			if (input.LA(2) == ttype) {
+				reportError(e);
+				beginResync();
+				input.consume(); // simply delete extra token
+				endResync();
+				input.consume(); // move past ttype token as if all were ok
+				return;
+			}
+			// insert "}" if expected
+			if (ttype == JSParser.RBRACE) {
+				displayRecognitionError(getTokenNames(), e);
+				return;
+			}
+			if (!recoverFromMismatchedElement(input, e, follow)) {
+				throw e;
+			}
+		}
 
 		protected void syncToSet() {
 			final BitSet follow = following[_fsp];
-			int mark = _input.mark();
+			int mark = input.mark();
 			try {
 				Token first = null;
 				Token last = null;
-				while (!follow.member(_input.LA(1))) {
-					if (_input.LA(1) == Token.EOF) {
-						_input.seek(mark);
+				while (!follow.member(input.LA(1))) {
+					if (input.LA(1) == Token.EOF) {
+						input.rewind();
 						mark = -1;
 						return;
 					}
-					last = _input.LT(1);
+					last = input.LT(1);
 					if (first == null) {
 						first = last;
 					}
-					_input.consume();
+					input.consume();
 				}
 				if (first != null && reporter != null) {
 					final ISourceRange end = convert(last);
@@ -251,7 +246,7 @@ public class JavaScriptParser implements ISourceParser {
 				}
 			} finally {
 				if (mark != -1) {
-					_input.release(mark);
+					input.release(mark);
 				}
 			}
 		}
@@ -288,26 +283,25 @@ public class JavaScriptParser implements ISourceParser {
 		 * 
 		 * @see org.eclipse.dltk.javascript.parser.tests.Bug20110503#testCombinedFollowsNPE()
 		 */
-// TODO remove?
-//		@Override
-//		protected BitSet combineFollows(boolean exact) {
-//			int top = _fsp;
-//			BitSet followSet = new BitSet();
-//			for (int i = top; i >= 0; i--) {
-//				BitSet localFollowSet = following[i];
-//				followSet.orInPlace(localFollowSet);
-//				if (exact && localFollowSet != null
-//						&& !localFollowSet.member(Token.EOR_TOKEN_TYPE)) {
-//					break;
-//				}
-//			}
-//			followSet.remove(Token.EOR_TOKEN_TYPE);
-//			return followSet;
-//		}
+		@Override
+		protected BitSet combineFollows(boolean exact) {
+			int top = _fsp;
+			BitSet followSet = new BitSet();
+			for (int i = top; i >= 0; i--) {
+				BitSet localFollowSet = following[i];
+				followSet.orInPlace(localFollowSet);
+				if (exact && localFollowSet != null
+						&& !localFollowSet.member(Token.EOR_TOKEN_TYPE)) {
+					break;
+				}
+			}
+			followSet.remove(Token.EOR_TOKEN_TYPE);
+			return followSet;
+		}
 
 		protected void reportRuleError(RecognitionException re) {
-			reportError(re.getMessage(), re.getOffendingToken());
-			recover(_input, re);
+			reportError(re);
+			recover(input, re);
 		}
 
 		private final Stack<JSParserState> states = new Stack<JSParserState>();
@@ -322,30 +316,6 @@ public class JavaScriptParser implements ISourceParser {
 
 		public JSParserState peekState() {
 			return states.isEmpty() ? null : states.peek();
-		}
-
-		@Override
-		public String[] getTokenNames() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String[] getRuleNames() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getGrammarFileName() {
-			//this is new in v4
-			return "JS.g";
-		}
-
-		@Override
-		public ATN getATN() {
-			// TODO Auto-generated method stub
-			return null;
 		}
 	}
 
@@ -386,7 +356,7 @@ public class JavaScriptParser implements ISourceParser {
 			final Reporter reporter = new Reporter(
 					TextUtils.createLineTracker(source), _reporter);
 			final JSTokenStream stream = createTokenStream(source);
-			//TODO add error listener stream.setReporter(reporter);
+			stream.setReporter(reporter);
 			final JSParser parser = createTreeParser(stream, reporter);
 			final standaloneExpression_return root = parser
 					.standaloneExpression();
@@ -407,9 +377,8 @@ public class JavaScriptParser implements ISourceParser {
 	public JSParser createTreeParser(final JSTokenStream stream,
 			final Reporter reporter) {
 		final JSParser parser = new JSParser(stream);
-		//TODO add error listener parser.reporter = reporter;
-		// TODO add xmlEnabled to the parser
-//		parser.xmlEnabled = xmlEnabled;
+		parser.reporter = reporter;
+		parser.xmlEnabled = xmlEnabled;
 		return parser;
 	}
 
@@ -421,7 +390,7 @@ public class JavaScriptParser implements ISourceParser {
 	protected Script parse(IModelElement element, JSTokenStream stream,
 			Reporter reporter) {
 		try {
-			//TODO error listener stream.setReporter(reporter);
+			stream.setReporter(reporter);
 			JSParser parser = createTreeParser(stream, reporter);
 			final program_return root = parser.program();
 			final NodeTransformer[] transformers = NodeTransformerManager
@@ -445,12 +414,12 @@ public class JavaScriptParser implements ISourceParser {
 	}
 
 	public JSTokenStream createTokenStream(char[] source) {
-		CharStream charStream = CharStreams.fromString(new String(source));
+		CharStream charStream = new ANTLRStringStream(source, source.length);
 		return createTokenStream(charStream);
 	}
 
 	public JSTokenStream createTokenStream(String source) {
-		CharStream charStream = CharStreams.fromString(source);
+		CharStream charStream = new ANTLRStringStream(source);
 		return createTokenStream(charStream);
 	}
 
@@ -462,7 +431,7 @@ public class JavaScriptParser implements ISourceParser {
 	 */
 	public JSTokenStream createTokenStream(InputStream input, String encoding)
 			throws IOException {
-		CharStream charStream = CharStreams.fromStream(input, Charset.forName(encoding));
+		CharStream charStream = new ANTLRInputStream(input, encoding);
 		return createTokenStream(charStream);
 	}
 

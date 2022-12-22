@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.annotations.Nullable;
 import org.eclipse.dltk.ast.ASTNode;
@@ -223,7 +223,7 @@ public class JSDocSupport implements IModelBuilder {
 		final ASTNode parent = statement.getParent();
 		if (parent instanceof BinaryOperation) {
 			final BinaryOperation binary = (BinaryOperation) parent;
-			if (binary.getOperation() == JSParser.ASSIGN
+			if (binary.getOperation() == JSParser.Assign
 					&& binary.getRightExpression() == statement) {
 				documentation = binary.getLeftExpression().getDocumentation();
 				if (documentation != null) {
@@ -851,7 +851,7 @@ public class JSDocSupport implements IModelBuilder {
 
 	private void processSuppressWarnings(JSDocTag tag,
 			@NonNull CountingReporter reporter, IElement element) {
-		final CharStream input = new ANTLRStringStream(tag.value());
+		final CharStream input = CharStreams.fromString(tag.value());
 		final boolean hasParenthesis = input.LT(1) == '(';
 		if (hasParenthesis) {
 			input.consume();

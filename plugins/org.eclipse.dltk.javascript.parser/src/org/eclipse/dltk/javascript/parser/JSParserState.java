@@ -11,6 +11,9 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser;
 
+/**
+ * @since 6.0
+ */
 public class JSParserState {
 	final JSParserState parent;
 	final JSParserRule rule;

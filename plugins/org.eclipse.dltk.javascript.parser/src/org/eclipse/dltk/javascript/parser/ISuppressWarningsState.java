@@ -20,7 +20,7 @@ import org.eclipse.dltk.compiler.problem.IProblemCategory;
  * It doesn't expose any methods and implementation is completely internal.
  * 
  * @noimplement This interface is not intended to be implemented by clients.
- * @since 4.0
+ * @since 6.0
  */
 public interface ISuppressWarningsState {
 

@@ -12,9 +12,9 @@
 
 package org.eclipse.dltk.javascript.parser;
 
-import org.antlr.v4.runtime.CharStream;
-//TODO import org.antlr.runtime.MismatchedTokenException;
-import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.MismatchedTokenException;
+import org.antlr.runtime.RecognitionException;
 
 public class JavaScriptTokenSource extends JavaScriptLexer implements
 		JSTokenSource {
@@ -41,7 +41,7 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 	}
 
 	public void seek(int index) {
-		_input.seek(index);
+		input.seek(index);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 
 	private int readXmlToken() {
 		int c;
-		while ((c = _input.LA(1)) != EOF) {
+		while ((c = input.LA(1)) != EOF) {
 			if (xmlIsTagContent) {
 				switch (c) {
 				case '>':
@@ -97,7 +97,7 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 					break;
 				case '/':
 					matchAny();
-					if (_input.LA(1) == '>') {
+					if (input.LA(1) == '>') {
 						matchAny();
 						xmlIsTagContent = false;
 						xmlOpenTagsCount--;
@@ -133,13 +133,13 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 				switch (c) {
 				case '<':
 					matchAny();
-					switch (_input.LA(1)) {
+					switch (input.LA(1)) {
 					case '!':
 						matchAny();
-						switch (_input.LA(1)) {
+						switch (input.LA(1)) {
 						case '-':
 							matchAny();
-							if (_input.LA(1) == '-') {
+							if (input.LA(1) == '-') {
 								matchAny();
 								readXmlComment();
 							} else {
@@ -195,7 +195,7 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 
 	private void readQuotedString(int quote) {
 		int c;
-		while ((c = _input.LA(1)) != EOF) {
+		while ((c = input.LA(1)) != EOF) {
 			matchAny();
 			if (c == quote) {
 				return;
@@ -206,9 +206,9 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 
 	private void readXmlComment() {
 		int c;
-		while ((c = _input.LA(1)) != EOF) {
+		while ((c = input.LA(1)) != EOF) {
 			matchAny();
-			if (c == '-' && _input.LA(1) == '-' && _input.LA(2) == '>') {
+			if (c == '-' && input.LA(1) == '-' && input.LA(2) == '>') {
 				return;
 			}
 		}
@@ -219,7 +219,7 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 		int c;
 		while ((c = input.LA(1)) != EOF) {
 			matchAny();
-			if (c == ']' && _input.LA(1) == ']' && _input.LA(2) == '>')
+			if (c == ']' && input.LA(1) == ']' && input.LA(2) == '>')
 				return;
 		}
 		throw new LexerException("msg.XML.bad.form");
@@ -228,7 +228,7 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 	private void readEntity() {
 		int declTags = 1;
 		int c;
-		while ((c = _input.LA(1)) != EOF) {
+		while ((c = input.LA(1)) != EOF) {
 			matchAny();
 			switch (c) {
 			case '<':
@@ -246,9 +246,9 @@ public class JavaScriptTokenSource extends JavaScriptLexer implements
 
 	private void readPI() {
 		int c;
-		while ((c = _input.LA(1)) != EOF) {
+		while ((c = input.LA(1)) != EOF) {
 			matchAny();
-			if (c == '?' && _input.LA(1) == '>') {
+			if (c == '?' && input.LA(1) == '>') {
 				matchAny();
 				return;
 			}

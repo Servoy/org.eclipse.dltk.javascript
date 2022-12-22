@@ -17,8 +17,10 @@ import org.eclipse.dltk.compiler.problem.IProblemReporter;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.javascript.ast.Script;
-import org.eclipse.dltk.javascript.parser.JavaScriptParser;
 
+/**
+ * @since 6.0
+ */
 public class JavaScriptParserUtil {
 
 	/**

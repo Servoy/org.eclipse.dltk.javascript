@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser;
 
-import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.Token;
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.Token;
 import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.core.SourceRange;
 import org.eclipse.dltk.core.builder.ISourceLineTracker;

@@ -17,6 +17,9 @@ import java.util.List;
 import org.eclipse.dltk.javascript.ast.MultiLineComment;
 import org.eclipse.dltk.utils.IntList;
 
+/**
+ * @since 6.0
+ */
 public class SimpleJSDocParser {
 
 	private static final char FORM_FEED = '\u000c';

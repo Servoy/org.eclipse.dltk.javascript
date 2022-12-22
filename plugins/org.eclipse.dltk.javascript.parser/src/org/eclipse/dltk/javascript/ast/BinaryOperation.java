@@ -113,12 +113,12 @@ public class BinaryOperation extends Expression {
 	}
 
 	public boolean isAssignment() {
-		return operation == JSParser.Assign || operation == JSParser.PlusAssign
-				|| operation == JSParser.MinusAssign || operation == JSParser.MultiplyAssign
-				|| operation == JSParser.DivideAssign || operation == JSParser.ModulusAssign
-				|| operation == JSParser.BitAndAssign || operation == JSParser.BitOrAssign
-				|| operation == JSParser.BitXorAssign || operation == JSParser.LeftShiftArithmeticAssign
-				|| operation == JSParser.RightShiftArithmeticAssign || operation == JSParser.RightShiftLogicalAssign;
+		return operation == JSParser.ASSIGN || operation == JSParser.ADDASS
+				|| operation == JSParser.SUBASS || operation == JSParser.MULASS
+				|| operation == JSParser.DIVASS || operation == JSParser.MODASS
+				|| operation == JSParser.ANDASS || operation == JSParser.ORASS
+				|| operation == JSParser.XORASS || operation == JSParser.SHLASS
+				|| operation == JSParser.SHRASS || operation == JSParser.SHUASS;
 	}
 
 	public boolean isAssignmentTo(Expression expression) {

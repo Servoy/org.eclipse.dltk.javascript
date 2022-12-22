@@ -13,6 +13,9 @@ package org.eclipse.dltk.javascript.parser;
 
 import org.eclipse.dltk.compiler.problem.IProblemIdentifier;
 
+/**
+ * @since 6.0
+ */
 public interface ProblemReporter {
 
 	void reportProblem(IProblemIdentifier identifier, String message,

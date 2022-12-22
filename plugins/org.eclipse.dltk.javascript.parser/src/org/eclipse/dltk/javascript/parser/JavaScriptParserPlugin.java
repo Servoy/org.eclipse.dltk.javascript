@@ -16,6 +16,9 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 
+/**
+ * @since 6.0
+ */
 public class JavaScriptParserPlugin extends Plugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.dltk.javascript.parser";

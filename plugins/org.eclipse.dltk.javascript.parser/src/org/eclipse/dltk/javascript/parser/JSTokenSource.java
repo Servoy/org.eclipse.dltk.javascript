@@ -11,8 +11,11 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser;
 
-import org.antlr.v4.runtime.TokenSource;
+import org.antlr.runtime.TokenSource;
 
+/**
+ * @since 6.0
+ */
 public interface JSTokenSource extends TokenSource {
 
 	int MODE_JS = 0;

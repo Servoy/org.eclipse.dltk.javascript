@@ -13,9 +13,12 @@ package org.eclipse.dltk.javascript.parser;
 
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
 
+/**
+ * @since 6.0
+ */
 public interface JSTokenStream extends TokenStream {
 
 	List<Token> getTokens();
@@ -24,6 +27,6 @@ public interface JSTokenStream extends TokenStream {
 
 	void setMode(int value);
 
-	//TODO error reporting is done differently in v4
-	//void setReporter(Reporter reporter);
+	void setReporter(Reporter reporter);
+
 }

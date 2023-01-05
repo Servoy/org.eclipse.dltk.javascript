@@ -1,5 +1,6 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -10,6 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.internal.core.util.WeakHashSet;
+import org.eclipse.dltk.javascript.ast.DecimalLiteral;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
@@ -21,9 +23,8 @@ import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.v4.Keywords;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignableContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.NumericLiteralContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ProgramContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableDeclarationContext;
@@ -34,6 +35,7 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	private final JSParser parser;
 	private SymbolTable scope;
 	private Stack<JSNode> parents = new Stack<JSNode>();
+	private List<JSNode> children = new ArrayList<JSNode>();
 	private Reporter reporter;
 	private Script script;
 	private List<Token> tokens;
@@ -87,7 +89,6 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	}
 	
 	public Script transformScript(ProgramContext root) {
-		Assert.isNotNull(root);
 		if (root == null)
 			return new Script();
 		script = new Script();
@@ -188,88 +189,69 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 		statement.setVarKeyword(createKeyword(statement, ctx.getParent().getStart(), Keywords.VAR));
 		
 		setRange(statement, ctx);
-		parents.add(statement); //TODO (check) add to parent
+		parents.add(statement);
 	}
 
 	@Override
 	public void enterVariableDeclaration(VariableDeclarationContext ctx) {
 		VariableDeclaration declaration = new VariableDeclaration((IVariableStatement) getParent());
 		parents.add(declaration);
-		
-		
-//		declaration
-//		.setIdentifier((Identifier) transformNode(node, declaration));
-//declaration.setStart(getTokenOffset(node.getTokenStartIndex()));
-//declaration.setEnd(getTokenOffset(node.getTokenStopIndex() + 1));
-//int i = 0;
-//if (i + 2 <= node.getChildCount()
-//		&& node.getChild(i).getType() == JSParser.ASSIGN) {
-
-		//	declaration.setAssignPosition(getTokenOffset(node.getChild(i)
-//			.getTokenStartIndex()));
-
-		//	declaration.setInitializer(transformExpression(
-//			node.getChild(i + 1), declaration));
-//	i += 2;
-//}
 	}	
 	
 	@Override
 	public void exitVariableDeclaration(VariableDeclarationContext ctx) {
-		JSNode variable = parents.pop();
-		VariableDeclaration declaration = (VariableDeclaration)variable;
+		VariableDeclaration declaration = (VariableDeclaration)parents.pop();
 		VariableStatement statement = (VariableStatement)getParent();
 		statement.addVariable(declaration);
+		if (children.get(0) instanceof Identifier) {
+			Identifier identifier = (Identifier) children.remove(0);
+			declaration.setIdentifier(identifier);
+			//TODO
+			//declaration.setStart(getTokenOffset(node.getTokenStartIndex()));
+			//declaration.setEnd(getTokenOffset(node.getTokenStopIndex() + 1));
+			if (!children.isEmpty() && children.get(0) instanceof Expression) {
+				declaration.setAssignPosition(getTokenOffset(ctx.Assign().getSymbol().getTokenIndex()));
+				declaration.setInitializer((Expression) children.remove(0));
+			}
+		}	
 
-// TODO fix NLS missing message
-//		SymbolKind kind = SymbolKind.VAR; //TODO add LET?
-//		final SymbolKind replaced = scope.add(
-//				declaration.getVariableName(), kind, declaration);
-//		if (replaced != null && reporter != null) {
-//			final Identifier identifier = declaration.getIdentifier();
-//			reporter.setRange(identifier.sourceStart(),
-//					identifier.sourceEnd());
-//			if (replaced == kind) {
-//				reporter.setFormattedMessage(kind.duplicateProblem,
-//						declaration.getVariableName());
-//			} else {
-//				reporter.setFormattedMessage(kind.hideProblem,
-//						declaration.getVariableName(),
-//						replaced.verboseName());
-//			}
-//			reporter.report();
-//		}
+		SymbolKind kind = SymbolKind.VAR; //TODO add LET?
+		final SymbolKind replaced = scope.add(
+				declaration.getVariableName(), kind, declaration);
+		if (replaced != null && reporter != null) {
+			final Identifier identifier = declaration.getIdentifier();
+			reporter.setRange(identifier.sourceStart(),
+					identifier.sourceEnd());
+			if (replaced == kind) {
+				reporter.setFormattedMessage(kind.duplicateProblem,
+						declaration.getVariableName());
+			} else {
+				reporter.setFormattedMessage(kind.hideProblem,
+						declaration.getVariableName(),
+						replaced.verboseName());
+			}
+			reporter.report();
+		}
 	}
-	
-	@Override
-	public void enterAssignable(AssignableContext ctx) {
-		VariableDeclaration declaration = (VariableDeclaration)getParent();
-		//TODO do we need to do something here?
-	}
-	
-	
 
 	@Override
 	public void enterIdentifier(IdentifierContext ctx) {
 		Assert.isTrue(ctx.getStart().getType() == JSParser.Identifier);
 //		|| JSLexer.isIdentifierKeyword(ctx.getStart().getType()));
 		
-		VariableDeclaration declaration = (VariableDeclaration)getParent();
-		Identifier identifier = new Identifier(declaration);
-		declaration.setIdentifier(identifier);
-		
+		Identifier identifier = new Identifier(getParent());	
 		// TODO locateDocumentation(identifier, currentJSNode);
-
 		identifier.setName(intern(ctx.getText()));
-
 		setRangeByToken(identifier, ctx.getStart().getStartIndex());
-		
+		children.add(identifier);
 	}
-	
 
 	@Override
-	public void enterAssignmentExpression(AssignmentExpressionContext ctx) {
-		VariableDeclaration declaration = (VariableDeclaration)getParent();
-		declaration.setInitializer(null); //TODO
+	public void enterNumericLiteral(NumericLiteralContext ctx) {
+		DecimalLiteral number = new DecimalLiteral(getParent());
+		number.setText(intern(ctx.getText()));
+		number.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		number.setEnd(number.sourceStart() + number.getText().length());
+		children.add(number);
 	}
 }

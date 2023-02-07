@@ -113,6 +113,21 @@
     	<parameters name="value1" directType="Object"/>
     	<parameters name="value2" directType="Object"/>
     </members>
+    <members xsi:type="ref:Method" name="values" description="Returns an array whose elements are strings corresponding to the enumerable string-keyed property values found directly upon object." static="true">
+        <parameters name="object1" directType="Object"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:SimpleType" target="String"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="entries" description="Returns an array whose elements are arrays corresponding to the enumerable string-keyed property key-value pairs found directly upon object." static="true">
+        <parameters name="object1" directType="Object"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:SimpleType" target="String"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="fromEntries" directType="Object" description="Transforms a list of key-value pairs into an object." static="true">
+        <parameters name="entries" directType="Object"/>
+    </members>
   </ref:Type>
   <ref:TypeAlias source="regexp" target="RegExp"/>
   <ref:Type name="RegExp" kind="PREDEFINED" superType="Object">

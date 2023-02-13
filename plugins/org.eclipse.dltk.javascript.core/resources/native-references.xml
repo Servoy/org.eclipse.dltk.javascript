@@ -516,6 +516,9 @@
   	<members xsi:type="ref:Method" name="fromCharCode" directType="String" static="true" description="Returns a string created by using the specified sequence of Unicode values.">
   	    <parameters name="num" kind="VARARGS"/>
     </members>
+    <members xsi:type="ref:Method" name="fromCodePoint" directType="String" static="true" description="Returns a string created by using the specified sequence of code points.">
+        <parameters name="num" kind="VARARGS"/>
+    </members>
     <members xsi:type="ref:Method" name="anchor" directType="String" description="Creates an HTML anchor.">
       <parameters name="anchorname" directType="String"/>
     </members>
@@ -531,6 +534,9 @@
     <members xsi:type="ref:Method" name="charCodeAt" directType="Number" description="Returns the Unicode of the character at a specified position.">
       <parameters name="index" directType="Number"/>
     </members>
+    <members xsi:type="ref:Method" name="codePointAt" directType="Number" description=" returns a non-negative integer that is the Unicode code point value at the given position. Note that this function does not give the nth code point in a string, but the code point starting at the specified string index">
+      <parameters name="index" directType="Number"/>
+    </members>
     <members xsi:type="ref:Method" name="concat" directType="String" description="Joins two or more strings.">
       <parameters name="strings" directType="String" kind="VARARGS"/>
     </members>
@@ -538,6 +544,14 @@
       <parameters name="searchString" directType="String"/>
       <parameters name="length " directType="Number" kind="OPTIONAL"/>
     </members>
+    <members xsi:type="ref:Method" name="padEnd" directType="String" description="The padEnd() method pads the current string with a given string (repeated, if needed) so that the resulting string reaches a given length. The padding is applied from the end of the current string.">
+      <parameters name="targetLength " directType="Number"/>
+      <parameters name="padString" directType="String"  kind="OPTIONAL"/>
+    </members>
+    <members xsi:type="ref:Method" name="padStart" directType="String" description="The padStart() method pads the current string with another string (multiple times, if needed) until the resulting string reaches the given length. The padding is applied from the start of the current string.">
+      <parameters name="targetLength " directType="Number"/>
+      <parameters name="padString" directType="String"  kind="OPTIONAL"/>
+    </members>    
     <members xsi:type="ref:Method" name="equals" directType="Boolean">
       <parameters name="object"/>
     </members>
@@ -638,6 +652,8 @@
     <members xsi:type="ref:Method" name="toUpperCase" directType="String" description="Returns a string in uppercase letters."/>
     <members xsi:type="ref:Method" name="valueOf" directType="String" description="Returns the primitive value of a String object."/>
     <members xsi:type="ref:Method" name="trim" directType="String" description="Returns the string stripped of whitespace from both ends."/>
+    <members xsi:type="ref:Method" name="trimStart" directType="String" description="Removes whitespace from the beginning of a string and returns a new string, without modifying the original string"/>
+    <members xsi:type="ref:Method" name="trimEnd" directType="String" description="Removes whitespace from the ending of a string and returns a new string, without modifying the original string"/>
   </ref:Type>
   <ref:TypeAlias source="string" target="String"/>
   <ref:Type name="XML" kind="PREDEFINED">

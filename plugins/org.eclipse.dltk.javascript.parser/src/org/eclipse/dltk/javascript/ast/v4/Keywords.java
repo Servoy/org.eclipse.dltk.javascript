@@ -14,7 +14,7 @@ package org.eclipse.dltk.javascript.ast.v4;
 
 import java.util.HashMap;
 
-import org.eclipse.dltk.javascript.parser.JSParser;
+import org.eclipse.dltk.javascript.parser.v4.JSParser;
 
 public class Keywords {
 

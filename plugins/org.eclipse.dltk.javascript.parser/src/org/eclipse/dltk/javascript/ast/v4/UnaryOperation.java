@@ -14,7 +14,9 @@ package org.eclipse.dltk.javascript.ast.v4;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTVisitor;
-import org.eclipse.dltk.javascript.parser.JSParser;
+import org.eclipse.dltk.javascript.ast.Expression;
+import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.parser.v4.JSParser;
 
 public class UnaryOperation extends Expression {
 

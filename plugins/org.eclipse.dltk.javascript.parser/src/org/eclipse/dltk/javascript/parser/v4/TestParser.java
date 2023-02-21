@@ -106,7 +106,7 @@ public class TestParser {
 	
 	@Test
 	public void testStatementBlock() {
-		String source = "{a += 1;}";
+		String source = "{a += 1; b=2;}";
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);
 		
@@ -269,6 +269,72 @@ public class TestParser {
 	@Test
 	public void testReturn() {
 		String source = "function sum(a,b){ return a + b;}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testBreak() {
+		String source = "for (var e in obj) { break; }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testBreakLabel() {
+		String source = "outer : for (var i in o) for (var e in obj) { break outer; }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testCall() {
+		String source = "myfunc(10);";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testNew() {
+		String source = "new A('test', 10);";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testThrow() {
+		String source = "if (a < b) throw new Error('some exception'); else throw 'error!';";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testTry() {
+		String source = "{ try { init(a); } catch (e) { throw 'error!'; } finally { a = 0;} }";
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);
 		

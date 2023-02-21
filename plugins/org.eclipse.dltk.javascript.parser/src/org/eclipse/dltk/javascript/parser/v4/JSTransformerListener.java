@@ -15,14 +15,20 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
+import org.eclipse.dltk.compiler.util.Util;
 import org.eclipse.dltk.internal.core.util.WeakHashSet;
 import org.eclipse.dltk.javascript.ast.Argument;
+import org.eclipse.dltk.javascript.ast.BreakStatement;
+import org.eclipse.dltk.javascript.ast.CallExpression;
+import org.eclipse.dltk.javascript.ast.CatchClause;
 import org.eclipse.dltk.javascript.ast.Comment;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.Documentable;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
+import org.eclipse.dltk.javascript.ast.ErrorExpression;
 import org.eclipse.dltk.javascript.ast.Expression;
+import org.eclipse.dltk.javascript.ast.FinallyClause;
 import org.eclipse.dltk.javascript.ast.ForInStatement;
 import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
@@ -36,10 +42,14 @@ import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.Literal;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
 import org.eclipse.dltk.javascript.ast.Method;
+import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.Statement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
+import org.eclipse.dltk.javascript.ast.SwitchStatement;
+import org.eclipse.dltk.javascript.ast.ThrowStatement;
+import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
@@ -48,14 +58,19 @@ import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.Keywords;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AdditiveExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BlockContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.BreakStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.CatchProductionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ContinueStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DoStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionSequenceContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.FinallyProductionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterArgContext;
@@ -66,17 +81,23 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.IfStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LabelledStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LiteralContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MultiplicativeExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.NewExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PostIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ProgramContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ReturnStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.SourceElementsContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementListContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ThrowStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TryStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableDeclarationContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableDeclarationListContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.WhileStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.factory.JSNodeCreator;
+import org.eclipse.dltk.utils.IntList;
 
 public class JSTransformerListener extends JavaScriptParserBaseListener {
 
@@ -84,6 +105,7 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	private SymbolTable scope;
 	private Stack<JSNode> parents = new Stack<JSNode>();
 	private Stack<JSNode> children = new Stack<JSNode>();
+	private Stack<List<Statement>> lists = new Stack<>();
 	private Reporter reporter;
 	private Script script;
 	private List<Token> tokens;
@@ -501,21 +523,14 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 		ifStatement.setIfKeyword(createKeyword(ifStatement, ctx.getStart(), Keywords.IF));		
 		ifStatement.setStart(ifStatement.getIfKeyword().sourceStart());
 		setEndByTokenIndex(ifStatement, ctx.getStop().getTokenIndex());
-		
-//		Statement _else = ctx.Else() != null ? transformStatementNode(ctx.statement(1), children.pop()) : null;
-//		Statement then = transformStatementNode(ctx.statement(0), children.pop());
+
 		Statement _else = ctx.Else() != null ? (Statement) children.pop() : null;
 		Statement then = (Statement) children.pop();
-		Expression condition = (Expression) children.pop();
-		
-		ifStatement.setCondition(condition);
+		ifStatement.setCondition((Expression) children.pop());
 		
 		ifStatement.setLP(getTokenOffset(JSParser.OpenParen, ctx.getStart().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
 		if (ctx.statement() != null) {
-			ifStatement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());//getTokenOffset(JSParser.CloseParen, ctx.getChild(0)
-//					.getTokenStopIndex() + 1, ctx.getChild(1)
-//					.getTokenStartIndex()));
-			
+			ifStatement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
 			ifStatement.setThenStatement(then);
 		} 
 		else {
@@ -524,26 +539,28 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 
 		if (ctx.Else() != null) {
 			Keyword elseKeyword = new Keyword(Keywords.ELSE);
-//			elseKeyword.setStart(getTokenOffset(JSParser.Else, ctx.getChild(1)
-//					.getTokenStopIndex() + 1, ctx.getChild(2)
-//					.getTokenStartIndex()));
-//			elseKeyword.setEnd(elseKeyword.sourceStart()
-//					+ Keywords.ELSE.length());
 			ifStatement.setElseKeyword(elseKeyword);
 			ifStatement.setElseStatement(_else);
 		}
 	}
 
 	@Override
+	public void exitStatementList(StatementListContext ctx) {
+		List<Statement> result = new ArrayList<>();
+		for (int i = 0; i < ctx.statement().size(); i++) {
+			result.add(transformStatementNode(ctx.statement(i), children.pop()));
+		}
+		Collections.reverse(result);
+		lists.push(result);
+	}
+
+	@Override
 	public void exitBlock(BlockContext ctx) {
 		StatementBlock block = (StatementBlock) getParent();
-		int j = ctx.statementList().statement().size();
-		for (int i = 0; i < ctx.statementList().statement().size(); i++) {
-			JSNode child = children.pop();
-			block.getStatements().add(transformStatementNode(ctx.statementList().statement(i), child));
-			j=-1;
+		List<Statement> statementList = lists.pop();
+		for (int i = 0; i < statementList.size(); i++) {
+			block.getStatements().add(statementList.get(i));
 		}
-		
 		block.setLC(getTokenOffset(JSParser.OpenBrace, ctx.getStart().getTokenIndex(),
 				ctx.getStop().getTokenIndex()));
 
@@ -563,6 +580,10 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 			block.setEnd(block.getStatements().get(block.getStatements().size() - 1).sourceStart());
 		} else {
 			block.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+		}
+		
+		if (ctx.getParent() instanceof TryStatementContext || ctx.getParent() instanceof CatchProductionContext || ctx.getParent() instanceof FinallyProductionContext) {
+			children.add(parents.pop());
 		}
 	}	
 		
@@ -686,13 +707,22 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	}
 	
 	@Override
+	public void exitSourceElements(SourceElementsContext ctx) {
+		if (ctx.getParent() instanceof ProgramContext) return;
+		List<Statement> result = new ArrayList<>();
+		for (int i = 0; i < ctx.sourceElement().size(); i++) {
+			result.add(transformStatementNode(ctx.sourceElement(i).statement(), children.pop()));
+		}
+		Collections.reverse(result);
+		lists.push(result);
+	}
+
+	@Override
 	public void exitFunctionBody(FunctionBodyContext ctx) {
 		StatementBlock block = (StatementBlock) getParent();
-		int j = ctx.sourceElements().sourceElement().size();
-		for (int i = 0; i < ctx.sourceElements().sourceElement().size(); i++) {
-			JSNode child = children.pop();
-			block.getStatements().add(transformStatementNode(ctx.sourceElements().sourceElement(i).statement(), child));
-			j=-1;
+		List<Statement> statementList = lists.pop();
+		for (int i = 0; i < statementList.size(); i++) {
+			block.getStatements().add(statementList.get(i));
 		}
 		
 		block.setLC(getTokenOffset(JSParser.OpenBrace, ctx.getStart().getTokenIndex(),
@@ -830,8 +860,10 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 		children.add(op);
 	}
 	
+	
+	
 	@Override
-	public void exitLabelledStatement(LabelledStatementContext ctx) {
+	public void enterLabelledStatement(LabelledStatementContext ctx) {
 		LabelledStatement statement = (LabelledStatement)getParent();
 
 		Label label = new Label(statement);
@@ -847,11 +879,15 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 			reporter.setRange(label.sourceStart(), label.sourceEnd());
 			reporter.report();
 		}
+	}
 
+	@Override
+	public void exitLabelledStatement(LabelledStatementContext ctx) {
+		LabelledStatement statement = (LabelledStatement)getParent();
 		if (ctx.statement() != null) {
 			statement.setStatement((Statement) children.pop());
 		}
-
+		children.pop();//remove the label from the stack, was processed in enterLabelledStatement
 		statement.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		statement.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
 	}
@@ -904,5 +940,206 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 				.sourceStart());
 		validateParent(JavaScriptParserProblems.INVALID_RETURN,
 				returnStatement, FunctionStatement.class, Method.class);
+	}
+
+	@Override
+	public void exitBreakStatement(BreakStatementContext ctx) {
+		BreakStatement statement = (BreakStatement)getParent();
+		statement.setBreakKeyword(createKeyword(statement, ctx.getStart(), Keywords.BREAK));
+
+		if (ctx.identifier() != null) {
+			Label label = new Label(statement);
+			Identifier labelNode = (Identifier) children.pop();
+			label.setText(intern(labelNode.getName()));
+			setRangeByToken(label, ctx.identifier().getStart().getTokenIndex());
+			statement.setLabel(label);
+			validateLabel(label);
+		}
+
+		statement.setSemicolonPosition(getTokenOffset(ctx.getStop().getTokenIndex()));
+		setRange(statement, ctx);
+		if (statement.getLabel() == null) {
+			validateParent(JavaScriptParserProblems.BAD_BREAK, statement,
+					LoopStatement.class, SwitchStatement.class);
+		}	
+	}
+
+	@Override
+	public void exitThrowStatement(ThrowStatementContext ctx) {
+		ThrowStatement statement = (ThrowStatement)getParent();
+		statement.setThrowKeyword(createKeyword(statement, ctx.getStart(), Keywords.THROW));
+
+		if (ctx.expressionSequence() != null) {
+			statement.setException((Expression) children.pop());
+		}
+
+		if (ctx.eos().SemiColon() != null) {
+			statement.setSemicolonPosition(getTokenOffset(ctx.eos().SemiColon().getSymbol().getTokenIndex()));
+		}
+		setRange(statement, ctx);
+	}
+
+	@Override
+	public void exitNewExpression(NewExpressionContext ctx) {
+		Expression callExpression = ctx.singleExpression()	!= null ? transformCallExpression(ctx.singleExpression(), ctx.arguments()) : null;
+		parents.pop();//TODO check
+		NewExpression expression = (NewExpression)getParent();
+		expression.setNewKeyword(createKeyword(expression, ctx.getStart(), Keywords.NEW));
+		if (ctx.singleExpression()	!= null) {
+			expression.setObjectClass(callExpression);
+		} else {
+			final ErrorExpression error = new ErrorExpression(expression,
+					Util.EMPTY_STRING);
+			final int pos = expression.getNewKeyword().sourceEnd();
+			error.setStart(pos);
+			error.setEnd(pos);
+			expression.setObjectClass(error);
+		}
+		setRange(expression, ctx);
+	}
+
+	@Override
+	public void exitArgumentsExpression(ArgumentsExpressionContext ctx) {
+		children.add(transformCallExpression(ctx.singleExpression(), ctx.arguments()));
+	}
+	
+	@Override
+	public void enterArguments(ArgumentsContext ctx) {
+		if (!getParent().getClass().equals(CallExpression.class)) {
+			parents.push(new CallExpression(getParent()));
+		}
+	}
+
+	private Expression transformCallExpression(SingleExpressionContext ctx, ArgumentsContext args) {
+		CallExpression call = (CallExpression)getParent();
+
+		Assert.isNotNull(ctx);
+		Assert.isNotNull(args);
+
+		List<Expression> _args = new ArrayList<>();
+		for(int i = 0; i < args.argument().size(); i++) {
+			_args.add((Expression) children.pop());
+		}
+		Collections.reverse(_args);
+		call.setExpression((Expression) children.pop());
+		IntList commas = new IntList();
+		for (int i = 0; i < _args.size(); i++) {
+			if (args.Comma(i) != null) {
+				commas.add(getTokenOffset(args.Comma(i).getSymbol().getTokenIndex()));
+			}
+			call.addArgument(_args.get(i));
+		}
+		call.setCommas(commas);
+		call.setLP(getTokenOffset(args.OpenParen().getSymbol().getTokenIndex()));
+		call.setRP(getTokenOffset(args.CloseParen().getSymbol().getTokenIndex()));
+
+		call.setStart(call.getExpression().sourceStart());
+		if (call.getRP() > -1) {
+			call.setEnd(call.getRP() + 1);
+		} else {
+			call.setEnd(call.getExpression().sourceEnd());
+		}
+		return call;
+	}
+
+	@Override
+	public void enterBlock(BlockContext ctx) {
+		if (getParent() instanceof StatementBlock) return;
+		parents.push(new StatementBlock(getParent()));
+	}
+
+	@Override
+	public void exitTryStatement(TryStatementContext ctx) {
+		TryStatement statement = (TryStatement)getParent();
+		statement.setTryKeyword(createKeyword(statement, ctx.getStart(), Keywords.TRY));
+
+//		boolean sawDefaultCatch = false;
+//		for (int i = 1 /* miss body */; i < node.getChildCount(); i++) {
+//
+//			Tree child = node.getChild(i);
+//
+//			switch (child.getType()) {
+//			case JSParser.CATCH:
+//				final CatchClause catchClause = (CatchClause) transformNode(
+//						child, statement);
+//				if (reporter != null && sawDefaultCatch) {
+//					reporter.setMessage(JavaScriptParserProblems.CATCH_UNREACHABLE);
+//					reporter.setRange(catchClause.sourceStart(),
+//							catchClause.getRP() + 1);
+//					reporter.report();
+//				}
+//				if (!sawDefaultCatch
+//						&& catchClause.getFilterExpression() == null) {
+//					sawDefaultCatch = true;
+//				}
+//				statement.getCatches().add(catchClause);
+//				break;
+//
+//			case JSParser.FINALLY:
+//				statement.setFinally((FinallyClause) children.pop());
+//				break;
+//
+//			default:
+//				throw new UnsupportedOperationException(
+//						"CATCH or FINALLY expected");
+//			}
+//
+//		}
+		statement.setBody((StatementBlock)children.pop());
+		statement.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		statement.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
+	}
+
+	@Override
+	public void enterCatchProduction(CatchProductionContext ctx) {
+		parents.push(new CatchClause(getParent()));
+	}
+	
+	@Override
+	public void exitCatchProduction(CatchProductionContext ctx) {
+		CatchClause catchClause = (CatchClause) parents.pop();
+		catchClause.setCatchKeyword(createKeyword(catchClause, ctx.getStart(), Keywords.CATCH));
+		catchClause.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
+
+// TODO this is not supported in the current g4 file, we need to change the rule and regenerate the parser
+//		int statementIndex = 1;
+//		if (statementIndex < node.getChildCount()
+//				&& node.getChild(statementIndex).getType() == JSParser.If) {
+//			catchClause.setIfKeyword(createKeyword(
+//					node.getChild(statementIndex++), Keywords.IF));
+//
+//			catchClause.setFilterExpression(transformExpression(
+//					node.getChild(statementIndex++), catchClause));
+//		}
+
+		catchClause.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+		catchClause.setStatement((Statement) children.pop());
+
+		catchClause.setException((Identifier) children.pop());
+		catchClause.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		catchClause.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));	
+		
+		TryStatement parent = (TryStatement) catchClause.getParent();
+		parent.getCatches().add(catchClause);
+	}
+	
+	@Override
+	public void enterFinallyProduction(FinallyProductionContext ctx) {
+		parents.push(new FinallyClause(getParent()));
+	}
+
+	@Override
+	public void exitFinallyProduction(FinallyProductionContext ctx) {
+		FinallyClause finallyClause = (FinallyClause)parents.pop();
+		finallyClause.setFinallyKeyword(createKeyword(finallyClause, ctx.getStart(), Keywords.FINALLY));
+
+		if (ctx.block() != null) {
+			finallyClause.setStatement((Statement) children.pop());
+		}
+
+		finallyClause.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		finallyClause.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
+		TryStatement parent = (TryStatement) finallyClause.getParent();
+		parent.setFinally(finallyClause);
 	}
 }

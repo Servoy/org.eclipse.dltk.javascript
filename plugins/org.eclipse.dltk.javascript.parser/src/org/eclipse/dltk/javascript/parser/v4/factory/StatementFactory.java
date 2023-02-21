@@ -12,6 +12,7 @@ import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
+import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
@@ -95,6 +96,9 @@ public class StatementFactory extends JSNodeFactory<StatementContext> {
 		}
 		if (ctx.breakStatement() != null) {
 			return new BreakStatement(parent);
+		}
+		if (ctx.throwStatement() != null) {
+			return new ThrowStatement(parent);
 		}
 		if (ctx.tryStatement() != null) {
 			return new TryStatement(parent);

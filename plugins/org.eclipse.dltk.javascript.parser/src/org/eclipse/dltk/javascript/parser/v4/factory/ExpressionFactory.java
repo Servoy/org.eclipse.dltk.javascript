@@ -3,16 +3,20 @@ package org.eclipse.dltk.javascript.parser.v4.factory;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AdditiveExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LiteralExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MultiplicativeExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.NewExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PostIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
@@ -46,6 +50,12 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 		}
 		if (ctx instanceof PostIncrementExpressionContext) {
 			return new UnaryOperation(parent);
+		}
+		if (ctx instanceof NewExpressionContext) {
+			return new NewExpression(parent);
+		}
+		if (ctx instanceof ArgumentsExpressionContext) {
+			return new CallExpression(parent);
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

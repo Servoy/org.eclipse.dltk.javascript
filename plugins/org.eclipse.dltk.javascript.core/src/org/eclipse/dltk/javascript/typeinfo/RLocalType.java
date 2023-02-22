@@ -109,7 +109,10 @@ class RLocalType extends RType implements IRLocalType {
 	private static void fillChildren(RLocalType rLocalType,
 			Set<String> children,
 			HashSet<IRType> set) {
-		if (set.add(rLocalType)) {
+		// Check rLocalType against its declared Type to prevent StackOverflow
+		// for constructor functions
+		if (rLocalType != rLocalType.getValue().getDeclaredType()
+				&& set.add(rLocalType)) {
 			IValueReference value = rLocalType.getValue();
 			children.addAll(value.getDirectChildren(
 					IValue.NO_LOCAL_TYPES));

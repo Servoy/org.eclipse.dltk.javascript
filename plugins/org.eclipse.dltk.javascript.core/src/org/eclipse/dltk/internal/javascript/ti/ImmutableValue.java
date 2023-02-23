@@ -257,11 +257,18 @@ public class ImmutableValue implements IValue, IValue2 {
 		} else {
 			result.addAll(children.keySet());
 		}
-		if ((flags & NO_LOCAL_TYPES) == 0) {
+
+		if ((flags & NO_LOCAL_TYPES) == 0
+				// ignore the flag if `this` is a thisValue
+				// so when using multiple levels of prototyping
+				// all inherited children will get included
+				|| this.getAttribute(IReferenceAttributes.THIS_VALUE) != null) {
 			if (getDeclaredType() instanceof IRLocalType) {
 				result.addAll(((IRLocalType) getDeclaredType())
 						.getDirectChildren());
 			}
+		}
+		if ((flags & NO_LOCAL_TYPES) == 0) {
 			for (IRType irType : getTypes()) {
 				if (irType instanceof IRLocalType) {
 					result.addAll(((IRLocalType) irType).getDirectChildren());

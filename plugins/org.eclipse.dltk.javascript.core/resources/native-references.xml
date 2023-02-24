@@ -594,7 +594,7 @@
       <parameters name="count" directType="Number"/>
     </members>
     <members xsi:type="ref:Method" name="replace" directType="String" description="Replaces some characters with some other characters in a string.">
-      <parameters name="findString">
+      <parameters name="findStringOrRegexp">
       <type xsi:type="ref:UnionType" >
 		<targets xsi:type="ref:SimpleType" >
 		<target href="proxy:dltk/javascript/typeinfo/type#String"/>
@@ -604,7 +604,7 @@
 		</targets>
 		</type>
 	  </parameters>
-      <parameters name="newString">
+      <parameters name="newStringOrFunction">
        <type xsi:type="ref:UnionType" >
       	<targets xsi:type="ref:SimpleType" >
 		<target href="proxy:dltk/javascript/typeinfo/type#String"/>

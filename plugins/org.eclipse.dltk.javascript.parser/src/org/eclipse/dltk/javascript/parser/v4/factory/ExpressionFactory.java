@@ -3,23 +3,39 @@ package org.eclipse.dltk.javascript.parser.v4.factory;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.CallExpression;
-import org.eclipse.dltk.javascript.ast.Identifier;
+import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.NewExpression;
+import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AdditiveExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrayLiteralExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.BitNotExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.DeleteExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LiteralExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberDotExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberIndexExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MultiplicativeExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.NewExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.NotExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.PostDecreaseExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PostIncrementExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.PreDecreaseExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.PreIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TypeofExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryMinusExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryPlusExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.VoidExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.YieldExpressionContext;
 
 public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 	private static final ExpressionFactory instance = new ExpressionFactory();
@@ -48,14 +64,30 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 		if (ctx instanceof RelationalExpressionContext) {
 			return createBinaryOperation(ctx, parent, ((TerminalNode)ctx.getChild(1)).getSymbol().getType());
 		}
-		if (ctx instanceof PostIncrementExpressionContext) {
-			return new UnaryOperation(parent);
+		if (ctx instanceof PostIncrementExpressionContext || ctx instanceof PostDecreaseExpressionContext ) {
+			return createUnaryOperation(ctx, parent, ((TerminalNode)ctx.getChild(1)).getSymbol().getType(), true);
+		}
+		if (ctx instanceof UnaryPlusExpressionContext || ctx instanceof UnaryMinusExpressionContext ||
+				ctx instanceof BitNotExpressionContext || ctx instanceof NotExpressionContext ||
+				ctx instanceof PreIncrementExpressionContext || ctx instanceof PreDecreaseExpressionContext ||
+				ctx instanceof VoidExpressionContext || ctx instanceof TypeofExpressionContext ||
+				ctx instanceof DeleteExpressionContext) {
+			return createUnaryOperation(ctx, parent, ((TerminalNode)ctx.getChild(0)).getSymbol().getType(), false);
 		}
 		if (ctx instanceof NewExpressionContext) {
 			return new NewExpression(parent);
 		}
 		if (ctx instanceof ArgumentsExpressionContext) {
 			return new CallExpression(parent);
+		}
+		if (ctx instanceof MemberIndexExpressionContext) {
+			return new GetArrayItemExpression(parent);
+		}
+		if (ctx instanceof MemberDotExpressionContext) {
+			return new PropertyExpression(parent);
+		}
+		if (ctx instanceof ArrayLiteralExpressionContext) {
+			return new ArrayInitializer(parent, ((ArrayLiteralExpressionContext)ctx).arrayLiteral().elementList().arrayElement().size());
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}
@@ -69,9 +101,17 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 		operation.setOperation(operationType);
 		return operation;
 	}
+	
+	UnaryOperation createUnaryOperation(SingleExpressionContext ctx, JSNode parent,
+			int operationType, boolean isPostfix) {
+		UnaryOperation operation = new UnaryOperation(parent, isPostfix);
+		operation.setOperation(operationType);
+		operation.setOperationPosition(operationType);
+		return operation;
+	}
 
 	@Override
 	boolean skip(ParserRuleContext ctx) {
-		return ctx instanceof IdentifierExpressionContext || ctx instanceof LiteralExpressionContext;
+		return ctx instanceof IdentifierExpressionContext || ctx instanceof LiteralExpressionContext || ctx instanceof YieldExpressionContext;
 	}
 }

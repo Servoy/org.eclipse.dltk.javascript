@@ -12554,10 +12554,6 @@ public class JSParser extends JavaScriptParserBase {
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	
-	// TODO PINC and PDEC!!! they were not part of the generated parser
-	public static final int PDEC = 146;
-	public static final int PINC = 147;
-	
 	static {
 		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
 		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {

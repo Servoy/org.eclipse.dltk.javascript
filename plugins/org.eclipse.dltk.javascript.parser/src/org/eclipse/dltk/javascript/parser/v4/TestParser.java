@@ -228,7 +228,7 @@ public class TestParser {
 	@Test
 	public void testScript() {
 		String source = "var a,b = 10;\n"
-			+//"var y=11+ b-a/2 * 7 % 3;\n" + //TODO
+			+"var y=11+ b-a/2 * 7 % 3;\n" +
 			"a=5; b+=1; a-=y;\n" +
 			"if (a < b) b = a;\n" +
 			"if (a < b) { b = a; } else {a = b;}\n" + 
@@ -335,6 +335,147 @@ public class TestParser {
 	@Test
 	public void testTry() {
 		String source = "{ try { init(a); } catch (e) { throw 'error!'; } finally { a = 0;} }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testYield() {
+		String source = "{ yield abc; }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testSwitch() {
+		String source = "switch (color) { case 'blue' : print(msg1); break; case 'red' : print(msg2); break; default: print(msg);}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testSwitchErrorReporting() {
+		String source = "switch (color) { case 'blue' : print(msg1); break; case 'red' : print(msg2); break; default: print(msg); default: abc();}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		//TODO test which errors are reported
+		//they can't be the same because the switch statement rule doesn't support more default cases
+		//assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testEmptyStatement() {
+		String source = ";";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testWithStatement() {
+		String source = "with (obj) test(x);";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testPostIncrementExpression() {
+		String source = "x = a++;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testIncrementExpression() {
+		String source = "for(var i=0; i < 10; ++i){ a += 1;}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testUnaryMinusExpression() {
+		String source = "c = -a;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testOtherUnaryOperations() {
+		String source = "i--; x = ~a;" 
+						+ "y = !a;"
+						+ "b = --i;"
+						+ "void a;"
+						+ "typeof a;"
+						+ "delete b;"
+						+ "c = -1;"
+						+ "d = +1;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testPropertyExpression() {
+		String source = "myobj.myprop;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testArrayItemExpression() {
+		String source = "arr[2];";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testArrayInitializer() {
+		String source = "var arr = [1, 2, 3];";
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);
 		

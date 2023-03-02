@@ -23,9 +23,11 @@ public class UnaryOperation extends Expression {
 	private Expression expression;
 	private int operation = -1;
 	private int operationPos = -1;
-
-	public UnaryOperation(JSNode parent) {
+	private boolean isPostfix;
+	
+	public UnaryOperation(JSNode parent, boolean isPostfix) {
 		super(parent);
+		this.isPostfix = isPostfix;
 	}
 
 	/**
@@ -69,7 +71,7 @@ public class UnaryOperation extends Expression {
 	}
 
 	public boolean isPostfix() {
-		return operation == JSParser.PINC || operation == JSParser.PDEC;
+		return isPostfix;
 	}
 
 	public boolean isTextOperator() {

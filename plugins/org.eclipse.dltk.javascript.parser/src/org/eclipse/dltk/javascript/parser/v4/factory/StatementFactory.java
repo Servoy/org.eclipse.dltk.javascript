@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
+import org.eclipse.dltk.javascript.ast.EmptyStatement;
 import org.eclipse.dltk.javascript.ast.ForInStatement;
 import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
@@ -12,10 +13,12 @@ import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
+import org.eclipse.dltk.javascript.ast.SwitchStatement;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
+import org.eclipse.dltk.javascript.ast.WithStatement;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DoStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForStatementContext;
@@ -102,6 +105,15 @@ public class StatementFactory extends JSNodeFactory<StatementContext> {
 		}
 		if (ctx.tryStatement() != null) {
 			return new TryStatement(parent);
+		}
+		if (ctx.switchStatement() != null) {
+			return new SwitchStatement(parent);
+		}
+		if (ctx.emptyStatement_() != null) {
+			return new EmptyStatement(parent);
+		}
+		if (ctx.withStatement() != null) {
+			return new WithStatement(parent);
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

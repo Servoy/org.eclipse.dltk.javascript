@@ -71,8 +71,8 @@ public class UnaryOperation extends Expression {
 	}
 
 	public boolean isTextOperator() {
-		return operation == JSParser.Delete || operation == JSParser.Typeof
-				|| operation == JSParser.Void;
+		return operation == JSParser.DELETE || operation == JSParser.TYPEOF
+				|| operation == JSParser.VOID;
 	}
 
 	@Override

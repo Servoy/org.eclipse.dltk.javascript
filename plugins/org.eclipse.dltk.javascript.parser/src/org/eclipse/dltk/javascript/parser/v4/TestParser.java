@@ -483,4 +483,51 @@ public class TestParser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
 	}
+	
+	@Test
+	public void testCommaExpression() {
+		String source = "y = ( a+b, 1/2, x );";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testTernaryOperator() {
+		String source = "y = x > 0 ? x : 0;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testConst() {
+		String source = "const a = 5;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testObjectInitializer() {
+		String source = "o = { a: 'foo',\n"
+				+ " b: 42,\n"
+				+ "get property() {},\n"
+				+ "set property(value) {}};";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
 }

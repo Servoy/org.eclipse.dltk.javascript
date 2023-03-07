@@ -2,6 +2,7 @@ package org.eclipse.dltk.javascript.parser.v4.factory;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
+import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.EmptyStatement;
@@ -23,6 +24,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.DoStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.VarModifierContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.WhileStatementContext;
 
 public class StatementFactory extends JSNodeFactory<StatementContext> {
@@ -60,7 +62,16 @@ public class StatementFactory extends JSNodeFactory<StatementContext> {
 			return new StatementBlock(parent);
 		}
 		if (ctx.variableStatement() != null) {
-			return new VariableStatement(parent);
+			VarModifierContext modifier =  ctx.variableStatement().variableDeclarationList().varModifier();
+			if (modifier.Var() != null) {
+				return new VariableStatement(parent);
+			}
+			if (modifier.Const() != null) {
+				return new ConstStatement(parent);
+			}
+			if (modifier.let_() != null) {
+				//TODO es6
+			}
 		}
 		if (ctx.importStatement() != null) {
 			//TODO es6

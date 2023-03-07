@@ -5,9 +5,12 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.CallExpression;
+import org.eclipse.dltk.javascript.ast.ConditionalOperator;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.NewExpression;
+import org.eclipse.dltk.javascript.ast.ObjectInitializer;
+import org.eclipse.dltk.javascript.ast.ParenthesizedExpression;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
@@ -25,12 +28,15 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberIndexExpressionConte
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MultiplicativeExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.NewExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.NotExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ObjectLiteralExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ParenthesizedExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PostDecreaseExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PostIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PreDecreaseExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PreIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TernaryExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.TypeofExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryMinusExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryPlusExpressionContext;
@@ -88,6 +94,15 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 		}
 		if (ctx instanceof ArrayLiteralExpressionContext) {
 			return new ArrayInitializer(parent, ((ArrayLiteralExpressionContext)ctx).arrayLiteral().elementList().arrayElement().size());
+		}
+		if (ctx instanceof ParenthesizedExpressionContext) {
+			return new ParenthesizedExpression(parent);
+		}
+		if (ctx instanceof TernaryExpressionContext) {
+			return new ConditionalOperator(parent);
+		}
+		if (ctx instanceof ObjectLiteralExpressionContext) {
+			return new ObjectInitializer(parent);
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

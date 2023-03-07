@@ -23,7 +23,10 @@ import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.CaseClause;
 import org.eclipse.dltk.javascript.ast.CatchClause;
+import org.eclipse.dltk.javascript.ast.CommaExpression;
 import org.eclipse.dltk.javascript.ast.Comment;
+import org.eclipse.dltk.javascript.ast.ConditionalOperator;
+import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DefaultClause;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
@@ -37,6 +40,7 @@ import org.eclipse.dltk.javascript.ast.ForInStatement;
 import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
+import org.eclipse.dltk.javascript.ast.GetMethod;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.IfStatement;
@@ -48,12 +52,17 @@ import org.eclipse.dltk.javascript.ast.Literal;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
 import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.NewExpression;
+import org.eclipse.dltk.javascript.ast.ObjectInitializer;
+import org.eclipse.dltk.javascript.ast.ParenthesizedExpression;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
+import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
+import org.eclipse.dltk.javascript.ast.SetMethod;
 import org.eclipse.dltk.javascript.ast.Statement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.SwitchStatement;
+import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
@@ -85,6 +94,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.DeleteExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DoStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ElementListContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.EmptyStatement_Context;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionSequenceContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FinallyProductionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
@@ -101,11 +111,16 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberIndexExpressionConte
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MultiplicativeExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.NewExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.NotExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ObjectLiteralContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ParenthesizedExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PostDecreaseExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PostIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PreDecreaseExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PreIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ProgramContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyExpressionAssignmentContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyGetterContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertySetterContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ReturnStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
@@ -113,6 +128,8 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.SourceElementsContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementListContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SwitchStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TernaryExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ThisExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ThrowStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.TryStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.TypeofExpressionContext;
@@ -369,28 +386,34 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 		}
 	}
 
-//TODO removed for now
-//	@Override
-//	public void enterExpressionSequence(ExpressionSequenceContext ctx) {
-//		List<SingleExpressionContext> ruleContexts = ctx.getRuleContexts(SingleExpressionContext.class);
-//		Collections.reverse(ruleContexts);
-//		for (SingleExpressionContext singleExpression : ruleContexts) {
-//			if (!JSNodeCreator.skipCreate(singleExpression)) {
-//				parents.push(JSNodeCreator.create(singleExpression, getParent()));
-//			}
-//		}
-//	}
-//
-//	@Override
-//	public void exitExpressionSequence(ExpressionSequenceContext ctx) {
-//		if (ctx.getParent() instanceof ExpressionStatementContext) return;
-//		List<SingleExpressionContext> ruleContexts = ctx.getRuleContexts(SingleExpressionContext.class);
-//		for (SingleExpressionContext singleExpression : ruleContexts) {
-//			if (!JSNodeCreator.skipCreate(singleExpression)) {
-//				children.push(parents.pop());
-//			}
-//		}
-//	}
+	@Override
+	public void enterExpressionSequence(ExpressionSequenceContext ctx) {
+		if (ctx.Comma().isEmpty()) return;
+		parents.push(new CommaExpression(getParent()));
+	}
+
+	@Override
+	public void exitExpressionSequence(ExpressionSequenceContext ctx) {
+		if (ctx.getParent() instanceof ExpressionStatementContext || ctx.Comma().isEmpty()) return;
+		CommaExpression expression = (CommaExpression) parents.pop();
+		List<SingleExpressionContext> ruleContexts = ctx.getRuleContexts(SingleExpressionContext.class);
+		List<ASTNode> items = new ArrayList<>();
+		IntList commas = new IntList();
+		int i = 0;
+		while ( i < ruleContexts.size() ) {
+			items.add(children.pop());
+			if (i+1 < ruleContexts.size()) {
+				commas.add(getTokenOffset(ctx.Comma(i).getSymbol().getTokenIndex()));
+			}
+			i++;
+		}
+		Collections.reverse(items);
+		expression.setItems(items);
+		expression.setCommas(commas);
+		expression.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		expression.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+		children.push(expression);
+	}
 	
 	@Override
 	public void exitExpressionStatement(ExpressionStatementContext ctx) {
@@ -407,30 +430,48 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterVariableStatement(VariableStatementContext ctx) {
-		createVariableStatement(ctx);
+		if (ctx.variableDeclarationList().varModifier().Var() != null) {
+			setupVariableStatement(ctx);
+		}
+		if (ctx.variableDeclarationList().varModifier().Const() != null) {
+			setupConstStatement(ctx);
+		}
+		//TODO let
 	}
 
-	public void createVariableStatement(ParserRuleContext ctx) {
+	public void setupVariableStatement(ParserRuleContext ctx) {
 		VariableStatement statement = (VariableStatement)getParent();
 		locateDocumentation(statement, ctx.getStart());
-		//TODO var/ or let or const!
 		statement.setVarKeyword(createKeyword(statement, ctx.getStart(), Keywords.VAR));
+		setRange(statement, ctx);
+	}
+	
+	public void setupConstStatement(ParserRuleContext ctx) {
+		ConstStatement statement = (ConstStatement)getParent();
+		locateDocumentation(statement, ctx.getStart());
+		statement.setConstKeyword(createKeyword(statement, ctx.getStart(), Keywords.CONST));
+		statement.setSemicolonPosition(getTokenOffset(ctx.getStop().getTokenIndex()));
 		setRange(statement, ctx);
 	}
 
 	@Override
 	public void enterVariableDeclarationList(
 			VariableDeclarationListContext ctx) {
-		if (!getParent().getClass().equals(VariableStatement.class)) {
+		if (ctx.varModifier().Var() != null && !getParent().getClass().equals(VariableStatement.class)) {
 			VariableStatement statement = new VariableStatement(getParent());
 			parents.push(statement);
-			createVariableStatement(ctx);
+			setupVariableStatement(ctx);
+		}
+		if (ctx.varModifier().Const() != null && !getParent().getClass().equals(ConstStatement.class)) {
+			ConstStatement statement = new ConstStatement(getParent());
+			parents.push(statement);
+			setupConstStatement(ctx);
 		}
 	}
 
 	@Override
 	public void exitVariableDeclarationList(VariableDeclarationListContext ctx) {
-		VariableStatement statement = (VariableStatement)getParent();
+		IVariableStatement statement = (IVariableStatement)getParent();
 		List<VariableDeclaration> decl = new ArrayList<>();
 		for (int i = 0; i < ctx.variableDeclaration().size(); i++ ) {
 			decl.add((VariableDeclaration) children.pop());
@@ -765,7 +806,7 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	@Override
 	public void exitFunctionBody(FunctionBodyContext ctx) {
 		StatementBlock block = (StatementBlock) getParent();
-		List<Statement> statementList = lists.pop();
+		List<Statement> statementList = !lists.isEmpty() ? lists.pop() : new ArrayList<>();
 		for (int i = 0; i < statementList.size(); i++) {
 			block.getStatements().add(statementList.get(i));
 		}
@@ -1406,5 +1447,152 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	public void exitArrayElement(ArrayElementContext ctx) {
 		ArrayInitializer array = (ArrayInitializer)getParent();
 		array.getItems().add((Expression) children.pop());
+	}
+
+	@Override
+	public void exitParenthesizedExpression(ParenthesizedExpressionContext ctx) {
+		ParenthesizedExpression expression = (ParenthesizedExpression) getParent();
+		expression.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
+		expression.setStart(expression.getLP());
+
+		if (ctx.expressionSequence() != null) {
+			expression.setExpression((Expression) children.pop());
+			expression.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+		} else {
+			expression.setExpression(new ErrorExpression(expression,
+					Util.EMPTY_STRING));
+			expression.setRP(getTokenOffset(ctx.getStop().getTokenIndex()));
+		}
+		expression.setEnd(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+	}
+
+	@Override
+	public void exitTernaryExpression(TernaryExpressionContext ctx) {
+		ConditionalOperator operator = (ConditionalOperator)getParent();
+		operator.setFalseValue((Expression) children.pop());
+		operator.setTrueValue((Expression) children.pop());
+		operator.setCondition((Expression) children.pop());
+		operator.setQuestionPosition(getTokenOffset(ctx.QuestionMark().getSymbol().getTokenIndex()));
+		operator.setColonPosition(getTokenOffset(ctx.Colon().getSymbol().getTokenIndex()));
+		operator.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		operator.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+	}
+
+	@Override
+	public void exitThisExpression(ThisExpressionContext ctx) {
+		ThisExpression expression = (ThisExpression)getParent();
+		expression.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		expression.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+	}
+
+	@Override
+	public void exitObjectLiteral(ObjectLiteralContext ctx) {
+		ObjectInitializer initializer = (ObjectInitializer) getParent();
+		
+		IntList commas = new IntList();
+		for (int i = 0; i < ctx.Comma().size(); i++) {
+			commas.add(getTokenOffset(ctx.Comma(i).getSymbol().getTokenIndex()));
+		}
+		if (!commas.isEmpty()
+				&& commas.size() >= initializer.getInitializers().size()
+				&& reporter != null) {
+			reporter.setMessage(JavaScriptParserProblems.TRAILING_COMMA_OBJECT_INITIALIZER);
+			final int comma = commas.get(commas.size() - 1);
+			reporter.setRange(comma, comma + 1);
+			reporter.report();
+		}
+		initializer.setCommas(commas);
+
+		Token LC = ctx.OpenBrace().getSymbol();
+		Token RC = ctx.CloseBrace().getSymbol();
+		initializer.setLC(getTokenOffset(LC.getStartIndex()));
+		initializer.setRC(getTokenOffset(RC.getTokenIndex()));
+
+		initializer.setMultiline(LC.getLine() != RC.getLine());
+
+		initializer.setStart(initializer.getLC());
+		initializer.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+	}
+
+	@Override
+	public void enterPropertyExpressionAssignment(PropertyExpressionAssignmentContext ctx) {
+		parents.push(new PropertyInitializer(getParent()));
+	}
+	
+	@Override
+	public void exitPropertyExpressionAssignment(PropertyExpressionAssignmentContext ctx) {
+		PropertyInitializer initializer = (PropertyInitializer) parents.pop();
+		final Expression value;
+		if (ctx.Colon() != null) {
+			initializer.setColon(getTokenOffset(ctx.Colon().getSymbol().getTokenIndex()));
+		}
+		if (ctx.singleExpression() != null) {
+			value = (Expression)children.pop();
+		}
+		//TODO FunctionProperty, PropertyShorthand
+		else {
+			value = new ErrorExpression(initializer, Util.EMPTY_STRING);
+			value.setStart(ctx.Colon() != null ? initializer.getColon() : ctx.getStart().getTokenIndex());
+			value.setEnd(ctx.Colon() != null ? initializer.getColon() + 1 : ctx.getStop().getTokenIndex());
+		}
+		initializer.setValue(value);
+		initializer.setName((Expression) children.pop());
+		initializer.setStart(initializer.getName().sourceStart());
+		initializer.setEnd(value.sourceEnd());
+		
+		((ObjectInitializer)getParent()).addInitializer(initializer);
+	}
+	
+	@Override
+	public void enterPropertyGetter(PropertyGetterContext ctx) {
+		parents.push(new GetMethod(getParent()));
+	}
+
+	@Override
+	public void exitPropertyGetter(PropertyGetterContext ctx) {
+		GetMethod method = (GetMethod) parents.pop();
+		
+		//get and set are not JSParser constants
+		final Keyword keyword = new Keyword(Keywords.GET);
+		assert Keywords.GET.equals(ctx.getStart().getText());
+		setRangeByToken(keyword, ctx.getStart().getStartIndex());
+		method.setGetKeyword(keyword);
+		method.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
+		method.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+
+		method.setBody((StatementBlock) children.pop());
+		method.setName((Identifier) children.pop());
+		children.pop();//get
+
+		method.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));		
+		((ObjectInitializer)getParent()).addInitializer(method);
+	}
+
+	@Override
+	public void enterPropertySetter(PropertySetterContext ctx) {
+		parents.push(new SetMethod(getParent()));
 	}	
+	
+	@Override
+	public void exitPropertySetter(PropertySetterContext ctx) {
+		SetMethod method = (SetMethod) parents.pop();
+		
+		//get and set are not JSParser constants
+		final Keyword keyword = new Keyword(Keywords.SET);
+		assert Keywords.SET.equals(ctx.getStart().getText());
+		setRangeByToken(keyword, ctx.getStart().getStartIndex());
+		method.setSetKeyword(keyword);
+		method.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
+		method.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+
+		method.setBody((StatementBlock) children.pop());
+		method.setArgument(((Argument) children.pop()).getIdentifier());
+		method.setName((Identifier) children.pop());
+		children.pop();//set
+
+		method.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));		
+		((ObjectInitializer)getParent()).addInitializer(method);
+	}
 }

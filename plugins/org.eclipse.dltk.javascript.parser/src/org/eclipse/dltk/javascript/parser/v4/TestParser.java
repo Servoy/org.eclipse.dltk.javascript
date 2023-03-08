@@ -530,4 +530,15 @@ public class TestParser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
 	}
+	
+	@Test
+	public void testEmptyExpression() {
+		String source = "var arr = [1, , 3];";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
 }

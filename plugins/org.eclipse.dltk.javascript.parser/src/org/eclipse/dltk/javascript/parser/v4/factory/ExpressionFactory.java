@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.ConditionalOperator;
+import org.eclipse.dltk.javascript.ast.EmptyExpression;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.NewExpression;
@@ -52,6 +53,7 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 	
 	@Override
 	JSNode createJSNode(SingleExpressionContext ctx, JSNode parent) {
+		if (ctx.getChildCount() == 0) return new EmptyExpression(parent);
 		if (ctx instanceof AdditiveExpressionContext) {
 			AdditiveExpressionContext _ctx = (AdditiveExpressionContext) ctx;
 			return createBinaryOperation(ctx, parent, _ctx.Plus() != null ? _ctx.Plus().getSymbol().getType() : _ctx.Minus().getSymbol().getType());

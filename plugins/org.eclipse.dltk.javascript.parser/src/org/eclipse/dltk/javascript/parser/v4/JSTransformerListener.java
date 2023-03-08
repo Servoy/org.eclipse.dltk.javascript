@@ -51,6 +51,7 @@ import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.Literal;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
 import org.eclipse.dltk.javascript.ast.Method;
+import org.eclipse.dltk.javascript.ast.MultiLineComment;
 import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.ObjectInitializer;
 import org.eclipse.dltk.javascript.ast.ParenthesizedExpression;
@@ -59,6 +60,7 @@ import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.SetMethod;
+import org.eclipse.dltk.javascript.ast.SingleLineComment;
 import org.eclipse.dltk.javascript.ast.Statement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.SwitchStatement;
@@ -74,6 +76,9 @@ import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.Keywords;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
+import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
+import org.eclipse.dltk.javascript.parser.NodeTransformer;
+import org.eclipse.dltk.javascript.parser.NodeTransformerExtension;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AdditiveExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
@@ -147,7 +152,6 @@ import org.eclipse.dltk.utils.IntList;
 
 public class JSTransformerListener extends JavaScriptParserBaseListener {
 
-	private final JSParser parser;
 	private SymbolTable scope;
 	private Stack<JSNode> parents = new Stack<JSNode>();
 	private Stack<JSNode> children = new Stack<JSNode>();
@@ -155,15 +159,25 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	private Reporter reporter;
 	private Script script;
 	private List<Token> tokens;
-	private final int[] tokenOffsets;
+	private int[] tokenOffsets;
 	private final Map<Integer, Comment> documentationMap = new HashMap<Integer, Comment>();
+	private NodeTransformer[] transformers;
+	private boolean ignoreUnknown; //TODO check
+	
+	public JSTransformerListener(List<Token> tokens) {
+		this(NodeTransformerManager.NO_TRANSFORMERS, tokens, false);
+	}
 
-	/**
-	 * @param javaScriptParser
-	 */
-	JSTransformerListener(JSParser javaScriptParser) {
-		parser = javaScriptParser;
-		tokens = ((JSTokenStream)parser.getTokenStream()).getTokens();
+	public JSTransformerListener(List<Token> tokens, boolean ignoreUnknown) {
+		this(NodeTransformerManager.NO_TRANSFORMERS, tokens, ignoreUnknown);
+	}
+
+	public JSTransformerListener(NodeTransformer[] transformers, List<Token> tokens,
+			boolean ignoreUnknown) {
+		Assert.isNotNull(tokens);
+		this.transformers = transformers;
+		this.tokens = tokens;
+		this.ignoreUnknown = ignoreUnknown;
 		tokenOffsets = prepareOffsetMap(tokens);
 	}
 	
@@ -252,8 +266,10 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	}
 	
 	public ASTNode transform(ParseTree root) {
-		// TODO Auto-generated method stub
-		return null;
+		if (root == null)
+			return null;
+		scope = null;
+		return JSNodeCreator.create((ParserRuleContext) root, null);
 	}
 	
 	public Script transformScript(ProgramContext root) {
@@ -265,23 +281,52 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(this, root);
 		
-		//TODO addComments(script);
+		addComments();
 		
 		script.setStart(0);
-		script.setEnd(tokenOffsets[tokenOffsets.length - 1]);//getTokenOffset(root.stop.getTokenIndex()));
+		script.setEnd(tokenOffsets[tokenOffsets.length - 1]);
 		
-//		for (NodeTransformer transformer : transformers) {
-//			if (transformer instanceof NodeTransformerExtension) {
-//				((NodeTransformerExtension) transformer).postConstruct(script);
-//			}
-//		}
+		for (NodeTransformer transformer : transformers) {
+			if (transformer instanceof NodeTransformerExtension) {
+				((NodeTransformerExtension) transformer).postConstruct(script);
+			}
+		}
 		
+		//TODO rem, is for testing purposes to check that everything was processed
 		assert parents.isEmpty();
 		assert children.isEmpty();
 		assert lists.isEmpty();
+		
 		return script;
 	}
 
+	private void addComments() {
+		//TODO is it possible to do this nicer?
+		for (int i = 0; i < tokens.size(); i++) {
+			final Token token = tokens.get(i);
+			final Comment comment;
+			if (token.getType() == JSParser.MultiLineComment) {
+				Comment c = new MultiLineComment();
+				c.setText(token.getText());
+				c.setStart(getTokenOffset(token.getTokenIndex()));
+				c.setEnd(c.sourceStart() + token.getText().length());
+				comment = c;
+			} else if (token.getType() == JSParser.SingleLineComment) {
+				Comment c = new SingleLineComment();
+				c.setText(token.getText());
+				c.setStart(getTokenOffset(token.getTokenIndex()));
+				c.setEnd(c.sourceStart() + token.getText().length());
+				comment = c;
+			} else {
+				continue;
+			}
+			script.addComment(comment);
+			if (comment.isDocumentation()) {
+				documentationMap.put(token.getTokenIndex(), comment);
+			}
+		}
+	}
+	
 	private Keyword createKeyword(ASTNode node, Token token, String text) {
 		assert text.equals(token.getText());
 		assert text.equals(Keywords.fromToken(token.getType()));
@@ -495,10 +540,7 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	
 	@Override
 	public void exitVariableDeclaration(VariableDeclarationContext ctx) {
-		VariableDeclaration declaration = (VariableDeclaration)parents.pop();
-//		VariableStatement statement = (VariableStatement)getParent();
-//		statement.addVariable(declaration);
-		
+		VariableDeclaration declaration = (VariableDeclaration) parents.pop();
 		if (!children.isEmpty() && children.peek() instanceof Expression && ctx.Assign() != null) {
 			declaration.setAssignPosition(getTokenOffset(ctx.Assign().getSymbol().getTokenIndex()));
 			declaration.setInitializer((Expression) children.pop());
@@ -506,8 +548,6 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 		if (children.peek() instanceof Identifier) {
 			Identifier identifier = (Identifier) children.pop();
 			declaration.setIdentifier(identifier);
-//			declaration.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-//			declaration.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
 		}
 
 		SymbolKind kind = SymbolKind.VAR; //TODO add LET?
@@ -521,10 +561,9 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 				reporter.setMessage(kind.duplicateProblem,
 						declaration.getVariableName());
 			} else {
-				//TODO
-//				reporter.setMessage(kind.hideProblem,
-//						declaration.getVariableName(),
-//						replaced.verboseName());
+				reporter.setFormattedMessage(kind.hideProblem,
+						declaration.getVariableName(),
+						replaced.verboseName());
 			}
 			reporter.report();
 		}
@@ -535,10 +574,7 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterIdentifier(IdentifierContext ctx) {
-		//TODO move to factory
 		Assert.isTrue(ctx.getStart().getType() == JSParser.Identifier);
-//		|| JSLexer.isIdentifierKeyword(ctx.getStart().getType()));
-		
 		Identifier identifier = new Identifier(getParent());	
 		locateDocumentation(identifier, ctx.getStart());
 		identifier.setName(intern(ctx.getText()));
@@ -1122,7 +1158,7 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 	@Override
 	public void exitNewExpression(NewExpressionContext ctx) {
 		Expression callExpression = ctx.singleExpression()	!= null ? transformCallExpression(ctx.singleExpression(), ctx.arguments()) : null;
-		parents.pop();//TODO check
+		parents.pop();
 		NewExpression expression = (NewExpression)getParent();
 		expression.setNewKeyword(createKeyword(expression, ctx.getStart(), Keywords.NEW));
 		if (ctx.singleExpression()	!= null) {
@@ -1436,6 +1472,17 @@ public class JSTransformerListener extends JavaScriptParserBaseListener {
 		ElementListContext elementList = ctx.arrayLiteral().elementList();
 		for (int i = 0; i < elementList.Comma().size(); i++) {
 			array.getCommas().add(getTokenOffset(elementList.Comma(i).getSymbol().getTokenIndex()));
+		}
+		if (array.getItems().size() != array.getCommas().size() - 1) {
+			//empty element(s)
+			for (int i = 0; i < elementList.getChildCount()-1 ; i++) {
+				if (elementList.Comma().contains(elementList.getChild(i)) && elementList.Comma().contains(elementList.getChild(i+1))) {
+					EmptyExpression empty = new EmptyExpression(array);
+					empty.setStart(ctx.getStart().getTokenIndex());
+					empty.setEnd(ctx.getStop().getTokenIndex());
+					array.getItems().add(i, empty);
+				}
+			}
 		}
 		array.setLB(getTokenOffset(ctx.getStart().getTokenIndex()));
 		array.setRB(getTokenOffset(ctx.arrayLiteral().CloseBracket().getSymbol().getTokenIndex()));

@@ -396,7 +396,8 @@ public class JavaScriptParser implements ISourceParser {
 			//TODO add error listener stream.setReporter(reporter);
 			final JSParser parser = createTreeParser(stream, reporter);
 			final ParseTree root = parser.program();
-			JSTransformerListener jsTransformerListener = new JSTransformerListener(parser);
+			JSTransformerListener jsTransformerListener = new JSTransformerListener(
+					((JSTokenStream)parser.getTokenStream()).getTokens(), parser.getNumberOfSyntaxErrors() > 0);
 			jsTransformerListener.setReporter(reporter);
 			return (Expression) jsTransformerListener.transform(root);
 		} catch (Exception e) {
@@ -428,7 +429,7 @@ public class JavaScriptParser implements ISourceParser {
 		try {
 			final JSParser parser = createTreeParser(stream, reporter);
 			final ProgramContext root = parser.program();
-			JSTransformerListener jsTransformerListener = new JSTransformerListener(parser);
+			JSTransformerListener jsTransformerListener = new JSTransformerListener(((JSTokenStream)parser.getTokenStream()).getTokens());
 			jsTransformerListener.setReporter(reporter);
 			final Script script = jsTransformerListener.transformScript(root);
 			if (element != null && element instanceof ISourceModule) {

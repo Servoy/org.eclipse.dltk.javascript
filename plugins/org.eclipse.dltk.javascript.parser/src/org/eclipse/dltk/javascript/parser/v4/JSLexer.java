@@ -13,7 +13,7 @@ import org.eclipse.dltk.compiler.problem.ProblemSeverity;
  */
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class JSLexer extends JavaScriptLexerBase {
-	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 	
 	/**
 	 * @since 6.0
@@ -1420,90 +1420,4 @@ public class JSLexer extends JavaScriptLexerBase {
 			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
 		}
 	}
-	
-	//---
-//	private Reporter reporter;
-//
-//	public void setReporter(Reporter reporter) {
-//		this.reporter = reporter;
-//	}
-//
-//	private int lastRecoveryIndex = -1;
-//
-//	@Override
-//	public void recover(RecognitionException re) {
-//		/*
-//		 * recover() is called TWICE! first in match(), then in nextToken().
-//		 */
-//		if (re instanceof InputMismatchException) {
-//			if (re.getOffendingToken().getTokenIndex() <= lastRecoveryIndex) {
-//				return;
-//			}
-//			lastRecoveryIndex = re.getOffendingToken().getTokenIndex();
-//		}
-//		super.recover(re);
-//	}
-//	
-//	
-//
-//	@Override
-//	public void displayRecognitionError(String[] tokenNames,
-//			RecognitionException e) {
-//		if (reporter == null)
-//			return;
-//		int start;
-//		int end;
-//		if (e instanceof NoIdentifierException) {
-//			e.c = input.LA(1);
-//			start = input.index();
-//			end = start + 1;
-//		} else {
-//			start = lastToken != null ? reporter.getOffset(lastToken)
-//					+ reporter.length(lastToken) : 0;
-//			end = reporter.getOffset(e.line, e.charPositionInLine);
-//			if (end < start) {
-//				end = start + 1;
-//			}
-//		}
-//		final String msg = getErrorMessage(e, tokenNames);
-//		reporter.setMessage(JavaScriptParserProblems.LEXER_ERROR, msg);
-//		reporter.setSeverity(ProblemSeverity.ERROR);
-//		reporter.setRange(start, end);
-//		reporter.setLine(e.getOffendingToken().getLine() - 1);
-//		reporter.report();
-//	}
-//
-//	@Override
-//	public String getCharErrorDisplay(int c) {
-//		final String s = super.getCharErrorDisplay(c);
-//		if (c >= 32 && c < 127) {
-//			return s; // ASCII
-//		} else {
-//			return s + " (0x" + Integer.toHexString(c).toUpperCase() + ")";
-//		}
-//	}
-//
-//	@Override
-//	public void recover(LexerNoViableAltException e) {
-//		// TODO Auto-generated method stub
-//		super.recover(e);
-//	}
-//
-//	@Override
-//	public void recoverFromMismatchedToken(IntStream input,
-//			RecognitionException e, int ttype, BitSet follow)
-//			throws RecognitionException {
-//		// if next token is what we are looking for then "delete" this token
-//		if (input.LA(2) == ttype) {
-//			reportError(e);
-//			beginResync();
-//			input.consume(); // simply delete extra token
-//			endResync();
-//			input.consume(); // move past ttype token as if all were ok
-//			return;
-//		}
-//		if (!recoverFromMismatchedElement(input, e, follow)) {
-//			throw e;
-//		}
-//	}
 }

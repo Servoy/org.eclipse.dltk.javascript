@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class JSParser extends JavaScriptParserBase {
-	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	/**
 	 * @since 6.0

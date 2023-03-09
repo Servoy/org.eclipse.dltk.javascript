@@ -469,10 +469,11 @@ public class JavaScriptParser implements ISourceParser {
 	}
 
 	private JSTokenStream createTokenStream(CharStream charStream) {
-		if (xmlEnabled) {
-			return new DynamicTokenStream(new JavaScriptTokenSource(charStream));
-		} else {
+// TODO enable if xml is supported
+//		if (xmlEnabled) {
+//			return new DynamicTokenStream(new JavaScriptTokenSource(charStream));
+//		} else {
 			return new JSCommonTokenStream(new JavaScriptLexer(charStream));
-		}
+//		}
 	}
 }

@@ -400,7 +400,7 @@
     <members xsi:type="ref:Method" name="getTimezoneOffset" directType="Number" description="Returns the difference in minutes between local time and Greenwich Mean Time (GMT)."/>
     <members xsi:type="ref:Method" name="getUTCDate" directType="Number" description="Returns the day of the month from a date according to universal time (from 1-31)."/>
     <members xsi:type="ref:Method" name="getUTCDay" directType="Number" description="Returns the day of the week from a date according to universal time (from 0-6)"/>
-    <members xsi:type="ref:Method" name="getUTCFullYear" directType="Number" description="Returns the four-digit year from a date according to universal time "/>
+    <members xsi:type="ref:Method" name="getUTCFullYear" directType="Number" description="Returns the four-digit year from a date according to universal time"/>
     <members xsi:type="ref:Method" name="getUTCHours" directType="Number" description="Returns the hour of a date according to universal time (from 0-23)"/>
     <members xsi:type="ref:Method" name="getUTCMilliseconds" directType="Number" description="Returns the milliseconds of a date according to universal time (from 0-999)"/>
     <members xsi:type="ref:Method" name="getUTCMinutes" directType="Number" description="Returns the minutes of a date according to universal time (from 0-59)"/>
@@ -443,7 +443,7 @@
     <members xsi:type="ref:Method" name="setUTCDate" directType="Number" description="Sets the day of the month from a date according to universal time (from 0-6).">
       <parameters name="day"/>
     </members>
-    <members xsi:type="ref:Method" name="setUTCFullYear" directType="Number" description="Sets the four-digit year from a date according to universal time ">
+    <members xsi:type="ref:Method" name="setUTCFullYear" directType="Number" description="Sets the four-digit year from a date according to universal time">
       <parameters name="fullyear"/>
       <parameters name="month" kind="OPTIONAL"/>
       <parameters name="day" kind="OPTIONAL"/>
@@ -513,10 +513,10 @@
     <staticConstructor name="String" directType="String">
       <parameters name="value" kind="OPTIONAL" directType="Object"/>
     </staticConstructor>
-  	<members xsi:type="ref:Method" name="fromCharCode" directType="String" static="true" description="Returns a string created by using the specified sequence of Unicode values.">
+  	<members xsi:type="ref:Method" name="fromCharCode" directType="String" static="true" description="&lt;br/&gt;Static method that returns a string created from the specified sequence of UTF-16 code units.&lt;br/&gt;&lt;pre&gt;String.fromCharCode(0x2014); // returns &amp;quot;—&amp;quot;&#10;String.fromCharCode(65, 66, 67); // returns &amp;quot;ABC&amp;quot;&lt;/pre&gt;&lt;br/&gt;&lt;b&gt;@param&lt;/b&gt; {Number...} num A sequence of numbers that are UTF-16 code units. The range is between 0 and 65535 (0xFFFF). Numbers greater than 0xFFFF are truncated. No validity checks are performed.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;@return&lt;/b&gt; String A string of length N consisting of the N specified UTF-16 code units.">
   	    <parameters name="num" kind="VARARGS"/>
     </members>
-    <members xsi:type="ref:Method" name="fromCodePoint" directType="String" static="true" description="Returns a string created by using the specified sequence of code points.">
+    <members xsi:type="ref:Method" name="fromCodePoint" directType="String" static="true" description="&lt;br/&gt;Static method that returns a string created by using the specified sequence of code points.&#10;String.fromCharCode() cannot return supplementary characters (i.e. code points 0x010000 – 0x10FFFF) by specifying their code point. Instead, it requires the UTF-16 surrogate pair for that. String.fromCodePoint(), on the other hand, can return 4-byte supplementary characters, as well as the more common 2-byte BMP characters, by specifying their code point (which is equivalent to the UTF-32 code unit).&#10;&#10;RangeError is thrown if an invalid Unicode code point is given (e.g. &quot;RangeError: NaN is not a valid code point&quot;).&lt;br/&gt;&lt;pre&gt;String.fromCodePoint(42); // &amp;quot;*&amp;quot;&#10;String.fromCodePoint(65, 90); // &amp;quot;AZ&amp;quot;&#10;String.fromCodePoint(0x2f804); // &amp;quot;\uD87E\uDC04&amp;quot;&#10;String.fromCodePoint(-1); // RangeError&#10;String.fromCodePoint(3.14); // RangeError&lt;/pre&gt;&lt;br/&gt;&lt;b&gt;@param&lt;/b&gt; {Number...} num A sequence of code points.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;@return&lt;/b&gt; String A string created by using the specified sequence of code points.">
         <parameters name="num" kind="VARARGS"/>
     </members>
     <members xsi:type="ref:Method" name="anchor" directType="String" description="Creates an HTML anchor.">
@@ -534,7 +534,7 @@
     <members xsi:type="ref:Method" name="charCodeAt" directType="Number" description="Returns the Unicode of the character at a specified position.">
       <parameters name="index" directType="Number"/>
     </members>
-    <members xsi:type="ref:Method" name="codePointAt" directType="Number" description=" returns a non-negative integer that is the Unicode code point value at the given position. Note that this function does not give the nth code point in a string, but the code point starting at the specified string index">
+    <members xsi:type="ref:Method" name="codePointAt" directType="Number" description="&lt;br/&gt;returns a non-negative integer that is the Unicode code point value at the given position. Note that this function does not give the nth code point in a string, but the code point starting at the specified string index.&lt;br/&gt;&lt;pre&gt;string.codePointAt(integer_position);&lt;/pre&gt;&lt;br/&gt;&lt;b&gt;@param&lt;/b&gt; {Number} index&lt;br/&gt;&lt;br/&gt;&lt;b&gt;@return&lt;/b&gt; Number">
       <parameters name="index" directType="Number"/>
     </members>
     <members xsi:type="ref:Method" name="concat" directType="String" description="Joins two or more strings.">
@@ -542,14 +542,14 @@
     </members>
     <members xsi:type="ref:Method" name="endsWith" directType="Boolean" description="Determines whether a string ends with the characters of a specified string, returning true or false as appropriate.">
       <parameters name="searchString" directType="String"/>
-      <parameters name="length " directType="Number" kind="OPTIONAL"/>
+      <parameters name="length" directType="Number" kind="OPTIONAL"/>
     </members>
-    <members xsi:type="ref:Method" name="padEnd" directType="String" description="The padEnd() method pads the current string with a given string (repeated, if needed) so that the resulting string reaches a given length. The padding is applied from the end of the current string.">
-      <parameters name="targetLength " directType="Number"/>
+    <members xsi:type="ref:Method" name="padEnd" directType="String" description="&lt;br/&gt;The padEnd() method pads the current string with a given string (repeated, if needed) so that the resulting string reaches a given length. The padding is applied from the end of the current string.&lt;br/&gt;&lt;pre&gt;string.padEnd(10, &amp;#039;*&amp;#039;);&lt;/pre&gt;&lt;br/&gt;&lt;b&gt;@param&lt;/b&gt; {Number} targetLength The length of the resulting string once the current str has been padded. If the value is less than or equal to str.length, then str is returned as-is.&lt;br/&gt;&lt;b&gt;@param&lt;/b&gt; {String} [padString] The string to pad the current str with. If padString is too long to stay within the targetLength, it will be truncated from the end. The default value is the unicode &quot;space&quot; character (U+0020).&lt;br/&gt;&lt;br/&gt;&lt;b&gt;@return&lt;/b&gt; String A String of the specified targetLength with the padString applied at the end of the current str.">
+      <parameters name="targetLength" directType="Number"/>
       <parameters name="padString" directType="String"  kind="OPTIONAL"/>
     </members>
-    <members xsi:type="ref:Method" name="padStart" directType="String" description="The padStart() method pads the current string with another string (multiple times, if needed) until the resulting string reaches the given length. The padding is applied from the start of the current string.">
-      <parameters name="targetLength " directType="Number"/>
+    <members xsi:type="ref:Method" name="padStart" directType="String" description="&lt;br/&gt;The padStart() method pads the current string with another string (multiple times, if needed) until the resulting string reaches the given length. The padding is applied from the start of the current string.&lt;br/&gt;&lt;pre&gt;string.padStart(10, &amp;#039;*&amp;#039;);&lt;/pre&gt;&lt;br/&gt;&lt;b&gt;@param&lt;/b&gt; {Number} targetLength The length of the resulting string once the current str has been padded. If the value is less than or equal to str.length, then str is returned as-is.&lt;br/&gt;&lt;b&gt;@param&lt;/b&gt; {String} [padString] The string to pad the current str with. If padString is too long to stay within the targetLength, it will be truncated from the end. The default value is the unicode &quot;space&quot; character (U+0020).&lt;br/&gt;&lt;br/&gt;&lt;b&gt;@return&lt;/b&gt; String A String of the specified targetLength with padString applied from the start.">
+      <parameters name="targetLength" directType="Number"/>
       <parameters name="padString" directType="String"  kind="OPTIONAL"/>
     </members>    
     <members xsi:type="ref:Method" name="equals" directType="Boolean">
@@ -652,8 +652,8 @@
     <members xsi:type="ref:Method" name="toUpperCase" directType="String" description="Returns a string in uppercase letters."/>
     <members xsi:type="ref:Method" name="valueOf" directType="String" description="Returns the primitive value of a String object."/>
     <members xsi:type="ref:Method" name="trim" directType="String" description="Returns the string stripped of whitespace from both ends."/>
-    <members xsi:type="ref:Method" name="trimStart" directType="String" description="Removes whitespace from the beginning of a string and returns a new string, without modifying the original string"/>
-    <members xsi:type="ref:Method" name="trimEnd" directType="String" description="Removes whitespace from the ending of a string and returns a new string, without modifying the original string"/>
+    <members xsi:type="ref:Method" name="trimStart" directType="String" description="&lt;br/&gt;Removes whitespace from the beginning of a string and returns a new string, without modifying the original string.&lt;br/&gt;&lt;pre&gt;string.trimStart();&lt;/pre&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;@return&lt;/b&gt; String"/>
+    <members xsi:type="ref:Method" name="trimEnd" directType="String" description="&lt;br/&gt;Removes whitespace from the beginning of a string and returns a new string, without modifying the original string.&lt;br/&gt;&lt;pre&gt;string.trimStart();&lt;/pre&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;@return&lt;/b&gt; String"/>
   </ref:Type>
   <ref:TypeAlias source="string" target="String"/>
   <ref:Type name="XML" kind="PREDEFINED">
@@ -671,7 +671,7 @@
     <members xsi:type="ref:Method" name="appendChild" directType="XML" description="The appendChild method appends the given child to the end of this XML object�s properties and returns this XML object.">
       <parameters name="child"/>
     </members>
-    <members xsi:type="ref:Method" name="attribute" directType="XMLList" description="The attribute method returns an XMLList containing zero or one XML attributes associated with this XML object that have the given attributeName. ">
+    <members xsi:type="ref:Method" name="attribute" directType="XMLList" description="The attribute method returns an XMLList containing zero or one XML attributes associated with this XML object that have the given attributeName.">
       <parameters name="child"/>
     </members>
     <members xsi:type="ref:Method" name="attributes" directType="XMLList" description="The attributes method returns an XMLList containing the XML attributes of this object."/>
@@ -727,7 +727,7 @@
     <members xsi:type="ref:Method" name="removeNamespace" directType="XML" description="The removeNamespace method removes the given namespace from the in scope namespaces of this object and all its descendents, then returns a copy of this XML object. The removeNamespaces method will not remove a namespace from an object where it is referenced by that object�s QName or the QNames of that object�s attributes">
       <parameters name="namespace"/>
     </members>
-    <members xsi:type="ref:Method" name="replace" directType="XML" description="The replace method replaces the XML properties of this XML object specified by propertyName with value and returns this XML object. If this XML object contains no properties that match propertyName, the replace method returns without modifying this XML object. The propertyName parameter may be a numeric property name, an unqualified name for a set of XML elements, a qualified name for a set of XML elements or the properties wildcard &quot;*&quot;. When the propertyName parameter is an unqualified name, it identifies XML elements in the default namespace. The value parameter may be an XML object, XMLList object or any value that may be converted to a String with ToString(). ">
+    <members xsi:type="ref:Method" name="replace" directType="XML" description="The replace method replaces the XML properties of this XML object specified by propertyName with value and returns this XML object. If this XML object contains no properties that match propertyName, the replace method returns without modifying this XML object. The propertyName parameter may be a numeric property name, an unqualified name for a set of XML elements, a qualified name for a set of XML elements or the properties wildcard &quot;*&quot;. When the propertyName parameter is an unqualified name, it identifies XML elements in the default namespace. The value parameter may be an XML object, XMLList object or any value that may be converted to a String with ToString().">
       <parameters name="propertyName"/>
       <parameters name="value" kind="OPTIONAL"/>
     </members>
@@ -749,7 +749,7 @@
     <members xsi:type="ref:Method" name="valueOf" directType="XML" description="The valueOf method returns this XML object"/>
   </ref:Type>
   <ref:Type name="XMLList" kind="PREDEFINED">
-      <members xsi:type="ref:Method" name="attribute" directType="XMLList" description="The attribute method returns an XMLList containing zero or one XML attributes associated with this XML object that have the given attributeName. ">
+      <members xsi:type="ref:Method" name="attribute" directType="XMLList" description="The attribute method returns an XMLList containing zero or one XML attributes associated with this XML object that have the given attributeName.">
       <parameters name="child"/>
     </members>
     <members xsi:type="ref:Method" name="attributes" directType="XMLList" description="The attributes method returns an XMLList containing the XML attributes of this object."/>

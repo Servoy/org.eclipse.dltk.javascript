@@ -29,6 +29,8 @@ import org.eclipse.emf.common.util.EList;
 class RRecordType extends RType implements IRRecordType, IRTypeExtension {
 
 	private final Map<String, IRRecordMember> members = new LinkedHashMap<String, IRRecordMember>();
+	private static final ThreadLocal<Set<IRType>> callStack = ThreadLocal
+			.withInitial(HashSet::new);
 
 	public RRecordType() {
 	}
@@ -100,13 +102,21 @@ class RRecordType extends RType implements IRRecordType, IRTypeExtension {
 
 	@Override
 	public TypeCompatibility isAssignableFrom(IRType type) {
-		if (super.isAssignableFrom(type).ok()) {
-			return TypeCompatibility.TRUE;
-		} else if (type instanceof RRecordType) {
-			return assignableFromRecordType((RRecordType) type);
-		} else {
-			return TypeCompatibility.FALSE;
+
+		if (callStack.get().add(type)) {
+			try {
+				if (super.isAssignableFrom(type).ok()) {
+					return TypeCompatibility.TRUE;
+				} else if (type instanceof RRecordType) {
+					return assignableFromRecordType((RRecordType) type);
+				} else {
+					return TypeCompatibility.FALSE;
+				}
+			} finally {
+				callStack.get().remove(type);
+			}
 		}
+		return TypeCompatibility.FALSE;
 	}
 
 	private TypeCompatibility assignableFromRecordType(RRecordType other) {

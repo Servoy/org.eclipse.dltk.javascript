@@ -30,7 +30,7 @@ import org.eclipse.dltk.core.builder.IBuildContext;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
-import org.eclipse.dltk.javascript.parser.JavaScriptParser;
+import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinfo.IRConstructor;
@@ -65,8 +65,7 @@ public class JavaScriptValidations {
 				return (Script) declaration;
 			}
 		}
-		final JavaScriptParser parser = new JavaScriptParser();
-		final Script script = parser.parse(context,
+		Script script = JavaScriptParserUtil.parse(context,
 				context.getProblemReporter());
 		context.set(IBuildContext.ATTR_MODULE_DECLARATION, script);
 		return script;

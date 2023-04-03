@@ -14,6 +14,8 @@ package org.eclipse.dltk.javascript.parser;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.BundleContext;
 
 public class JavaScriptParserPlugin extends Plugin {
@@ -77,6 +79,11 @@ public class JavaScriptParserPlugin extends Plugin {
 				t.printStackTrace();
 			}
 		}
+	}
+	
+	public static IEclipsePreferences getEclipsePreferences()
+	{
+		return InstanceScope.INSTANCE.getNode(PLUGIN_ID);
 	}
 
 }

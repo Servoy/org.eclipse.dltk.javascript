@@ -33,17 +33,27 @@ public class JavaScriptParserUtil {
 	public static Script parse(ISourceModule module, IProblemReporter reporter) {
 		// TODO pass additional predicate to this call...
 		IModuleDeclaration declaration = SourceParserUtil.parse(module,
-				reporter);
+					reporter);
 		if (declaration instanceof Script) {
 			return (Script) declaration;
 		}
-		return new JavaScriptParser().parse((IModuleSource) module, reporter);
+		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse((IModuleSource) module, reporter)
+				: new JavaScriptParser().parse((IModuleSource) module, reporter);
 	}
 
 	public static Script parse(IModuleSource module, IProblemReporter reporter) {
 		if (module instanceof ISourceModule) {
 			return parse((ISourceModule) module, reporter);
 		}
-		return new JavaScriptParser().parse(module, reporter);
+		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse(module, reporter)
+				: new JavaScriptParser().parse(module, reporter);
+	}
+
+	public static Script parse(String source, IProblemReporter reporter) {
+		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse(source, reporter)
+				: new JavaScriptParser().parse(source, reporter);
 	}
 }

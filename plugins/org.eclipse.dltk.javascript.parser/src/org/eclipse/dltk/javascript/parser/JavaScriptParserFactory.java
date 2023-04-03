@@ -17,7 +17,8 @@ import org.eclipse.dltk.ast.parser.ISourceParserFactory;
 public class JavaScriptParserFactory implements ISourceParserFactory {
 
 	public ISourceParser createSourceParser() {
-		return new JavaScriptParser();
+		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser() : new JavaScriptParser();
 	}
 
 }

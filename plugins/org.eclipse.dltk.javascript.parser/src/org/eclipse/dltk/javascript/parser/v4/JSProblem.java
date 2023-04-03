@@ -14,6 +14,7 @@ package org.eclipse.dltk.javascript.parser.v4;
 import org.antlr.v4.runtime.RecognitionException;
 import org.eclipse.dltk.compiler.problem.DefaultProblem;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
+import org.eclipse.dltk.javascript.parser.JavaScriptParserProblems;
 
 public class JSProblem extends DefaultProblem {
 

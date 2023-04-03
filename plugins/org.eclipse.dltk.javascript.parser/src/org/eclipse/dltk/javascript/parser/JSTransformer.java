@@ -657,7 +657,7 @@ public class JSTransformer {
 		Assert.isNotNull(node.getChild(0));
 		Assert.isNotNull(node.getChild(1));
 
-		BinaryOperation operation = new BinaryOperation(getParent());
+		BinaryOperation operation = new org.eclipse.dltk.javascript.ast.v3.BinaryOperation(getParent());
 
 		operation.setOperation(node.getType());
 
@@ -1178,7 +1178,7 @@ public class JSTransformer {
 
 	protected ASTNode visitUnaryOperation(Tree node) {
 
-		UnaryOperation operation = new UnaryOperation(getParent());
+		UnaryOperation operation = new org.eclipse.dltk.javascript.ast.v3.UnaryOperation(getParent());
 
 		operation.setOperation(node.getType());
 

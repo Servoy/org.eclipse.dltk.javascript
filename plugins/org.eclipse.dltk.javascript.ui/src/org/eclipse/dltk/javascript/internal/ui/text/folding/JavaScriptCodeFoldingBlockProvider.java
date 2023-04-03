@@ -38,8 +38,8 @@ import org.eclipse.dltk.javascript.ast.StringLiteral;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
-import org.eclipse.dltk.javascript.parser.JSParser;
 import org.eclipse.dltk.javascript.parser.JavaScriptParser;
+import org.eclipse.dltk.javascript.parser.JavascriptParserPreferences;
 import org.eclipse.dltk.javascript.parser.PropertyExpressionUtils;
 import org.eclipse.dltk.ui.PreferenceConstants;
 import org.eclipse.dltk.ui.text.folding.IFoldingBlockProvider;
@@ -58,8 +58,11 @@ public class JavaScriptCodeFoldingBlockProvider extends
 				return (Script) declaration;
 			}
 		}
-		JavaScriptParser parser = new JavaScriptParser();
-		return parser.parse(content, null);
+		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		return antlr4Parser
+				? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser()
+						.parse(content, null)
+				: new JavaScriptParser().parse(content, null);
 	}
 
 	private boolean collapseMethods;
@@ -165,7 +168,7 @@ public class JavaScriptCodeFoldingBlockProvider extends
 			}
 		} else if (node instanceof BinaryOperation) {
 			final BinaryOperation operation = (BinaryOperation) node;
-			if (operation.getOperation() == JSParser.ASSIGN) {
+			if (operation.isAssignOperator()) {
 				final String path = PropertyExpressionUtils.getPath(operation
 						.getLeftExpression());
 				if (path != null) {
@@ -178,7 +181,7 @@ public class JavaScriptCodeFoldingBlockProvider extends
 
 	@Override
 	public Object visitBinaryOperation(BinaryOperation node) {
-		if (node.getOperation() == JSParser.ASSIGN) {
+		if (node.isAssignOperator()) {
 			final Expression expression = node.getLeftExpression();
 			final String name = PropertyExpressionUtils.getPath(expression);
 			if (name != null) {

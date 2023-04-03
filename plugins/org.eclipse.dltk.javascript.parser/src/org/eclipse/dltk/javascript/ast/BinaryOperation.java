@@ -13,11 +13,10 @@ package org.eclipse.dltk.javascript.ast;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTVisitor;
-import org.eclipse.dltk.javascript.parser.JSParser;
 
-public class BinaryOperation extends Expression {
+public abstract class BinaryOperation extends Expression {
 
-	private int operation = -1;
+	protected int operation = -1;
 	private Expression left;
 	private Expression right;
 	private int operationPos = -1;
@@ -54,10 +53,6 @@ public class BinaryOperation extends Expression {
 
 	public void setOperationPosition(int operationPos) {
 		this.operationPos = operationPos;
-	}
-
-	public String getOperationText() {
-		return Keywords.fromToken(this.operation);
 	}
 
 	public Expression getLeftExpression() {
@@ -111,17 +106,24 @@ public class BinaryOperation extends Expression {
 
 		return buffer.toString();
 	}
-
-	public boolean isAssignment() {
-		return operation == JSParser.ASSIGN || operation == JSParser.ADDASS
-				|| operation == JSParser.SUBASS || operation == JSParser.MULASS
-				|| operation == JSParser.DIVASS || operation == JSParser.MODASS
-				|| operation == JSParser.ANDASS || operation == JSParser.ORASS
-				|| operation == JSParser.XORASS || operation == JSParser.SHLASS
-				|| operation == JSParser.SHRASS || operation == JSParser.SHUASS;
-	}
-
+	
 	public boolean isAssignmentTo(Expression expression) {
 		return expression == left && isAssignment();
 	}
+	
+	public abstract boolean isAssignment(); 
+	
+	public abstract boolean isAssignOperator();
+	
+	public abstract String getOperationText();
+	
+	public abstract boolean isLogicalAnd();
+	
+	public abstract boolean returnsBoolean();
+
+	public abstract boolean isAddition();
+
+	public abstract boolean isLogicalOr();
+	
+	public abstract boolean isInstanceof();
 }

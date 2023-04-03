@@ -1,32 +1,22 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
-import java.util.BitSet;
-
+// Generated from java-escape by ANTLR 4.11.1
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
-import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 
-/**
- * @since 6.0
- */
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class JSLexer extends JavaScriptLexerBase {
 	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
-	
-	/**
-	 * @since 6.0
-	 */
+
 	protected static final DFA[] _decisionToDFA;
-	/**
-	 * @since 6.0
-	 */
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
-	/**
-	 * @since 6.0
-	 */
 	public static final int
 		HashBangLine=1, MultiLineComment=2, SingleLineComment=3, RegularExpressionLiteral=4, 
 		OpenBracket=5, CloseBracket=6, OpenParen=7, CloseParen=8, OpenBrace=9, 
@@ -53,33 +43,18 @@ public class JSLexer extends JavaScriptLexerBase {
 		Identifier=119, StringLiteral=120, BackTick=121, WhiteSpaces=122, LineTerminator=123, 
 		HtmlComment=124, CDataComment=125, UnexpectedCharacter=126, TemplateStringStartExpression=127, 
 		TemplateStringAtom=128;
-	/**
-	 * @since 6.0
-	 */
 	public static final int
 		ERROR=2;
-	/**
-	 * @since 6.0
-	 */
 	public static final int
 		TEMPLATE=1;
-	/**
-	 * @since 6.0
-	 */
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN", "ERROR"
 	};
 
-	/**
-	 * @since 6.0
-	 */
 	public static String[] modeNames = {
 		"DEFAULT_MODE", "TEMPLATE"
 	};
 
-	/**
-	 * @since 6.0
-	 */
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"HashBangLine", "MultiLineComment", "SingleLineComment", "RegularExpressionLiteral", 
@@ -113,9 +88,6 @@ public class JSLexer extends JavaScriptLexerBase {
 			"RegularExpressionClassChar", "RegularExpressionBackslashSequence"
 		};
 	}
-	/**
-	 * @since 6.0
-	 */
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
@@ -139,9 +111,6 @@ public class JSLexer extends JavaScriptLexerBase {
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
-	/**
-	 * @since 6.0
-	 */
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, "HashBangLine", "MultiLineComment", "SingleLineComment", "RegularExpressionLiteral", 
@@ -169,18 +138,11 @@ public class JSLexer extends JavaScriptLexerBase {
 			"TemplateStringStartExpression", "TemplateStringAtom"
 		};
 	}
-	/**
-	 * @since 6.0
-	 */
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
-	/**
-	 * @since 6.0
-	 */
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
 	 * @deprecated Use {@link #VOCABULARY} instead.
-	 * @since 6.0
 	 */
 	@Deprecated
 	public static final String[] tokenNames;
@@ -205,15 +167,11 @@ public class JSLexer extends JavaScriptLexerBase {
 	}
 
 	@Override
-
 	public Vocabulary getVocabulary() {
 		return VOCABULARY;
 	}
 
 
-	/**
-	 * @since 6.0
-	 */
 	public JSLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
@@ -394,9 +352,6 @@ public class JSLexer extends JavaScriptLexerBase {
 		}
 		return true;
 	}
-	/**
-	 * @since 6.0
-	 */
 	private boolean Package_sempred(RuleContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 10:
@@ -404,9 +359,6 @@ public class JSLexer extends JavaScriptLexerBase {
 		}
 		return true;
 	}
-	/**
-	 * @since 6.0
-	 */
 	private boolean Protected_sempred(RuleContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 11:
@@ -422,9 +374,6 @@ public class JSLexer extends JavaScriptLexerBase {
 		return true;
 	}
 
-	/**
-	 * @since 6.0
-	 */
 	public static final String _serializedATN =
 		"\u0004\u0000\u0080\u048a\u0006\uffff\uffff\u0006\uffff\uffff\u0002\u0000"+
 		"\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002\u0007\u0002\u0002\u0003"+
@@ -1409,9 +1358,6 @@ public class JSLexer extends JavaScriptLexerBase {
 		"\u0000\u0001\u0000\u0001\b\u0000\u0004\u0000\u0000\u0001\n\u0001\u0001"+
 		"w\u0002\u0001x\u0003\u0005\u0001\u0000\u0000\u0002\u0000\u0001~\u0004"+
 		"\u0007y\u0000\u0005\u0000\u0000";
-	/**
-	 * @since 6.0
-	 */
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

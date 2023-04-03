@@ -18,7 +18,7 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.dltk.javascript.parser.v4.JSTokenSource;
 import org.eclipse.dltk.javascript.parser.v4.JSTokenStream;
 import org.eclipse.dltk.javascript.parser.v4.JavaScriptLexer;
-import org.eclipse.dltk.javascript.parser.v4.Reporter;
+import org.eclipse.dltk.javascript.parser.Reporter;
 
 public class JSCommonTokenStream extends CommonTokenStream implements
 		JSTokenStream {
@@ -35,7 +35,6 @@ public class JSCommonTokenStream extends CommonTokenStream implements
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Token> getTokens() {
 		return super.getTokens();

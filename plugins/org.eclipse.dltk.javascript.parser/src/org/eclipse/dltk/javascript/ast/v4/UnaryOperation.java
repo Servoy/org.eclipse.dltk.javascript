@@ -12,58 +12,16 @@
 
 package org.eclipse.dltk.javascript.ast.v4;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.dltk.ast.ASTVisitor;
-import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.parser.v4.JSParser;
 
-public class UnaryOperation extends Expression {
+public class UnaryOperation extends org.eclipse.dltk.javascript.ast.UnaryOperation {
 
-	private Expression expression;
-	private int operation = -1;
-	private int operationPos = -1;
 	private boolean isPostfix;
 	
 	public UnaryOperation(JSNode parent, boolean isPostfix) {
 		super(parent);
 		this.isPostfix = isPostfix;
-	}
-
-	/**
-	 * @see org.eclipse.dltk.ast.ASTNode#traverse(org.eclipse.dltk.ast.ASTVisitor)
-	 */
-	@Override
-	public void traverse(ASTVisitor visitor) throws Exception {
-		if (visitor.visit(this)) {
-			if (expression != null)
-				expression.traverse(visitor);
-			visitor.endvisit(this);
-		}
-	}
-
-	public Expression getExpression() {
-		return this.expression;
-	}
-
-	public void setExpression(Expression expression) {
-		this.expression = expression;
-	}
-
-	public int getOperation() {
-		return this.operation;
-	}
-
-	public void setOperation(int operation) {
-		this.operation = operation;
-	}
-
-	public int getOperationPosition() {
-		return this.operationPos;
-	}
-
-	public void setOperationPosition(int operationPos) {
-		this.operationPos = operationPos;
 	}
 
 	public String getOperationText() {
@@ -80,29 +38,27 @@ public class UnaryOperation extends Expression {
 	}
 
 	@Override
-	public String toSourceString(String indentationString) {
-
-		Assert.isTrue(sourceStart() >= 0);
-		Assert.isTrue(sourceEnd() > 0);
-		Assert.isTrue(operationPos > 0);
-		Assert.isTrue(operation > 0);
-
-		final StringBuilder buffer = new StringBuilder();
-
-		if (!isPostfix()) {
-			buffer.append(getOperationText());
-			if (isTextOperator()) {
-				buffer.append(" ");
-			}
-		}
-
-		buffer.append(expression.toSourceString(indentationString));
-
-		if (isPostfix()) {
-			buffer.append(getOperationText());
-		}
-
-		return buffer.toString();
+	public boolean isIncDec() {
+		return operation == JSParser.PlusPlus || operation == JSParser.MinusMinus;
 	}
 
+	@Override
+	public boolean isNotOperator() {
+		return operation == JSParser.Not;
+	}
+
+	@Override
+	public boolean isDelete() {
+		return operation == JSParser.Delete;
+	}
+
+	@Override
+	public boolean isTypeOf() {
+		return operation == JSParser.Typeof;
+	}
+
+	@Override
+	public boolean isVoid() {
+		return operation == JSParser.Void;
+	}
 }

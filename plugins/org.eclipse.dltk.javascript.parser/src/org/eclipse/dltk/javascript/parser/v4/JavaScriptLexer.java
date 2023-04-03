@@ -14,6 +14,7 @@ package org.eclipse.dltk.javascript.parser.v4;
 import org.antlr.v4.runtime.CharStream;
 //TODO check import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.v4.runtime.RecognitionException;
+import org.eclipse.dltk.javascript.parser.Reporter;
 
 public class JavaScriptLexer extends JSLexer {
 

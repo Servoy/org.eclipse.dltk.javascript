@@ -3,6 +3,7 @@ package org.eclipse.dltk.javascript.parser.v4.factory;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
+import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.ConditionalOperator;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
@@ -14,7 +15,6 @@ import org.eclipse.dltk.javascript.ast.ObjectInitializer;
 import org.eclipse.dltk.javascript.ast.ParenthesizedExpression;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.ThisExpression;
-import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AdditiveExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
@@ -27,6 +27,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.BitNotExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BitOrExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BitShiftExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BitXOrExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ConditionalKeywordExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DeleteExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.EqualityExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionExpressionContext;
@@ -91,7 +92,8 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 		}
 		if (ctx instanceof RelationalExpressionContext || ctx instanceof EqualityExpressionContext || ctx instanceof LogicalAndExpressionContext ||
 				ctx instanceof LogicalOrExpressionContext || ctx instanceof InstanceofExpressionContext ||
-				ctx instanceof BitOrExpressionContext || ctx instanceof BitAndExpressionContext || ctx instanceof BitXOrExpressionContext) {
+				ctx instanceof BitOrExpressionContext || ctx instanceof BitAndExpressionContext || ctx instanceof BitXOrExpressionContext
+				|| ctx instanceof InExpressionContext) {
 			return createBinaryOperation(ctx, parent, ((TerminalNode)ctx.getChild(1)).getSymbol().getType());
 		}
 		if (ctx instanceof PostIncrementExpressionContext || ctx instanceof PostDecreaseExpressionContext ) {
@@ -157,7 +159,7 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 
 	@Override
 	boolean skip(SingleExpressionContext ctx) {
-		return ctx instanceof IdentifierExpressionContext || ctx instanceof LiteralExpressionContext
-				|| ctx instanceof YieldExpressionContext || ctx instanceof InExpressionContext;
+		return ctx instanceof IdentifierExpressionContext || ctx instanceof ConditionalKeywordExpressionContext || ctx instanceof LiteralExpressionContext
+				|| ctx instanceof YieldExpressionContext;
 	}
 }

@@ -1,5 +1,7 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
+// Generated from java-escape by ANTLR 4.11.1
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -8,7 +10,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * This class provides an empty implementation of {@link JavaScriptParserListener},
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
- * @since 6.0
  */
 public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	/**
@@ -1312,6 +1313,18 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterIdentifierExpression(JSParser.IdentifierExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -1595,6 +1608,18 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitReservedWord(JSParser.ReservedWordContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConditionalKeyword(JSParser.ConditionalKeywordContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConditionalKeyword(JSParser.ConditionalKeywordContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

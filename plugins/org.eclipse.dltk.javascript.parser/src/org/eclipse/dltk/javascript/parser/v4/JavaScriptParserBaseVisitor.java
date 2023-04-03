@@ -1,5 +1,6 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
+// Generated from java-escape by ANTLR 4.11.1
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -9,7 +10,6 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  *
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
- * @since 6.0
  */
 public class JavaScriptParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements JavaScriptParserVisitor<T> {
 	/**
@@ -774,6 +774,13 @@ public class JavaScriptParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitIdentifierExpression(JSParser.IdentifierExpressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -936,6 +943,13 @@ public class JavaScriptParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitReservedWord(JSParser.ReservedWordContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitConditionalKeyword(JSParser.ConditionalKeywordContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -14,31 +14,28 @@ package org.eclipse.dltk.javascript.parser.v4;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Stack;
+import java.util.EmptyStackException;
 
-import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.parser.ISourceParser;
 import org.eclipse.dltk.compiler.env.IModuleSource;
 import org.eclipse.dltk.compiler.problem.IProblemReporter;
-import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.ISourceModule;
-import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.core.builder.ISourceLineTracker;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.Script;
+import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ProgramContext;
-import org.eclipse.dltk.utils.TextUtils;
 import org.eclipse.dltk.javascript.parser.v4.internal.JSCommonTokenStream;
+import org.eclipse.dltk.utils.TextUtils;
+
+import org.eclipse.dltk.javascript.parser.JSProblem;
+import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
 
 public class JavaScriptParser implements ISourceParser {
 
@@ -53,310 +50,19 @@ public class JavaScriptParser implements ISourceParser {
 	}
 
 	public static final String PARSER_ID = "org.eclipse.dltk.javascript.NewParser";
-
-	static class JSBaseParser extends Parser {
-
-		Reporter reporter;
-//		boolean xmlEnabled;
-
-		public JSBaseParser(TokenStream input) {
-			super(input);
-		}
-
-//		protected boolean isXmlEnabled() {
-//			return xmlEnabled;
-//		}
-
-		protected void reportFailure(Throwable t) {
-			if (reporter != null && !peekState().hasErrors()) {
-				reporter.reportProblem(new JSProblem(t));
-			}
-		}
-
-		private JSParserMessages messages = null;
-
-		private JSParserMessages getMessages() {
-			if (messages == null) {
-				messages = new JSParserMessages();
-			}
-			return messages;
-		}
-
-		private String getTokenName(int token) {
-			String message = getMessages().get(token);
-			if (message == null) {
-				message = getTokenNames()[token];
-			}
-			return message;
-		}
-
-		@Override
-		public String getTokenErrorDisplay(Token t) {
-			final String message = getMessages().get(t.getType());
-			if (message != null) {
-				return message;
-			}
-			return super.getTokenErrorDisplay(t);
-		}
-
-// TODO use the error listener
-//		@Override
-//		public void displayRecognitionError(String[] tokenNames,
-//				RecognitionException re) {
-//			peekState().incrementErrorCount();
-//			if (reporter == null)
-//				return;
-//			String message;
-//			ISourceRange range;
-//			if (re instanceof NoViableAltException) {
-//				range = convert(re.token);
-//				final Token token = getLastToken(re.token);
-//				message = getMessages().get(peekState().rule, token.getType());
-//				if (message == null) {
-//					message = "Unexpected " + getTokenErrorDisplay(re.token);
-//				}
-//			} else if (re instanceof MismatchedTokenException) {
-//				MismatchedTokenException mte = (MismatchedTokenException) re;
-//				if (re.token == Token.EOF_TOKEN) {
-//					message = getTokenName(mte.expecting) + " expected";
-//				} else {
-//					message = "Mismatched input "
-//							+ getTokenErrorDisplay(re.token);
-//					if (mte.expecting >= 0 && mte.expecting < tokenNames.length) {
-//						message += ", " + getTokenName(mte.expecting)
-//								+ " expected";
-//					}
-//				}
-//				range = convert(re.token);
-//				if (range.getLength() + range.getOffset() >= inputLength()) {
-//					int stop = inputLength() - 1;
-//					int start = Math.min(stop - 1, range.getOffset() - 2);
-//					range = new SourceRange(start, stop - start);
-//				}
-//			} else if (re instanceof MismatchedSetException) {
-//				MismatchedSetException mse = (MismatchedSetException) re;
-//				message = "Mismatched input " + getTokenErrorDisplay(re.token);
-//				if (mse.expecting != null) {
-//					message += " expecting set " + mse.expecting;
-//				}
-//				range = convert(re.token);
-//			} else {
-//				message = "Syntax Error:" + re.getMessage();
-//				range = convert(re.token);
-//				// stop = start + 1;}
-//			}
-//			reporter.setMessage(JavaScriptParserProblems.SYNTAX_ERROR, message);
-//			reporter.setSeverity(ProblemSeverity.ERROR);
-//			if (range != null) {
-//				reporter.setRange(range.getOffset(),
-//						range.getOffset() + range.getLength());
-//			}
-//			reporter.setLine(re.line - 1);
-//			reporter.report();
-//		}
-
-		private Token getLastToken(Token token) {
-			if (token.getType() == JSParser.EOF) { //TODO check
-				final TokenStream stream = getTokenStream();
-				int index = stream.index();
-				while (index > 0) {
-					--index;
-					final Token prevToken = stream.get(index);
-					if (prevToken.getType() != JSParser.WhiteSpaces
-							&& prevToken.getType() != JSParser.LineTerminator) {
-						token = prevToken;
-						break;
-					}
-				}
-			}
-			return token;
-		}
-
-		private ISourceRange convert(Token token) {
-			token = getLastToken(token);
-			if (token.getType() == JSParser.EOF) { //TODO check
-				return null;
-			}
-			return reporter.toSourceRange(token);
-		}
-
-		private int inputLength() {
-			return reporter.getLength();
-		}
-
-		/*
-		 * Standard implementation contains forgotten debug System.err.println()
-		 * and we don't need it at all.
-		 */
-// TODO check
-//		@Override
-//		public void recoverFromMismatchedToken(IntStream input,
-//				RecognitionException e, int ttype, BitSet follow)
-//				throws RecognitionException {
-//			// if next token is what we are looking for then "delete" this token
-//			if (input.LA(2) == ttype) {
-//				reportError(e);
-//				beginResync();
-//				input.consume(); // simply delete extra token
-//				endResync();
-//				input.consume(); // move past ttype token as if all were ok
-//				return;
-//			}
-//			// insert "}" if expected
-//			if (ttype == JSParser.CloseBrace) {
-//				//TODO should we still use? displayRecognitionError(getTokenNames(), e);
-//				return;
-//			}
-//			if (!recoverFromMismatchedElement(input, e, follow)) {
-//				throw e;
-//			}
-//		}
-
-
-//		protected void syncToSet() {
-//			final BitSet follow = following[_fsp];
-//			int mark = _input.mark();
-//			try {
-//				Token first = null;
-//				Token last = null;
-//				while (!follow.member(_input.LA(1))) {
-//					if (_input.LA(1) == Token.EOF) {
-//						_input.seek(mark);
-//						mark = -1;
-//						return;
-//					}
-//					last = _input.LT(1);
-//					if (first == null) {
-//						first = last;
-//					}
-//					_input.consume();
-//				}
-//				if (first != null && reporter != null) {
-//					final ISourceRange end = convert(last);
-//					reporter.setMessage(JavaScriptParserProblems.SYNTAX_ERROR,
-//							"Unexpected input was discarded");
-//					reporter.setSeverity(ProblemSeverity.ERROR);
-//					reporter.setRange(convert(first).getOffset(),
-//							end.getOffset() + end.getLength());
-//					reporter.setLine(first.getLine() - 1);
-//					reporter.report();
-//				}
-//			} finally {
-//				if (mark != -1) {
-//					_input.release(mark);
-//				}
-//			}
-//		}
-
-		protected void reportReservedKeyword(Token token) {
-			if (reporter == null)
-				return;
-			final ISourceRange range = convert(token);
-			reporter.setFormattedMessage(
-					JavaScriptParserProblems.RESERVED_KEYWORD, token.getText());
-			reporter.setSeverity(ProblemSeverity.ERROR);
-			reporter.setRange(range.getOffset(),
-					range.getOffset() + range.getLength());
-			reporter.setLine(token.getLine() - 1);
-			reporter.report();
-		}
-
-		protected void reportError(String message, Token token) {
-			if (reporter == null)
-				return;
-			final ISourceRange range = convert(token);
-			reporter.setMessage(JavaScriptParserProblems.SYNTAX_ERROR, message);
-			reporter.setSeverity(ProblemSeverity.ERROR);
-			reporter.setRange(range.getOffset(),
-					range.getOffset() + range.getLength());
-			reporter.setLine(token.getLine() - 1);
-			reporter.report();
-		}
-
-		/**
-		 * Overrides the function to prevent NPE.
-		 * 
-		 * The only change is <code>localFollowSet != null</code> check
-		 * 
-		 * @see org.eclipse.dltk.javascript.parser.tests.Bug20110503#testCombinedFollowsNPE()
-		 */
-// TODO remove?
-//		@Override
-//		protected BitSet combineFollows(boolean exact) {
-//			int top = _fsp;
-//			BitSet followSet = new BitSet();
-//			for (int i = top; i >= 0; i--) {
-//				BitSet localFollowSet = following[i];
-//				followSet.orInPlace(localFollowSet);
-//				if (exact && localFollowSet != null
-//						&& !localFollowSet.member(Token.EOR_TOKEN_TYPE)) {
-//					break;
-//				}
-//			}
-//			followSet.remove(Token.EOR_TOKEN_TYPE);
-//			return followSet;
-//		}
-
-		protected void reportRuleError(RecognitionException re) {
-			reportError(re.getMessage(), re.getOffendingToken());
-			recover(_input, re);
-		}
-
-		private void recover(TokenStream _input, RecognitionException re) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		private final Stack<JSParserState> states = new Stack<JSParserState>();
-
-		protected void pushState(JSParserRule rule) {
-			states.push(new JSParserState(peekState(), rule));
-		}
-
-		protected void popState() {
-			states.pop();
-		}
-
-		public JSParserState peekState() {
-			return states.isEmpty() ? null : states.peek();
-		}
-
-		@Override
-		public String[] getTokenNames() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String[] getRuleNames() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getGrammarFileName() {
-			//this is new in v4
-			return "JS.g";
-		}
-
-		@Override
-		public ATN getATN() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	}
-
+	
 	/**
 	 * @since 2.0
 	 */
 	public Script parse(IModuleSource input, IProblemReporter reporter) {
 		Assert.isNotNull(input);
 		char[] source = input.getContentsAsCharArray();
+		Reporter reporter_ = reporter == null ? null : new Reporter(TextUtils
+				.createLineTracker(source), reporter);
 		return parse(
 				input.getModelElement(),
-				createTokenStream(source),
-				reporter == null ? null : new Reporter(TextUtils
-						.createLineTracker(source), reporter));
+				createTokenStream(source, reporter_),
+				reporter_);
 	}
 
 	/**
@@ -364,9 +70,13 @@ public class JavaScriptParser implements ISourceParser {
 	 */
 	public Script parse(String source, IProblemReporter reporter) {
 		Assert.isNotNull(source);
-		return parse(null, createTokenStream(source),
-				TextUtils.createLineTracker(source), reporter);
+		ISourceLineTracker lineTracker = TextUtils
+				.createLineTracker(source);
+		Reporter reporter_ = reporter == null ? null : new Reporter(lineTracker, reporter);
+		return parse(null, createTokenStream(source, reporter_),
+				lineTracker, reporter);
 	}
+
 
 	/**
 	 * Parse the specified string as JavaScript expression. Returns the
@@ -382,14 +92,16 @@ public class JavaScriptParser implements ISourceParser {
 		try {
 			final Reporter reporter = new Reporter(
 					TextUtils.createLineTracker(source), _reporter);
-			final JSTokenStream stream = createTokenStream(source);
-			//TODO add error listener stream.setReporter(reporter);
+			final JSTokenStream stream = createTokenStream(source, reporter);
 			final JSParser parser = createTreeParser(stream, reporter);
 			final ParseTree root = parser.program();
 			JSTransformer jsTransformerListener = new JSTransformer(
 					((JSTokenStream)parser.getTokenStream()).getTokens(), parser.getNumberOfSyntaxErrors() > 0);
 			jsTransformerListener.setReporter(reporter);
 			return (Expression) jsTransformerListener.transform(root);
+		} catch (ClassCastException e) {
+			//ignore 
+			return null;
 		} catch (Exception e) {
 			if (DLTKCore.DEBUG)
 				e.printStackTrace();
@@ -399,11 +111,13 @@ public class JavaScriptParser implements ISourceParser {
 			return null;
 		}
 	}
+	
+	
 
 	public JSParser createTreeParser(final JSTokenStream stream,
 			final Reporter reporter) {
 		final JSParser parser = new JSParser(stream);
-		//TODO add error listener parser.reporter = reporter;
+		parser.addErrorListener(new ParseErrorListener(reporter));
 		// TODO add xmlEnabled to the parser
 //		parser.xmlEnabled = xmlEnabled;
 		return parser;
@@ -426,7 +140,11 @@ public class JavaScriptParser implements ISourceParser {
 				script.setAttribute(JavaScriptParserUtil.ATTR_MODULE, element);
 			}
 			return script;
-		} catch (Exception e) {
+		}
+		catch (ClassCastException|EmptyStackException e) {
+			return new Script();
+		}
+		catch (Exception e) {
 			JavaScriptParserPlugin.error(e);
 			if (reporter != null) {
 				reporter.reportProblem(new JSProblem(e));
@@ -436,14 +154,14 @@ public class JavaScriptParser implements ISourceParser {
 		}
 	}
 
-	public JSTokenStream createTokenStream(char[] source) {
+	public JSTokenStream createTokenStream(char[] source, Reporter reporter) {
 		CharStream charStream = CharStreams.fromString(new String(source));
-		return createTokenStream(charStream);
+		return createTokenStream(charStream, reporter);
 	}
 
-	public JSTokenStream createTokenStream(String source) {
+	public JSTokenStream createTokenStream(String source, Reporter reporter) {
 		CharStream charStream = CharStreams.fromString(source);
-		return createTokenStream(charStream);
+		return createTokenStream(charStream, reporter);
 	}
 
 	/**
@@ -452,18 +170,23 @@ public class JavaScriptParser implements ISourceParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public JSTokenStream createTokenStream(InputStream input, String encoding)
+	public JSTokenStream createTokenStream(InputStream input, String encoding, Reporter reporter)
 			throws IOException {
 		CharStream charStream = CharStreams.fromStream(input, Charset.forName(encoding));
-		return createTokenStream(charStream);
+		return createTokenStream(charStream, reporter);
 	}
 
-	private JSTokenStream createTokenStream(CharStream charStream) {
+	private JSTokenStream createTokenStream(CharStream charStream, Reporter reporter) {
 // TODO enable if xml is supported
 //		if (xmlEnabled) {
 //			return new DynamicTokenStream(new JavaScriptTokenSource(charStream));
 //		} else {
-			return new JSCommonTokenStream(new JavaScriptLexer(charStream));
+			JavaScriptLexer lexer = new JavaScriptLexer(charStream);
+			if (reporter != null) {
+				lexer.addErrorListener(new ParseErrorListener(reporter));
+			}
+			lexer.setUseStrictDefault(false);
+			return new JSCommonTokenStream(lexer);
 //		}
 	}
 }

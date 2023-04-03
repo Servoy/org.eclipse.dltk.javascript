@@ -86,6 +86,11 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		HANDLERS.put(GetLocalNameExpression.class, 45);
 		HANDLERS.put(ErrorExpression.class, 46);
 		HANDLERS.put(EmptyStatement.class, 47);
+		
+		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
+		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
+		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.UnaryOperation.class, 34);
+		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.UnaryOperation.class, 34);
 	}
 
 	// generated function

@@ -14,12 +14,11 @@ package org.eclipse.dltk.javascript.ast;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTVisitor;
-import org.eclipse.dltk.javascript.parser.JSParser;
 
-public class UnaryOperation extends Expression {
+public abstract class UnaryOperation extends Expression {
 
 	private Expression expression;
-	private int operation = -1;
+	protected int operation = -1;
 	private int operationPos = -1;
 
 	public UnaryOperation(JSNode parent) {
@@ -62,18 +61,11 @@ public class UnaryOperation extends Expression {
 		this.operationPos = operationPos;
 	}
 
-	public String getOperationText() {
-		return Keywords.fromToken(operation);
-	}
+	public abstract String getOperationText();
 
-	public boolean isPostfix() {
-		return operation == JSParser.PINC || operation == JSParser.PDEC;
-	}
+	public abstract boolean isPostfix();
 
-	public boolean isTextOperator() {
-		return operation == JSParser.DELETE || operation == JSParser.TYPEOF
-				|| operation == JSParser.VOID;
-	}
+	public abstract boolean isTextOperator();
 
 	@Override
 	public String toSourceString(String indentationString) {
@@ -100,5 +92,15 @@ public class UnaryOperation extends Expression {
 
 		return buffer.toString();
 	}
+
+	public abstract boolean isIncDec();
+
+	public abstract boolean isNotOperator();
+
+	public abstract boolean isDelete();
+
+	public abstract boolean isTypeOf();
+
+	public abstract boolean isVoid(); 
 
 }

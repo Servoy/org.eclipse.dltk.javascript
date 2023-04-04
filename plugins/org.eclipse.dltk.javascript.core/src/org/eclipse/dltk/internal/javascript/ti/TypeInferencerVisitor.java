@@ -283,8 +283,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitBinaryOperation(BinaryOperation node) {
 		final IValueReference left = visit(node.getLeftExpression());
-		final int op = node.getOperation();
-		if (JSParser.ASSIGN == op) {
+		if (node.isAssignOperator()) {
 			if (left != null) {
 				for (IModelBuilder modelBuilder : context.getModelBuilders()) {
 					if (modelBuilder instanceof IModelBuilderExtension) {
@@ -330,23 +329,18 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		final IValueReference right = visit(node.getRightExpression());
 		if (left == null && right instanceof ConstantValue) {
 			return right;
-		} else if (op == JSParser.LAND) {
+		} else if (node.isLogicalAnd()) {
 			return coalesce(right, left);
-		} else if (op == JSParser.GT || op == JSParser.GTE || op == JSParser.LT
-				|| op == JSParser.LTE || op == JSParser.NSAME
-				|| op == JSParser.SAME || op == JSParser.NEQ
-				|| op == JSParser.EQ) {
+		} else if (node.returnsBoolean()) {
 			return ConstantValue.of(RTypes.BOOLEAN);
 		} else if (isNumber(left) && isNumber(right)) {
 			return ConstantValue.of(RTypes.NUMBER);
-		} else if (op == JSParser.ADD) {
+		} else if (node.isAddition()) {
 			if (isString(left) || isString(right)) {
 				return ConstantValue.of(RTypes.STRING);
 			}
 			return left;
-		} else if (JSParser.INSTANCEOF == op) {
-			return ConstantValue.of(RTypes.BOOLEAN);
-		} else if (JSParser.LOR == op) {
+		} else if (node.isLogicalOr()) {
 			final JSTypeSet typeSet = JSTypeSet.create();
 			if (left != null) {
 				typeSet.addAll(left.getDeclaredTypes());
@@ -1756,19 +1750,19 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitUnaryOperation(UnaryOperation node) {
-		if (node.getOperation() == JSParser.NOT) {
+		if (node.isNotOperator()) {
 			visit(node.getExpression());
 			return ConstantValue.of(RTypes.BOOLEAN);
-		} else if (node.getOperation() == JSParser.DELETE) {
+		} else if (node.isDelete()) {
 			final IValueReference value = visit(node.getExpression());
 			if (value != null) {
 				value.delete(false);
 			}
 			return ConstantValue.of(RTypes.BOOLEAN);
-		} else if (node.getOperation() == JSParser.TYPEOF) {
+		} else if (node.isTypeOf()) {
 			visit(node.getExpression());
 			return ConstantValue.of(RTypes.STRING);
-		} else if (node.getOperation() == JSParser.VOID) {
+		} else if (node.isVoid()) {
 			visit(node.getExpression());
 			return null;
 		} else {

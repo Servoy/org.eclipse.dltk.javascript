@@ -41,7 +41,6 @@ import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.core.JavaScriptLanguageUtil;
 import org.eclipse.dltk.javascript.core.JavaScriptNature;
-import org.eclipse.dltk.javascript.parser.JSParser;
 import org.eclipse.dltk.javascript.parser.JSProblemIdentifier;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
 import org.eclipse.dltk.javascript.parser.ProblemReporter;
@@ -223,7 +222,7 @@ public class JSDocSupport implements IModelBuilder {
 		final ASTNode parent = statement.getParent();
 		if (parent instanceof BinaryOperation) {
 			final BinaryOperation binary = (BinaryOperation) parent;
-			if (binary.getOperation() == JSParser.ASSIGN
+			if (binary.isAssignOperator()
 					&& binary.getRightExpression() == statement) {
 				documentation = binary.getLeftExpression().getDocumentation();
 				if (documentation != null) {

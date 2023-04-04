@@ -44,7 +44,6 @@ import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
-import org.eclipse.dltk.javascript.parser.JSParser;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
 import org.eclipse.dltk.javascript.structure.FunctionDeclaration;
 import org.eclipse.dltk.javascript.structure.FunctionExpression;
@@ -306,7 +305,7 @@ public class StructureReporter3 extends
 		if (expression instanceof FunctionStatement
 				|| expression instanceof VariableStatement
 				|| expression instanceof BinaryOperation
-				&& isAssignment((BinaryOperation) expression)) {
+						&& ((BinaryOperation) expression).isAssignOperator()) {
 			visit(expression);
 		} else {
 			final ExpressionNode expressionNode = new ExpressionNode(peek());
@@ -317,13 +316,9 @@ public class StructureReporter3 extends
 		return null;
 	}
 
-	private boolean isAssignment(BinaryOperation operation) {
-		return operation.getOperation() == JSParser.ASSIGN;
-	}
-
 	@Override
 	public IStructureNode visitBinaryOperation(BinaryOperation node) {
-		if (node.getOperation() == JSParser.ASSIGN) {
+		if (node.isAssignOperator()) {
 			final Expression left = node.getLeftExpression();
 			final Expression right = node.getRightExpression();
 			if (left instanceof PropertyExpression) {

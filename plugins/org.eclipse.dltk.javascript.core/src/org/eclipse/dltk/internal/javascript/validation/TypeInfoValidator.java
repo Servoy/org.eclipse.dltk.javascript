@@ -79,7 +79,6 @@ import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.internal.core.TemporaryBindings;
 import org.eclipse.dltk.javascript.internal.core.ThreadTypeSystemImpl;
 import org.eclipse.dltk.javascript.parser.ISuppressWarningsState;
-import org.eclipse.dltk.javascript.parser.JSParser;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
 import org.eclipse.dltk.javascript.parser.PropertyExpressionUtils;
 import org.eclipse.dltk.javascript.parser.Reporter;
@@ -1759,9 +1758,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 				return false;
 			} else if (parent instanceof UnaryOperation) {
 				final UnaryOperation operation = (UnaryOperation) parent;
-				final int op = operation.getOperation();
-				return op != JSParser.INC && op != JSParser.DEC
-						&& op != JSParser.PINC && op != JSParser.PDEC
+				return !operation.isIncDec()
 						|| isAccess(node, operation.getParent());
 			} else {
 				return true;
@@ -1795,7 +1792,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 					if (result.exists()
 							&& node.getParent() instanceof BinaryOperation
 							&& ((BinaryOperation) node.getParent())
-									.getOperation() == JSParser.INSTANCEOF
+									.isInstanceof()
 							&& ((BinaryOperation) node.getParent())
 									.getRightExpression() == node) {
 						checkTypeReference(node,
@@ -2171,8 +2168,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 			if (expression.getParent() instanceof BinaryOperation) {
 				final BinaryOperation bo = (BinaryOperation) expression
 						.getParent();
-				return bo.getOperation() == JSParser.LAND
-						|| bo.getOperation() == JSParser.LOR;
+				return bo.isLogicalAnd() || bo.isLogicalOr();
 			}
 			return false;
 		}

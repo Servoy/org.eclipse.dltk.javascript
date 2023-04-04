@@ -164,7 +164,7 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 		super.visitCondition(condition);
 		if (condition instanceof BinaryOperation) {
 			BinaryOperation operation = (BinaryOperation) condition;
-			if (operation.getOperation() == JSParser.ASSIGN) {
+			if (operation.isAssignOperator()) {
 				reporter.reportProblem(JavaScriptProblems.EQUAL_AS_ASSIGN,
 						"Test for equality (==) mistyped as assignment (=)?",
 						condition.sourceStart(), condition.sourceEnd());
@@ -174,7 +174,7 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 
 	@Override
 	public Object visitBinaryOperation(BinaryOperation node) {
-		if (node.getOperation() == JSParser.ASSIGN
+		if (node.isAssignOperator()
 				&& !canAssignTo(node.getLeftExpression())) {
 			reporter.reportProblem(JavaScriptProblems.INVALID_ASSIGN_LEFT,
 					"Invalid assignment left-hand side.", node.sourceStart(),
@@ -185,17 +185,13 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 
 	@Override
 	public Object visitUnaryOperation(UnaryOperation node) {
-		if (isIncDec(node.getOperation()) && !canAssignTo(node.getExpression())) {
+		if (node.isIncDec()
+				&& !canAssignTo(node.getExpression())) {
 			reporter.reportProblem(JavaScriptProblems.INVALID_ASSIGN_LEFT,
 					"Invalid assignment left-hand side.", node.sourceStart(),
 					node.sourceEnd());
 		}
 		return super.visitUnaryOperation(node);
-	}
-
-	private boolean isIncDec(int operation) {
-		return operation == JSParser.INC || operation == JSParser.DEC
-				|| operation == JSParser.PINC || operation == JSParser.PDEC;
 	}
 
 	private boolean canAssignTo(Expression expression) {

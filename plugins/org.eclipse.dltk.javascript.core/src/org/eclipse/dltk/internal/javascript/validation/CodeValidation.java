@@ -28,7 +28,7 @@ import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.Identifier;
-import org.eclipse.dltk.javascript.ast.Keywords;
+import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Label;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
@@ -39,7 +39,6 @@ import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
-import org.eclipse.dltk.javascript.parser.JSParser;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.osgi.util.NLS;
 
@@ -115,7 +114,8 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 	@Override
 	public Object visitBreakStatement(BreakStatement node) {
 		if (node.getLabel() != null) {
-			validateLabel(node.getLabel(), node.sourceStart(), JSParser.BREAK);
+			validateLabel(node.getLabel(), node,
+					node.getBreakKeyword().getKeyword());
 		}
 		return super.visitBreakStatement(node);
 	}
@@ -123,25 +123,26 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 	@Override
 	public Object visitContinueStatement(ContinueStatement node) {
 		if (node.getLabel() != null) {
-			validateLabel(node.getLabel(), node.sourceStart(),
-					JSParser.CONTINUE);
+			validateLabel(node.getLabel(), node,
+					node.getContinueKeyword().getKeyword());
 		}
 		return super.visitContinueStatement(node);
 	}
 
-	private void validateLabel(Label label, int statementStart, int token) {
+	private void validateLabel(Label label, JSNode parent, String keyword) {
 		final LabelInfo info = scope.getLabel(label.getText());
 		if (info == null) {
 			return;
 		}
 		if (info.finished) {
 			reporter.setMessage(
-					token == JSParser.BREAK ? JavaScriptProblems.BREAK_OUTSIDE_LABEL
+					parent instanceof BreakStatement
+							? JavaScriptProblems.BREAK_OUTSIDE_LABEL
 							: JavaScriptProblems.CONTINUE_OUTSIDE_LABEL,
-					Keywords.fromToken(token)
+					keyword
 							+ " outside of labelled statement");
 			reporter.setSeverity(ProblemSeverity.ERROR);
-			reporter.setRange(statementStart, label.sourceEnd());
+			reporter.setRange(parent.sourceStart(), label.sourceEnd());
 			reporter.report();
 			return;
 		}
@@ -149,13 +150,13 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 				&& info.statement.getStatement() instanceof LoopStatement) {
 			return;
 		}
-		if (token == JSParser.BREAK) {
+		if (parent instanceof BreakStatement) {
 			return;
 		}
 		reporter.setMessage(JavaScriptProblems.CONTINUE_NON_LOOP_LABEL,
 				"continue can only use labels of iteration statements");
 		reporter.setSeverity(ProblemSeverity.ERROR);
-		reporter.setRange(statementStart, label.sourceEnd());
+		reporter.setRange(parent.sourceStart(), label.sourceEnd());
 		reporter.report();
 	}
 

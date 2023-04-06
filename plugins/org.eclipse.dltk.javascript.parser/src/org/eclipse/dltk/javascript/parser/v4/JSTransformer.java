@@ -314,12 +314,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 				((NodeTransformerExtension) transformer).postConstruct(script);
 			}
 		}
-		
-		//TODO rem, is for testing purposes to check that everything was processed
-		assert parents.isEmpty();
-		assert children.isEmpty();
-		assert lists.isEmpty();
-		
 		return script;
 	}
 

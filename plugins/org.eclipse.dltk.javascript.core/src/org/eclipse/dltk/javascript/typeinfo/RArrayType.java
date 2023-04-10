@@ -69,8 +69,9 @@ class RArrayType extends RType implements IRArrayType {
 			if (ortherItem == RTypes.EMPTY_ARRAY_ITEM_TYPE) {
 				return TypeCompatibility.TRUE;
 			}
-			final TypeCompatibility compatibility = itemType
-					.isAssignableFrom(ortherItem);
+			final TypeCompatibility compatibility = itemType != null
+					? itemType.isAssignableFrom(ortherItem)
+					: TypeCompatibility.FALSE;
 			return compatibility == TypeCompatibility.TRUE ? compatibility
 					: TypeCompatibility.UNPARAMETERIZED;
 		} else {

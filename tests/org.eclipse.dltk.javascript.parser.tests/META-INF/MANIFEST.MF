@@ -8,7 +8,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit,
  org.eclipse.dltk.core;bundle-version="0.0.0",
  org.eclipse.dltk.core.tests,
- org.eclipse.dltk.javascript.parser;bundle-version="0.0.0",
+ org.eclipse.dltk.javascript.parser,
  org.antlr.runtime;bundle-version="[3.0.0,3.0.9)",
  com.google.guava
 Bundle-ActivationPolicy: lazy

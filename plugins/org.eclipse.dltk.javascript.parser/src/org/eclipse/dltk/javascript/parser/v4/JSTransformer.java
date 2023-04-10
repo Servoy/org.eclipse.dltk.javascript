@@ -76,6 +76,7 @@ import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
 import org.eclipse.dltk.javascript.ast.WithStatement;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.Keywords;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
@@ -93,6 +94,8 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrayElementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrayLiteralExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrowFunctionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrowFunctionParametersContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignableContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorContext;
@@ -974,12 +977,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
-	public void exitFunctionExpression(FunctionExpressionContext ctx) {
+	public void exitAnonymousFunctionDecl(AnonymousFunctionDeclContext ctx) {
 		FunctionStatement fn = (FunctionStatement) getParent();
-		AnonymousFunctionDeclContext context = (AnonymousFunctionDeclContext) ctx.anonymousFunction();
-		fn.setLP(getTokenOffset(context.OpenParen().getSymbol().getTokenIndex()));
-		fn.setRP(getTokenOffset(context.CloseParen().getSymbol().getTokenIndex()));
-		setupFunction(context.Function_(), context.formalParameterList(), null);
+		fn.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
+		fn.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+		setupFunction(ctx.Function_(), ctx.formalParameterList(), null);
 	}
 	
 	@Override
@@ -1016,13 +1018,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 				argument.setCommaPosition(getTokenOffset(parameterList.Comma(i).getSymbol().getTokenIndex()));
 			}
 			fn.addArgument(argument);
-			if (functionScope.add(argument.getArgumentName(), SymbolKind.PARAM) != null && reporter != null) {
-				reporter.setFormattedMessage(
-				JavaScriptParserProblems.DUPLICATE_PARAMETER,
-				argument.getArgumentName());
-				reporter.setRange(argument.sourceStart(), argument.sourceEnd());
-				reporter.report();
-			}
+			validateParameter(functionScope, argument);
 		}
 		
 		if (id != null) {
@@ -1056,7 +1052,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		fn.setEnd(fn.getBody().sourceEnd());
 	}
 	
-	private Statement transformStatementNode(StatementContext ctx, JSNode expression) {
+	private Statement transformStatementNode(ParserRuleContext ctx, JSNode expression) {
 		if (expression instanceof Statement)
 			return (Statement) expression;
 		else {
@@ -1781,6 +1777,76 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			identifier.setName(intern(ctx.getText()));
 			setRangeByToken(identifier, ctx.getStart().getTokenIndex());
 			children.push(identifier);
+		}
+	}
+
+	@Override
+	public void exitArrowFunction(ArrowFunctionContext ctx) {
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) getParent();
+		
+		Statement body = null;
+		if (children.peek() instanceof StatementBlock) {
+				body = (StatementBlock) children.pop();
+		}
+		else {
+			body = transformStatementNode(ctx, children.pop());
+		}
+		
+		final SymbolTable functionScope = new SymbolTable(fn);
+		ArrowFunctionParametersContext params = ctx.arrowFunctionParameters();
+		if (params.formalParameterList() != null) {
+			List<Argument> arguments = new ArrayList<>();
+			FormalParameterListContext parameterList = ctx.arrowFunctionParameters().formalParameterList();
+			List<FormalParameterArgContext> args = parameterList.formalParameterArg();
+			for (FormalParameterArgContext arg : args) {
+				if (children.peek() instanceof Argument) {
+					arguments.add((Argument) children.pop());
+				}
+			}
+			Collections.reverse(arguments);
+			for (int i = 0, childCount = arguments.size(); i < childCount; ++i) {
+				Argument argument = arguments.get(i);
+				if (i + 1 < childCount) {
+					argument.setCommaPosition(getTokenOffset(parameterList.Comma(i).getSymbol().getTokenIndex()));
+				}
+				fn.addArgument(argument);
+				validateParameter(functionScope, argument);
+			}
+			
+			if (params.OpenParen() != null) {
+				fn.setLP(getTokenOffset(params.OpenParen().getSymbol().getTokenIndex()));
+			}
+			if (params.CloseParen() != null) {
+				fn.setRP(getTokenOffset(params.CloseParen().getSymbol().getTokenIndex()));
+			}
+		}
+		else if (children.peek() instanceof Identifier) {
+			Argument argument = new Argument(fn);
+			argument.setIdentifier((Identifier) children.pop());
+			fn.addArgument(argument);
+			validateParameter(functionScope, argument);
+		}
+		
+		final SymbolTable savedScope = scope;
+		try {
+			scope = functionScope;
+			fn.setBody(body);
+		} finally {
+			scope = savedScope;
+		}
+		fn.setArrow(getTokenOffset(ctx.ARROW().getSymbol().getTokenIndex()));
+		fn.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		fn.setEnd(fn.getBody().sourceEnd());
+	}
+
+	public void validateParameter(final SymbolTable functionScope,
+			Argument argument) {
+		if (functionScope.add(argument.getArgumentName(), SymbolKind.PARAM) != null && reporter != null) {
+			reporter.setFormattedMessage(
+					JavaScriptParserProblems.DUPLICATE_PARAMETER,
+					argument.getArgumentName());
+			reporter.setRange(argument.sourceStart(), argument.sourceEnd());
+			reporter.report();
 		}
 	}
 }

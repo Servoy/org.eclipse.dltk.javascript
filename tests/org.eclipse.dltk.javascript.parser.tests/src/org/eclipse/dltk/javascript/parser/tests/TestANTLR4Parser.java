@@ -11,9 +11,12 @@ import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.dltk.compiler.problem.IProblemReporter;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Script;
+import org.eclipse.dltk.javascript.ast.Statement;
+import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.junit.Test;
 
@@ -630,5 +633,43 @@ public class TestANTLR4Parser {
 		Script scriptv4 = jsParserv4.parse(source, reporter);
 		assertNotNull(scriptv4);		
 		assertTrue(problems.size() == 3);
+	}
+	
+	@Test
+	public void testArrowFunction1() {
+		String source ="e => {e.toUpperCase();}";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement.getChilds().get(0) instanceof ArrowFunctionStatement);
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) statement.getChilds().get(0);
+		assertEquals(1, fn.getArguments().size());
+		assertEquals("e", fn.getArguments().get(0).toString());
+		assertEquals(2, fn.getArrow());
+		assertTrue(fn.getBody() instanceof StatementBlock);
+		assertEquals(1, ((StatementBlock) fn.getBody()).getStatements().size());
+		assertEquals("e.toUpperCase();",((StatementBlock) fn.getBody()).getStatements().get(0).toString().trim());
+	}
+	
+	@Test
+	public void testArrowFunction2() {
+		String source ="(a, b) => a + b + 100;";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement.getChilds().get(0) instanceof ArrowFunctionStatement);
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) statement.getChilds().get(0);
+		assertEquals(2, fn.getArguments().size());
+		assertEquals("a", fn.getArguments().get(0).toString());
+		assertEquals("b", fn.getArguments().get(1).toString());
+		assertEquals(0, fn.getLP());
+		assertEquals(5, fn.getRP());
+		assertEquals(7, fn.getArrow());
+		assertTrue(fn.getBody() instanceof VoidExpression);
+		assertEquals("a + b + 100", fn.getBody().toString().trim());
 	}
 }

@@ -66,6 +66,7 @@ import org.eclipse.dltk.javascript.ast.XmlFragment;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.core.dom.ArrayAccessExpression;
 import org.eclipse.dltk.javascript.core.dom.ArrayLiteral;
 import org.eclipse.dltk.javascript.core.dom.AttributeIdentifier;
@@ -690,5 +691,26 @@ public class ASTConverter extends ASTVisitor<Node> {
 	@Override
 	public Node visitEmptyStatement(EmptyStatement node) {
 		return DOM_FACTORY.createEmptyStatement();
+	}
+
+	@Override
+	public Node visitArrowFunction(ArrowFunctionStatement node) {
+		FunctionExpression res = DOM_FACTORY.createFunctionExpression();
+		for (Argument arg : node.getArguments()) {
+			Parameter prm = DOM_FACTORY.createParameter();
+			prm.setName(createIdentifier(arg.getIdentifier()));
+			prm.setBegin(arg.sourceStart());
+			prm.setEnd(arg.sourceEnd());
+			res.getParameters().add(prm);
+		}
+		if (node.isBlock()) {
+			res.setBody((org.eclipse.dltk.javascript.core.dom.BlockStatement) visit(node
+				.getBody()));
+		}
+		else {
+			//TODO set statement or convert to statement block?
+		}
+		res.setParametersPosition(node.getLP() + 1);
+		return res;
 	}
 }

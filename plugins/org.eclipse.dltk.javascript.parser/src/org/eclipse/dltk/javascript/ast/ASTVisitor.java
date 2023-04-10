@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.dltk.ast.ASTNode;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 
 public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 
@@ -86,6 +87,7 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		HANDLERS.put(GetLocalNameExpression.class, 45);
 		HANDLERS.put(ErrorExpression.class, 46);
 		HANDLERS.put(EmptyStatement.class, 47);
+		HANDLERS.put(ArrowFunctionStatement.class, 48);
 		
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
@@ -192,6 +194,8 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 			return visitErrorExpression((ErrorExpression) node);
 		case 47:
 			return visitEmptyStatement((EmptyStatement) node);
+		case 48:
+			return visitArrowFunction((ArrowFunctionStatement) node);
 		}
 		return visitUnknownNode(node);
 	}
@@ -365,6 +369,8 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 	}
 
 	public abstract E visitEmptyStatement(EmptyStatement node);
+	
+	public abstract E visitArrowFunction(ArrowFunctionStatement node);
 
 	/**
 	 * @since 2.0

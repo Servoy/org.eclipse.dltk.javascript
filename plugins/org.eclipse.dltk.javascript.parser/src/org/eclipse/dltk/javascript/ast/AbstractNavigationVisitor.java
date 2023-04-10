@@ -14,6 +14,7 @@ package org.eclipse.dltk.javascript.ast;
 import java.util.List;
 
 import org.eclipse.dltk.ast.ASTNode;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 
 public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 
@@ -375,4 +376,8 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 		return null;
 	}
 
+	@Override
+	public E visitArrowFunction(ArrowFunctionStatement node) {
+		return visit(node.getBody());
+	}
 }

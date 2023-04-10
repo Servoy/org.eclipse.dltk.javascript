@@ -3,6 +3,7 @@ package org.eclipse.dltk.javascript.parser.v4.factory;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.ConditionalOperator;
@@ -19,6 +20,7 @@ import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AdditiveExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrayLiteralExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrowFunctionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorExpressionContext;
@@ -134,6 +136,9 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 			return new ThisExpression(parent);
 		}
 		if (ctx instanceof FunctionExpressionContext) {
+			if (ctx.getChild(0) instanceof ArrowFunctionContext) {
+				return new ArrowFunctionStatement(parent);
+			}
 			return new FunctionStatement(parent, false);
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());

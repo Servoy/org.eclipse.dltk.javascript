@@ -80,6 +80,7 @@ import org.eclipse.dltk.javascript.ast.XmlFragment;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.utils.IntList;
 
 public class ASTVerifier extends ASTVisitor<Boolean> {
@@ -753,6 +754,12 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 	public Boolean visitEmptyStatement(EmptyStatement node) {
 		testChar(';', node.sourceStart());
 		return false;
+	}
+
+	@Override
+	public Boolean visitArrowFunction(ArrowFunctionStatement node) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

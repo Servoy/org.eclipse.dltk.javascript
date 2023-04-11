@@ -70,6 +70,7 @@ class RArrayType extends RType implements IRArrayType {
 				return TypeCompatibility.TRUE;
 			}
 			final TypeCompatibility compatibility = itemType != null
+					&& ortherItem != null
 					? itemType.isAssignableFrom(ortherItem)
 					: TypeCompatibility.FALSE;
 			return compatibility == TypeCompatibility.TRUE ? compatibility

@@ -446,7 +446,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			ErrorExpression error = new ErrorExpression(getParent(),
 					ctx.exception.getMessage());
 			error.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-			error.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+			if (ctx.getStop() != null) error.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
 			parents.push(error);
 			return true;
 		}
@@ -995,8 +995,8 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	private void setupFunction(TerminalNode function_, FormalParameterListContext parameterList, IdentifierContext id) {		
 		FunctionStatement fn = (FunctionStatement) getParent();
 		if (function_ != null) {
-			locateDocumentation(fn, function_.getSymbol());
 			fn.setFunctionKeyword(createKeyword(fn, function_.getSymbol(), Keywords.FUNCTION));
+			locateDocumentation(fn, function_.getSymbol());
 		}
 		
 		StatementBlock body = (StatementBlock) children.pop();
@@ -1085,7 +1085,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		Argument arg = new Argument(getParent());
 		arg.setIdentifier((Identifier) children.pop());
 		//TODO impl set initializer (es6)
-		arg.setCommaPosition(0);
 		arg.setStart(ctx.getStart().getTokenIndex());
 		arg.setEnd(ctx.getStop().getTokenIndex());
 		children.add(arg);

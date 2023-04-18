@@ -303,11 +303,10 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			return new Script();
 		script = new Script();
 		scope = new SymbolTable(script);
+		addComments();
 		
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(this, root);
-		
-		addComments();
 		
 		script.setStart(0);
 		script.setEnd(tokenOffsets[tokenOffsets.length - 1]);

@@ -1058,7 +1058,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			VoidExpression voidExpression = new VoidExpression(getParent() == null? script : getParent());
 			voidExpression.setExpression((Expression) expression);
 
-			if (ctx.getStop().getTokenIndex() >= 0
+			if (ctx.getStop() != null && ctx.getStop().getTokenIndex() >= 0
 					&& ctx.getStop().getTokenIndex() < tokens.size()) {
 				final Token token = ctx.getStop();
 				if (token.getType() == JSParser.SemiColon) {

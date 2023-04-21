@@ -8,11 +8,13 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
+import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.ISourceableBlock;
 import org.eclipse.dltk.javascript.ast.JSDeclaration;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.JSScope;
+import org.eclipse.dltk.javascript.ast.ParenthesizedExpression;
 import org.eclipse.dltk.javascript.ast.Statement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
 
@@ -137,5 +139,14 @@ public class ArrowFunctionStatement extends Expression implements ISourceableBlo
 	public boolean isBlock() {
 		return (body instanceof ISourceableBlock)
 				&& ((ISourceableBlock) body).isBlock();
+	}
+
+	public boolean isInlineBlock() {
+		if (getParent() instanceof ParenthesizedExpression) {
+			if (((ParenthesizedExpression) getParent()).getParent() instanceof CallExpression) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

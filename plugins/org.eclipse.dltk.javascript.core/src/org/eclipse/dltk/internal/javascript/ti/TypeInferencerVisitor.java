@@ -1098,6 +1098,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return method;
 	}
 
+	private JSMethod createMethod(ArrowFunctionStatement node) {
+		final JSMethod method = new JSMethod(node, getSource());
+		return method;
+	}
+
 	public void visitFunctionBody(FunctionStatement node) {
 		boolean visitBody = visitFunctionBody;
 		if (!visitBody && node.getDocumentation() != null
@@ -1949,8 +1954,108 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitArrowFunction(ArrowFunctionStatement node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		final JSMethod method;
+		final IValueReference result;
+		final ForwardDeclaration forward = forwardDeclarations.remove(node);
+		if (forward != null) {
+			method = forward.method;
+			result = forward.reference;
+		} else {
+			method = createMethod(node);
+			result = new AnonymousValue();
+			initializeFunction(method, result);
+			result.setAttribute(IReferenceAttributes.R_METHOD,
+					RModelBuilder.create(getContext(), method));
+		}
+		final ThisValue thisValue = new ThisValue();
+		if (method.getThisType() != null) {
+			thisValue.setDeclaredType(
+					this.context.contextualize(method.getThisType()));
+		} else if (method.getExtendsType() != null) {
+			IRType thisType = this.context
+					.contextualize(method.getExtendsType());
+			thisValue.setDeclaredType(thisType);
+			if (thisType instanceof IRLocalType) {
+				IValueReference prototype = result
+						.createChild(IRLocalType.PROTOTYPE_PROPERTY);
+				prototype.setDeclaredType(
+						context.getType(ITypeNames.OBJECT).toRType(context));
+				Set<String> directChildren = ((IRLocalType) thisType)
+						.getDirectChildren();
+				for (String child : directChildren) {
+					IValueReference protoChild = prototype.createChild(child);
+					IValueReference localChild = ((IRLocalType) thisType)
+							.getDirectChild(child);
+					protoChild.setKind(localChild.getKind());
+					protoChild.setLocation(localChild.getLocation());
+					if (localChild.getDeclaredType() != null) {
+						protoChild
+								.setDeclaredType(localChild.getDeclaredType());
+					} else if (localChild.getKind() == ReferenceKind.FUNCTION) {
+						protoChild.setDeclaredType(context
+								.getType(ITypeNames.FUNCTION).toRType(context));
+					}
+					JSTypeSet types = localChild.getTypes();
+					protoChild.getTypes().addAll(types);
 
+				}
+			}
+
+		} else {
+			// if this is a "this.property" assignment then take over the this
+			// of the parent.
+			if (node.getParent() instanceof BinaryOperation) {
+				BinaryOperation bo = (BinaryOperation) node.getParent();
+				if (bo.getLeftExpression() instanceof PropertyExpression
+						&& ((PropertyExpression) bo.getLeftExpression())
+								.getObject() instanceof ThisExpression) {
+					IValueCollection context = peekContext();
+					if (context instanceof IFunctionValueCollection) {
+						String name = ((IFunctionValueCollection) context)
+								.getFunctionName();
+						thisValue.setDeclaredType(RTypes.localType(name,
+								context.getParent().getChild(name)));
+					}
+				}
+			}
+		}
+		final IValueCollection function = new FunctionValueCollection(
+				peekContext(), method.getName(), thisValue,
+				node.isInlineBlock());
+
+		for (IParameter parameter : method.getParameters()) {
+			final IValueReference refArg = function
+					.createChild(parameter.getName());
+			refArg.setKind(ReferenceKind.ARGUMENT);
+			setTypeImpl(refArg, parameter.getType());
+			refArg.setLocation(parameter.getLocation());
+		}
+		result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE, function);
+		enterContext(function);
+		Set<IProblemIdentifier> suppressed = null;
+		try {
+			if (reporter != null && !method.getSuppressedWarnings().isEmpty()) {
+				suppressed = new HashSet<IProblemIdentifier>();
+				for (IProblemCategory category : method
+						.getSuppressedWarnings()) {
+					suppressed.addAll(category.contents());
+				}
+				reporter.pushSuppressWarnings(suppressed);
+			}
+			// visitFunctionBody(node);
+			handleDeclarations(node);
+			visit(node.getBody());
+		} finally {
+			if (reporter != null && suppressed != null) {
+				reporter.popSuppressWarnings();
+			}
+			leaveContext();
+			result.setAttribute(IReferenceAttributes.RESOLVING, null);
+		}
+		final IValueReference returnValue = result
+				.getChild(IValueReference.FUNCTION_OP);
+		returnValue.addValue(function.getReturnValue(), true);
+		setTypeImpl(returnValue, method.getType());
+		return result;
+	}
 }

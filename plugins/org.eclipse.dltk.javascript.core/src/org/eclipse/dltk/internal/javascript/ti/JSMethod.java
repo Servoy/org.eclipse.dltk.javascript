@@ -29,6 +29,7 @@ import org.eclipse.dltk.javascript.ast.Keyword;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.parser.PropertyExpressionUtils;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMethod;
@@ -198,6 +199,51 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 			Expression name) {
 		super(node.getArguments().size());
 		initialize(node, source, name);
+	}
+
+	public JSMethod(ArrowFunctionStatement node, ReferenceSource source) {
+		super(node.getArguments().size());
+		initialize(node, source);
+	}
+
+	private void initialize(ArrowFunctionStatement node,
+			ReferenceSource source) {
+			setLocation(ReferenceLocation.create(source, node.sourceStart(),
+					node.sourceEnd()));
+			Expression expression = null;
+			if (node.getParent() instanceof BinaryOperation) {
+				expression = ((BinaryOperation) node.getParent())
+						.getLeftExpression();
+				while (expression != null
+						&& !(expression instanceof Identifier)) {
+					if (expression instanceof PropertyExpression) {
+						expression = ((PropertyExpression) expression)
+								.getProperty();
+					} else
+						expression = null;
+				}
+			} else if (node.getParent() instanceof PropertyInitializer) {
+				expression = ((PropertyInitializer) node.getParent()).getName();
+			} else if (node.getParent() instanceof VariableDeclaration) {
+				expression = ((VariableDeclaration) node.getParent())
+						.getIdentifier();
+			}
+			if (expression instanceof Identifier) {
+				setName(((Identifier) expression).getName());
+			} else {
+				setName("<anonymous>");
+			}
+		for (Argument argument : node.getArguments()) {
+			final IParameter parameter = createParameter();
+			parameter.setName(argument.getIdentifier().getName());
+			parameter.setLocation(ReferenceLocation.create(source,
+					argument.sourceStart(), argument.sourceEnd()));
+			getParameters().add(parameter);
+		}
+		final Comment documentation = JSDocSupport.getComment(node);
+		if (documentation != null) {
+			setDocRange(documentation.getRange());
+		}
 	}
 
 	protected void initialize(FunctionStatement node, ReferenceSource source,

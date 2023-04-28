@@ -6,6 +6,7 @@ import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.NullExpression;
 import org.eclipse.dltk.javascript.ast.RegExpLiteral;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LiteralContext;
 import org.eclipse.dltk.javascript.parser.v4.JSTransformer;
 
@@ -41,6 +42,11 @@ public class LiteralFactory extends JSNodeFactory<LiteralContext> {
 		}
 		if (ctx.NullLiteral() != null) {
 			return new NullExpression(parent);
+		}
+		if (ctx.templateStringLiteral() != null) {
+			TemplateStringLiteral templateStringLiteral = new TemplateStringLiteral(parent);
+			templateStringLiteral.setText(JSTransformer.intern(ctx.getText()));
+			return templateStringLiteral;
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

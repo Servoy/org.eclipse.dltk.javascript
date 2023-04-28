@@ -583,4 +583,6 @@ public interface DomFactory extends EFactory {
 	 */
 	DomPackage getDomPackage();
 
+	TemplateStringLiteral createTemplateStringLiteral();
+
 } //DomFactory

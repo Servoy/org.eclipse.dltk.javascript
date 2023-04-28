@@ -831,4 +831,10 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 		return DomPackage.eINSTANCE;
 	}
 
+	@Override
+	public TemplateStringLiteral createTemplateStringLiteral() {
+		TemplateStringLiteralImpl literal = new TemplateStringLiteralImpl();
+		return literal;
+	}
+
 } //DomFactoryImpl

@@ -67,6 +67,9 @@ import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.core.dom.ArrayAccessExpression;
 import org.eclipse.dltk.javascript.core.dom.ArrayLiteral;
 import org.eclipse.dltk.javascript.core.dom.AttributeIdentifier;
@@ -710,7 +713,30 @@ public class ASTConverter extends ASTVisitor<Node> {
 		else {
 			//TODO set statement or convert to statement block?
 		}
-		res.setParametersPosition(node.getLP() + 1);
+		res.setParametersPosition(node.getLP() >= 0 ? node.getLP() + 1 : node.getArguments().get(0).sourceStart() );
 		return res;
+	}
+
+	@Override
+	public Node visitTemplateStringLiteral(TemplateStringLiteral node) {
+		org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral res = DOM_FACTORY
+				.createTemplateStringLiteral();
+		res.setText(node.getText());
+		for (TemplateStringExpression expression : node.getTemplateExpressions()) {
+			res.addExpression(visitTemplateStringExpression(expression));
+		}
+		return res;
+	}
+
+	@Override
+	public Node visitTemplateStringExpression(TemplateStringExpression node) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node visitTagFunction(TagFunctionExpression node) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

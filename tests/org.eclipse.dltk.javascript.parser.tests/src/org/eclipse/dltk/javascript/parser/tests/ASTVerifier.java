@@ -81,6 +81,9 @@ import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.utils.IntList;
 
 public class ASTVerifier extends ASTVisitor<Boolean> {
@@ -772,6 +775,33 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 		if(node.getRP() != -1) 
 			testChar(Keywords.RP, node.getRP());
 
+		return true;
+	}
+
+	@Override
+	public Boolean visitTemplateStringLiteral(TemplateStringLiteral node) {
+		testString(node.getText(), node.sourceStart(), node.sourceEnd());
+		testChar('`', node.getStartBackTick());
+		testChar('`', node.getEndBackTick());
+		for (TemplateStringExpression expression : node.getTemplateExpressions()) {
+			visitTemplateStringExpression(expression);
+		}
+		return true;
+	}
+
+	@Override
+	public Boolean visitTemplateStringExpression(
+			TemplateStringExpression node) {
+		testString("${", node.getTemplateStringStart(), node.getTemplateStringStart() + 2);
+		testChar('}', node.getTemplateCloseBrace());
+		visit(node.getExpression());
+		return true;
+	}
+
+	@Override
+	public Boolean visitTagFunction(TagFunctionExpression node) {
+		visit(node.getTagFunction());
+		visit(node.getLiteral());
 		return true;
 	}
 }

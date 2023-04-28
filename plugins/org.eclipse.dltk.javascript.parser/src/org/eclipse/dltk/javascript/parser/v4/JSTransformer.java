@@ -79,6 +79,9 @@ import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.Keywords;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
 import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
 import org.eclipse.dltk.javascript.parser.JSProblemIdentifier;
@@ -159,6 +162,9 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.SourceElementsContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementListContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SwitchStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TemplateStringAtomContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TemplateStringExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TemplateStringLiteralContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.TernaryExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ThisExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ThrowStatementContext;
@@ -174,6 +180,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.WhileStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.WithStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.YieldStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.factory.JSNodeCreator;
+import org.eclipse.dltk.javascript.parser.v4.factory.JSNodeFactory;
 import org.eclipse.dltk.utils.IntList;
 
 public class JSTransformer extends JavaScriptParserBaseListener {
@@ -511,7 +518,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void enterLiteral(LiteralContext ctx) {
 		Literal literal = (Literal) JSNodeCreator.create(ctx, getParent());
 		literal.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-		literal.setEnd(literal.sourceStart() + literal.getText().length());
+		if (literal.getText() != null) {
+			literal.setEnd(literal.sourceStart() + literal.getText().length());
+		}
 		children.push(literal);
 	}
 
@@ -1846,5 +1855,56 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			reporter.setRange(argument.sourceStart(), argument.sourceEnd());
 			reporter.report();
 		}
+	}
+
+	@Override
+	public void enterTemplateStringLiteral(TemplateStringLiteralContext ctx) {
+		TemplateStringLiteral literal;
+		if (children.peek() instanceof TemplateStringLiteral) {
+			literal = (TemplateStringLiteral) children.pop();
+		}
+		else {
+			literal = new TemplateStringLiteral(getParent());
+			literal.setText(intern(ctx.getText()));
+			literal.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+			if (literal.getText() != null) {
+				literal.setEnd(literal.sourceStart() + literal.getText().length());
+			}
+		}
+		literal.setStartBackTick(getTokenOffset(ctx.BackTick(0).getSymbol().getTokenIndex()));
+		literal.setEndBackTick(getTokenOffset(ctx.BackTick(1) != null ? 
+				ctx.BackTick(1).getSymbol().getTokenIndex(): ctx.getStop().getTokenIndex()));
+		parents.add(literal);
+	}	
+
+	@Override
+	public void exitTemplateStringLiteral(TemplateStringLiteralContext ctx) {
+		if (ctx.getParent() instanceof LiteralContext) return;
+		children.push(parents.pop());
+	}
+
+	@Override
+	public void exitTemplateStringAtom(TemplateStringAtomContext ctx) {
+		if (ctx.TemplateStringStartExpression() != null)
+		{
+			TemplateStringExpression expression = new TemplateStringExpression(getParent());
+			expression.setExpression((Expression) children.pop());
+			int start = getTokenOffset(ctx.TemplateStringStartExpression().getSymbol().getTokenIndex());
+			expression.setStart(start);
+			int end = expression.getExpression().sourceEnd() + 1;
+			expression.setEnd(end);
+			expression.setTemplateStringStart(start);
+			expression.setTemplateCloseBrace(end);
+			((TemplateStringLiteral)getParent()).addTemplateStringExpression(expression);
+		}
+	}
+
+	@Override
+	public void exitTemplateStringExpression(TemplateStringExpressionContext ctx) {
+		TagFunctionExpression tagFunction = (TagFunctionExpression) getParent();
+		tagFunction.setLiteral((TemplateStringLiteral) children.pop());
+		tagFunction.setTagFunction((Expression) children.pop());
+		tagFunction.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+		tagFunction.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
 	}
 }

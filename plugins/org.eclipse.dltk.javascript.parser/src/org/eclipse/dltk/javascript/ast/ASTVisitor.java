@@ -18,6 +18,9 @@ import java.util.Map;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 
 public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 
@@ -88,6 +91,9 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		HANDLERS.put(ErrorExpression.class, 46);
 		HANDLERS.put(EmptyStatement.class, 47);
 		HANDLERS.put(ArrowFunctionStatement.class, 48);
+		HANDLERS.put(TemplateStringLiteral.class, 49);
+		HANDLERS.put(TagFunctionExpression.class, 50);
+		HANDLERS.put(TemplateStringExpression.class, 51);
 		
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
@@ -196,6 +202,12 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 			return visitEmptyStatement((EmptyStatement) node);
 		case 48:
 			return visitArrowFunction((ArrowFunctionStatement) node);
+		case 49:
+			return visitTemplateStringLiteral((TemplateStringLiteral) node);
+		case 50:
+			return visitTagFunction((TagFunctionExpression)node);
+		case 51:
+			return visitTemplateStringExpression((TemplateStringExpression)node);
 		}
 		return visitUnknownNode(node);
 	}
@@ -371,6 +383,12 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 	public abstract E visitEmptyStatement(EmptyStatement node);
 	
 	public abstract E visitArrowFunction(ArrowFunctionStatement node);
+	
+	public abstract E visitTemplateStringLiteral(TemplateStringLiteral node);
+	
+	public abstract E visitTemplateStringExpression(TemplateStringExpression node);
+	
+	public abstract E visitTagFunction(TagFunctionExpression node);
 
 	/**
 	 * @since 2.0

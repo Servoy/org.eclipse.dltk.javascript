@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.ConditionalOperator;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
@@ -52,6 +53,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.PreDecreaseExpressionConte
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PreIncrementExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.TemplateStringExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.TernaryExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ThisExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.TypeofExpressionContext;
@@ -140,6 +142,9 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 				return new ArrowFunctionStatement(parent);
 			}
 			return new FunctionStatement(parent, false);
+		}
+		if (ctx instanceof TemplateStringExpressionContext) {
+			return new TagFunctionExpression(parent);
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

@@ -95,6 +95,9 @@ import org.eclipse.dltk.javascript.ast.XmlAttributeIdentifier;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.formatter.JavaScriptFormatterConstants;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.ArrayBracketsConfiguration;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.ArrowPunctuationConfiguration;
@@ -1774,6 +1777,26 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 
 				return formatterNode;
 
+			}
+
+			@Override
+			public IFormatterNode visitTemplateStringLiteral(
+					TemplateStringLiteral node) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public IFormatterNode visitTemplateStringExpression(
+					TemplateStringExpression node) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public IFormatterNode visitTagFunction(TagFunctionExpression node) {
+				// TODO Auto-generated method stub
+				return null;
 			}
 
 		});

@@ -93,6 +93,9 @@ import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.internal.core.RRecordMember;
@@ -2057,5 +2060,22 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		returnValue.addValue(function.getReturnValue(), true);
 		setTypeImpl(returnValue, method.getType());
 		return result;
+	}
+
+	@Override
+	public IValueReference visitTemplateStringLiteral(
+			TemplateStringLiteral node) {
+		return ConstantValue.of(RTypes.STRING);
+	}
+
+	@Override
+	public IValueReference visitTemplateStringExpression(
+			TemplateStringExpression node) {
+		return ConstantValue.of(RTypes.STRING);
+	}
+
+	@Override
+	public IValueReference visitTagFunction(TagFunctionExpression node) {
+		return visit(node.getTagFunction());
 	}
 }

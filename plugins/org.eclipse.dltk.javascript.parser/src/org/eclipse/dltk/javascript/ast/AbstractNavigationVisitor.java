@@ -15,6 +15,9 @@ import java.util.List;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 
 public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 
@@ -379,5 +382,25 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 	@Override
 	public E visitArrowFunction(ArrowFunctionStatement node) {
 		return visit(node.getBody());
+	}
+
+	@Override
+	public E visitTemplateStringLiteral(TemplateStringLiteral node) {
+		for (Expression expression : node.getTemplateExpressions()) {
+			visit(expression);
+		}
+		return null;
+	}
+
+	@Override
+	public E visitTagFunction(TagFunctionExpression node) {
+		visit(node.getTagFunction());
+		visit(node.getLiteral());
+		return null;
+	}
+
+	@Override
+	public E visitTemplateStringExpression(TemplateStringExpression node) {
+		return visit(node.getExpression());
 	}
 }

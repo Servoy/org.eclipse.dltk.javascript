@@ -17,6 +17,8 @@ import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.junit.Test;
 
@@ -671,5 +673,38 @@ public class TestANTLR4Parser {
 		assertEquals(7, fn.getArrow());
 		assertTrue(fn.getBody() instanceof VoidExpression);
 		assertEquals("a + b + 100", fn.getBody().toString().trim());
+	}
+	
+	@Test
+	public void testTemplateString() {
+		String source ="`test ${abc+c}`";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		TemplateStringLiteral expr = (TemplateStringLiteral) ((VoidExpression) statement).getExpression();
+		assertEquals(source, expr.toString().trim());
+		assertEquals(1, expr.getTemplateExpressions().size());
+		assertEquals("${abc + c}", expr.getTemplateExpressions().get(0).toString());
+	}
+	
+	@Test
+	public void testTagFunction() {
+		String source ="myfunc`test ${abc} some other text ${c}`";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		TagFunctionExpression expr = (TagFunctionExpression) ((VoidExpression) statement).getExpression();
+		assertEquals(source, expr.toString().trim());
+		assertEquals("myfunc",expr.getTagFunction().toString());
+		TemplateStringLiteral literal = expr.getLiteral();
+		assertEquals(2, literal.getTemplateExpressions().size());
+		assertEquals("${abc}", literal.getTemplateExpressions().get(0).toString());
+		assertEquals("${c}", literal.getTemplateExpressions().get(1).toString());
 	}
 }

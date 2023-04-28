@@ -758,8 +758,20 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 
 	@Override
 	public Boolean visitArrowFunction(ArrowFunctionStatement node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		for (Argument argument : node.getArguments()) {
+			visit(argument.getIdentifier());
+			if (argument.getCommaPosition() != -1) {
+				testChar(',', argument.getCommaPosition());
+			}
+		}
+		testString("=>", node.getArrow(), node.getArrow() + 2);
+		visit(node.getBody());
 
+		if(node.getLP() != -1)
+			testChar(Keywords.LP, node.getLP());
+		if(node.getRP() != -1) 
+			testChar(Keywords.RP, node.getRP());
+
+		return true;
+	}
 }

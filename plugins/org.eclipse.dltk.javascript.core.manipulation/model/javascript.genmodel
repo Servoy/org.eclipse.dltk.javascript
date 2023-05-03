@@ -291,5 +291,22 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//ForEachInStatement/item"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//ForEachInStatement/collection"/>
     </genClasses>
+    <genClasses ecoreClass="dom.ecore#//ArrowFunction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference dom.ecore#//ArrowFunction/documentation"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//ArrowFunction/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//ArrowFunction/body"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dom.ecore#//ArrowFunction/parametersPosition"/>
+    </genClasses>
+    <genClasses ecoreClass="dom.ecore#//TemplateStringLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute dom.ecore#//TemplateStringLiteral/text"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//TemplateStringLiteral/templateExpressions"/>
+    </genClasses>
+    <genClasses ecoreClass="dom.ecore#//TemplateStringExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//TemplateStringExpression/expression"/>
+    </genClasses>
+    <genClasses ecoreClass="dom.ecore#//TagFunction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//TagFunction/tagFunction"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference dom.ecore#//TagFunction/templateStringLiteral"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

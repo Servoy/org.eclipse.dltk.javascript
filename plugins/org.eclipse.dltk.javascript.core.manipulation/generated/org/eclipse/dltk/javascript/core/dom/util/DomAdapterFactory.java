@@ -380,6 +380,22 @@ public class DomAdapterFactory extends AdapterFactoryImpl {
 				return createForEachInStatementAdapter();
 			}
 			@Override
+			public Adapter caseArrowFunction(ArrowFunction object) {
+				return createArrowFunctionAdapter();
+			}
+			@Override
+			public Adapter caseTemplateStringLiteral(TemplateStringLiteral object) {
+				return createTemplateStringLiteralAdapter();
+			}
+			@Override
+			public Adapter caseTemplateStringExpression(TemplateStringExpression object) {
+				return createTemplateStringExpressionAdapter();
+			}
+			@Override
+			public Adapter caseTagFunction(TagFunction object) {
+				return createTagFunctionAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -1474,6 +1490,62 @@ public class DomAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createForEachInStatementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.dltk.javascript.core.dom.ArrowFunction <em>Arrow Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.dltk.javascript.core.dom.ArrowFunction
+	 * @generated
+	 */
+	public Adapter createArrowFunctionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral <em>Template String Literal</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral
+	 * @generated
+	 */
+	public Adapter createTemplateStringLiteralAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.dltk.javascript.core.dom.TemplateStringExpression <em>Template String Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.dltk.javascript.core.dom.TemplateStringExpression
+	 * @generated
+	 */
+	public Adapter createTemplateStringExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.dltk.javascript.core.dom.TagFunction <em>Tag Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.dltk.javascript.core.dom.TagFunction
+	 * @generated
+	 */
+	public Adapter createTagFunctionAdapter() {
 		return null;
 	}
 

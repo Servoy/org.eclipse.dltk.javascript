@@ -72,6 +72,7 @@ import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.core.dom.ArrayAccessExpression;
 import org.eclipse.dltk.javascript.core.dom.ArrayLiteral;
+import org.eclipse.dltk.javascript.core.dom.ArrowFunction;
 import org.eclipse.dltk.javascript.core.dom.AttributeIdentifier;
 import org.eclipse.dltk.javascript.core.dom.BinaryExpression;
 import org.eclipse.dltk.javascript.core.dom.BinaryOperator;
@@ -105,11 +106,11 @@ import org.eclipse.dltk.javascript.core.dom.SimplePropertyAssignment;
 import org.eclipse.dltk.javascript.core.dom.Source;
 import org.eclipse.dltk.javascript.core.dom.Statement;
 import org.eclipse.dltk.javascript.core.dom.SwitchElement;
+import org.eclipse.dltk.javascript.core.dom.TagFunction;
 import org.eclipse.dltk.javascript.core.dom.UnaryExpression;
 import org.eclipse.dltk.javascript.core.dom.UnaryOperator;
 import org.eclipse.dltk.javascript.core.dom.VariableReference;
 import org.eclipse.dltk.javascript.core.dom.XmlInitializer;
-import org.eclipse.dltk.javascript.parser.JSParser;
 
 public class ASTConverter extends ASTVisitor<Node> {
 	private static final DomFactory DOM_FACTORY = DomFactory.eINSTANCE;
@@ -698,7 +699,7 @@ public class ASTConverter extends ASTVisitor<Node> {
 
 	@Override
 	public Node visitArrowFunction(ArrowFunctionStatement node) {
-		FunctionExpression res = DOM_FACTORY.createFunctionExpression();
+		ArrowFunction res = DOM_FACTORY.createArrowFunction();
 		for (Argument arg : node.getArguments()) {
 			Parameter prm = DOM_FACTORY.createParameter();
 			prm.setName(createIdentifier(arg.getIdentifier()));
@@ -706,13 +707,7 @@ public class ASTConverter extends ASTVisitor<Node> {
 			prm.setEnd(arg.sourceEnd());
 			res.getParameters().add(prm);
 		}
-		if (node.isBlock()) {
-			res.setBody((org.eclipse.dltk.javascript.core.dom.BlockStatement) visit(node
-				.getBody()));
-		}
-		else {
-			//TODO set statement or convert to statement block?
-		}
+		res.setBody((Statement) visit(node.getBody()));
 		res.setParametersPosition(node.getLP() >= 0 ? node.getLP() + 1 : node.getArguments().get(0).sourceStart() );
 		return res;
 	}
@@ -723,20 +718,30 @@ public class ASTConverter extends ASTVisitor<Node> {
 				.createTemplateStringLiteral();
 		res.setText(node.getText());
 		for (TemplateStringExpression expression : node.getTemplateExpressions()) {
-			res.addExpression(visitTemplateStringExpression(expression));
+			res.getTemplateExpressions().add((org.eclipse.dltk.javascript.core.dom.TemplateStringExpression)
+					visitTemplateStringExpression(expression));
 		}
 		return res;
 	}
 
 	@Override
 	public Node visitTemplateStringExpression(TemplateStringExpression node) {
-		// TODO Auto-generated method stub
-		return null;
+		org.eclipse.dltk.javascript.core.dom.TemplateStringExpression res = DOM_FACTORY
+				.createTemplateStringExpression();
+		res.setExpression((Expression) visit(node.getExpression()));
+		res.setBegin(node.sourceStart());
+		res.setEnd(node.sourceEnd());
+		return res;
 	}
 
 	@Override
 	public Node visitTagFunction(TagFunctionExpression node) {
-		// TODO Auto-generated method stub
-		return null;
+		TagFunction res = DOM_FACTORY.createTagFunction();
+		res.setTagFunction((Expression) visit(node.getTagFunction()));
+		res.setTemplateStringLiteral((org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral)
+				visitTemplateStringLiteral(node.getLiteral()));
+		res.setBegin(node.sourceStart());
+		res.setEnd(node.sourceEnd());
+		return res;
 	}
 }

@@ -763,6 +763,47 @@ public class DomSwitch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case DomPackage.ARROW_FUNCTION: {
+				ArrowFunction arrowFunction = (ArrowFunction)theEObject;
+				T result = caseArrowFunction(arrowFunction);
+				if (result == null) result = caseExpression(arrowFunction);
+				if (result == null) result = caseIArrayElement(arrowFunction);
+				if (result == null) result = caseIForInitializer(arrowFunction);
+				if (result == null) result = caseNode(arrowFunction);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case DomPackage.TEMPLATE_STRING_LITERAL: {
+				TemplateStringLiteral templateStringLiteral = (TemplateStringLiteral)theEObject;
+				T result = caseTemplateStringLiteral(templateStringLiteral);
+				if (result == null) result = caseExpression(templateStringLiteral);
+				if (result == null) result = caseIPropertyName(templateStringLiteral);
+				if (result == null) result = caseIArrayElement(templateStringLiteral);
+				if (result == null) result = caseIForInitializer(templateStringLiteral);
+				if (result == null) result = caseNode(templateStringLiteral);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case DomPackage.TEMPLATE_STRING_EXPRESSION: {
+				TemplateStringExpression templateStringExpression = (TemplateStringExpression)theEObject;
+				T result = caseTemplateStringExpression(templateStringExpression);
+				if (result == null) result = caseExpression(templateStringExpression);
+				if (result == null) result = caseIArrayElement(templateStringExpression);
+				if (result == null) result = caseIForInitializer(templateStringExpression);
+				if (result == null) result = caseNode(templateStringExpression);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case DomPackage.TAG_FUNCTION: {
+				TagFunction tagFunction = (TagFunction)theEObject;
+				T result = caseTagFunction(tagFunction);
+				if (result == null) result = caseExpression(tagFunction);
+				if (result == null) result = caseIArrayElement(tagFunction);
+				if (result == null) result = caseIForInitializer(tagFunction);
+				if (result == null) result = caseNode(tagFunction);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -1919,6 +1960,66 @@ public class DomSwitch<T> {
 	 * @generated
 	 */
 	public T caseForEachInStatement(ForEachInStatement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Arrow Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Arrow Function</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseArrowFunction(ArrowFunction object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Template String Literal</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Template String Literal</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTemplateStringLiteral(TemplateStringLiteral object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Template String Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Template String Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTemplateStringExpression(TemplateStringExpression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Tag Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Tag Function</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTagFunction(TagFunction object) {
 		return null;
 	}
 

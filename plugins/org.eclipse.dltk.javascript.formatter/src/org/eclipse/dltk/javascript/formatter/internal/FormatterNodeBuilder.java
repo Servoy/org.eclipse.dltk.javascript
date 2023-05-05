@@ -15,6 +15,7 @@ package org.eclipse.dltk.javascript.formatter.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -99,8 +100,10 @@ import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.formatter.JavaScriptFormatterConstants;
+import org.eclipse.dltk.javascript.formatter.internal.nodes.AbstractBracesConfiguration;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.ArrayBracketsConfiguration;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.ArrowPunctuationConfiguration;
+import org.eclipse.dltk.javascript.formatter.internal.nodes.BackTicksNode;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.BinaryOperationPinctuationConfiguration;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.BlockBracesConfiguration;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.BracesNode;
@@ -1782,23 +1785,70 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 			@Override
 			public IFormatterNode visitTemplateStringLiteral(
 					TemplateStringLiteral node) {
-				// TODO Auto-generated method stub
-				return null;
+				FormatterBlockNode formatterNode = new FormatterBlockNode(
+						document);
+
+				formatterNode.addChild(createEmptyTextNode(document,
+						node.sourceStart()));
+				push(formatterNode);
+				
+				BackTicksNode backticks = new BackTicksNode(document);
+				backticks.setBegin(createCharNode(document, node.getStartBackTick()));
+				push(backticks);
+				
+				if (node.getText().contains("${")) {
+					int startPos = node.sourceStart() + 1;
+					String[] parts = node.getText().substring(1, node.sourceEnd() - startPos).split("\\$\\{|\\}");
+					Iterator<TemplateStringExpression> expressions = node.getTemplateExpressions().iterator();
+					for (int i=0; i < parts.length; i++) {
+						if ( i % 2 == 0) {
+							createTextNode(document, startPos, parts[i].length() - 1);
+							startPos += parts[i].length();
+						}
+						else {
+							TemplateStringExpression var = expressions.next();
+							visit(var);
+							startPos = var.sourceEnd();
+						}
+					}
+				}
+				else {
+					createTextNode(document, node.sourceStart() + 1, node.sourceEnd() - 2);
+				}
+				checkedPop(backticks, node.getEndBackTick());
+				backticks.setEnd(createCharNode(document, node.getEndBackTick()));
+				
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
 			}
 
 			@Override
 			public IFormatterNode visitTemplateStringExpression(
 					TemplateStringExpression node) {
-				// TODO Auto-generated method stub
-				return null;
+				FormatterBlockNode formatterNode = new FormatterBlockNode(
+						document);
+				formatterNode.addChild(createEmptyTextNode(document,
+						node.sourceStart()));
+				push(formatterNode);
+				createTextNode(document, node.sourceStart(), node.sourceStart() + 2);		
+				visit(node.getExpression());
+				createCharNode(document, node.sourceEnd() - 1);
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
 			}
 
 			@Override
 			public IFormatterNode visitTagFunction(TagFunctionExpression node) {
-				// TODO Auto-generated method stub
-				return null;
+				FormatterBlockNode formatterNode = new FormatterBlockNode(
+						document);
+				formatterNode.addChild(createEmptyTextNode(document,
+						node.sourceStart()));
+				push(formatterNode);
+				visit(node.getTagFunction());
+				visit(node.getLiteral());
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
 			}
-
 		});
 
 		checkedPop(root, document.getLength());

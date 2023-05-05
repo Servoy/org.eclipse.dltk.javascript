@@ -691,6 +691,23 @@ public class TestANTLR4Parser {
 	}
 	
 	@Test
+	public void testTemplateString2() {
+		String source ="var ts=`test ${abc+c}!`";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		VariableStatement expression = (VariableStatement) ((VoidExpression) statement).getExpression();
+		VariableDeclaration expr = expression.getVariables().get(0);
+		assertEquals(source, expression.toString().trim());
+		TemplateStringLiteral templateStringLiteral = (TemplateStringLiteral) expr.getInitializer();
+		assertEquals(1, templateStringLiteral.getTemplateExpressions().size());
+		assertEquals("${abc + c}", templateStringLiteral.getTemplateExpressions().get(0).toString());
+	}
+	
+	@Test
 	public void testTagFunction() {
 		String source ="myfunc`test ${abc} some other text ${c}`";
 		Script scriptv4 = getScriptv4(source);

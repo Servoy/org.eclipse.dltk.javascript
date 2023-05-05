@@ -1874,12 +1874,16 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		literal.setStartBackTick(getTokenOffset(ctx.BackTick(0).getSymbol().getTokenIndex()));
 		literal.setEndBackTick(getTokenOffset(ctx.BackTick(1) != null ? 
 				ctx.BackTick(1).getSymbol().getTokenIndex(): ctx.getStop().getTokenIndex()));
-		parents.add(literal);
+		parents.push(literal);
 	}	
 
 	@Override
 	public void exitTemplateStringLiteral(TemplateStringLiteralContext ctx) {
-		if (ctx.getParent() instanceof LiteralContext) return;
+		//this is not so nice but we need to avoid removing items from the stack when we have just the tagstring
+		if (ctx.getParent().getParent() != null && ctx.getParent().getParent().getParent() != null &&
+				ctx.getParent().getParent().getParent() instanceof ExpressionSequenceContext) {
+			return;
+		}
 		children.push(parents.pop());
 	}
 

@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.SimplePropertyAssignmentImpl#getInitializer <em>Initializer</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public class SimplePropertyAssignmentImpl extends PropertyAssignmentImpl impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getInitializer() {
 		return initializer;
 	}
@@ -90,6 +91,7 @@ public class SimplePropertyAssignmentImpl extends PropertyAssignmentImpl impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setInitializer(Expression newInitializer) {
 		if (newInitializer != initializer) {
 			NotificationChain msgs = null;

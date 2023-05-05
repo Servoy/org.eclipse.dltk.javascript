@@ -25,11 +25,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.LabeledStatementImpl#getLabel <em>Label</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.LabeledStatementImpl#getStatement <em>Statement</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -78,6 +78,7 @@ public class LabeledStatementImpl extends StatementImpl implements LabeledStatem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Label getLabel() {
 		return label;
 	}
@@ -102,6 +103,7 @@ public class LabeledStatementImpl extends StatementImpl implements LabeledStatem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setLabel(Label newLabel) {
 		if (newLabel != label) {
 			NotificationChain msgs = null;
@@ -121,6 +123,7 @@ public class LabeledStatementImpl extends StatementImpl implements LabeledStatem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Statement getStatement() {
 		return statement;
 	}
@@ -145,6 +148,7 @@ public class LabeledStatementImpl extends StatementImpl implements LabeledStatem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setStatement(Statement newStatement) {
 		if (newStatement != statement) {
 			NotificationChain msgs = null;

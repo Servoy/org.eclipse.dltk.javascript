@@ -24,11 +24,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.FilterExpressionImpl#getObject <em>Object</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.FilterExpressionImpl#getFilter <em>Filter</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -77,6 +77,7 @@ public class FilterExpressionImpl extends ExpressionImpl implements FilterExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getObject() {
 		return object;
 	}
@@ -101,6 +102,7 @@ public class FilterExpressionImpl extends ExpressionImpl implements FilterExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setObject(Expression newObject) {
 		if (newObject != object) {
 			NotificationChain msgs = null;
@@ -120,6 +122,7 @@ public class FilterExpressionImpl extends ExpressionImpl implements FilterExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getFilter() {
 		return filter;
 	}
@@ -144,6 +147,7 @@ public class FilterExpressionImpl extends ExpressionImpl implements FilterExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setFilter(Expression newFilter) {
 		if (newFilter != filter) {
 			NotificationChain msgs = null;

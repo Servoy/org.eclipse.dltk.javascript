@@ -33,12 +33,12 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.TryStatementImpl#getBody <em>Body</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.TryStatementImpl#getCatches <em>Catches</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.TryStatementImpl#getFinallyClause <em>Finally Clause</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -97,6 +97,7 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BlockStatement getBody() {
 		return body;
 	}
@@ -121,6 +122,7 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setBody(BlockStatement newBody) {
 		if (newBody != body) {
 			NotificationChain msgs = null;
@@ -140,6 +142,7 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<CatchClause> getCatches() {
 		if (catches == null) {
 			catches = new EObjectContainmentEList<CatchClause>(CatchClause.class, this, DomPackage.TRY_STATEMENT__CATCHES);
@@ -152,6 +155,7 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FinallyClause getFinallyClause() {
 		return finallyClause;
 	}
@@ -176,6 +180,7 @@ public class TryStatementImpl extends StatementImpl implements TryStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setFinallyClause(FinallyClause newFinallyClause) {
 		if (newFinallyClause != finallyClause) {
 			NotificationChain msgs = null;

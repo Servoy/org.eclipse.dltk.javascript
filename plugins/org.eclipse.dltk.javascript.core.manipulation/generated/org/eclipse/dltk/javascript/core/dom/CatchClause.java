@@ -14,12 +14,12 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.CatchClause#getException <em>Exception</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.CatchClause#getFilter <em>Filter</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.CatchClause#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getCatchClause()
  * @model

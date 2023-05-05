@@ -32,7 +32,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 */
 	public static DomFactory init() {
 		try {
-			DomFactory theDomFactory = (DomFactory)EPackage.Registry.INSTANCE.getEFactory("http:///org/eclipse/dltk/javascript/core/dom/dom.ecore"); 
+			DomFactory theDomFactory = (DomFactory)EPackage.Registry.INSTANCE.getEFactory(DomPackage.eNS_URI);
 			if (theDomFactory != null) {
 				return theDomFactory;
 			}
@@ -122,6 +122,10 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 			case DomPackage.FILTER_EXPRESSION: return createFilterExpression();
 			case DomPackage.DEFAULT_XML_NAMESPACE_STATEMENT: return createDefaultXmlNamespaceStatement();
 			case DomPackage.FOR_EACH_IN_STATEMENT: return createForEachInStatement();
+			case DomPackage.ARROW_FUNCTION: return createArrowFunction();
+			case DomPackage.TEMPLATE_STRING_LITERAL: return createTemplateStringLiteral();
+			case DomPackage.TEMPLATE_STRING_EXPRESSION: return createTemplateStringExpression();
+			case DomPackage.TAG_FUNCTION: return createTagFunction();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -166,6 +170,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Comment createComment() {
 		CommentImpl comment = new CommentImpl();
 		return comment;
@@ -176,6 +181,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Identifier createIdentifier() {
 		IdentifierImpl identifier = new IdentifierImpl();
 		return identifier;
@@ -186,6 +192,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public VariableReference createVariableReference() {
 		VariableReferenceImpl variableReference = new VariableReferenceImpl();
 		return variableReference;
@@ -196,6 +203,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Label createLabel() {
 		LabelImpl label = new LabelImpl();
 		return label;
@@ -206,6 +214,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NullLiteral createNullLiteral() {
 		NullLiteralImpl nullLiteral = new NullLiteralImpl();
 		return nullLiteral;
@@ -216,6 +225,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BooleanLiteral createBooleanLiteral() {
 		BooleanLiteralImpl booleanLiteral = new BooleanLiteralImpl();
 		return booleanLiteral;
@@ -226,6 +236,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NumericLiteral createNumericLiteral() {
 		NumericLiteralImpl numericLiteral = new NumericLiteralImpl();
 		return numericLiteral;
@@ -236,6 +247,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public StringLiteral createStringLiteral() {
 		StringLiteralImpl stringLiteral = new StringLiteralImpl();
 		return stringLiteral;
@@ -246,6 +258,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public RegularExpressionLiteral createRegularExpressionLiteral() {
 		RegularExpressionLiteralImpl regularExpressionLiteral = new RegularExpressionLiteralImpl();
 		return regularExpressionLiteral;
@@ -256,6 +269,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ThisExpression createThisExpression() {
 		ThisExpressionImpl thisExpression = new ThisExpressionImpl();
 		return thisExpression;
@@ -266,6 +280,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ArrayLiteral createArrayLiteral() {
 		ArrayLiteralImpl arrayLiteral = new ArrayLiteralImpl();
 		return arrayLiteral;
@@ -276,6 +291,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Elision createElision() {
 		ElisionImpl elision = new ElisionImpl();
 		return elision;
@@ -286,6 +302,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ObjectLiteral createObjectLiteral() {
 		ObjectLiteralImpl objectLiteral = new ObjectLiteralImpl();
 		return objectLiteral;
@@ -296,6 +313,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public SimplePropertyAssignment createSimplePropertyAssignment() {
 		SimplePropertyAssignmentImpl simplePropertyAssignment = new SimplePropertyAssignmentImpl();
 		return simplePropertyAssignment;
@@ -306,6 +324,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public GetterAssignment createGetterAssignment() {
 		GetterAssignmentImpl getterAssignment = new GetterAssignmentImpl();
 		return getterAssignment;
@@ -316,6 +335,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public SetterAssignment createSetterAssignment() {
 		SetterAssignmentImpl setterAssignment = new SetterAssignmentImpl();
 		return setterAssignment;
@@ -326,6 +346,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ParenthesizedExpression createParenthesizedExpression() {
 		ParenthesizedExpressionImpl parenthesizedExpression = new ParenthesizedExpressionImpl();
 		return parenthesizedExpression;
@@ -336,6 +357,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ArrayAccessExpression createArrayAccessExpression() {
 		ArrayAccessExpressionImpl arrayAccessExpression = new ArrayAccessExpressionImpl();
 		return arrayAccessExpression;
@@ -346,6 +368,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public PropertyAccessExpression createPropertyAccessExpression() {
 		PropertyAccessExpressionImpl propertyAccessExpression = new PropertyAccessExpressionImpl();
 		return propertyAccessExpression;
@@ -356,6 +379,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NewExpression createNewExpression() {
 		NewExpressionImpl newExpression = new NewExpressionImpl();
 		return newExpression;
@@ -366,6 +390,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public CallExpression createCallExpression() {
 		CallExpressionImpl callExpression = new CallExpressionImpl();
 		return callExpression;
@@ -376,6 +401,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public UnaryExpression createUnaryExpression() {
 		UnaryExpressionImpl unaryExpression = new UnaryExpressionImpl();
 		return unaryExpression;
@@ -386,6 +412,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BinaryExpression createBinaryExpression() {
 		BinaryExpressionImpl binaryExpression = new BinaryExpressionImpl();
 		return binaryExpression;
@@ -396,6 +423,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConditionalExpression createConditionalExpression() {
 		ConditionalExpressionImpl conditionalExpression = new ConditionalExpressionImpl();
 		return conditionalExpression;
@@ -406,6 +434,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BlockStatement createBlockStatement() {
 		BlockStatementImpl blockStatement = new BlockStatementImpl();
 		return blockStatement;
@@ -416,6 +445,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public VariableStatement createVariableStatement() {
 		VariableStatementImpl variableStatement = new VariableStatementImpl();
 		return variableStatement;
@@ -426,6 +456,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public VariableDeclaration createVariableDeclaration() {
 		VariableDeclarationImpl variableDeclaration = new VariableDeclarationImpl();
 		return variableDeclaration;
@@ -436,6 +467,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EmptyStatement createEmptyStatement() {
 		EmptyStatementImpl emptyStatement = new EmptyStatementImpl();
 		return emptyStatement;
@@ -446,6 +478,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ExpressionStatement createExpressionStatement() {
 		ExpressionStatementImpl expressionStatement = new ExpressionStatementImpl();
 		return expressionStatement;
@@ -456,6 +489,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IfStatement createIfStatement() {
 		IfStatementImpl ifStatement = new IfStatementImpl();
 		return ifStatement;
@@ -466,6 +500,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DoStatement createDoStatement() {
 		DoStatementImpl doStatement = new DoStatementImpl();
 		return doStatement;
@@ -476,6 +511,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public WhileStatement createWhileStatement() {
 		WhileStatementImpl whileStatement = new WhileStatementImpl();
 		return whileStatement;
@@ -486,6 +522,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ForStatement createForStatement() {
 		ForStatementImpl forStatement = new ForStatementImpl();
 		return forStatement;
@@ -496,6 +533,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ForInStatement createForInStatement() {
 		ForInStatementImpl forInStatement = new ForInStatementImpl();
 		return forInStatement;
@@ -506,6 +544,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ContinueStatement createContinueStatement() {
 		ContinueStatementImpl continueStatement = new ContinueStatementImpl();
 		return continueStatement;
@@ -516,6 +555,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BreakStatement createBreakStatement() {
 		BreakStatementImpl breakStatement = new BreakStatementImpl();
 		return breakStatement;
@@ -526,6 +566,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ReturnStatement createReturnStatement() {
 		ReturnStatementImpl returnStatement = new ReturnStatementImpl();
 		return returnStatement;
@@ -536,6 +577,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public WithStatement createWithStatement() {
 		WithStatementImpl withStatement = new WithStatementImpl();
 		return withStatement;
@@ -546,6 +588,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public SwitchStatement createSwitchStatement() {
 		SwitchStatementImpl switchStatement = new SwitchStatementImpl();
 		return switchStatement;
@@ -556,6 +599,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public CaseClause createCaseClause() {
 		CaseClauseImpl caseClause = new CaseClauseImpl();
 		return caseClause;
@@ -566,6 +610,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DefaultClause createDefaultClause() {
 		DefaultClauseImpl defaultClause = new DefaultClauseImpl();
 		return defaultClause;
@@ -576,6 +621,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public LabeledStatement createLabeledStatement() {
 		LabeledStatementImpl labeledStatement = new LabeledStatementImpl();
 		return labeledStatement;
@@ -586,6 +632,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ThrowStatement createThrowStatement() {
 		ThrowStatementImpl throwStatement = new ThrowStatementImpl();
 		return throwStatement;
@@ -596,6 +643,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TryStatement createTryStatement() {
 		TryStatementImpl tryStatement = new TryStatementImpl();
 		return tryStatement;
@@ -606,6 +654,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public CatchClause createCatchClause() {
 		CatchClauseImpl catchClause = new CatchClauseImpl();
 		return catchClause;
@@ -616,6 +665,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FinallyClause createFinallyClause() {
 		FinallyClauseImpl finallyClause = new FinallyClauseImpl();
 		return finallyClause;
@@ -626,6 +676,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FunctionExpression createFunctionExpression() {
 		FunctionExpressionImpl functionExpression = new FunctionExpressionImpl();
 		return functionExpression;
@@ -636,6 +687,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Parameter createParameter() {
 		ParameterImpl parameter = new ParameterImpl();
 		return parameter;
@@ -646,6 +698,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Source createSource() {
 		SourceImpl source = new SourceImpl();
 		return source;
@@ -656,6 +709,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConstStatement createConstStatement() {
 		ConstStatementImpl constStatement = new ConstStatementImpl();
 		return constStatement;
@@ -666,6 +720,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public XmlInitializer createXmlInitializer() {
 		XmlInitializerImpl xmlInitializer = new XmlInitializerImpl();
 		return xmlInitializer;
@@ -676,6 +731,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public AttributeIdentifier createAttributeIdentifier() {
 		AttributeIdentifierImpl attributeIdentifier = new AttributeIdentifierImpl();
 		return attributeIdentifier;
@@ -686,6 +742,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public QualifiedIdentifier createQualifiedIdentifier() {
 		QualifiedIdentifierImpl qualifiedIdentifier = new QualifiedIdentifierImpl();
 		return qualifiedIdentifier;
@@ -696,6 +753,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public WildcardIdentifier createWildcardIdentifier() {
 		WildcardIdentifierImpl wildcardIdentifier = new WildcardIdentifierImpl();
 		return wildcardIdentifier;
@@ -706,6 +764,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ExpressionSelector createExpressionSelector() {
 		ExpressionSelectorImpl expressionSelector = new ExpressionSelectorImpl();
 		return expressionSelector;
@@ -716,6 +775,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public XmlTextFragment createXmlTextFragment() {
 		XmlTextFragmentImpl xmlTextFragment = new XmlTextFragmentImpl();
 		return xmlTextFragment;
@@ -726,6 +786,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public XmlExpressionFragment createXmlExpressionFragment() {
 		XmlExpressionFragmentImpl xmlExpressionFragment = new XmlExpressionFragmentImpl();
 		return xmlExpressionFragment;
@@ -736,6 +797,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DescendantAccessExpression createDescendantAccessExpression() {
 		DescendantAccessExpressionImpl descendantAccessExpression = new DescendantAccessExpressionImpl();
 		return descendantAccessExpression;
@@ -746,6 +808,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FilterExpression createFilterExpression() {
 		FilterExpressionImpl filterExpression = new FilterExpressionImpl();
 		return filterExpression;
@@ -756,6 +819,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DefaultXmlNamespaceStatement createDefaultXmlNamespaceStatement() {
 		DefaultXmlNamespaceStatementImpl defaultXmlNamespaceStatement = new DefaultXmlNamespaceStatementImpl();
 		return defaultXmlNamespaceStatement;
@@ -766,9 +830,21 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ForEachInStatement createForEachInStatement() {
 		ForEachInStatementImpl forEachInStatement = new ForEachInStatementImpl();
 		return forEachInStatement;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public ArrowFunction createArrowFunction() {
+		ArrowFunctionImpl arrowFunction = new ArrowFunctionImpl();
+		return arrowFunction;
 	}
 
 	/**
@@ -816,6 +892,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DomPackage getDomPackage() {
 		return (DomPackage)getEPackage();
 	}
@@ -835,6 +912,28 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	public TemplateStringLiteral createTemplateStringLiteral() {
 		TemplateStringLiteralImpl literal = new TemplateStringLiteralImpl();
 		return literal;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public TemplateStringExpression createTemplateStringExpression() {
+		TemplateStringExpressionImpl templateStringExpression = new TemplateStringExpressionImpl();
+		return templateStringExpression;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public TagFunction createTagFunction() {
+		TagFunctionImpl tagFunction = new TagFunctionImpl();
+		return tagFunction;
 	}
 
 } //DomFactoryImpl

@@ -14,11 +14,11 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.ArrayAccessExpression#getArray <em>Array</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.ArrayAccessExpression#getIndex <em>Index</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getArrayAccessExpression()
  * @model

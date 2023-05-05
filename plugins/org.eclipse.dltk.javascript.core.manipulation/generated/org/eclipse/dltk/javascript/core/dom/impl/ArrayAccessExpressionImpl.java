@@ -24,11 +24,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ArrayAccessExpressionImpl#getArray <em>Array</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ArrayAccessExpressionImpl#getIndex <em>Index</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -77,6 +77,7 @@ public class ArrayAccessExpressionImpl extends ExpressionImpl implements ArrayAc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getArray() {
 		return array;
 	}
@@ -101,6 +102,7 @@ public class ArrayAccessExpressionImpl extends ExpressionImpl implements ArrayAc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setArray(Expression newArray) {
 		if (newArray != array) {
 			NotificationChain msgs = null;
@@ -120,6 +122,7 @@ public class ArrayAccessExpressionImpl extends ExpressionImpl implements ArrayAc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getIndex() {
 		return index;
 	}
@@ -144,6 +147,7 @@ public class ArrayAccessExpressionImpl extends ExpressionImpl implements ArrayAc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setIndex(Expression newIndex) {
 		if (newIndex != index) {
 			NotificationChain msgs = null;

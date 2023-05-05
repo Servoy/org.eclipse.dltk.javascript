@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.FunctionExpressionImpl#getDocumentation <em>Documentation</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.FunctionExpressionImpl#getIdentifier <em>Identifier</em>}</li>
@@ -36,7 +37,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.FunctionExpressionImpl#getBody <em>Body</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.FunctionExpressionImpl#getParametersPosition <em>Parameters Position</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -125,6 +125,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Comment getDocumentation() {
 		if (documentation != null && documentation.eIsProxy()) {
 			InternalEObject oldDocumentation = (InternalEObject)documentation;
@@ -151,6 +152,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDocumentation(Comment newDocumentation) {
 		Comment oldDocumentation = documentation;
 		documentation = newDocumentation;
@@ -163,6 +165,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Identifier getIdentifier() {
 		return identifier;
 	}
@@ -187,6 +190,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setIdentifier(Identifier newIdentifier) {
 		if (newIdentifier != identifier) {
 			NotificationChain msgs = null;
@@ -206,6 +210,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<Parameter> getParameters() {
 		if (parameters == null) {
 			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, DomPackage.FUNCTION_EXPRESSION__PARAMETERS);
@@ -218,6 +223,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BlockStatement getBody() {
 		return body;
 	}
@@ -242,6 +248,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setBody(BlockStatement newBody) {
 		if (newBody != body) {
 			NotificationChain msgs = null;
@@ -261,6 +268,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public int getParametersPosition() {
 		return parametersPosition;
 	}
@@ -270,6 +278,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setParametersPosition(int newParametersPosition) {
 		int oldParametersPosition = parametersPosition;
 		parametersPosition = newParametersPosition;
@@ -405,7 +414,7 @@ public class FunctionExpressionImpl extends ExpressionImpl implements FunctionEx
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (parametersPosition: ");
 		result.append(parametersPosition);
 		result.append(')');

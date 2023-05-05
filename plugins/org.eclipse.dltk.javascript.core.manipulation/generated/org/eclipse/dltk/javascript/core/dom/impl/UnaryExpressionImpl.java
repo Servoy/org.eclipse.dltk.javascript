@@ -25,11 +25,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.UnaryExpressionImpl#getArgument <em>Argument</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.UnaryExpressionImpl#getOperation <em>Operation</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -88,6 +88,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getArgument() {
 		return argument;
 	}
@@ -112,6 +113,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setArgument(Expression newArgument) {
 		if (newArgument != argument) {
 			NotificationChain msgs = null;
@@ -131,6 +133,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public UnaryOperator getOperation() {
 		return operation;
 	}
@@ -140,6 +143,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setOperation(UnaryOperator newOperation) {
 		UnaryOperator oldOperation = operation;
 		operation = newOperation == null ? OPERATION_EDEFAULT : newOperation;
@@ -238,7 +242,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (operation: ");
 		result.append(operation);
 		result.append(')');

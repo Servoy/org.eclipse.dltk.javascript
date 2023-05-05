@@ -15,11 +15,11 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.CallExpression#getApplicant <em>Applicant</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.CallExpression#getArguments <em>Arguments</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getCallExpression()
  * @model

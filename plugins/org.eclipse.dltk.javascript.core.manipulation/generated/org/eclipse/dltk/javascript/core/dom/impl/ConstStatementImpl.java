@@ -28,10 +28,10 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ConstStatementImpl#getDeclarations <em>Declarations</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -70,6 +70,7 @@ public class ConstStatementImpl extends StatementImpl implements ConstStatement 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<VariableDeclaration> getDeclarations() {
 		if (declarations == null) {
 			declarations = new EObjectContainmentEList<VariableDeclaration>(VariableDeclaration.class, this, DomPackage.CONST_STATEMENT__DECLARATIONS);

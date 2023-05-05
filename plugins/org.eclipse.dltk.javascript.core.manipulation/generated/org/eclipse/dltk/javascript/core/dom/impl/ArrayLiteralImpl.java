@@ -28,10 +28,10 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ArrayLiteralImpl#getElements <em>Elements</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -70,6 +70,7 @@ public class ArrayLiteralImpl extends ExpressionImpl implements ArrayLiteral {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<IArrayElement> getElements() {
 		if (elements == null) {
 			elements = new EObjectContainmentEList<IArrayElement>(IArrayElement.class, this, DomPackage.ARRAY_LITERAL__ELEMENTS);

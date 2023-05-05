@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.AccessorAssignmentImpl#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public abstract class AccessorAssignmentImpl extends PropertyAssignmentImpl impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BlockStatement getBody() {
 		return body;
 	}
@@ -90,6 +91,7 @@ public abstract class AccessorAssignmentImpl extends PropertyAssignmentImpl impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setBody(BlockStatement newBody) {
 		if (newBody != body) {
 			NotificationChain msgs = null;

@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.VariableReferenceImpl#getVariable <em>Variable</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public class VariableReferenceImpl extends ExpressionImpl implements VariableRef
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Identifier getVariable() {
 		return variable;
 	}
@@ -90,6 +91,7 @@ public class VariableReferenceImpl extends ExpressionImpl implements VariableRef
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setVariable(Identifier newVariable) {
 		if (newVariable != variable) {
 			NotificationChain msgs = null;

@@ -25,11 +25,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ForInStatementImpl#getItem <em>Item</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ForInStatementImpl#getCollection <em>Collection</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -78,6 +78,7 @@ public class ForInStatementImpl extends IterationStatementImpl implements ForInS
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IForInitializer getItem() {
 		return item;
 	}
@@ -102,6 +103,7 @@ public class ForInStatementImpl extends IterationStatementImpl implements ForInS
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setItem(IForInitializer newItem) {
 		if (newItem != item) {
 			NotificationChain msgs = null;
@@ -121,6 +123,7 @@ public class ForInStatementImpl extends IterationStatementImpl implements ForInS
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getCollection() {
 		return collection;
 	}
@@ -145,6 +148,7 @@ public class ForInStatementImpl extends IterationStatementImpl implements ForInS
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setCollection(Expression newCollection) {
 		if (newCollection != collection) {
 			NotificationChain msgs = null;

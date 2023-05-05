@@ -14,10 +14,10 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.Label#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getLabel()
  * @model

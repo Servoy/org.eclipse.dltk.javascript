@@ -28,10 +28,10 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.XmlInitializerImpl#getFragments <em>Fragments</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -70,6 +70,7 @@ public class XmlInitializerImpl extends ExpressionImpl implements XmlInitializer
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<XmlFragment> getFragments() {
 		if (fragments == null) {
 			fragments = new EObjectContainmentEList<XmlFragment>(XmlFragment.class, this, DomPackage.XML_INITIALIZER__FRAGMENTS);

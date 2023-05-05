@@ -26,12 +26,12 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.CatchClauseImpl#getException <em>Exception</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.CatchClauseImpl#getFilter <em>Filter</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.CatchClauseImpl#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -90,6 +90,7 @@ public class CatchClauseImpl extends NodeImpl implements CatchClause {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Identifier getException() {
 		return exception;
 	}
@@ -114,6 +115,7 @@ public class CatchClauseImpl extends NodeImpl implements CatchClause {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setException(Identifier newException) {
 		if (newException != exception) {
 			NotificationChain msgs = null;
@@ -133,6 +135,7 @@ public class CatchClauseImpl extends NodeImpl implements CatchClause {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getFilter() {
 		return filter;
 	}
@@ -157,6 +160,7 @@ public class CatchClauseImpl extends NodeImpl implements CatchClause {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setFilter(Expression newFilter) {
 		if (newFilter != filter) {
 			NotificationChain msgs = null;
@@ -176,6 +180,7 @@ public class CatchClauseImpl extends NodeImpl implements CatchClause {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BlockStatement getBody() {
 		return body;
 	}
@@ -200,6 +205,7 @@ public class CatchClauseImpl extends NodeImpl implements CatchClause {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setBody(BlockStatement newBody) {
 		if (newBody != body) {
 			NotificationChain msgs = null;

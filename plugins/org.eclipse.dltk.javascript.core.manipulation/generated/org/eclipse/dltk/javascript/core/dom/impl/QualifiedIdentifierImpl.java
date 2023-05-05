@@ -25,11 +25,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.QualifiedIdentifierImpl#getNamespace <em>Namespace</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.QualifiedIdentifierImpl#getMember <em>Member</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -78,6 +78,7 @@ public class QualifiedIdentifierImpl extends PropertyIdentifierImpl implements Q
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IPropertySelector getNamespace() {
 		return namespace;
 	}
@@ -102,6 +103,7 @@ public class QualifiedIdentifierImpl extends PropertyIdentifierImpl implements Q
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setNamespace(IPropertySelector newNamespace) {
 		if (newNamespace != namespace) {
 			NotificationChain msgs = null;
@@ -121,6 +123,7 @@ public class QualifiedIdentifierImpl extends PropertyIdentifierImpl implements Q
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IUnqualifiedSelector getMember() {
 		return member;
 	}
@@ -145,6 +148,7 @@ public class QualifiedIdentifierImpl extends PropertyIdentifierImpl implements Q
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setMember(IUnqualifiedSelector newMember) {
 		if (newMember != member) {
 			NotificationChain msgs = null;

@@ -22,11 +22,11 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.NodeImpl#getBegin <em>Begin</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.NodeImpl#getEnd <em>End</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -95,6 +95,7 @@ public abstract class NodeImpl extends EObjectImpl implements Node {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public int getBegin() {
 		return begin;
 	}
@@ -104,6 +105,7 @@ public abstract class NodeImpl extends EObjectImpl implements Node {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setBegin(int newBegin) {
 		int oldBegin = begin;
 		begin = newBegin;
@@ -116,6 +118,7 @@ public abstract class NodeImpl extends EObjectImpl implements Node {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public int getEnd() {
 		return end;
 	}
@@ -125,6 +128,7 @@ public abstract class NodeImpl extends EObjectImpl implements Node {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setEnd(int newEnd) {
 		int oldEnd = end;
 		end = newEnd;
@@ -209,7 +213,7 @@ public abstract class NodeImpl extends EObjectImpl implements Node {
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (begin: ");
 		result.append(begin);
 		result.append(", end: ");

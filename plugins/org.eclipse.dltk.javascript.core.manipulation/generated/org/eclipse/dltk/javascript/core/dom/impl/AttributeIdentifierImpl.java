@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.AttributeIdentifierImpl#getSelector <em>Selector</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public class AttributeIdentifierImpl extends PropertyIdentifierImpl implements A
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ISelector getSelector() {
 		return selector;
 	}
@@ -90,6 +91,7 @@ public class AttributeIdentifierImpl extends PropertyIdentifierImpl implements A
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setSelector(ISelector newSelector) {
 		if (newSelector != selector) {
 			NotificationChain msgs = null;

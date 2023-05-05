@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ContinueStatementImpl#getLabel <em>Label</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public class ContinueStatementImpl extends StatementImpl implements ContinueStat
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Label getLabel() {
 		return label;
 	}
@@ -90,6 +91,7 @@ public class ContinueStatementImpl extends StatementImpl implements ContinueStat
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setLabel(Label newLabel) {
 		if (newLabel != label) {
 			NotificationChain msgs = null;

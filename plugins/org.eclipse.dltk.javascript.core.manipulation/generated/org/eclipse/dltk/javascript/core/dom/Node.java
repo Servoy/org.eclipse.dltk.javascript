@@ -15,11 +15,11 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.Node#getBegin <em>Begin</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.Node#getEnd <em>End</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getNode()
  * @model abstract="true"

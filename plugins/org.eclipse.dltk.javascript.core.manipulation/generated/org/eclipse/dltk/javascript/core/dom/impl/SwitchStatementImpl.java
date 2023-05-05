@@ -32,11 +32,11 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.SwitchStatementImpl#getSelector <em>Selector</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.SwitchStatementImpl#getElements <em>Elements</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -85,6 +85,7 @@ public class SwitchStatementImpl extends StatementImpl implements SwitchStatemen
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getSelector() {
 		return selector;
 	}
@@ -109,6 +110,7 @@ public class SwitchStatementImpl extends StatementImpl implements SwitchStatemen
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setSelector(Expression newSelector) {
 		if (newSelector != selector) {
 			NotificationChain msgs = null;
@@ -128,6 +130,7 @@ public class SwitchStatementImpl extends StatementImpl implements SwitchStatemen
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<SwitchElement> getElements() {
 		if (elements == null) {
 			elements = new EObjectContainmentEList<SwitchElement>(SwitchElement.class, this, DomPackage.SWITCH_STATEMENT__ELEMENTS);

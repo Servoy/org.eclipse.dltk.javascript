@@ -14,13 +14,13 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.BinaryExpression#getLeft <em>Left</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.BinaryExpression#getRight <em>Right</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.BinaryExpression#getOperation <em>Operation</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.BinaryExpression#getOperatorPosition <em>Operator Position</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getBinaryExpression()
  * @model

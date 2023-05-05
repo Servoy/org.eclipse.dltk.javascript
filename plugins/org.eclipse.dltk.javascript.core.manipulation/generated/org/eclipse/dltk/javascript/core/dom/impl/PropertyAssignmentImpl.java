@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.PropertyAssignmentImpl#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public abstract class PropertyAssignmentImpl extends NodeImpl implements Propert
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IPropertyName getName() {
 		return name;
 	}
@@ -90,6 +91,7 @@ public abstract class PropertyAssignmentImpl extends NodeImpl implements Propert
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(IPropertyName newName) {
 		if (newName != name) {
 			NotificationChain msgs = null;

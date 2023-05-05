@@ -14,12 +14,12 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.ForStatement#getInitialization <em>Initialization</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.ForStatement#getCondition <em>Condition</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.ForStatement#getIncrement <em>Increment</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getForStatement()
  * @model

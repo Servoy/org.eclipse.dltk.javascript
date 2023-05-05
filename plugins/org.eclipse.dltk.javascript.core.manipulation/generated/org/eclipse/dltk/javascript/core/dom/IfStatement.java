@@ -14,12 +14,12 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.IfStatement#getPredicate <em>Predicate</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.IfStatement#getConsequent <em>Consequent</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.IfStatement#getAlternative <em>Alternative</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getIfStatement()
  * @model

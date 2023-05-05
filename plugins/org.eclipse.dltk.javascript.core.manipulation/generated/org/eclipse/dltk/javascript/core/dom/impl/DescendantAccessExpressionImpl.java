@@ -25,11 +25,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.DescendantAccessExpressionImpl#getObject <em>Object</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.DescendantAccessExpressionImpl#getProperty <em>Property</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -78,6 +78,7 @@ public class DescendantAccessExpressionImpl extends ExpressionImpl implements De
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getObject() {
 		return object;
 	}
@@ -102,6 +103,7 @@ public class DescendantAccessExpressionImpl extends ExpressionImpl implements De
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setObject(Expression newObject) {
 		if (newObject != object) {
 			NotificationChain msgs = null;
@@ -121,6 +123,7 @@ public class DescendantAccessExpressionImpl extends ExpressionImpl implements De
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IProperty getProperty() {
 		return property;
 	}
@@ -145,6 +148,7 @@ public class DescendantAccessExpressionImpl extends ExpressionImpl implements De
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setProperty(IProperty newProperty) {
 		if (newProperty != property) {
 			NotificationChain msgs = null;

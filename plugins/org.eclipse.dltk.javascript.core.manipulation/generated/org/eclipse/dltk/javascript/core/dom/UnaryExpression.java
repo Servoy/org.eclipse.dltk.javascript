@@ -14,11 +14,11 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.UnaryExpression#getArgument <em>Argument</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.UnaryExpression#getOperation <em>Operation</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getUnaryExpression()
  * @model

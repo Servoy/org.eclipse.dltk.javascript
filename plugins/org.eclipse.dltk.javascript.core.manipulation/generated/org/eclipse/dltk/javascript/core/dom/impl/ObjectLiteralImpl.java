@@ -28,10 +28,10 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ObjectLiteralImpl#getProperties <em>Properties</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -70,6 +70,7 @@ public class ObjectLiteralImpl extends ExpressionImpl implements ObjectLiteral {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<PropertyAssignment> getProperties() {
 		if (properties == null) {
 			properties = new EObjectContainmentEList<PropertyAssignment>(PropertyAssignment.class, this, DomPackage.OBJECT_LITERAL__PROPERTIES);

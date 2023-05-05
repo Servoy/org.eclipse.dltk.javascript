@@ -25,12 +25,12 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ForStatementImpl#getInitialization <em>Initialization</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ForStatementImpl#getCondition <em>Condition</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ForStatementImpl#getIncrement <em>Increment</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -89,6 +89,7 @@ public class ForStatementImpl extends IterationStatementImpl implements ForState
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IForInitializer getInitialization() {
 		return initialization;
 	}
@@ -113,6 +114,7 @@ public class ForStatementImpl extends IterationStatementImpl implements ForState
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setInitialization(IForInitializer newInitialization) {
 		if (newInitialization != initialization) {
 			NotificationChain msgs = null;
@@ -132,6 +134,7 @@ public class ForStatementImpl extends IterationStatementImpl implements ForState
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getCondition() {
 		return condition;
 	}
@@ -156,6 +159,7 @@ public class ForStatementImpl extends IterationStatementImpl implements ForState
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setCondition(Expression newCondition) {
 		if (newCondition != condition) {
 			NotificationChain msgs = null;
@@ -175,6 +179,7 @@ public class ForStatementImpl extends IterationStatementImpl implements ForState
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getIncrement() {
 		return increment;
 	}
@@ -199,6 +204,7 @@ public class ForStatementImpl extends IterationStatementImpl implements ForState
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setIncrement(Expression newIncrement) {
 		if (newIncrement != increment) {
 			NotificationChain msgs = null;

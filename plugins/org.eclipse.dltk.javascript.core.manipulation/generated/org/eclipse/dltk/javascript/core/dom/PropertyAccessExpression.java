@@ -14,11 +14,11 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.PropertyAccessExpression#getObject <em>Object</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.PropertyAccessExpression#getProperty <em>Property</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getPropertyAccessExpression()
  * @model

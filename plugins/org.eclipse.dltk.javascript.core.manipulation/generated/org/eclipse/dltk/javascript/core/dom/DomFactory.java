@@ -575,6 +575,15 @@ public interface DomFactory extends EFactory {
 	ForEachInStatement createForEachInStatement();
 
 	/**
+	 * Returns a new object of class '<em>Arrow Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Arrow Function</em>'.
+	 * @generated
+	 */
+	ArrowFunction createArrowFunction();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -584,5 +593,23 @@ public interface DomFactory extends EFactory {
 	DomPackage getDomPackage();
 
 	TemplateStringLiteral createTemplateStringLiteral();
+
+	/**
+	 * Returns a new object of class '<em>Template String Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Template String Expression</em>'.
+	 * @generated
+	 */
+	TemplateStringExpression createTemplateStringExpression();
+
+	/**
+	 * Returns a new object of class '<em>Tag Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Tag Function</em>'.
+	 * @generated
+	 */
+	TagFunction createTagFunction();
 
 } //DomFactory

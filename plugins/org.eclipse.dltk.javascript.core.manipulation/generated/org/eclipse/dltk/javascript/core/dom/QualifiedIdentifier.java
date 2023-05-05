@@ -14,11 +14,11 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.QualifiedIdentifier#getNamespace <em>Namespace</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.QualifiedIdentifier#getMember <em>Member</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getQualifiedIdentifier()
  * @model

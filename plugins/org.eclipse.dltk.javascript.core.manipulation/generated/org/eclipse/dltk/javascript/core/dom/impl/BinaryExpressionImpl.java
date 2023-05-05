@@ -25,13 +25,13 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.BinaryExpressionImpl#getLeft <em>Left</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.BinaryExpressionImpl#getRight <em>Right</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.BinaryExpressionImpl#getOperation <em>Operation</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.BinaryExpressionImpl#getOperatorPosition <em>Operator Position</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -120,6 +120,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getLeft() {
 		return left;
 	}
@@ -144,6 +145,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setLeft(Expression newLeft) {
 		if (newLeft != left) {
 			NotificationChain msgs = null;
@@ -163,6 +165,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getRight() {
 		return right;
 	}
@@ -187,6 +190,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setRight(Expression newRight) {
 		if (newRight != right) {
 			NotificationChain msgs = null;
@@ -206,6 +210,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BinaryOperator getOperation() {
 		return operation;
 	}
@@ -215,6 +220,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setOperation(BinaryOperator newOperation) {
 		BinaryOperator oldOperation = operation;
 		operation = newOperation == null ? OPERATION_EDEFAULT : newOperation;
@@ -227,6 +233,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public int getOperatorPosition() {
 		return operatorPosition;
 	}
@@ -236,6 +243,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setOperatorPosition(int newOperatorPosition) {
 		int oldOperatorPosition = operatorPosition;
 		operatorPosition = newOperatorPosition;
@@ -356,7 +364,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (operation: ");
 		result.append(operation);
 		result.append(", operatorPosition: ");

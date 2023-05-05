@@ -14,11 +14,11 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.ForEachInStatement#getItem <em>Item</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.ForEachInStatement#getCollection <em>Collection</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getForEachInStatement()
  * @model

@@ -14,11 +14,11 @@ package org.eclipse.dltk.javascript.core.dom;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.LabeledStatement#getLabel <em>Label</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.LabeledStatement#getStatement <em>Statement</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.dltk.javascript.core.dom.DomPackage#getLabeledStatement()
  * @model

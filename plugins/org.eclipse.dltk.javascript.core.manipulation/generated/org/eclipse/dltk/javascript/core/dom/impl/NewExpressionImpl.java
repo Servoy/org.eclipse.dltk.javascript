@@ -31,11 +31,11 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.NewExpressionImpl#getConstructor <em>Constructor</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.NewExpressionImpl#getArguments <em>Arguments</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -84,6 +84,7 @@ public class NewExpressionImpl extends ExpressionImpl implements NewExpression {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getConstructor() {
 		return constructor;
 	}
@@ -108,6 +109,7 @@ public class NewExpressionImpl extends ExpressionImpl implements NewExpression {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setConstructor(Expression newConstructor) {
 		if (newConstructor != constructor) {
 			NotificationChain msgs = null;
@@ -127,6 +129,7 @@ public class NewExpressionImpl extends ExpressionImpl implements NewExpression {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<Expression> getArguments() {
 		if (arguments == null) {
 			arguments = new EObjectContainmentEList<Expression>(Expression.class, this, DomPackage.NEW_EXPRESSION__ARGUMENTS);

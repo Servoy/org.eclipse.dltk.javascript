@@ -9,6 +9,7 @@ package org.eclipse.dltk.javascript.core.dom.impl;
 import org.eclipse.dltk.javascript.core.dom.AccessorAssignment;
 import org.eclipse.dltk.javascript.core.dom.ArrayAccessExpression;
 import org.eclipse.dltk.javascript.core.dom.ArrayLiteral;
+import org.eclipse.dltk.javascript.core.dom.ArrowFunction;
 import org.eclipse.dltk.javascript.core.dom.AttributeIdentifier;
 import org.eclipse.dltk.javascript.core.dom.BinaryExpression;
 import org.eclipse.dltk.javascript.core.dom.BinaryOperator;
@@ -72,6 +73,9 @@ import org.eclipse.dltk.javascript.core.dom.Statement;
 import org.eclipse.dltk.javascript.core.dom.StringLiteral;
 import org.eclipse.dltk.javascript.core.dom.SwitchElement;
 import org.eclipse.dltk.javascript.core.dom.SwitchStatement;
+import org.eclipse.dltk.javascript.core.dom.TagFunction;
+import org.eclipse.dltk.javascript.core.dom.TemplateStringExpression;
+import org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.core.dom.ThisExpression;
 import org.eclipse.dltk.javascript.core.dom.ThrowStatement;
 import org.eclipse.dltk.javascript.core.dom.TryStatement;
@@ -645,6 +649,34 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass arrowFunctionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass templateStringLiteralEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass templateStringExpressionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass tagFunctionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EEnum unaryOperatorEEnum = null;
 
 	/**
@@ -682,7 +714,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 
 	/**
 	 * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-	 * 
+	 *
 	 * <p>This method is used to initialize {@link DomPackage#eINSTANCE} when that field is accessed.
 	 * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
 	 * <!-- begin-user-doc -->
@@ -696,7 +728,8 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		if (isInited) return (DomPackage)EPackage.Registry.INSTANCE.getEPackage(DomPackage.eNS_URI);
 
 		// Obtain or create and register package
-		DomPackageImpl theDomPackage = (DomPackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof DomPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new DomPackageImpl());
+		Object registeredDomPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
+		DomPackageImpl theDomPackage = registeredDomPackage instanceof DomPackageImpl ? (DomPackageImpl)registeredDomPackage : new DomPackageImpl();
 
 		isInited = true;
 
@@ -709,7 +742,6 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		// Mark meta-data to indicate it can't be changed
 		theDomPackage.freeze();
 
-  
 		// Update the registry and return the package
 		EPackage.Registry.INSTANCE.put(DomPackage.eNS_URI, theDomPackage);
 		return theDomPackage;
@@ -720,6 +752,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getNode() {
 		return nodeEClass;
 	}
@@ -729,6 +762,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getNode_Begin() {
 		return (EAttribute)nodeEClass.getEStructuralFeatures().get(0);
 	}
@@ -738,6 +772,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getNode_End() {
 		return (EAttribute)nodeEClass.getEStructuralFeatures().get(1);
 	}
@@ -747,6 +782,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getComment() {
 		return commentEClass;
 	}
@@ -756,6 +792,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getComment_Text() {
 		return (EAttribute)commentEClass.getEStructuralFeatures().get(0);
 	}
@@ -765,6 +802,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIdentifier() {
 		return identifierEClass;
 	}
@@ -774,6 +812,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getIdentifier_Name() {
 		return (EAttribute)identifierEClass.getEStructuralFeatures().get(0);
 	}
@@ -783,6 +822,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getVariableReference() {
 		return variableReferenceEClass;
 	}
@@ -792,6 +832,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getVariableReference_Variable() {
 		return (EReference)variableReferenceEClass.getEStructuralFeatures().get(0);
 	}
@@ -801,6 +842,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getLabel() {
 		return labelEClass;
 	}
@@ -810,6 +852,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getLabel_Name() {
 		return (EAttribute)labelEClass.getEStructuralFeatures().get(0);
 	}
@@ -819,6 +862,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getExpression() {
 		return expressionEClass;
 	}
@@ -828,6 +872,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getNullLiteral() {
 		return nullLiteralEClass;
 	}
@@ -837,6 +882,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getBooleanLiteral() {
 		return booleanLiteralEClass;
 	}
@@ -846,6 +892,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBooleanLiteral_Text() {
 		return (EAttribute)booleanLiteralEClass.getEStructuralFeatures().get(0);
 	}
@@ -855,6 +902,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getNumericLiteral() {
 		return numericLiteralEClass;
 	}
@@ -864,6 +912,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getNumericLiteral_Text() {
 		return (EAttribute)numericLiteralEClass.getEStructuralFeatures().get(0);
 	}
@@ -873,6 +922,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getStringLiteral() {
 		return stringLiteralEClass;
 	}
@@ -882,6 +932,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getStringLiteral_Text() {
 		return (EAttribute)stringLiteralEClass.getEStructuralFeatures().get(0);
 	}
@@ -891,6 +942,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getRegularExpressionLiteral() {
 		return regularExpressionLiteralEClass;
 	}
@@ -900,6 +952,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getRegularExpressionLiteral_Text() {
 		return (EAttribute)regularExpressionLiteralEClass.getEStructuralFeatures().get(0);
 	}
@@ -909,6 +962,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getThisExpression() {
 		return thisExpressionEClass;
 	}
@@ -918,6 +972,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getArrayLiteral() {
 		return arrayLiteralEClass;
 	}
@@ -927,6 +982,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getArrayLiteral_Elements() {
 		return (EReference)arrayLiteralEClass.getEStructuralFeatures().get(0);
 	}
@@ -936,6 +992,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIArrayElement() {
 		return iArrayElementEClass;
 	}
@@ -945,6 +1002,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getElision() {
 		return elisionEClass;
 	}
@@ -954,6 +1012,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getObjectLiteral() {
 		return objectLiteralEClass;
 	}
@@ -963,6 +1022,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getObjectLiteral_Properties() {
 		return (EReference)objectLiteralEClass.getEStructuralFeatures().get(0);
 	}
@@ -972,6 +1032,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getPropertyAssignment() {
 		return propertyAssignmentEClass;
 	}
@@ -981,6 +1042,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getPropertyAssignment_Name() {
 		return (EReference)propertyAssignmentEClass.getEStructuralFeatures().get(0);
 	}
@@ -990,6 +1052,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIPropertyName() {
 		return iPropertyNameEClass;
 	}
@@ -999,6 +1062,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSimplePropertyAssignment() {
 		return simplePropertyAssignmentEClass;
 	}
@@ -1008,6 +1072,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSimplePropertyAssignment_Initializer() {
 		return (EReference)simplePropertyAssignmentEClass.getEStructuralFeatures().get(0);
 	}
@@ -1017,6 +1082,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getAccessorAssignment() {
 		return accessorAssignmentEClass;
 	}
@@ -1026,6 +1092,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getAccessorAssignment_Body() {
 		return (EReference)accessorAssignmentEClass.getEStructuralFeatures().get(0);
 	}
@@ -1035,6 +1102,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getGetterAssignment() {
 		return getterAssignmentEClass;
 	}
@@ -1044,6 +1112,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSetterAssignment() {
 		return setterAssignmentEClass;
 	}
@@ -1053,6 +1122,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSetterAssignment_Parameter() {
 		return (EReference)setterAssignmentEClass.getEStructuralFeatures().get(0);
 	}
@@ -1062,6 +1132,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getParenthesizedExpression() {
 		return parenthesizedExpressionEClass;
 	}
@@ -1071,6 +1142,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getParenthesizedExpression_Enclosed() {
 		return (EReference)parenthesizedExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1080,6 +1152,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getArrayAccessExpression() {
 		return arrayAccessExpressionEClass;
 	}
@@ -1089,6 +1162,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getArrayAccessExpression_Array() {
 		return (EReference)arrayAccessExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1098,6 +1172,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getArrayAccessExpression_Index() {
 		return (EReference)arrayAccessExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1107,6 +1182,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getPropertyAccessExpression() {
 		return propertyAccessExpressionEClass;
 	}
@@ -1116,6 +1192,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getPropertyAccessExpression_Object() {
 		return (EReference)propertyAccessExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1125,6 +1202,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getPropertyAccessExpression_Property() {
 		return (EReference)propertyAccessExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1134,6 +1212,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getNewExpression() {
 		return newExpressionEClass;
 	}
@@ -1143,6 +1222,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getNewExpression_Constructor() {
 		return (EReference)newExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1152,6 +1232,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getNewExpression_Arguments() {
 		return (EReference)newExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1161,6 +1242,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getCallExpression() {
 		return callExpressionEClass;
 	}
@@ -1170,6 +1252,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getCallExpression_Applicant() {
 		return (EReference)callExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1179,6 +1262,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getCallExpression_Arguments() {
 		return (EReference)callExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1188,6 +1272,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getUnaryExpression() {
 		return unaryExpressionEClass;
 	}
@@ -1197,6 +1282,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getUnaryExpression_Argument() {
 		return (EReference)unaryExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1206,6 +1292,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getUnaryExpression_Operation() {
 		return (EAttribute)unaryExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1215,6 +1302,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getBinaryExpression() {
 		return binaryExpressionEClass;
 	}
@@ -1224,6 +1312,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getBinaryExpression_Left() {
 		return (EReference)binaryExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1233,6 +1322,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getBinaryExpression_Right() {
 		return (EReference)binaryExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1242,6 +1332,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBinaryExpression_Operation() {
 		return (EAttribute)binaryExpressionEClass.getEStructuralFeatures().get(2);
 	}
@@ -1251,6 +1342,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBinaryExpression_OperatorPosition() {
 		return (EAttribute)binaryExpressionEClass.getEStructuralFeatures().get(3);
 	}
@@ -1260,6 +1352,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getConditionalExpression() {
 		return conditionalExpressionEClass;
 	}
@@ -1269,6 +1362,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getConditionalExpression_Predicate() {
 		return (EReference)conditionalExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1278,6 +1372,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getConditionalExpression_Consequent() {
 		return (EReference)conditionalExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1287,6 +1382,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getConditionalExpression_Alternative() {
 		return (EReference)conditionalExpressionEClass.getEStructuralFeatures().get(2);
 	}
@@ -1296,6 +1392,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getStatement() {
 		return statementEClass;
 	}
@@ -1305,6 +1402,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getBlockStatement() {
 		return blockStatementEClass;
 	}
@@ -1314,6 +1412,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getBlockStatement_Statements() {
 		return (EReference)blockStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1323,6 +1422,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getVariableStatement() {
 		return variableStatementEClass;
 	}
@@ -1332,6 +1432,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getVariableStatement_Declarations() {
 		return (EReference)variableStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1341,6 +1442,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getVariableDeclaration() {
 		return variableDeclarationEClass;
 	}
@@ -1350,6 +1452,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getVariableDeclaration_Identifier() {
 		return (EReference)variableDeclarationEClass.getEStructuralFeatures().get(0);
 	}
@@ -1359,6 +1462,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getVariableDeclaration_Initializer() {
 		return (EReference)variableDeclarationEClass.getEStructuralFeatures().get(1);
 	}
@@ -1368,6 +1472,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getEmptyStatement() {
 		return emptyStatementEClass;
 	}
@@ -1377,6 +1482,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getExpressionStatement() {
 		return expressionStatementEClass;
 	}
@@ -1386,6 +1492,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getExpressionStatement_Expression() {
 		return (EReference)expressionStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1395,6 +1502,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIfStatement() {
 		return ifStatementEClass;
 	}
@@ -1404,6 +1512,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getIfStatement_Predicate() {
 		return (EReference)ifStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1413,6 +1522,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getIfStatement_Consequent() {
 		return (EReference)ifStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -1422,6 +1532,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getIfStatement_Alternative() {
 		return (EReference)ifStatementEClass.getEStructuralFeatures().get(2);
 	}
@@ -1431,6 +1542,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIterationStatement() {
 		return iterationStatementEClass;
 	}
@@ -1440,6 +1552,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getIterationStatement_Body() {
 		return (EReference)iterationStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1449,6 +1562,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDoStatement() {
 		return doStatementEClass;
 	}
@@ -1458,6 +1572,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDoStatement_Condition() {
 		return (EReference)doStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1467,6 +1582,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getWhileStatement() {
 		return whileStatementEClass;
 	}
@@ -1476,6 +1592,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getWhileStatement_Condition() {
 		return (EReference)whileStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1485,6 +1602,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getForStatement() {
 		return forStatementEClass;
 	}
@@ -1494,6 +1612,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getForStatement_Initialization() {
 		return (EReference)forStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1503,6 +1622,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getForStatement_Condition() {
 		return (EReference)forStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -1512,6 +1632,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getForStatement_Increment() {
 		return (EReference)forStatementEClass.getEStructuralFeatures().get(2);
 	}
@@ -1521,6 +1642,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIForInitializer() {
 		return iForInitializerEClass;
 	}
@@ -1530,6 +1652,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getForInStatement() {
 		return forInStatementEClass;
 	}
@@ -1539,6 +1662,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getForInStatement_Item() {
 		return (EReference)forInStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1548,6 +1672,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getForInStatement_Collection() {
 		return (EReference)forInStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -1557,6 +1682,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getContinueStatement() {
 		return continueStatementEClass;
 	}
@@ -1566,6 +1692,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getContinueStatement_Label() {
 		return (EReference)continueStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1575,6 +1702,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getBreakStatement() {
 		return breakStatementEClass;
 	}
@@ -1584,6 +1712,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getBreakStatement_Label() {
 		return (EReference)breakStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1593,6 +1722,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getReturnStatement() {
 		return returnStatementEClass;
 	}
@@ -1602,6 +1732,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getReturnStatement_Expression() {
 		return (EReference)returnStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1611,6 +1742,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getWithStatement() {
 		return withStatementEClass;
 	}
@@ -1620,6 +1752,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getWithStatement_Expression() {
 		return (EReference)withStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1629,6 +1762,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getWithStatement_Statement() {
 		return (EReference)withStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -1638,6 +1772,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSwitchStatement() {
 		return switchStatementEClass;
 	}
@@ -1647,6 +1782,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSwitchStatement_Selector() {
 		return (EReference)switchStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1656,6 +1792,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSwitchStatement_Elements() {
 		return (EReference)switchStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -1665,6 +1802,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSwitchElement() {
 		return switchElementEClass;
 	}
@@ -1674,6 +1812,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSwitchElement_Statements() {
 		return (EReference)switchElementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1683,6 +1822,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getCaseClause() {
 		return caseClauseEClass;
 	}
@@ -1692,6 +1832,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getCaseClause_Expression() {
 		return (EReference)caseClauseEClass.getEStructuralFeatures().get(0);
 	}
@@ -1701,6 +1842,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDefaultClause() {
 		return defaultClauseEClass;
 	}
@@ -1710,6 +1852,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getLabeledStatement() {
 		return labeledStatementEClass;
 	}
@@ -1719,6 +1862,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getLabeledStatement_Label() {
 		return (EReference)labeledStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1728,6 +1872,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getLabeledStatement_Statement() {
 		return (EReference)labeledStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -1737,6 +1882,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getThrowStatement() {
 		return throwStatementEClass;
 	}
@@ -1746,6 +1892,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getThrowStatement_Exception() {
 		return (EReference)throwStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1755,6 +1902,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getTryStatement() {
 		return tryStatementEClass;
 	}
@@ -1764,6 +1912,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getTryStatement_Body() {
 		return (EReference)tryStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1773,6 +1922,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getTryStatement_Catches() {
 		return (EReference)tryStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -1782,6 +1932,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getTryStatement_FinallyClause() {
 		return (EReference)tryStatementEClass.getEStructuralFeatures().get(2);
 	}
@@ -1791,6 +1942,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getCatchClause() {
 		return catchClauseEClass;
 	}
@@ -1800,6 +1952,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getCatchClause_Exception() {
 		return (EReference)catchClauseEClass.getEStructuralFeatures().get(0);
 	}
@@ -1809,6 +1962,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getCatchClause_Filter() {
 		return (EReference)catchClauseEClass.getEStructuralFeatures().get(1);
 	}
@@ -1818,6 +1972,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getCatchClause_Body() {
 		return (EReference)catchClauseEClass.getEStructuralFeatures().get(2);
 	}
@@ -1827,6 +1982,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getFinallyClause() {
 		return finallyClauseEClass;
 	}
@@ -1836,6 +1992,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFinallyClause_Body() {
 		return (EReference)finallyClauseEClass.getEStructuralFeatures().get(0);
 	}
@@ -1845,6 +2002,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getFunctionExpression() {
 		return functionExpressionEClass;
 	}
@@ -1854,6 +2012,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFunctionExpression_Documentation() {
 		return (EReference)functionExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -1863,6 +2022,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFunctionExpression_Identifier() {
 		return (EReference)functionExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -1872,6 +2032,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFunctionExpression_Parameters() {
 		return (EReference)functionExpressionEClass.getEStructuralFeatures().get(2);
 	}
@@ -1881,6 +2042,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFunctionExpression_Body() {
 		return (EReference)functionExpressionEClass.getEStructuralFeatures().get(3);
 	}
@@ -1890,6 +2052,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFunctionExpression_ParametersPosition() {
 		return (EAttribute)functionExpressionEClass.getEStructuralFeatures().get(4);
 	}
@@ -1899,6 +2062,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getParameter() {
 		return parameterEClass;
 	}
@@ -1908,6 +2072,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getParameter_Name() {
 		return (EReference)parameterEClass.getEStructuralFeatures().get(0);
 	}
@@ -1917,6 +2082,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSource() {
 		return sourceEClass;
 	}
@@ -1926,6 +2092,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSource_Statements() {
 		return (EReference)sourceEClass.getEStructuralFeatures().get(0);
 	}
@@ -1935,6 +2102,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getConstStatement() {
 		return constStatementEClass;
 	}
@@ -1944,6 +2112,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getConstStatement_Declarations() {
 		return (EReference)constStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -1953,6 +2122,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getPropertyIdentifier() {
 		return propertyIdentifierEClass;
 	}
@@ -1962,6 +2132,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIProperty() {
 		return iPropertyEClass;
 	}
@@ -1971,6 +2142,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getXmlInitializer() {
 		return xmlInitializerEClass;
 	}
@@ -1980,6 +2152,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getXmlInitializer_Fragments() {
 		return (EReference)xmlInitializerEClass.getEStructuralFeatures().get(0);
 	}
@@ -1989,6 +2162,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getAttributeIdentifier() {
 		return attributeIdentifierEClass;
 	}
@@ -1998,6 +2172,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getAttributeIdentifier_Selector() {
 		return (EReference)attributeIdentifierEClass.getEStructuralFeatures().get(0);
 	}
@@ -2007,6 +2182,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getISelector() {
 		return iSelectorEClass;
 	}
@@ -2016,6 +2192,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getQualifiedIdentifier() {
 		return qualifiedIdentifierEClass;
 	}
@@ -2025,6 +2202,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getQualifiedIdentifier_Namespace() {
 		return (EReference)qualifiedIdentifierEClass.getEStructuralFeatures().get(0);
 	}
@@ -2034,6 +2212,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getQualifiedIdentifier_Member() {
 		return (EReference)qualifiedIdentifierEClass.getEStructuralFeatures().get(1);
 	}
@@ -2043,6 +2222,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIUnqualifiedSelector() {
 		return iUnqualifiedSelectorEClass;
 	}
@@ -2052,6 +2232,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getWildcardIdentifier() {
 		return wildcardIdentifierEClass;
 	}
@@ -2061,6 +2242,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getIPropertySelector() {
 		return iPropertySelectorEClass;
 	}
@@ -2070,6 +2252,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getExpressionSelector() {
 		return expressionSelectorEClass;
 	}
@@ -2079,6 +2262,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getExpressionSelector_Index() {
 		return (EReference)expressionSelectorEClass.getEStructuralFeatures().get(0);
 	}
@@ -2088,6 +2272,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getXmlFragment() {
 		return xmlFragmentEClass;
 	}
@@ -2097,6 +2282,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getXmlTextFragment() {
 		return xmlTextFragmentEClass;
 	}
@@ -2106,6 +2292,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getXmlTextFragment_Text() {
 		return (EAttribute)xmlTextFragmentEClass.getEStructuralFeatures().get(0);
 	}
@@ -2115,6 +2302,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getXmlExpressionFragment() {
 		return xmlExpressionFragmentEClass;
 	}
@@ -2124,6 +2312,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getXmlExpressionFragment_Expression() {
 		return (EReference)xmlExpressionFragmentEClass.getEStructuralFeatures().get(0);
 	}
@@ -2133,6 +2322,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDescendantAccessExpression() {
 		return descendantAccessExpressionEClass;
 	}
@@ -2142,6 +2332,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDescendantAccessExpression_Object() {
 		return (EReference)descendantAccessExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -2151,6 +2342,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDescendantAccessExpression_Property() {
 		return (EReference)descendantAccessExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -2160,6 +2352,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getFilterExpression() {
 		return filterExpressionEClass;
 	}
@@ -2169,6 +2362,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFilterExpression_Object() {
 		return (EReference)filterExpressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -2178,6 +2372,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFilterExpression_Filter() {
 		return (EReference)filterExpressionEClass.getEStructuralFeatures().get(1);
 	}
@@ -2187,6 +2382,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDefaultXmlNamespaceStatement() {
 		return defaultXmlNamespaceStatementEClass;
 	}
@@ -2196,6 +2392,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDefaultXmlNamespaceStatement_Expression() {
 		return (EReference)defaultXmlNamespaceStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -2205,6 +2402,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getForEachInStatement() {
 		return forEachInStatementEClass;
 	}
@@ -2214,6 +2412,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getForEachInStatement_Item() {
 		return (EReference)forEachInStatementEClass.getEStructuralFeatures().get(0);
 	}
@@ -2223,6 +2422,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getForEachInStatement_Collection() {
 		return (EReference)forEachInStatementEClass.getEStructuralFeatures().get(1);
 	}
@@ -2232,6 +2432,137 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
+	public EClass getArrowFunction() {
+		return arrowFunctionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getArrowFunction_Documentation() {
+		return (EReference)arrowFunctionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getArrowFunction_Parameters() {
+		return (EReference)arrowFunctionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getArrowFunction_Body() {
+		return (EReference)arrowFunctionEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getArrowFunction_ParametersPosition() {
+		return (EAttribute)arrowFunctionEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getTemplateStringLiteral() {
+		return templateStringLiteralEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getTemplateStringLiteral_Text() {
+		return (EAttribute)templateStringLiteralEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getTemplateStringLiteral_TemplateExpressions() {
+		return (EReference)templateStringLiteralEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getTemplateStringExpression() {
+		return templateStringExpressionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getTemplateStringExpression_Expression() {
+		return (EReference)templateStringExpressionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getTagFunction() {
+		return tagFunctionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getTagFunction_TagFunction() {
+		return (EReference)tagFunctionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getTagFunction_TemplateStringLiteral() {
+		return (EReference)tagFunctionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getUnaryOperator() {
 		return unaryOperatorEEnum;
 	}
@@ -2241,6 +2572,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EEnum getBinaryOperator() {
 		return binaryOperatorEEnum;
 	}
@@ -2250,6 +2582,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DomFactory getDomFactory() {
 		return (DomFactory)getEFactoryInstance();
 	}
@@ -2518,6 +2851,23 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		createEReference(forEachInStatementEClass, FOR_EACH_IN_STATEMENT__ITEM);
 		createEReference(forEachInStatementEClass, FOR_EACH_IN_STATEMENT__COLLECTION);
 
+		arrowFunctionEClass = createEClass(ARROW_FUNCTION);
+		createEReference(arrowFunctionEClass, ARROW_FUNCTION__DOCUMENTATION);
+		createEReference(arrowFunctionEClass, ARROW_FUNCTION__PARAMETERS);
+		createEReference(arrowFunctionEClass, ARROW_FUNCTION__BODY);
+		createEAttribute(arrowFunctionEClass, ARROW_FUNCTION__PARAMETERS_POSITION);
+
+		templateStringLiteralEClass = createEClass(TEMPLATE_STRING_LITERAL);
+		createEAttribute(templateStringLiteralEClass, TEMPLATE_STRING_LITERAL__TEXT);
+		createEReference(templateStringLiteralEClass, TEMPLATE_STRING_LITERAL__TEMPLATE_EXPRESSIONS);
+
+		templateStringExpressionEClass = createEClass(TEMPLATE_STRING_EXPRESSION);
+		createEReference(templateStringExpressionEClass, TEMPLATE_STRING_EXPRESSION__EXPRESSION);
+
+		tagFunctionEClass = createEClass(TAG_FUNCTION);
+		createEReference(tagFunctionEClass, TAG_FUNCTION__TAG_FUNCTION);
+		createEReference(tagFunctionEClass, TAG_FUNCTION__TEMPLATE_STRING_LITERAL);
+
 		// Create enums
 		unaryOperatorEEnum = createEEnum(UNARY_OPERATOR);
 		binaryOperatorEEnum = createEEnum(BINARY_OPERATOR);
@@ -2638,6 +2988,11 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		filterExpressionEClass.getESuperTypes().add(this.getExpression());
 		defaultXmlNamespaceStatementEClass.getESuperTypes().add(this.getStatement());
 		forEachInStatementEClass.getESuperTypes().add(this.getIterationStatement());
+		arrowFunctionEClass.getESuperTypes().add(this.getExpression());
+		templateStringLiteralEClass.getESuperTypes().add(this.getExpression());
+		templateStringLiteralEClass.getESuperTypes().add(this.getIPropertyName());
+		templateStringExpressionEClass.getESuperTypes().add(this.getExpression());
+		tagFunctionEClass.getESuperTypes().add(this.getExpression());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(nodeEClass, Node.class, "Node", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -2885,6 +3240,23 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		initEReference(getForEachInStatement_Item(), this.getIForInitializer(), null, "item", null, 1, 1, ForEachInStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getForEachInStatement_Collection(), this.getExpression(), null, "collection", null, 1, 1, ForEachInStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(arrowFunctionEClass, ArrowFunction.class, "ArrowFunction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getArrowFunction_Documentation(), this.getComment(), null, "documentation", null, 0, 1, ArrowFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getArrowFunction_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, ArrowFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getArrowFunction_Body(), this.getStatement(), null, "body", null, 1, 1, ArrowFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getArrowFunction_ParametersPosition(), ecorePackage.getEInt(), "parametersPosition", null, 1, 1, ArrowFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(templateStringLiteralEClass, TemplateStringLiteral.class, "TemplateStringLiteral", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTemplateStringLiteral_Text(), ecorePackage.getEString(), "text", null, 1, 1, TemplateStringLiteral.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTemplateStringLiteral_TemplateExpressions(), this.getTemplateStringExpression(), null, "templateExpressions", null, 0, -1, TemplateStringLiteral.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(templateStringExpressionEClass, TemplateStringExpression.class, "TemplateStringExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTemplateStringExpression_Expression(), this.getExpression(), null, "expression", null, 1, 1, TemplateStringExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(tagFunctionEClass, TagFunction.class, "TagFunction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTagFunction_TagFunction(), this.getExpression(), null, "tagFunction", null, 1, 1, TagFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTagFunction_TemplateStringLiteral(), this.getTemplateStringLiteral(), null, "templateStringLiteral", null, 0, 1, TagFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		// Initialize enums and add enum literals
 		initEEnum(unaryOperatorEEnum, UnaryOperator.class, "UnaryOperator");
 		addEEnumLiteral(unaryOperatorEEnum, UnaryOperator.POSTFIX_INC);
@@ -2953,42 +3325,48 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
     protected void createNullAnnotations() {
-		String source = null;		
+		String source = null;
 		addAnnotation
-		  (getIdentifier_Name(), 
-		   source, 
+		  (getIdentifier_Name(),
+		   source,
 		   new String[] {
-			 "value", "1"
-		   });		
+			   "value", "1"
+		   });
 		addAnnotation
-		  (getLabel_Name(), 
-		   source, 
+		  (getLabel_Name(),
+		   source,
 		   new String[] {
-			 "value", "1"
-		   });		
+			   "value", "1"
+		   });
 		addAnnotation
-		  (getBooleanLiteral_Text(), 
-		   source, 
+		  (getBooleanLiteral_Text(),
+		   source,
 		   new String[] {
-			 "value", "1"
-		   });		
+			   "value", "1"
+		   });
 		addAnnotation
-		  (getNumericLiteral_Text(), 
-		   source, 
+		  (getNumericLiteral_Text(),
+		   source,
 		   new String[] {
-			 "value", "1"
-		   });		
+			   "value", "1"
+		   });
 		addAnnotation
-		  (getStringLiteral_Text(), 
-		   source, 
+		  (getStringLiteral_Text(),
+		   source,
 		   new String[] {
-			 "value", "1"
-		   });		
+			   "value", "1"
+		   });
 		addAnnotation
-		  (getRegularExpressionLiteral_Text(), 
-		   source, 
+		  (getRegularExpressionLiteral_Text(),
+		   source,
 		   new String[] {
-			 "value", "1"
+			   "value", "1"
+		   });
+		addAnnotation
+		  (getTemplateStringLiteral_Text(),
+		   source,
+		   new String[] {
+			   "value", "1"
 		   });
 	}
 

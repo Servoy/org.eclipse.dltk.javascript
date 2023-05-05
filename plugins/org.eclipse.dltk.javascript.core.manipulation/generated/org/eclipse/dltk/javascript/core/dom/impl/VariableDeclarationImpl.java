@@ -22,11 +22,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.VariableDeclarationImpl#getIdentifier <em>Identifier</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.VariableDeclarationImpl#getInitializer <em>Initializer</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -75,6 +75,7 @@ public class VariableDeclarationImpl extends NodeImpl implements VariableDeclara
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Identifier getIdentifier() {
 		return identifier;
 	}
@@ -99,6 +100,7 @@ public class VariableDeclarationImpl extends NodeImpl implements VariableDeclara
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setIdentifier(Identifier newIdentifier) {
 		if (newIdentifier != identifier) {
 			NotificationChain msgs = null;
@@ -118,6 +120,7 @@ public class VariableDeclarationImpl extends NodeImpl implements VariableDeclara
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getInitializer() {
 		return initializer;
 	}
@@ -142,6 +145,7 @@ public class VariableDeclarationImpl extends NodeImpl implements VariableDeclara
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setInitializer(Expression newInitializer) {
 		if (newInitializer != initializer) {
 			NotificationChain msgs = null;

@@ -31,11 +31,11 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.CallExpressionImpl#getApplicant <em>Applicant</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.CallExpressionImpl#getArguments <em>Arguments</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -84,6 +84,7 @@ public class CallExpressionImpl extends ExpressionImpl implements CallExpression
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getApplicant() {
 		return applicant;
 	}
@@ -108,6 +109,7 @@ public class CallExpressionImpl extends ExpressionImpl implements CallExpression
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setApplicant(Expression newApplicant) {
 		if (newApplicant != applicant) {
 			NotificationChain msgs = null;
@@ -127,6 +129,7 @@ public class CallExpressionImpl extends ExpressionImpl implements CallExpression
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<Expression> getArguments() {
 		if (arguments == null) {
 			arguments = new EObjectContainmentEList<Expression>(Expression.class, this, DomPackage.CALL_EXPRESSION__ARGUMENTS);

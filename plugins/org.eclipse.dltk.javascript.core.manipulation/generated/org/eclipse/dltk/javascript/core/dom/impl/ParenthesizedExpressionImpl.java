@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.ParenthesizedExpressionImpl#getEnclosed <em>Enclosed</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public class ParenthesizedExpressionImpl extends ExpressionImpl implements Paren
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getEnclosed() {
 		return enclosed;
 	}
@@ -90,6 +91,7 @@ public class ParenthesizedExpressionImpl extends ExpressionImpl implements Paren
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setEnclosed(Expression newEnclosed) {
 		if (newEnclosed != enclosed) {
 			NotificationChain msgs = null;

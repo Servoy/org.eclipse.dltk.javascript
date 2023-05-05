@@ -466,7 +466,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #LSH
-	 * @model name="lsh" literal="<<"
+	 * @model name="lsh" literal="&lt;&lt;"
 	 * @generated
 	 * @ordered
 	 */
@@ -481,7 +481,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #RSH
-	 * @model name="rsh" literal=">>"
+	 * @model name="rsh" literal="&gt;&gt;"
 	 * @generated
 	 * @ordered
 	 */
@@ -496,7 +496,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #URSH
-	 * @model name="ursh" literal=">>>"
+	 * @model name="ursh" literal="&gt;&gt;&gt;"
 	 * @generated
 	 * @ordered
 	 */
@@ -511,7 +511,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #LESS
-	 * @model name="less" literal="<"
+	 * @model name="less" literal="&lt;"
 	 * @generated
 	 * @ordered
 	 */
@@ -526,7 +526,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #GREATER
-	 * @model name="greater" literal=">"
+	 * @model name="greater" literal="&gt;"
 	 * @generated
 	 * @ordered
 	 */
@@ -541,7 +541,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #LEQ
-	 * @model name="leq" literal="<="
+	 * @model name="leq" literal="&lt;="
 	 * @generated
 	 * @ordered
 	 */
@@ -556,7 +556,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #GEQ
-	 * @model name="geq" literal=">="
+	 * @model name="geq" literal="&gt;="
 	 * @generated
 	 * @ordered
 	 */
@@ -661,7 +661,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #BW_AND
-	 * @model name="bwAnd" literal="&"
+	 * @model name="bwAnd" literal="&amp;"
 	 * @generated
 	 * @ordered
 	 */
@@ -706,7 +706,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #LOG_AND
-	 * @model name="logAnd" literal="&&"
+	 * @model name="logAnd" literal="&amp;&amp;"
 	 * @generated
 	 * @ordered
 	 */
@@ -826,7 +826,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #LSH_ASSIGN
-	 * @model name="lshAssign" literal="<<="
+	 * @model name="lshAssign" literal="&lt;&lt;="
 	 * @generated
 	 * @ordered
 	 */
@@ -841,7 +841,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #RSH_ASSIGN
-	 * @model name="rshAssign" literal=">>="
+	 * @model name="rshAssign" literal="&gt;&gt;="
 	 * @generated
 	 * @ordered
 	 */
@@ -856,7 +856,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #URSH_ASSIGN
-	 * @model name="urshAssign" literal=">>>="
+	 * @model name="urshAssign" literal="&gt;&gt;&gt;="
 	 * @generated
 	 * @ordered
 	 */
@@ -871,7 +871,7 @@ public enum BinaryOperator implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #AND_ASSIGN
-	 * @model name="andAssign" literal="&="
+	 * @model name="andAssign" literal="&amp;="
 	 * @generated
 	 * @ordered
 	 */
@@ -980,6 +980,8 @@ public enum BinaryOperator implements Enumerator {
 	 * Returns the '<em><b>Binary Operator</b></em>' literal with the specified literal value.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @param literal the literal.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static BinaryOperator get(String literal) {
@@ -996,6 +998,8 @@ public enum BinaryOperator implements Enumerator {
 	 * Returns the '<em><b>Binary Operator</b></em>' literal with the specified name.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @param name the name.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static BinaryOperator getByName(String name) {
@@ -1012,6 +1016,8 @@ public enum BinaryOperator implements Enumerator {
 	 * Returns the '<em><b>Binary Operator</b></em>' literal with the specified integer value.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @param value the integer value.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static BinaryOperator get(int value) {
@@ -1094,6 +1100,7 @@ public enum BinaryOperator implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public int getValue() {
 	  return value;
 	}
@@ -1103,6 +1110,7 @@ public enum BinaryOperator implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 	  return name;
 	}
@@ -1112,6 +1120,7 @@ public enum BinaryOperator implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getLiteral() {
 	  return literal;
 	}

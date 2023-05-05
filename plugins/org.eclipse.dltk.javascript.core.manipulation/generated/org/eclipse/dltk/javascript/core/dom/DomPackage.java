@@ -3828,6 +3828,235 @@ public interface DomPackage extends EPackage {
 	int FOR_EACH_IN_STATEMENT_FEATURE_COUNT = ITERATION_STATEMENT_FEATURE_COUNT + 2;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.ArrowFunctionImpl <em>Arrow Function</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.ArrowFunctionImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getArrowFunction()
+	 * @generated
+	 */
+	int ARROW_FUNCTION = 77;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARROW_FUNCTION__BEGIN = EXPRESSION__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARROW_FUNCTION__END = EXPRESSION__END;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARROW_FUNCTION__DOCUMENTATION = EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARROW_FUNCTION__PARAMETERS = EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Body</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARROW_FUNCTION__BODY = EXPRESSION_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Parameters Position</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARROW_FUNCTION__PARAMETERS_POSITION = EXPRESSION_FEATURE_COUNT + 3;
+
+	/**
+	 * The number of structural features of the '<em>Arrow Function</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARROW_FUNCTION_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 4;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.TemplateStringLiteralImpl <em>Template String Literal</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.TemplateStringLiteralImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTemplateStringLiteral()
+	 * @generated
+	 */
+	int TEMPLATE_STRING_LITERAL = 78;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_LITERAL__BEGIN = EXPRESSION__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_LITERAL__END = EXPRESSION__END;
+
+	/**
+	 * The feature id for the '<em><b>Text</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_LITERAL__TEXT = EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Template Expressions</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_LITERAL__TEMPLATE_EXPRESSIONS = EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Template String Literal</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_LITERAL_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 2;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.TemplateStringExpressionImpl <em>Template String Expression</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.TemplateStringExpressionImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTemplateStringExpression()
+	 * @generated
+	 */
+	int TEMPLATE_STRING_EXPRESSION = 79;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_EXPRESSION__BEGIN = EXPRESSION__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_EXPRESSION__END = EXPRESSION__END;
+
+	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_EXPRESSION__EXPRESSION = EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Template String Expression</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMPLATE_STRING_EXPRESSION_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.TagFunctionImpl <em>Tag Function</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.TagFunctionImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTagFunction()
+	 * @generated
+	 */
+	int TAG_FUNCTION = 80;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TAG_FUNCTION__BEGIN = EXPRESSION__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TAG_FUNCTION__END = EXPRESSION__END;
+
+	/**
+	 * The feature id for the '<em><b>Tag Function</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TAG_FUNCTION__TAG_FUNCTION = EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Template String Literal</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TAG_FUNCTION__TEMPLATE_STRING_LITERAL = EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Tag Function</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TAG_FUNCTION_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 2;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3835,7 +4064,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 77;
+	int UNARY_OPERATOR = 81;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -3845,7 +4074,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 78;
+	int BINARY_OPERATOR = 82;
 
 
 	/**
@@ -5620,6 +5849,145 @@ public interface DomPackage extends EPackage {
 	EReference getForEachInStatement_Collection();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.ArrowFunction <em>Arrow Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Arrow Function</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ArrowFunction
+	 * @generated
+	 */
+	EClass getArrowFunction();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.eclipse.dltk.javascript.core.dom.ArrowFunction#getDocumentation <em>Documentation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Documentation</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ArrowFunction#getDocumentation()
+	 * @see #getArrowFunction()
+	 * @generated
+	 */
+	EReference getArrowFunction_Documentation();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.dltk.javascript.core.dom.ArrowFunction#getParameters <em>Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Parameters</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ArrowFunction#getParameters()
+	 * @see #getArrowFunction()
+	 * @generated
+	 */
+	EReference getArrowFunction_Parameters();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.dltk.javascript.core.dom.ArrowFunction#getBody <em>Body</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Body</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ArrowFunction#getBody()
+	 * @see #getArrowFunction()
+	 * @generated
+	 */
+	EReference getArrowFunction_Body();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.dltk.javascript.core.dom.ArrowFunction#getParametersPosition <em>Parameters Position</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Parameters Position</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ArrowFunction#getParametersPosition()
+	 * @see #getArrowFunction()
+	 * @generated
+	 */
+	EAttribute getArrowFunction_ParametersPosition();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral <em>Template String Literal</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Template String Literal</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral
+	 * @generated
+	 */
+	EClass getTemplateStringLiteral();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral#getText <em>Text</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Text</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral#getText()
+	 * @see #getTemplateStringLiteral()
+	 * @generated
+	 */
+	EAttribute getTemplateStringLiteral_Text();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral#getTemplateExpressions <em>Template Expressions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Template Expressions</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TemplateStringLiteral#getTemplateExpressions()
+	 * @see #getTemplateStringLiteral()
+	 * @generated
+	 */
+	EReference getTemplateStringLiteral_TemplateExpressions();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.TemplateStringExpression <em>Template String Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Template String Expression</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TemplateStringExpression
+	 * @generated
+	 */
+	EClass getTemplateStringExpression();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.dltk.javascript.core.dom.TemplateStringExpression#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TemplateStringExpression#getExpression()
+	 * @see #getTemplateStringExpression()
+	 * @generated
+	 */
+	EReference getTemplateStringExpression_Expression();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.TagFunction <em>Tag Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Tag Function</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TagFunction
+	 * @generated
+	 */
+	EClass getTagFunction();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.dltk.javascript.core.dom.TagFunction#getTagFunction <em>Tag Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Tag Function</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TagFunction#getTagFunction()
+	 * @see #getTagFunction()
+	 * @generated
+	 */
+	EReference getTagFunction_TagFunction();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.eclipse.dltk.javascript.core.dom.TagFunction#getTemplateStringLiteral <em>Template String Literal</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Template String Literal</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.TagFunction#getTemplateStringLiteral()
+	 * @see #getTagFunction()
+	 * @generated
+	 */
+	EReference getTagFunction_TemplateStringLiteral();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7158,6 +7526,118 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FOR_EACH_IN_STATEMENT__COLLECTION = eINSTANCE.getForEachInStatement_Collection();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.ArrowFunctionImpl <em>Arrow Function</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.ArrowFunctionImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getArrowFunction()
+		 * @generated
+		 */
+		EClass ARROW_FUNCTION = eINSTANCE.getArrowFunction();
+
+		/**
+		 * The meta object literal for the '<em><b>Documentation</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ARROW_FUNCTION__DOCUMENTATION = eINSTANCE.getArrowFunction_Documentation();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ARROW_FUNCTION__PARAMETERS = eINSTANCE.getArrowFunction_Parameters();
+
+		/**
+		 * The meta object literal for the '<em><b>Body</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ARROW_FUNCTION__BODY = eINSTANCE.getArrowFunction_Body();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters Position</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ARROW_FUNCTION__PARAMETERS_POSITION = eINSTANCE.getArrowFunction_ParametersPosition();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.TemplateStringLiteralImpl <em>Template String Literal</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.TemplateStringLiteralImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTemplateStringLiteral()
+		 * @generated
+		 */
+		EClass TEMPLATE_STRING_LITERAL = eINSTANCE.getTemplateStringLiteral();
+
+		/**
+		 * The meta object literal for the '<em><b>Text</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TEMPLATE_STRING_LITERAL__TEXT = eINSTANCE.getTemplateStringLiteral_Text();
+
+		/**
+		 * The meta object literal for the '<em><b>Template Expressions</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TEMPLATE_STRING_LITERAL__TEMPLATE_EXPRESSIONS = eINSTANCE.getTemplateStringLiteral_TemplateExpressions();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.TemplateStringExpressionImpl <em>Template String Expression</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.TemplateStringExpressionImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTemplateStringExpression()
+		 * @generated
+		 */
+		EClass TEMPLATE_STRING_EXPRESSION = eINSTANCE.getTemplateStringExpression();
+
+		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TEMPLATE_STRING_EXPRESSION__EXPRESSION = eINSTANCE.getTemplateStringExpression_Expression();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.TagFunctionImpl <em>Tag Function</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.TagFunctionImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTagFunction()
+		 * @generated
+		 */
+		EClass TAG_FUNCTION = eINSTANCE.getTagFunction();
+
+		/**
+		 * The meta object literal for the '<em><b>Tag Function</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TAG_FUNCTION__TAG_FUNCTION = eINSTANCE.getTagFunction_TagFunction();
+
+		/**
+		 * The meta object literal for the '<em><b>Template String Literal</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TAG_FUNCTION__TEMPLATE_STRING_LITERAL = eINSTANCE.getTagFunction_TemplateStringLiteral();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.

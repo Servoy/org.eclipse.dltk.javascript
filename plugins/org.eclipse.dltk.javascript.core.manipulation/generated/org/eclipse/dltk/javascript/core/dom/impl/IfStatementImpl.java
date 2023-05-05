@@ -25,12 +25,12 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.IfStatementImpl#getPredicate <em>Predicate</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.IfStatementImpl#getConsequent <em>Consequent</em>}</li>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.IfStatementImpl#getAlternative <em>Alternative</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -89,6 +89,7 @@ public class IfStatementImpl extends StatementImpl implements IfStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getPredicate() {
 		return predicate;
 	}
@@ -113,6 +114,7 @@ public class IfStatementImpl extends StatementImpl implements IfStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setPredicate(Expression newPredicate) {
 		if (newPredicate != predicate) {
 			NotificationChain msgs = null;
@@ -132,6 +134,7 @@ public class IfStatementImpl extends StatementImpl implements IfStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Statement getConsequent() {
 		return consequent;
 	}
@@ -156,6 +159,7 @@ public class IfStatementImpl extends StatementImpl implements IfStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setConsequent(Statement newConsequent) {
 		if (newConsequent != consequent) {
 			NotificationChain msgs = null;
@@ -175,6 +179,7 @@ public class IfStatementImpl extends StatementImpl implements IfStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Statement getAlternative() {
 		return alternative;
 	}
@@ -199,6 +204,7 @@ public class IfStatementImpl extends StatementImpl implements IfStatement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setAlternative(Statement newAlternative) {
 		if (newAlternative != alternative) {
 			NotificationChain msgs = null;

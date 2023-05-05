@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.dltk.javascript.core.dom.impl.SetterAssignmentImpl#getParameter <em>Parameter</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -66,6 +66,7 @@ public class SetterAssignmentImpl extends AccessorAssignmentImpl implements Sett
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Identifier getParameter() {
 		return parameter;
 	}
@@ -90,6 +91,7 @@ public class SetterAssignmentImpl extends AccessorAssignmentImpl implements Sett
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setParameter(Identifier newParameter) {
 		if (newParameter != parameter) {
 			NotificationChain msgs = null;

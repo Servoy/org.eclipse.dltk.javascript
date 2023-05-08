@@ -709,6 +709,8 @@ public class ASTConverter extends ASTVisitor<Node> {
 		}
 		res.setBody((Statement) visit(node.getBody()));
 		res.setParametersPosition(node.getLP() >= 0 ? node.getLP() + 1 : node.getArguments().get(0).sourceStart() );
+		res.setBegin(node.sourceStart());
+		res.setEnd(node.sourceEnd());
 		return res;
 	}
 

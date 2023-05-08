@@ -1757,7 +1757,7 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 					}
 					checkedPop(parens, node.getRP());
 					parens.setEnd(createCharNode(document, node.getRP()));
-				} else if (node.getArguments().size() == 0) {
+				} else if (node.getArguments().size() == 1) {
 					//identifier
 					visit(node.getArguments().get(0).getIdentifier());
 				}
@@ -1773,7 +1773,7 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 
 					processBraces(node.getBody(), bodyConfiguration);
 				} else {
-					visitVoidExpression((VoidExpression) node.getBody());
+					visit(node.getBody());
 				}
 
 				checkedPop(formatterNode, node.sourceEnd());

@@ -1721,65 +1721,8 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 			@Override
 			public IFormatterNode visitArrowFunction(
 					ArrowFunctionStatement node) {
-				FormatterFunctionNode formatterNode = new FormatterFunctionNode(
-						document);
-				push(formatterNode);
-				if (node.getLP() >= 0) {
-					final IParensConfiguration parensConf;
-					if (node.getArguments().isEmpty()) {
-						parensConf = new FunctionNoArgumentsParensConfiguration(
-								document);
-					} else {
-						parensConf = new FunctionArgumentsParensConfiguration(
-								document);
-					}
-					final ParensNode parens = new ParensNode(
-							document,
-							parensConf,
-							false,
-							document
-							.getBoolean(JavaScriptFormatterConstants.INSERT_SPACE_BEFORE_PARENS_ANONYMOUS_FUNCTION));
-					parens.setBegin(createCharNode(document, node.getLP()));
-					push(parens);
-
-					if (!node.getArguments().isEmpty()) {
-						final Argument arg0 = node.getArguments().get(0);
-						skipSpaces(parens, arg0.sourceStart());
-					}
-					for (Argument argument : node.getArguments()) {
-						visit(argument.getIdentifier());
-						if (argument.getCommaPosition() != -1) {
-							int position = argument.getCommaPosition();
-							skipSpacesOnly(parens, position);
-							processPunctuation(position, 1,
-									new FunctionArgumentsPunctuationConfiguration());
-						}
-					}
-					checkedPop(parens, node.getRP());
-					parens.setEnd(createCharNode(document, node.getRP()));
-				} else if (node.getArguments().size() == 1) {
-					//identifier
-					visit(node.getArguments().get(0).getIdentifier());
-				}
-				
 				processPunctuation(node.getArrow(), 2, new ArrowPunctuationConfiguration());
-
-				if (node.isBlock()) {
-					boolean emptyBody = node.isEmptyBody();
-					IBracesConfiguration bodyConfiguration;
-
-					bodyConfiguration = new FunctionExpressionBodyBracesConfiguration(
-							document, emptyBody);
-
-					processBraces(node.getBody(), bodyConfiguration);
-				} else {
-					visit(node.getBody());
-				}
-
-				checkedPop(formatterNode, node.sourceEnd());
-
-				return formatterNode;
-
+				return null;
 			}
 
 			@Override

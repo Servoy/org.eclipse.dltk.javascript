@@ -237,7 +237,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	
 	private JSNode getParent() {
 		if (parents.isEmpty()) {
-			return null;
+			return script;
 		} else {
 			return parents.peek();
 		}
@@ -430,7 +430,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	private void addStatement(StatementContext ctx, JSNode expression) {
 		Statement statement = transformStatementNode(ctx, expression);
-		if (expression.getParent() == null) {
+		if (expression.getParent() == script) {
 			script.addStatement(statement);
 		}
 		else

@@ -676,6 +676,52 @@ public class TestANTLR4Parser {
 	}
 	
 	@Test
+	public void testFunc() {
+		String source ="/**\r\n"
+				+ "	 * @properties={typeid:24,uuid:\"46504F39-D010-4933-B11E-639EA779E496\"}\r\n"
+				+ "	 */\r\n"
+				+ "	function abc() {\r\n"
+				+ "		const mat = ['abc', 'ab', 'ccc'];\r\n"
+				+ "		application.output(mat.foreach(function(mat_){return mat_.length;}));\r\n"
+				+ "	}";
+		
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertNotNull(script);
+		
+		Statement statementv4 = scriptv4.getStatements().get(0);
+		assertNotNull(statementv4);
+		assertTrue(statementv4.getChilds().get(0) instanceof FunctionStatement);
+		FunctionStatement fn4 = (FunctionStatement)statementv4.getChilds().get(0);
+		assertNotNull(fn4.getDocumentation());
+		
+		Statement statement = script.getStatements().get(0);
+		assertNotNull(statement);
+		assertEquals(statement.sourceStart(), statementv4.sourceStart());
+		assertEquals(statement.sourceEnd(), statementv4.sourceEnd());
+		
+		assertTrue(statement.getChilds().get(0) instanceof FunctionStatement);
+		FunctionStatement fn = (FunctionStatement)statement.getChilds().get(0);
+
+		assertEquals(fn.sourceStart(), fn4.sourceStart());
+		assertEquals(fn.sourceEnd(), fn4.sourceEnd());
+	}
+	
+	@Test
+	public void testCallArrow() {
+		String source = "application.output(mat.map(mat => mat.length));";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		Statement statementv4 = scriptv4.getStatements().get(0);
+		assertNotNull(statementv4);
+		assertTrue(statementv4 instanceof VoidExpression);
+		VoidExpression expr = (VoidExpression)statementv4;
+		assertTrue(expr.getParent() instanceof Script);
+		assertTrue(expr.getExpression().getParent() instanceof Script);
+	}
+	
+	@Test
 	public void testTemplateString() {
 		String source ="`test ${abc+c}`";
 		Script scriptv4 = getScriptv4(source);

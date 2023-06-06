@@ -1801,33 +1801,35 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		
 		final SymbolTable functionScope = new SymbolTable(fn);
 		ArrowFunctionParametersContext params = ctx.arrowFunctionParameters();
-		if (params.formalParameterList() != null) {
-			List<Argument> arguments = new ArrayList<>();
-			FormalParameterListContext parameterList = ctx.arrowFunctionParameters().formalParameterList();
-			List<FormalParameterArgContext> args = parameterList.formalParameterArg();
-			for (FormalParameterArgContext arg : args) {
-				if (children.peek() instanceof Argument) {
-					arguments.add((Argument) children.pop());
-				}
-			}
-			Collections.reverse(arguments);
-			for (int i = 0, childCount = arguments.size(); i < childCount; ++i) {
-				Argument argument = arguments.get(i);
-				if (i + 1 < childCount) {
-					argument.setCommaPosition(getTokenOffset(parameterList.Comma(i).getSymbol().getTokenIndex()));
-				}
-				fn.addArgument(argument);
-				validateParameter(functionScope, argument);
-			}
-			
-			if (params.OpenParen() != null) {
-				fn.setLP(getTokenOffset(params.OpenParen().getSymbol().getTokenIndex()));
-			}
+		if (params.OpenParen() != null) {
+			fn.setLP(getTokenOffset(params.OpenParen().getSymbol().getTokenIndex()));
 			if (params.CloseParen() != null) {
 				fn.setRP(getTokenOffset(params.CloseParen().getSymbol().getTokenIndex()));
 			}
-		}
-		else if (children.peek() instanceof Identifier) {
+			if (params.formalParameterList() != null) {
+				List<Argument> arguments = new ArrayList<>();
+				FormalParameterListContext parameterList = ctx
+						.arrowFunctionParameters().formalParameterList();
+				List<FormalParameterArgContext> args = parameterList
+						.formalParameterArg();
+				for (FormalParameterArgContext arg : args) {
+					if (children.peek() instanceof Argument) {
+						arguments.add((Argument) children.pop());
+					}
+				}
+				Collections.reverse(arguments);
+				for (int i = 0,
+						childCount = arguments.size(); i < childCount; ++i) {
+					Argument argument = arguments.get(i);
+					if (i + 1 < childCount) {
+						argument.setCommaPosition(getTokenOffset(parameterList
+								.Comma(i).getSymbol().getTokenIndex()));
+					}
+					fn.addArgument(argument);
+					validateParameter(functionScope, argument);
+				}
+			}
+		} else if (children.peek() instanceof Identifier) {
 			Argument argument = new Argument(fn);
 			argument.setIdentifier((Identifier) children.pop());
 			fn.addArgument(argument);

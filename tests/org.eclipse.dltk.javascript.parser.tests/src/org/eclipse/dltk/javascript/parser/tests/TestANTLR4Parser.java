@@ -676,6 +676,19 @@ public class TestANTLR4Parser {
 	}
 	
 	@Test
+	public void testArrowFunction3() {
+		String source ="() => {application.output(\"test\");}";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement.getChilds().get(0) instanceof ArrowFunctionStatement);
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) statement.getChilds().get(0);
+		assertEquals(0, fn.getArguments().size());
+	}
+	
+	@Test
 	public void testFunc() {
 		String source ="/**\r\n"
 				+ "	 * @properties={typeid:24,uuid:\"46504F39-D010-4933-B11E-639EA779E496\"}\r\n"

@@ -804,6 +804,15 @@ public class DomSwitch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case DomPackage.FOR_OF_STATEMENT: {
+				ForOfStatement forOfStatement = (ForOfStatement)theEObject;
+				T result = caseForOfStatement(forOfStatement);
+				if (result == null) result = caseIterationStatement(forOfStatement);
+				if (result == null) result = caseStatement(forOfStatement);
+				if (result == null) result = caseNode(forOfStatement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -2020,6 +2029,21 @@ public class DomSwitch<T> {
 	 * @generated
 	 */
 	public T caseTagFunction(TagFunction object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>For Of Statement</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>For Of Statement</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseForOfStatement(ForOfStatement object) {
 		return null;
 	}
 

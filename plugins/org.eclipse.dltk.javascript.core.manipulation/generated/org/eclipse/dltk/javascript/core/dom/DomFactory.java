@@ -612,4 +612,13 @@ public interface DomFactory extends EFactory {
 	 */
 	TagFunction createTagFunction();
 
+	/**
+	 * Returns a new object of class '<em>For Of Statement</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>For Of Statement</em>'.
+	 * @generated
+	 */
+	ForOfStatement createForOfStatement();
+
 } //DomFactory

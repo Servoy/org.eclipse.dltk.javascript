@@ -308,5 +308,9 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//TagFunction/tagFunction"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference dom.ecore#//TagFunction/templateStringLiteral"/>
     </genClasses>
+    <genClasses ecoreClass="dom.ecore#//ForOfStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//ForOfStatement/item"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//ForOfStatement/collection"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

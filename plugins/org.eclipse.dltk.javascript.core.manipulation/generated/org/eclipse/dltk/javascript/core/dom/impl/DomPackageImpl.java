@@ -38,6 +38,7 @@ import org.eclipse.dltk.javascript.core.dom.FilterExpression;
 import org.eclipse.dltk.javascript.core.dom.FinallyClause;
 import org.eclipse.dltk.javascript.core.dom.ForEachInStatement;
 import org.eclipse.dltk.javascript.core.dom.ForInStatement;
+import org.eclipse.dltk.javascript.core.dom.ForOfStatement;
 import org.eclipse.dltk.javascript.core.dom.ForStatement;
 import org.eclipse.dltk.javascript.core.dom.FunctionExpression;
 import org.eclipse.dltk.javascript.core.dom.GetterAssignment;
@@ -671,6 +672,13 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	private EClass tagFunctionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass forOfStatementEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -2563,6 +2571,36 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getForOfStatement() {
+		return forOfStatementEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getForOfStatement_Item() {
+		return (EReference)forOfStatementEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getForOfStatement_Collection() {
+		return (EReference)forOfStatementEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getUnaryOperator() {
 		return unaryOperatorEEnum;
 	}
@@ -2868,6 +2906,10 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		createEReference(tagFunctionEClass, TAG_FUNCTION__TAG_FUNCTION);
 		createEReference(tagFunctionEClass, TAG_FUNCTION__TEMPLATE_STRING_LITERAL);
 
+		forOfStatementEClass = createEClass(FOR_OF_STATEMENT);
+		createEReference(forOfStatementEClass, FOR_OF_STATEMENT__ITEM);
+		createEReference(forOfStatementEClass, FOR_OF_STATEMENT__COLLECTION);
+
 		// Create enums
 		unaryOperatorEEnum = createEEnum(UNARY_OPERATOR);
 		binaryOperatorEEnum = createEEnum(BINARY_OPERATOR);
@@ -2993,6 +3035,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		templateStringLiteralEClass.getESuperTypes().add(this.getIPropertyName());
 		templateStringExpressionEClass.getESuperTypes().add(this.getExpression());
 		tagFunctionEClass.getESuperTypes().add(this.getExpression());
+		forOfStatementEClass.getESuperTypes().add(this.getIterationStatement());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(nodeEClass, Node.class, "Node", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -3256,6 +3299,10 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		initEClass(tagFunctionEClass, TagFunction.class, "TagFunction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTagFunction_TagFunction(), this.getExpression(), null, "tagFunction", null, 1, 1, TagFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTagFunction_TemplateStringLiteral(), this.getTemplateStringLiteral(), null, "templateStringLiteral", null, 0, 1, TagFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(forOfStatementEClass, ForOfStatement.class, "ForOfStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getForOfStatement_Item(), this.getIForInitializer(), null, "item", null, 1, 1, ForOfStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getForOfStatement_Collection(), this.getExpression(), null, "collection", null, 1, 1, ForOfStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(unaryOperatorEEnum, UnaryOperator.class, "UnaryOperator");

@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -402,5 +403,12 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 	@Override
 	public E visitTemplateStringExpression(TemplateStringExpression node) {
 		return visit(node.getExpression());
+	}
+
+	@Override
+	public E visitForOfStatement(ForOfStatement node) {
+		visit(node.getItem());
+		visit(node.getIterator());
+		return visit(node.getBody());
 	}
 }

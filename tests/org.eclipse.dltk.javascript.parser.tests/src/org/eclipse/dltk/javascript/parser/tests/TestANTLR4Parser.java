@@ -17,6 +17,7 @@ import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.ast.JSNode;
@@ -782,5 +783,24 @@ public class TestANTLR4Parser {
 		assertEquals(2, literal.getTemplateExpressions().size());
 		assertEquals("${abc}", literal.getTemplateExpressions().get(0).toString());
 		assertEquals("${c}", literal.getTemplateExpressions().get(1).toString());
+	}
+	
+	@Test
+	public void testForOf() {
+		String source = "for (var e of obj) { a+= 1; }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof ForOfStatement);
+		ForOfStatement forOf = (ForOfStatement) statement;
+		assertEquals("var e", forOf.getItem().toString());
+		assertEquals("obj", forOf.getIterator().toString());
+		assertNotNull(forOf.getOfKeyword());
+		assertEquals(11, forOf.getOfKeyword().sourceStart());
+		assertEquals(13, forOf.getOfKeyword().sourceEnd());
+		assertNotNull(forOf.getBody());
+		assertEquals("a += 1;\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
 	}
 }

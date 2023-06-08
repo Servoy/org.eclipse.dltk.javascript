@@ -96,6 +96,7 @@ import org.eclipse.dltk.javascript.ast.XmlAttributeIdentifier;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -138,6 +139,7 @@ import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterElseKeyword
 import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterElseNode;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterFinallyClauseNode;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterForInStatementNode;
+import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterForOfStatementNode;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterForStatementNode;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterFunctionNode;
 import org.eclipse.dltk.javascript.formatter.internal.nodes.FormatterLabelledStatementNode;
@@ -1789,6 +1791,33 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 				push(formatterNode);
 				visit(node.getTagFunction());
 				visit(node.getLiteral());
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
+			}
+
+			@Override
+			public IFormatterNode visitForOfStatement(ForOfStatement node) {
+				FormatterForOfStatementNode formatterNode = new FormatterForOfStatementNode(
+						document);
+
+				formatterNode.setBegin(createTextNode(document,
+						node.getForKeyword()));
+
+				push(formatterNode);
+
+				List<ASTNode> nodes = new ArrayList<ASTNode>();
+
+				nodes.add(node.getItem());
+				nodes.add(node.getOfKeyword());
+				nodes.add(node.getIterator());
+
+				processParens(node.getLP(), node.getRP(), nodes,
+						new ForParensConfiguration(document));
+
+				if (node.getBody() != null)
+					processBraces(node.getBody(), new BlockBracesConfiguration(
+							document));
+
 				checkedPop(formatterNode, node.sourceEnd());
 				return formatterNode;
 			}

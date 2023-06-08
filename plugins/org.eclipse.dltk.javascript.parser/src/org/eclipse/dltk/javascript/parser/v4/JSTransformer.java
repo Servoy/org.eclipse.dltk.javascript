@@ -78,6 +78,7 @@ import org.eclipse.dltk.javascript.ast.WithStatement;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.Keywords;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
@@ -125,6 +126,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionSequenceContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FinallyProductionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ForOfStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterArgContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterListContext;
@@ -1912,5 +1914,34 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		tagFunction.setTagFunction((Expression) children.pop());
 		tagFunction.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		tagFunction.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+	}
+	
+	@Override
+	public void exitForOfStatement(ForOfStatementContext ctx) {
+		ForOfStatement statement = (ForOfStatement)getParent();
+		Statement body = (Statement) children.pop();
+		Expression iterator = (Expression) children.pop();
+		Identifier of = (Identifier) children.pop();
+		Expression item = (Expression) children.pop();
+		
+		statement.setForKeyword(createKeyword(statement, ctx.getStart(),  Keywords.FOR));
+		statement.setLP(getTokenOffset(JSParser.OpenParen, 
+				ctx.For().getSymbol().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
+		statement.setItem(item);
+
+		Keyword ofKeyword = new Keyword(Keywords.OF);
+		ofKeyword.setStart(of.sourceStart());
+		ofKeyword.setEnd(of.sourceStart() + Keywords.OF.length());
+		statement.setOfKeyword(ofKeyword);
+		statement.setIterator(iterator);
+		if (ctx.CloseParen() != null) {
+			statement.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+		}
+
+		if (ctx.getChildCount() >= 1)
+			statement.setBody(body);
+
+		statement.setStart(statement.getForKeyword().sourceStart());
+		setEndByTokenIndex(statement, ctx.getStop().getTokenIndex());
 	}
 }

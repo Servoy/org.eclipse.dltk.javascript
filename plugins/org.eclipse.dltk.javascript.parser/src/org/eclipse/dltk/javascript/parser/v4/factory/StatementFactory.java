@@ -19,8 +19,10 @@ import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
 import org.eclipse.dltk.javascript.ast.WithStatement;
+import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DoStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.ForOfStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VarModifierContext;
@@ -74,6 +76,9 @@ public class StatementFactory extends JSNodeFactory<StatementContext> {
 			}
 			if (ctx.iterationStatement() instanceof ForInStatementContext) {
 				return new ForInStatement(parent);
+			}
+			if (ctx.iterationStatement() instanceof ForOfStatementContext) {
+				return new ForOfStatement(parent);
 			}
 		}
 		if (ctx.functionDeclaration() != null) {

@@ -4057,6 +4057,70 @@ public interface DomPackage extends EPackage {
 	int TAG_FUNCTION_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 2;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.ForOfStatementImpl <em>For Of Statement</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.ForOfStatementImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getForOfStatement()
+	 * @generated
+	 */
+	int FOR_OF_STATEMENT = 81;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FOR_OF_STATEMENT__BEGIN = ITERATION_STATEMENT__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FOR_OF_STATEMENT__END = ITERATION_STATEMENT__END;
+
+	/**
+	 * The feature id for the '<em><b>Body</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FOR_OF_STATEMENT__BODY = ITERATION_STATEMENT__BODY;
+
+	/**
+	 * The feature id for the '<em><b>Item</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FOR_OF_STATEMENT__ITEM = ITERATION_STATEMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Collection</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FOR_OF_STATEMENT__COLLECTION = ITERATION_STATEMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>For Of Statement</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FOR_OF_STATEMENT_FEATURE_COUNT = ITERATION_STATEMENT_FEATURE_COUNT + 2;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4064,7 +4128,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 81;
+	int UNARY_OPERATOR = 82;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -4074,7 +4138,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 82;
+	int BINARY_OPERATOR = 83;
 
 
 	/**
@@ -5988,6 +6052,38 @@ public interface DomPackage extends EPackage {
 	EReference getTagFunction_TemplateStringLiteral();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.ForOfStatement <em>For Of Statement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>For Of Statement</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ForOfStatement
+	 * @generated
+	 */
+	EClass getForOfStatement();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.dltk.javascript.core.dom.ForOfStatement#getItem <em>Item</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Item</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ForOfStatement#getItem()
+	 * @see #getForOfStatement()
+	 * @generated
+	 */
+	EReference getForOfStatement_Item();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.dltk.javascript.core.dom.ForOfStatement#getCollection <em>Collection</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Collection</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.ForOfStatement#getCollection()
+	 * @see #getForOfStatement()
+	 * @generated
+	 */
+	EReference getForOfStatement_Collection();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7638,6 +7734,32 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TAG_FUNCTION__TEMPLATE_STRING_LITERAL = eINSTANCE.getTagFunction_TemplateStringLiteral();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.ForOfStatementImpl <em>For Of Statement</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.ForOfStatementImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getForOfStatement()
+		 * @generated
+		 */
+		EClass FOR_OF_STATEMENT = eINSTANCE.getForOfStatement();
+
+		/**
+		 * The meta object literal for the '<em><b>Item</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FOR_OF_STATEMENT__ITEM = eINSTANCE.getForOfStatement_Item();
+
+		/**
+		 * The meta object literal for the '<em><b>Collection</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FOR_OF_STATEMENT__COLLECTION = eINSTANCE.getForOfStatement_Collection();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.

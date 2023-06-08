@@ -51,6 +51,8 @@ public class Keywords {
 	public static final String CONST = "const";
 
 	public static final String IN = "in";
+	
+	public static final String OF = "of";
 
 	public static final String NEW = "new";
 

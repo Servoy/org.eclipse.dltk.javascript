@@ -2089,7 +2089,10 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	public IValueReference visitForOfStatement(ForOfStatement node) {
 		IValueReference itemReference = visit(node.getItem());
 		IValueReference iteratorReference = visit(node.getIterator());
-		inferIteratorType(itemReference, iteratorReference);
+		if (itemReference instanceof IValueProvider
+				&& ((IValueProvider) itemReference).getValue() != null) {
+			inferIteratorType(itemReference, iteratorReference);
+		}
 		visit(node.getBody());
 		return null;
 	}

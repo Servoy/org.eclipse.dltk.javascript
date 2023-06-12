@@ -71,11 +71,9 @@ public class JavaScriptParserPlugin extends Plugin {
 			p.getLog()
 					.log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
 							message, t));
-		} else {
+		} else if (t != null) {
 			System.err.println(message);
-			if (t != null) {
-				t.printStackTrace();
-			}
+			t.printStackTrace();
 		}
 	}
 

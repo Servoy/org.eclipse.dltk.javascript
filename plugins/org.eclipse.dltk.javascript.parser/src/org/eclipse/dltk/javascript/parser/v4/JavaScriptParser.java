@@ -117,6 +117,7 @@ public class JavaScriptParser implements ISourceParser {
 	public JSParser createTreeParser(final JSTokenStream stream,
 			final Reporter reporter) {
 		final JSParser parser = new JSParser(stream);
+		parser.removeErrorListeners();
 		parser.addErrorListener(new ParseErrorListener(reporter));
 		// TODO add xmlEnabled to the parser
 //		parser.xmlEnabled = xmlEnabled;
@@ -183,6 +184,7 @@ public class JavaScriptParser implements ISourceParser {
 //		} else {
 			JavaScriptLexer lexer = new JavaScriptLexer(charStream);
 			if (reporter != null) {
+				lexer.removeErrorListeners();
 				lexer.addErrorListener(new ParseErrorListener(reporter));
 			}
 			lexer.setUseStrictDefault(false);

@@ -132,7 +132,6 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterArgContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterListContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionBodyContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionDeclarationContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.IfStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.InExpressionContext;
@@ -182,7 +181,6 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.WhileStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.WithStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.YieldStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.factory.JSNodeCreator;
-import org.eclipse.dltk.javascript.parser.v4.factory.JSNodeFactory;
 import org.eclipse.dltk.utils.IntList;
 
 public class JSTransformer extends JavaScriptParserBaseListener {
@@ -191,6 +189,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	private Stack<JSNode> parents = new Stack<JSNode>();
 	private Stack<JSNode> children = new Stack<JSNode>();
 	private Stack<List<Statement>> lists = new Stack<>();
+	private Stack<SymbolTable> scopes = new Stack<SymbolTable>();
 	private Reporter reporter;
 	private Script script;
 	private List<Token> tokens;
@@ -245,6 +244,14 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		}
 	}
 	
+	private SymbolTable getScope() {
+		if (scopes.isEmpty()) {
+			return scope;
+		} else {
+			return scopes.peek();
+		}
+	}
+	
 	private void locateDocumentation(final Documentable node, Token t) {
 		int tokenIndex = t.getTokenIndex();
 		while (tokenIndex > 0) {
@@ -268,7 +275,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	private void validateLabel(Label label) {
 		if (reporter == null)
 			return;
-		if (!scope.hasLabel(label.getText())) {
+		if (!getScope().hasLabel(label.getText())) {
 			reporter.setFormattedMessage(
 					JavaScriptParserProblems.UNDEFINED_LABEL, label.getText());
 			reporter.setSeverity(ProblemSeverity.ERROR);
@@ -604,7 +611,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		}
 
 		SymbolKind kind = SymbolKind.VAR; //TODO add LET?
-		final SymbolKind replaced = scope.add(
+		final SymbolKind replaced = getScope().add(
 				declaration.getVariableName(), kind, declaration);
 		if (replaced != null && reporter != null) {
 			final Identifier identifier = declaration.getIdentifier();
@@ -940,6 +947,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
+	public void enterFunctionDeclaration(FunctionDeclarationContext ctx) {
+		scopes.push(new SymbolTable((FunctionStatement)getParent()));
+	}
+
+	@Override
 	public void enterFunctionBody(FunctionBodyContext ctx) {
 		parents.push(new StatementBlock(getParent()));
 	}
@@ -995,6 +1007,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 	
 	@Override
+	public void enterAnonymousFunctionDecl(AnonymousFunctionDeclContext ctx) {
+		scopes.push(new SymbolTable((FunctionStatement)getParent()));
+	}
+
+	@Override
 	public void exitFunctionDeclaration(FunctionDeclarationContext ctx) {
 		FunctionStatement fn = (FunctionStatement) getParent();
 		fn.setLP(getTokenOffset(JSParser.OpenParen, 
@@ -1021,7 +1038,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			}
 		}
 		Collections.reverse(arguments);
-		final SymbolTable functionScope = new SymbolTable(fn);
+		final SymbolTable functionScope = scopes.pop();
 		for (int i = 0, childCount = arguments.size(); i < childCount; ++i) {
 			Argument argument = arguments.get(i);
 			if (i + 1 < childCount) {
@@ -1034,7 +1051,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		if (id != null) {
 			Identifier identifier = (Identifier) children.pop();
 			fn.setName(identifier);
-			final SymbolKind replaced = scope.add(identifier.getName(),
+			final SymbolKind replaced = getScope().add(identifier.getName(),
 					SymbolKind.FUNCTION, fn);
 			if (replaced != null && reporter != null) {
 				if (replaced == SymbolKind.FUNCTION) {
@@ -1050,14 +1067,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 				reporter.report();
 			}
 		}
-		
-		final SymbolTable savedScope = scope;
-		try {
-			scope = functionScope;
-			fn.setBody(body);
-		} finally {
-			scope = savedScope;
-		}
+		fn.setBody(body);
 		fn.setStart(fn.getFunctionKeyword().sourceStart());
 		fn.setEnd(fn.getBody().sourceEnd());
 	}
@@ -1176,7 +1186,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 		statement.setColonPosition(getTokenOffset(ctx.Colon().getSymbol().getTokenIndex()));
 
-		if (!scope.addLabel(statement) && reporter != null) {
+		if (!getScope().addLabel(statement) && reporter != null) {
 			reporter.setMessage(JavaScriptParserProblems.DUPLICATE_LABEL);
 			reporter.setSeverity(ProblemSeverity.ERROR);
 			reporter.setRange(label.sourceStart(), label.sourceEnd());
@@ -1788,6 +1798,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			children.push(identifier);
 		}
 	}
+	
+	@Override
+	public void enterArrowFunction(ArrowFunctionContext ctx) {
+		scopes.push(new SymbolTable((ArrowFunctionStatement)getParent()));
+	}
 
 	@Override
 	public void exitArrowFunction(ArrowFunctionContext ctx) {
@@ -1801,7 +1816,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			body = transformStatementNode(ctx, children.pop());
 		}
 		
-		final SymbolTable functionScope = new SymbolTable(fn);
+		final SymbolTable functionScope = scopes.pop();
 		ArrowFunctionParametersContext params = ctx.arrowFunctionParameters();
 		if (params.OpenParen() != null) {
 			fn.setLP(getTokenOffset(params.OpenParen().getSymbol().getTokenIndex()));
@@ -1838,13 +1853,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			validateParameter(functionScope, argument);
 		}
 		
-		final SymbolTable savedScope = scope;
-		try {
-			scope = functionScope;
-			fn.setBody(body);
-		} finally {
-			scope = savedScope;
-		}
+		fn.setBody(body);
 		fn.setArrow(getTokenOffset(ctx.ARROW().getSymbol().getTokenIndex()));
 		fn.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		fn.setEnd(fn.getBody().sourceEnd());

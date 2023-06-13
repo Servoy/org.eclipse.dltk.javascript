@@ -634,7 +634,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterIdentifier(IdentifierContext ctx) {
-		Assert.isTrue(ctx.getStart().getType() == JSParser.Identifier);
+		Assert.isTrue(ctx.getStart().getType() == JSParser.Identifier ||
+				ctx.getStart().getType() == JSParser.Async ||
+				ctx.getStart().getType() == JSParser.NonStrictLet);
 		Identifier identifier = new Identifier(getParent());	
 		locateDocumentation(identifier, ctx.getStart());
 		identifier.setName(intern(ctx.getText()));

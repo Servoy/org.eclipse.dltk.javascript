@@ -611,7 +611,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			reporter.setRange(identifier.sourceStart(),
 					identifier.sourceEnd());
 			if (replaced == kind) {
-				reporter.setMessage(kind.duplicateProblem,
+				reporter.setFormattedMessage(kind.duplicateProblem,
 						declaration.getVariableName());
 			} else {
 				reporter.setFormattedMessage(kind.hideProblem,
@@ -1038,7 +1038,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 					SymbolKind.FUNCTION, fn);
 			if (replaced != null && reporter != null) {
 				if (replaced == SymbolKind.FUNCTION) {
-					reporter.setMessage(
+					reporter.setFormattedMessage(
 							JavaScriptParserProblems.DUPLICATE_FUNCTION,
 							identifier.getName());
 				} else {

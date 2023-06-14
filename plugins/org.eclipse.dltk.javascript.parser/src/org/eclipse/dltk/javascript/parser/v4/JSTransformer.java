@@ -1694,7 +1694,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		initializer.setMultiline(LC.getLine() != RC.getLine());
 
 		initializer.setStart(initializer.getLC());
-		initializer.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+		initializer.setEnd(getTokenOffset(ctx.getStop().getTokenIndex())+1);
 	}
 
 	@Override

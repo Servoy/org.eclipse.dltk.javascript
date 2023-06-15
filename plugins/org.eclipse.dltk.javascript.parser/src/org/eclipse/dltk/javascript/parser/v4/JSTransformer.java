@@ -133,6 +133,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterListContext
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionBodyContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionDeclarationContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierNameContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.IfStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.InExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.InstanceofExpressionContext;
@@ -634,14 +635,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterIdentifier(IdentifierContext ctx) {
+		if (ctx.getParent() instanceof IdentifierNameContext) return;
 		Assert.isTrue(ctx.getStart().getType() == JSParser.Identifier ||
 				ctx.getStart().getType() == JSParser.Async ||
 				ctx.getStart().getType() == JSParser.NonStrictLet);
-		Identifier identifier = new Identifier(getParent());	
-		locateDocumentation(identifier, ctx.getStart());
-		identifier.setName(intern(ctx.getText()));
-		setRangeByToken(identifier, ctx.getStart().getTokenIndex());
-		children.push(identifier);
+		createIdentifier(ctx.getStart(), ctx.getText());
 	}
 	
 	@Override
@@ -1793,14 +1791,23 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void enterConditionalKeyword(ConditionalKeywordContext ctx) {
 		if (ctx.getParent() instanceof ConditionalKeywordExpressionContext ||
 				ctx.getParent() instanceof AssignableContext) {
-			Identifier identifier = new Identifier(getParent());	
-			locateDocumentation(identifier, ctx.getStart());
-			identifier.setName(intern(ctx.getText()));
-			setRangeByToken(identifier, ctx.getStart().getTokenIndex());
-			children.push(identifier);
+			createIdentifier(ctx.getStart(), ctx.getText());
 		}
 	}
+
+	private void createIdentifier(Token start, String text) {
+		Identifier identifier = new Identifier(getParent());	
+		locateDocumentation(identifier, start);
+		identifier.setName(intern(text));
+		setRangeByToken(identifier, start.getTokenIndex());
+		children.push(identifier);
+	}
 	
+	@Override
+	public void enterIdentifierName(IdentifierNameContext ctx) {
+		createIdentifier(ctx.getStart(), ctx.getText());
+	}
+
 	@Override
 	public void enterArrowFunction(ArrowFunctionContext ctx) {
 		scopes.push(new SymbolTable((ArrowFunctionStatement)getParent()));

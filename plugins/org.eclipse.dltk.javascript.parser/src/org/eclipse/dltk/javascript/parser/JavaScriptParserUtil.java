@@ -19,6 +19,8 @@ import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.javascript.ast.Script;
 
 public class JavaScriptParserUtil {
+	
+	private static final Boolean useEcma = initUseEcma();
 
 	/**
 	 * The name of the attribute referencing {@link ISourceModule} from
@@ -30,6 +32,18 @@ public class JavaScriptParserUtil {
 		return parse(module, null);
 	}
 
+	private static Boolean initUseEcma() {
+		String value = System.getProperty("dltk.useEcma");
+		if (value == null)
+		{
+			value = System.getenv("dltk.useEcma");
+		}
+		if (value != null) {
+			return Boolean.valueOf(value);
+		}
+		return null;
+	}
+
 	public static Script parse(ISourceModule module, IProblemReporter reporter) {
 		// TODO pass additional predicate to this call...
 		IModuleDeclaration declaration = SourceParserUtil.parse(module,
@@ -37,22 +51,27 @@ public class JavaScriptParserUtil {
 		if (declaration instanceof Script) {
 			return (Script) declaration;
 		}
-		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		boolean antlr4Parser = useEcmaParser();
 		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse((IModuleSource) module, reporter)
 				: new JavaScriptParser().parse((IModuleSource) module, reporter);
+	}
+
+	private static boolean useEcmaParser() {
+		
+		return useEcma != null ? useEcma.booleanValue() : new JavascriptParserPreferences().useES6Parser();
 	}
 
 	public static Script parse(IModuleSource module, IProblemReporter reporter) {
 		if (module instanceof ISourceModule) {
 			return parse((ISourceModule) module, reporter);
 		}
-		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		boolean antlr4Parser = useEcmaParser();
 		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse(module, reporter)
 				: new JavaScriptParser().parse(module, reporter);
 	}
 
 	public static Script parse(String source, IProblemReporter reporter) {
-		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
+		boolean antlr4Parser = useEcmaParser();
 		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse(source, reporter)
 				: new JavaScriptParser().parse(source, reporter);
 	}

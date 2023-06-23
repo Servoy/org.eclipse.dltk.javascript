@@ -481,7 +481,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			}
 		}
 		else {
-		if (ctx.getParent() != null && ctx.getParent().getParent() instanceof ExpressionStatementContext) return;
 		if (ctx instanceof SingleExpressionContext) {
 			if (!JSNodeCreator.skipCreate(ctx)) {
 				children.push(parents.pop());
@@ -498,7 +497,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitExpressionSequence(ExpressionSequenceContext ctx) {
-		if (ctx.getParent() instanceof ExpressionStatementContext || ctx.Comma().isEmpty()) return;
+		if (ctx.Comma().isEmpty()) return;
 		CommaExpression expression = (CommaExpression) parents.pop();
 		List<SingleExpressionContext> ruleContexts = ctx.getRuleContexts(SingleExpressionContext.class);
 		List<ASTNode> items = new ArrayList<>();
@@ -521,7 +520,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	
 	@Override
 	public void exitExpressionStatement(ExpressionStatementContext ctx) {
-		addStatement((StatementContext) ctx.getParent(), parents.pop());
+		addStatement((StatementContext) ctx.getParent(), children.pop());
 	}
 
 	@Override
@@ -871,9 +870,38 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void exitForStatement(ForStatementContext ctx) {
 		ForStatement statement = (ForStatement) getParent();
 		Statement body = (Statement) children.pop();
-		Expression step =  (Expression) children.pop();
-		Expression condition =  (Expression) children.pop();
-		Expression initial = (Expression) children.pop();
+		Expression step = null, condition = null, initial = null;
+		if (ctx.expressionSequence().size() == 3 || ctx.expressionSequence().size() == 2 
+			&& ctx.variableDeclarationList() != null) {
+			step =  (Expression) children.pop();
+			condition =  (Expression) children.pop();
+			initial = (Expression) children.pop();
+		}
+		else if (ctx.expressionSequence().size() == 0 && ctx.variableDeclarationList() == null) {
+			step = new EmptyExpression(statement);
+			condition = new EmptyExpression(statement);
+			initial = new EmptyExpression(statement);
+		}
+		else {
+			List<ParseTree> _children = ctx.children;
+			int index = _children.indexOf(ctx.OpenParen()) + 1;
+			if (_children.size() > index && _children.get(index) == ctx.SemiColon(0)) {
+				initial = new EmptyExpression(statement);
+			}
+			index = _children.indexOf(ctx.SemiColon(0)) + 1;
+			if (_children.size() > index && _children.get(index) == ctx.SemiColon(1)) {
+				condition = new EmptyExpression(statement);
+			}
+			index = _children.indexOf(ctx.SemiColon(1)) + 1;
+			if (_children.size() > index && _children.get(index) == ctx.CloseParen()) {
+				step = new EmptyExpression(statement);
+			}
+			
+			if (step == null) step =  (Expression) children.pop();
+			if (condition == null) condition =  (Expression) children.pop();
+			if (initial == null) initial = (Expression) children.pop();
+			
+		}
 		
 		statement.setForKeyword(createKeyword(statement, ctx.getStart(),  Keywords.FOR));
 		statement.setLP(getTokenOffset(JSParser.OpenParen, 
@@ -1472,11 +1500,12 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitYieldStatement(YieldStatementContext ctx) {
-		YieldOperator expression = (YieldOperator)getParent();
+		YieldOperator expression = (YieldOperator)parents.pop();
 		expression.setYieldKeyword(createKeyword(expression, ctx.getStart(), Keywords.YIELD));
 		expression.setExpression((Expression) children.pop());
 		expression.setStart(expression.getYieldKeyword().sourceStart());
 		expression.setEnd(expression.getExpression().sourceEnd());
+		children.push(expression);
 	}
 
 	@Override
@@ -1901,11 +1930,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitTemplateStringLiteral(TemplateStringLiteralContext ctx) {
-		//this is not so nice but we need to avoid removing items from the stack when we have just the tagstring
-		if (ctx.getParent().getParent() != null && ctx.getParent().getParent().getParent() != null &&
-				ctx.getParent().getParent().getParent() instanceof ExpressionSequenceContext) {
-			return;
-		}
 		children.push(parents.pop());
 	}
 

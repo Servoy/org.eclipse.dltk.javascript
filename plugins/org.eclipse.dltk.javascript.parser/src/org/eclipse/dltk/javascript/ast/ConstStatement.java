@@ -19,7 +19,11 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.internal.parser.JSLiterals;
 
-public class ConstStatement extends Statement implements IVariableStatement, Documentable {
+/**
+ * Same as the VariableStatement, this class extends expression only to allow usage as initial expression in
+ * "for(;;)" loop statement.
+ */
+public class ConstStatement extends Expression implements IVariableStatement, Documentable {
 
 	private Keyword constKeyword;
 	private final List<VariableDeclaration> consts = new ArrayList<VariableDeclaration>();
@@ -75,7 +79,6 @@ public class ConstStatement extends Statement implements IVariableStatement, Doc
 	public String toSourceString(String indentationString) {
 		Assert.isTrue(sourceStart() >= 0);
 		Assert.isTrue(sourceEnd() > 0);
-		Assert.isTrue(semic > 0);
 
 		StringBuffer buffer = new StringBuffer();
 
@@ -88,7 +91,7 @@ public class ConstStatement extends Statement implements IVariableStatement, Doc
 				buffer.append(", ");
 			buffer.append(consts.get(i).toSourceString(indentationString));
 		}
-		buffer.append(";\n");
+		if (semic > 0 ) buffer.append(";\n");
 
 		return buffer.toString();
 	}

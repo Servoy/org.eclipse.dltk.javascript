@@ -317,6 +317,18 @@ public class TestANTLR4Parser {
 	}
 	
 	@Test
+	public void testParamsFrom() {
+		//conditional keyword as object property
+		String source = "plugins.mail.sendMail(params.to, params.from, params.subject, emailContent)";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
 	public void testBreak() {
 		String source = "for (var e in obj) { break; }";
 		Script script = getScript(source);
@@ -429,6 +441,34 @@ public class TestANTLR4Parser {
 	}
 	
 	@Test
+	public void testEmptyExpressionFor() {
+		String source = "for (;;){"
+				+ "test(x);"
+				+ "var a = 1;"
+				+ "test(a)}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+			
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testFors() {
+		String source = "for (var a;;){ test(a);}"
+				+ "for (;a<10;){ test(a);}"
+				+ "for (var b;a<10;){ test(a);}"
+				+ "for (a<10;a++){ test(a);}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+			
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
 	public void testWithStatement() {
 		String source = "with (obj) test(x);";
 		Script script = getScript(source);
@@ -525,6 +565,17 @@ public class TestANTLR4Parser {
 	
 	@Test
 	public void testCommaExpression() {
+		String source = " x = a, b;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
+	public void testParenthesizedExpression() {
 		String source = "y = ( a+b, 1/2, x );";
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);

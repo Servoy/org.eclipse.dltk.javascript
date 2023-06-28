@@ -597,7 +597,9 @@ public class DomSwitch<T> {
 			case DomPackage.CONST_STATEMENT: {
 				ConstStatement constStatement = (ConstStatement)theEObject;
 				T result = caseConstStatement(constStatement);
-				if (result == null) result = caseStatement(constStatement);
+				if (result == null) result = caseExpression(constStatement);
+				if (result == null) result = caseIArrayElement(constStatement);
+				if (result == null) result = caseIForInitializer(constStatement);
 				if (result == null) result = caseNode(constStatement);
 				if (result == null) result = defaultCase(theEObject);
 				return result;

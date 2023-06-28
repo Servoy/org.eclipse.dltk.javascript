@@ -3044,7 +3044,7 @@ public interface DomPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONST_STATEMENT__BEGIN = STATEMENT__BEGIN;
+	int CONST_STATEMENT__BEGIN = EXPRESSION__BEGIN;
 
 	/**
 	 * The feature id for the '<em><b>End</b></em>' attribute.
@@ -3053,7 +3053,7 @@ public interface DomPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONST_STATEMENT__END = STATEMENT__END;
+	int CONST_STATEMENT__END = EXPRESSION__END;
 
 	/**
 	 * The feature id for the '<em><b>Declarations</b></em>' containment reference list.
@@ -3062,7 +3062,7 @@ public interface DomPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONST_STATEMENT__DECLARATIONS = STATEMENT_FEATURE_COUNT + 0;
+	int CONST_STATEMENT__DECLARATIONS = EXPRESSION_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>Const Statement</em>' class.
@@ -3071,7 +3071,7 @@ public interface DomPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONST_STATEMENT_FEATURE_COUNT = STATEMENT_FEATURE_COUNT + 1;
+	int CONST_STATEMENT_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.PropertyIdentifierImpl <em>Property Identifier</em>}' class.

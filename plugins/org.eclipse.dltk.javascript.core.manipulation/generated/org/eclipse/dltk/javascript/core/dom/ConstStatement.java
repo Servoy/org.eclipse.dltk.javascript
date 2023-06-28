@@ -24,7 +24,7 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface ConstStatement extends Statement {
+public interface ConstStatement extends Expression {
 	/**
 	 * Returns the value of the '<em><b>Declarations</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.dltk.javascript.core.dom.VariableDeclaration}.

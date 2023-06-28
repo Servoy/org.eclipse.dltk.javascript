@@ -854,4 +854,40 @@ public class TestANTLR4Parser {
 		assertNotNull(forOf.getBody());
 		assertEquals("a += 1;\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
 	}
+	
+	@Test
+	public void testForOfConst() {
+		String source = "for (const e of obj) { a+= 1; }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof ForOfStatement);
+		ForOfStatement forOf = (ForOfStatement) statement;
+		assertEquals("const e", forOf.getItem().toString());
+		assertEquals("obj", forOf.getIterator().toString());
+		assertNotNull(forOf.getOfKeyword());
+		assertEquals(13, forOf.getOfKeyword().sourceStart());
+		assertEquals(15, forOf.getOfKeyword().sourceEnd());
+		assertNotNull(forOf.getBody());
+		assertEquals("a += 1;\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
+	}
+	
+	@Test
+	public void testForOf_failedPredicate() {
+		String source = "for (cont e of obj) { a+= 1; }"; // typo for const		
+		final org.eclipse.dltk.javascript.parser.v4.JavaScriptParser jsParserv4 =  new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = jsParserv4.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(problems.size(), 3);
+		assertEquals(problems.get(0).getMessage(), "rule iterationStatement failed predicate: {this.p(\"of\")}?");
+	}
 }

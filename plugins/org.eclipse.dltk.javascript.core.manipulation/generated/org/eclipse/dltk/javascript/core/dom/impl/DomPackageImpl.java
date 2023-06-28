@@ -3009,7 +3009,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		functionExpressionEClass.getESuperTypes().add(this.getExpression());
 		parameterEClass.getESuperTypes().add(this.getNode());
 		sourceEClass.getESuperTypes().add(this.getNode());
-		constStatementEClass.getESuperTypes().add(this.getStatement());
+		constStatementEClass.getESuperTypes().add(this.getExpression());
 		propertyIdentifierEClass.getESuperTypes().add(this.getExpression());
 		propertyIdentifierEClass.getESuperTypes().add(this.getIProperty());
 		iPropertyEClass.getESuperTypes().add(this.getNode());

@@ -35,7 +35,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *
  * @generated
  */
-public class ConstStatementImpl extends StatementImpl implements ConstStatement {
+public class ConstStatementImpl extends ExpressionImpl implements ConstStatement {
 	/**
 	 * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}' containment reference list.
 	 * <!-- begin-user-doc -->

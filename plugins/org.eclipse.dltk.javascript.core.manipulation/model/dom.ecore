@@ -336,7 +336,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="statements" upperBound="-1"
         eType="#//Statement" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ConstStatement" eSuperTypes="#//Statement">
+  <eClassifiers xsi:type="ecore:EClass" name="ConstStatement" eSuperTypes="#//Expression">
     <eStructuralFeatures xsi:type="ecore:EReference" name="declarations" lowerBound="1"
         upperBound="-1" eType="#//VariableDeclaration" containment="true"/>
   </eClassifiers>

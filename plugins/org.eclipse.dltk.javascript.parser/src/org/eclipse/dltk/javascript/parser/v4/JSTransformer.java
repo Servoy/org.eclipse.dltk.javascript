@@ -514,7 +514,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		expression.setItems(items);
 		expression.setCommas(commas);
 		expression.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-		expression.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+		expression.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
 		children.push(expression);
 	}
 	
@@ -762,7 +762,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void exitIfStatement(IfStatementContext ctx) {
 		IfStatement ifStatement = (IfStatement) getParent();
 		ifStatement.setIfKeyword(createKeyword(ifStatement, ctx.getStart(), Keywords.IF));		
-		ifStatement.setStart(ctx.getStart().getTokenIndex());
+		ifStatement.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		setEndByTokenIndex(ifStatement, ctx.getStop().getTokenIndex());
 
 		Statement _else = ctx.Else() != null ? (Statement) children.pop() : null;
@@ -775,16 +775,15 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			ifStatement.setLP(getTokenOffset(JSParser.OpenParen, 
 					ctx.getStart().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
 		}
+		if (ctx.CloseParen() != null) {
+			ifStatement.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+		}
 		if (ctx.statement() != null) {
-			ifStatement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
 			ifStatement.setThenStatement(then);
-		} 
-		else {
-			ifStatement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
 		}
 
 		if (ctx.Else() != null) {
-			Keyword elseKeyword = new Keyword(Keywords.ELSE);
+			Keyword elseKeyword = createKeyword(ifStatement, ctx.Else().getSymbol(), Keywords.ELSE);
 			ifStatement.setElseKeyword(elseKeyword);
 			ifStatement.setElseStatement(_else);
 		}
@@ -953,7 +952,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		
 		statement.setItem(item);
 
-		Keyword inKeyword = new Keyword(Keywords.IN);
+		Keyword inKeyword = createKeyword(statement, ctx.In().getSymbol(), Keywords.IN);
 
 //		int iteratorStart = node.getChild(0).getChild(1).getTokenStartIndex();
 //
@@ -963,8 +962,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 //			iteratorStart = node.getChild(0).getChild(1).getChild(0)
 //					.getTokenStartIndex();
 
-		inKeyword.setStart(ctx.In().getSymbol().getTokenIndex());
-		inKeyword.setEnd(inKeyword.sourceStart() + Keywords.IN.length());
 		statement.setInKeyword(inKeyword);
 		statement.setIterator(iterator);
 		statement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
@@ -1232,7 +1229,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		}
 		children.pop();//remove the label from the stack, was processed in enterLabelledStatement
 		statement.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-		statement.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+		statement.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
 	}
 
 	@Override
@@ -1643,8 +1640,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			for (int i = 0; i < elementList.getChildCount()-1 ; i++) {
 				if (elementList.Comma().contains(elementList.getChild(i)) && elementList.Comma().contains(elementList.getChild(i+1))) {
 					EmptyExpression empty = new EmptyExpression(array);
-					empty.setStart(ctx.getStart().getTokenIndex());
-					empty.setEnd(ctx.getStop().getTokenIndex());
+					Token comma = elementList.Comma(i).getSymbol();
+					empty.setStart(comma.getStartIndex());
+					empty.setEnd(comma.getStopIndex());
 					array.getItems().add(i, empty);
 				}
 			}
@@ -1675,7 +1673,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 					Util.EMPTY_STRING));
 			expression.setRP(getTokenOffset(ctx.getStop().getTokenIndex()));
 		}
-		expression.setEnd(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+		expression.setEnd(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex() + 1));
 	}
 
 	@Override
@@ -1687,7 +1685,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		operator.setQuestionPosition(getTokenOffset(ctx.QuestionMark().getSymbol().getTokenIndex()));
 		operator.setColonPosition(getTokenOffset(ctx.Colon().getSymbol().getTokenIndex()));
 		operator.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-		operator.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+		operator.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
 	}
 
 	@Override
@@ -1767,7 +1765,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		//get and set are not JSParser constants
 		final Keyword keyword = new Keyword(Keywords.GET);
 		assert Keywords.GET.equals(ctx.getStart().getText());
-		setRangeByToken(keyword, ctx.getStart().getStartIndex());
+		setRangeByToken(keyword, ctx.getStart().getTokenIndex());
 		method.setGetKeyword(keyword);
 		method.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		method.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
@@ -1777,7 +1775,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		children.pop();//get
 
 		method.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));		
+		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));		
 		((ObjectInitializer)getParent()).addInitializer(method);
 	}
 
@@ -1793,7 +1791,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		//get and set are not JSParser constants
 		final Keyword keyword = new Keyword(Keywords.SET);
 		assert Keywords.SET.equals(ctx.getStart().getText());
-		setRangeByToken(keyword, ctx.getStart().getStartIndex());
+		setRangeByToken(keyword, ctx.getStart().getTokenIndex());
 		method.setSetKeyword(keyword);
 		method.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		method.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
@@ -1804,7 +1802,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		children.pop();//set
 
 		method.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));		
+		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));		
 		((ObjectInitializer)getParent()).addInitializer(method);
 	}
 

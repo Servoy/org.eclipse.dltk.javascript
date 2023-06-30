@@ -202,7 +202,7 @@ public class Keywords {
 		map.put(Integer.valueOf(JSParser.NullLiteral), Keywords.NULL);
 		map.put(Integer.valueOf(JSParser.Return), Keywords.RETURN);
 		map.put(Integer.valueOf(JSParser.If), Keywords.IF);
-		map.put(Integer.valueOf(JSParser.Else), Keywords.IF);
+		map.put(Integer.valueOf(JSParser.Else), Keywords.ELSE);
 		map.put(Integer.valueOf(JSParser.Switch), Keywords.SWITCH);
 		map.put(Integer.valueOf(JSParser.Case), Keywords.CASE);
 		map.put(Integer.valueOf(JSParser.Break), Keywords.BREAK);

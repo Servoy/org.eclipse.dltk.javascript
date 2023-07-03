@@ -838,7 +838,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		statement.setWhileKeyword(createKeyword(statement, ctx.getStart(),  Keywords.WHILE));
 		statement.setLP(getTokenOffset(JSParser.OpenParen, 
 				ctx.getStart().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
-		statement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
+		statement.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
 
 		if (ctx.statement() != null) statement.setBody((Statement) children.pop());
 		statement.setCondition((Expression) children.pop());
@@ -858,10 +858,10 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		statement.setWhileKeyword(createKeyword(statement, ctx.While().getSymbol(), Keywords.WHILE));
 		statement.setLP(getTokenOffset(JSParser.OpenParen, 
 				ctx.While().getSymbol().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
-		statement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
+		statement.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
 
 		statement.setCondition(condition);
-		statement.setSemicolonPosition(ctx.getStop().getTokenIndex());
+		statement.setSemicolonPosition(getTokenOffset(ctx.getStop().getTokenIndex()));
 
 		statement.setStart(statement.getDoKeyword().sourceStart());
 		setEndByTokenIndex(statement, ctx.getStop().getTokenIndex());
@@ -913,7 +913,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		statement.setCondition(condition);
 		statement.setConditionalSemicolonPosition(getTokenOffset(ctx.SemiColon(1).getSymbol().getTokenIndex()));
 		statement.setStep(step);
-		statement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
+		statement.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
 
 		if (statement.getInitial() instanceof EmptyExpression) {
 			final int pos = statement.getInitialSemicolonPosition();
@@ -964,7 +964,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 		statement.setInKeyword(inKeyword);
 		statement.setIterator(iterator);
-		statement.setRP(ctx.CloseParen().getSymbol().getTokenIndex());
+		statement.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
 
 		if (ctx.getChildCount() >= 1)
 			statement.setBody(body);

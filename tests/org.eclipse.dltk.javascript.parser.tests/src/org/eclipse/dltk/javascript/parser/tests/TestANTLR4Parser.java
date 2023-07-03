@@ -7,20 +7,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.dltk.compiler.problem.IProblemReporter;
-import org.eclipse.dltk.javascript.ast.FunctionStatement;
-import org.eclipse.dltk.javascript.ast.Script;
-import org.eclipse.dltk.javascript.ast.Statement;
-import org.eclipse.dltk.javascript.ast.StatementBlock;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
-import org.eclipse.dltk.javascript.ast.VariableStatement;
-import org.eclipse.dltk.javascript.ast.VoidExpression;
-import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
-import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
-import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
-import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
-import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.ast.*;
+import org.eclipse.dltk.javascript.ast.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.v4.*;
 import org.junit.Test;
 
 /**
@@ -52,11 +44,43 @@ public class TestANTLR4Parser {
 		return scriptv4;
 	}
 	
-	private boolean equalsJSNode(JSNode node1, JSNode node2) {
-		if (node1.toString().equals(node2.toString())) {
-			return node1.sourceStart() == node2.sourceStart() &&
-					node1.sourceEnd() == node2.sourceEnd() &&
-					node1.toString().equals(node2.toString());
+	private boolean equalsJSNode(ASTNode node1, ASTNode node2) {
+		if (node1.toString().equals(node2.toString()) &&
+			node1.sourceStart() == node2.sourceStart() &&
+			node1.sourceEnd() == node2.sourceEnd() &&
+			node1.getChilds().size() == node2.getChilds().size()) {
+			List<ASTNode> node1_children = node1.getChilds();
+			List<ASTNode> node2_children = node2.getChilds();
+			for (int i = 0; i < node1_children.size(); i++) {
+				ASTNode child1 = node1_children.get(i);
+				ASTNode child2 = node2_children.get(i);
+				if (child1 instanceof VoidExpression && ((VoidExpression)node1_children.get(i)).getExpression() instanceof VariableStatement ||
+						node1_children.get(i) instanceof VariableStatement && child2 instanceof VariableStatement) {
+					//need to compare var statements separately because of bug in old antlr parser sourceEnd
+					return compareVarStatements(child1, child2);
+				}
+				if (!equalsJSNode(child1, child2)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private boolean compareVarStatements(ASTNode child1, ASTNode child2) {
+		VariableStatement var1 = (VariableStatement)(child1 instanceof VoidExpression ? 
+				((VoidExpression)child1).getExpression(): child1);
+		VariableStatement var2 = (VariableStatement) (child2 instanceof VoidExpression ? 
+				((VoidExpression)child2).getExpression(): child2);
+		if (var1.sourceStart() == var2.sourceStart() && 
+				var1.getVariables().size() == var2.getVariables().size()) {
+			for(int j = 0; j < var1.getVariables().size(); j++) {
+				if (!equalsJSNode(var1.getVariables().get(j), var2.getVariables().get(j))) {
+					return false;
+				}
+			}
+			return true;
 		}
 		return false;
 	}
@@ -123,6 +147,11 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		StatementBlock statement = (StatementBlock) script.getStatements().get(0);
+		StatementBlock statementv4 = (StatementBlock) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLC(), statementv4.getLC());
+		assertEquals(statement.getRC(), statementv4.getRC());
 	}
 	
 	@Test
@@ -134,6 +163,12 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		assertTrue(assignment.isAssignment());
+		assertTrue(assignmentv4.isAssignment());
+		assertEquals(assignment.getOperationPosition(), assignmentv4.getOperationPosition());
 	}
 	
 	@Test
@@ -145,6 +180,11 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		IfStatement statement = (IfStatement) script.getStatements().get(0);
+		IfStatement statementv4 = (IfStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
 	}
 	
 	@Test
@@ -178,6 +218,10 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		WhileStatement statement = (WhileStatement) script.getStatements().get(0);
+		WhileStatement statementv4 = (WhileStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
 	}
 	
 	@Test
@@ -189,17 +233,29 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		DoWhileStatement statement = (DoWhileStatement) script.getStatements().get(0);
+		DoWhileStatement statementv4 = (DoWhileStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
+		assertEquals(statement.getSemicolonPosition(), statementv4.getSemicolonPosition());
 	}
 	
 	@Test
 	public void testFor() {
-		String source = "for(var i=0; true; 1){ a += 1;}";
+		String source = "for(var i=0; i < list.size(); i++){ a += 1;}";
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		ForStatement statement = (ForStatement) script.getStatements().get(0);
+		ForStatement statementv4 = (ForStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
+		assertEquals(statement.getInitialSemicolonPosition(), statementv4.getInitialSemicolonPosition());
+		assertEquals(statement.getConditionalSemicolonPosition(), statementv4.getConditionalSemicolonPosition());
 	}
 	
 	@Test
@@ -211,6 +267,11 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		ForInStatement statement = (ForInStatement) script.getStatements().get(0);
+		ForInStatement statementv4 = (ForInStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
 	}
 	
 	@Test
@@ -292,6 +353,13 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		ForInStatement statement = (ForInStatement) script.getStatements().get(0);
+		ForInStatement statementv4 = (ForInStatement) scriptv4.getStatements().get(0);
+		StatementBlock block = (StatementBlock) statement.getBody();
+		StatementBlock blockv4 = (StatementBlock) statementv4.getBody();
+		ContinueStatement continue_ = (ContinueStatement) block.getStatements().get(0);
+		ContinueStatement continue_v4 = (ContinueStatement) blockv4.getStatements().get(0);
+		assertEquals(continue_.getSemicolonPosition(), continue_v4.getSemicolonPosition());
 	}
 	
 	@Test
@@ -314,6 +382,13 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		FunctionStatement statement = (FunctionStatement) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		FunctionStatement statementv4 = (FunctionStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		StatementBlock block = (StatementBlock) statement.getBody();
+		StatementBlock blockv4 = (StatementBlock) statementv4.getBody();
+		ReturnStatement return_ = (ReturnStatement) block.getStatements().get(0);
+		ReturnStatement returnv4 = (ReturnStatement) blockv4.getStatements().get(0);
+		assertEquals(return_.getSemicolonPosition(), returnv4.getSemicolonPosition());
 	}
 	
 	@Test
@@ -348,6 +423,13 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		ForInStatement statement = (ForInStatement)((LabelledStatement) script.getStatements().get(0)).getStatement();
+		ForInStatement statementv4 = (ForInStatement) ((LabelledStatement)scriptv4.getStatements().get(0)).getStatement();
+		StatementBlock block = (StatementBlock) ((ForInStatement)statement.getBody()).getBody();
+		StatementBlock blockv4 = (StatementBlock)((ForInStatement) statementv4.getBody()).getBody();
+		BreakStatement break_ = (BreakStatement) block.getStatements().get(0);
+		BreakStatement break_v4 = (BreakStatement) blockv4.getStatements().get(0);
+		assertEquals(break_.getSemicolonPosition(), break_v4.getSemicolonPosition());
 	}
 	
 	@Test
@@ -359,6 +441,13 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		CallExpression expression = (CallExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		CallExpression expressionv4 = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(expression.getLP(), expressionv4.getLP());
+		assertEquals(expression.getRP(), expressionv4.getRP());
+		assertTrue(expressionv4.getCommas().isEmpty());
+		assertEquals(expression.getCommas().size(), expressionv4.getCommas().size());
 	}
 	
 	@Test
@@ -370,6 +459,16 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+
+		NewExpression expression = (NewExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		NewExpression expressionv4 = (NewExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		CallExpression call = (CallExpression) expression.getObjectClass();
+		CallExpression callv4 = (CallExpression) expressionv4.getObjectClass();
+		assertEquals(call.getLP(), callv4.getLP());
+		assertEquals(call.getRP(), callv4.getRP());
+		assertEquals(callv4.getCommas().size(), callv4.getCommas().size());
+		assertEquals(callv4.getCommas().size(),1);
+		assertEquals(call.getCommas().first(), callv4.getCommas().first());
 	}
 	
 	@Test

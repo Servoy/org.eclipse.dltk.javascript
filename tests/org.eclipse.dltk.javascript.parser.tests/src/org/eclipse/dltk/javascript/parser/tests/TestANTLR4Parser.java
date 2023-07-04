@@ -12,6 +12,7 @@ import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.dltk.compiler.problem.IProblemReporter;
 import org.eclipse.dltk.javascript.ast.*;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.*;
 import org.junit.Test;
 
@@ -165,7 +166,7 @@ public class TestANTLR4Parser {
 		assertTrue(equalsJSNode(script, scriptv4));
 		
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
-		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		assertTrue(assignment.isAssignment());
 		assertTrue(assignmentv4.isAssignment());
 		assertEquals(assignment.getOperationPosition(), assignmentv4.getOperationPosition());
@@ -480,6 +481,15 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		IfStatement statement = (IfStatement) script.getStatements().get(0);
+		IfStatement statementv4 = (IfStatement) scriptv4.getStatements().get(0);
+		ThrowStatement throw_ = (ThrowStatement) statement.getThenStatement();
+		ThrowStatement throw_v4 = (ThrowStatement) statementv4.getThenStatement();
+		assertEquals(throw_.getSemicolonPosition(), throw_v4.getSemicolonPosition());
+		ThrowStatement throw2 = (ThrowStatement) statement.getElseStatement();
+		ThrowStatement throw2_v4 = (ThrowStatement) statementv4.getElseStatement();
+		assertEquals(throw2.getSemicolonPosition(), throw2_v4.getSemicolonPosition());
 	}
 	
 	@Test
@@ -490,7 +500,7 @@ public class TestANTLR4Parser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4));		
 	}
 	
 	@Test
@@ -513,6 +523,12 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		SwitchStatement statement = (SwitchStatement) script.getStatements().get(0);
+		SwitchStatement statementv4 = (SwitchStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
+		assertEquals(statement.getLC(), statementv4.getLC());
+		assertEquals(statement.getRC(), statementv4.getRC());
 	}
 	
 	@Test
@@ -576,6 +592,10 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		WithStatement statement = (WithStatement) script.getStatements().get(0);
+		WithStatement statementv4 = (WithStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
 	}
 	
 	@Test
@@ -587,6 +607,12 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		UnaryOperation postincrement = (UnaryOperation) assignment.getRightExpression();
+		UnaryOperation postincrementv4 = (UnaryOperation) assignmentv4.getRightExpression();
+		assertEquals(postincrement.getOperationPosition(), postincrementv4.getOperationPosition());
 	}
 	
 	@Test
@@ -598,6 +624,9 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		UnaryOperation increment = (UnaryOperation) ((ForStatement) script.getStatements().get(0)).getStep();
+		UnaryOperation incrementv4 = (UnaryOperation) ((ForStatement) scriptv4.getStatements().get(0)).getStep();
+		assertEquals(increment.getOperationPosition(), incrementv4.getOperationPosition());
 	}
 	
 	@Test
@@ -609,6 +638,11 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		UnaryOperation minus = (UnaryOperation) assignment.getRightExpression();
+		UnaryOperation minusv4 = (UnaryOperation) assignmentv4.getRightExpression();
+		assertEquals(minus.getOperationPosition(), minusv4.getOperationPosition());
 	}
 	
 	@Test
@@ -638,6 +672,9 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		PropertyExpression expression = (PropertyExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		PropertyExpression expressionv4 = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(expression.getDotPosition(), expressionv4.getDotPosition());
 	}
 	
 	@Test
@@ -649,6 +686,10 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		GetArrayItemExpression expression = (GetArrayItemExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		GetArrayItemExpression expressionv4 = (GetArrayItemExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(expression.getLB(), expressionv4.getLB());
+		assertEquals(expression.getRB(), expressionv4.getRB());
 	}
 	
 	@Test
@@ -660,6 +701,16 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		
+		VariableStatement statement = (VariableStatement) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement statementv4 = (VariableStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ArrayInitializer init = (ArrayInitializer) ((VariableDeclaration)statement.getVariables().get(0)).getInitializer();
+		ArrayInitializer initv4 = (ArrayInitializer) ((VariableDeclaration)statementv4.getVariables().get(0)).getInitializer();
+		assertEquals(init.getLB(), initv4.getLB());
+		assertEquals(init.getRB(), initv4.getRB());
+		assertEquals(init.getCommas().size(), initv4.getCommas().size());
+		assertEquals(init.getCommas().get(0), initv4.getCommas().get(0));
+		assertEquals(init.getCommas().get(1), initv4.getCommas().get(1));
 	}
 	
 	@Test
@@ -671,6 +722,10 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		CommaExpression expr = (CommaExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		CommaExpression exprv4 = (CommaExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(expr.getCommas().size(), exprv4.getCommas().size());
+		assertEquals(expr.getCommas().get(0), exprv4.getCommas().get(0));
 	}
 	
 	@Test
@@ -682,6 +737,15 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ParenthesizedExpression pexpr = (ParenthesizedExpression) assignment.getRightExpression();
+		ParenthesizedExpression pexprv4 = (ParenthesizedExpression) assignmentv4.getRightExpression();
+		CommaExpression expr = (CommaExpression) pexpr.getExpression();
+		CommaExpression exprv4 = (CommaExpression) pexprv4.getExpression();
+		assertEquals(expr.getCommas().size(), exprv4.getCommas().size());
+		assertEquals(expr.getCommas().get(0), exprv4.getCommas().get(0));
+		assertEquals(expr.getCommas().get(1), exprv4.getCommas().get(1));
 	}
 	
 	@Test
@@ -693,6 +757,12 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ConditionalOperator conditional = (ConditionalOperator) assignment.getRightExpression();
+		ConditionalOperator conditionalv4 = (ConditionalOperator) assignmentv4.getRightExpression();
+		assertEquals(conditional.getQuestionPosition(), conditionalv4.getQuestionPosition());
+		assertEquals(conditional.getColonPosition(), conditionalv4.getColonPosition());
 	}
 	
 	@Test
@@ -718,6 +788,17 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ObjectInitializer init = (ObjectInitializer) assignment.getRightExpression();
+		ObjectInitializer initv4 = (ObjectInitializer) assignmentv4.getRightExpression();
+		assertEquals(init.getLC(), initv4.getLC());
+		assertEquals(init.getRC(), initv4.getRC());
+		assertEquals(init.getCommas().size(), initv4.getCommas().size());
+		assertEquals(init.getCommas().get(0), initv4.getCommas().get(0));
+		assertEquals(init.getCommas().get(1), initv4.getCommas().get(1));
+		assertEquals(init.getCommas().get(2), initv4.getCommas().get(2));
+		assertEquals(init.isMultiline(), initv4.isMultiline());
 	}
 	
 	@Test
@@ -729,6 +810,16 @@ public class TestANTLR4Parser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
+		VariableStatement statement = (VariableStatement) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement statementv4 = (VariableStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ArrayInitializer init = (ArrayInitializer) ((VariableDeclaration)statement.getVariables().get(0)).getInitializer();
+		ArrayInitializer initv4 = (ArrayInitializer) ((VariableDeclaration)statementv4.getVariables().get(0)).getInitializer();
+		assertEquals(init.getCommas().size(), initv4.getCommas().size());
+		assertEquals(init.getCommas().get(0), initv4.getCommas().get(0));
+		assertEquals(init.getCommas().get(1), initv4.getCommas().get(1));
+		assertEquals(init.getItems().size(), initv4.getItems().size());
+		assertTrue(init.getItems().get(1) instanceof EmptyExpression);
+		assertTrue(initv4.getItems().get(1) instanceof EmptyExpression);
 	}
 
 	@Test

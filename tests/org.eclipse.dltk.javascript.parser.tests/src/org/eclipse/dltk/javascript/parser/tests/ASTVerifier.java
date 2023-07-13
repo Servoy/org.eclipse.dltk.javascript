@@ -82,6 +82,7 @@ import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -819,6 +820,14 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 
 		testChar(Keywords.LP, node.getLP());
 		testChar(Keywords.RP, node.getRP());
+
+		return true;
+	}
+
+	@Override
+	public Boolean visitLetStatement(LetStatement node) {
+		testKeyword(node.getLetKeyword());
+		visitVariableDeclarations(node.getVariables());
 
 		return true;
 	}

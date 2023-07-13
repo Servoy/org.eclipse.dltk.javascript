@@ -86,7 +86,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.ide.IDEEncoding;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.eclipse.ui.views.navigator.ResourceSorter;
+import org.eclipse.ui.views.navigator.ResourceComparator;
 
 /**
  * Launch configuration tab used to specify the location a launch configuration
@@ -186,12 +186,8 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 	public void createControl(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
-		PlatformUI
-				.getWorkbench()
-				.getHelpSystem()
-				.setHelp(
-						getControl(),
-						IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(),
+				IDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMMON_TAB);
 		comp.setLayout(new GridLayout(2, true));
 		comp.setFont(parent.getFont());
 
@@ -210,13 +206,11 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 	 * 
 	 */
 	private void createFavoritesComponent(Composite parent) {
-		Group favComp = SWTUtil
-				.createGroup(
-						parent,
-						LaunchConfigurationsMessages.CommonTab_Display_in_favorites_menu__10,
-						1, 1, GridData.FILL_BOTH);
-		fFavoritesTable = CheckboxTableViewer.newCheckList(favComp, SWT.CHECK
-				| SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
+		Group favComp = SWTUtil.createGroup(parent,
+				LaunchConfigurationsMessages.CommonTab_Display_in_favorites_menu__10,
+				1, 1, GridData.FILL_BOTH);
+		fFavoritesTable = CheckboxTableViewer.newCheckList(favComp,
+				SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
 		Control table = fFavoritesTable.getControl();
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		table.setLayoutData(gd);
@@ -313,8 +307,8 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 
 		fFileOutput = createCheckButton(standardGroup,
 				LaunchConfigurationsMessages.CommonTab_6);
-		fFileOutput.setLayoutData(new GridData(SWT.BEGINNING, SWT.NORMAL,
-				false, false));
+		fFileOutput.setLayoutData(
+				new GridData(SWT.BEGINNING, SWT.NORMAL, false, false));
 		fFileOutput.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				enableOuputCaptureWidgets(fFileOutput.getSelection());
@@ -336,7 +330,8 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 				dialog.setTitle(LaunchConfigurationsMessages.CommonTab_13);
 				dialog.setMessage(LaunchConfigurationsMessages.CommonTab_14);
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-				dialog.setSorter(new ResourceSorter(ResourceSorter.NAME));
+				dialog.setComparator(
+						new ResourceComparator(ResourceComparator.NAME));
 				if (dialog.open() == IDialogConstants.OK_ID) {
 					IResource resource = (IResource) dialog.getFirstResult();
 					String arg = resource.getFullPath().toString();
@@ -417,17 +412,17 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 				LaunchConfigurationsMessages.CommonTab_1, 2, 1,
 				GridData.FILL_BOTH);
 
-		fDefaultEncodingButton = createRadioButton(group, MessageFormat.format(
-				LaunchConfigurationsMessages.CommonTab_2,
-				new String[] { defaultEncoding }));
+		fDefaultEncodingButton = createRadioButton(group,
+				MessageFormat.format(LaunchConfigurationsMessages.CommonTab_2,
+						new String[] { defaultEncoding }));
 		GridData gd = new GridData(SWT.BEGINNING, SWT.NORMAL, true, false);
 		gd.horizontalSpan = 2;
 		fDefaultEncodingButton.setLayoutData(gd);
 
 		fAltEncodingButton = createRadioButton(group,
 				LaunchConfigurationsMessages.CommonTab_3);
-		fAltEncodingButton.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING));
+		fAltEncodingButton.setLayoutData(
+				new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 
 		fEncodingCombo = new Combo(group, SWT.READ_ONLY);
 		fEncodingCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -526,9 +521,7 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 		String currentContainerString = fSharedLocationText.getText();
 		IContainer currentContainer = getContainer(currentContainerString);
 		SharedLocationSelectionDialog dialog = new SharedLocationSelectionDialog(
-				getShell(),
-				currentContainer,
-				false,
+				getShell(), currentContainer, false,
 				LaunchConfigurationsMessages.CommonTab_Select_a_location_for_the_launch_configuration_13);
 		dialog.showClosedProjects(false);
 		dialog.open();
@@ -599,17 +592,16 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 		boolean dltkOutput = false;
 
 		try {
-			dltkOutput = configuration
-					.getAttribute(
-							ScriptLaunchConfigurationConstants.ATTR_USE_INTERACTIVE_CONSOLE,
-							false);
+			dltkOutput = configuration.getAttribute(
+					ScriptLaunchConfigurationConstants.ATTR_USE_INTERACTIVE_CONSOLE,
+					false);
 
 			outputToConsole = configuration.getAttribute(
 					IDebugUIConstants.ATTR_CAPTURE_IN_CONSOLE, true);
 			outputFile = configuration.getAttribute(
 					IDebugUIConstants.ATTR_CAPTURE_IN_FILE, (String) null);
-			append = configuration.getAttribute(
-					IDebugUIConstants.ATTR_APPEND_TO_FILE, false);
+			append = configuration
+					.getAttribute(IDebugUIConstants.ATTR_APPEND_TO_FILE, false);
 		} catch (CoreException e) {
 		}
 
@@ -632,7 +624,8 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 	 * @param configuration
 	 *            the local launch configuration
 	 */
-	protected void updateLaunchInBackground(ILaunchConfiguration configuration) {
+	protected void updateLaunchInBackground(
+			ILaunchConfiguration configuration) {
 		fLaunchInBackgroundButton
 				.setSelection(isLaunchInBackground(configuration));
 	}
@@ -758,10 +751,10 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 			ILaunchConfigurationWorkingCopy config) {
 		try {
 			Object[] checked = fFavoritesTable.getCheckedElements();
-			boolean debug = config.getAttribute(
-					IDebugUIConstants.ATTR_DEBUG_FAVORITE, false);
-			boolean run = config.getAttribute(
-					IDebugUIConstants.ATTR_RUN_FAVORITE, false);
+			boolean debug = config
+					.getAttribute(IDebugUIConstants.ATTR_DEBUG_FAVORITE, false);
+			boolean run = config
+					.getAttribute(IDebugUIConstants.ATTR_RUN_FAVORITE, false);
 			if (debug || run) {
 				// old attributes
 				List groups = new ArrayList();
@@ -838,7 +831,8 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 	private boolean validateEncoding() {
 		if (fAltEncodingButton.getSelection()) {
 			if (fEncodingCombo.getSelectionIndex() == -1) {
-				setErrorMessage(DLTKLaunchConfigurationsMessages.commonTab_EncodingNotSupported);
+				setErrorMessage(
+						DLTKLaunchConfigurationsMessages.commonTab_EncodingNotSupported);
 				return false;
 			}
 		}
@@ -870,13 +864,14 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 		if (isShared()) {
 			String path = fSharedLocationText.getText().trim();
 			IContainer container = getContainer(path);
-			if (container == null
-					|| container.equals(ResourcesPlugin.getWorkspace()
-							.getRoot())) {
-				setErrorMessage(LaunchConfigurationsMessages.CommonTab_Invalid_shared_configuration_location_14);
+			if (container == null || container
+					.equals(ResourcesPlugin.getWorkspace().getRoot())) {
+				setErrorMessage(
+						LaunchConfigurationsMessages.CommonTab_Invalid_shared_configuration_location_14);
 				return false;
 			} else if (!container.getProject().isOpen()) {
-				setErrorMessage(LaunchConfigurationsMessages.CommonTab_Cannot_save_launch_configuration_in_a_closed_project__1);
+				setErrorMessage(
+						LaunchConfigurationsMessages.CommonTab_Cannot_save_launch_configuration_in_a_closed_project__1);
 				return false;
 			}
 		}
@@ -906,8 +901,8 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		updateConfigFromLocalShared(configuration);
 		updateConfigFromFavorites(configuration);
-		setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND,
-				configuration, fLaunchInBackgroundButton.getSelection(), true);
+		setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND, configuration,
+				fLaunchInBackgroundButton.getSelection(), true);
 		String encoding = null;
 		if (fAltEncodingButton.getSelection()) {
 			encoding = fEncodingCombo.getText();
@@ -953,13 +948,13 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 			IFileHandle proxyFile;
 			try {
 				IExecutionEnvironment exeEnv = (IExecutionEnvironment) EnvironmentManager
-						.getLocalEnvironment().getAdapter(
-								IExecutionEnvironment.class);
+						.getLocalEnvironment()
+						.getAdapter(IExecutionEnvironment.class);
 				proxyFile = JavaScriptLaunchingPlugin.getDefault()
 						.getConsoleProxy(exeEnv);
 				if (proxyFile != null) {
-					configuration.setAttribute("environmentId", proxyFile
-							.getEnvironment().getId());
+					configuration.setAttribute("environmentId",
+							proxyFile.getEnvironment().getId());
 					configuration.setAttribute("proxy_path",
 							proxyFile.toOSString());
 				}
@@ -973,10 +968,9 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 			useDltk = true;
 		}
 
-		configuration
-				.setAttribute(
-						ScriptLaunchConfigurationConstants.ATTR_USE_INTERACTIVE_CONSOLE,
-						useDltk);
+		configuration.setAttribute(
+				ScriptLaunchConfigurationConstants.ATTR_USE_INTERACTIVE_CONSOLE,
+				useDltk);
 
 		// Last option
 		if (captureOutput) {
@@ -1058,7 +1052,8 @@ public class JavaScriptCommonTab extends AbstractLaunchConfigurationTab {
 		public void dispose() {
 		}
 
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		public void inputChanged(Viewer viewer, Object oldInput,
+				Object newInput) {
 		}
 
 	}

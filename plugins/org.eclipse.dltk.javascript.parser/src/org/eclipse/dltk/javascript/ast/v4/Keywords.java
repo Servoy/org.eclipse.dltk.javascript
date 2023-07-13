@@ -47,6 +47,8 @@ public class Keywords {
 	public static final String DO = "do";
 
 	public static final String VAR = "var";
+	
+	public static final String LET = "let";
 
 	public static final String CONST = "const";
 
@@ -214,6 +216,7 @@ public class Keywords {
 		map.put(Integer.valueOf(JSParser.Do), Keywords.DO);
 		map.put(Integer.valueOf(JSParser.Var), Keywords.VAR);
 		//TODO Let strict vs not strict? map.put(Integer.valueOf(JavaScriptParser.StrictLet), Keywords.LET);
+		map.put(Integer.valueOf(JSParser.NonStrictLet), Keywords.LET);
 		map.put(Integer.valueOf(JSParser.Const), Keywords.CONST);
 		map.put(Integer.valueOf(JSParser.In), Keywords.IN);
 		map.put(Integer.valueOf(JSParser.New), Keywords.NEW);

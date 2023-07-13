@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -96,6 +97,7 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		HANDLERS.put(TagFunctionExpression.class, 50);
 		HANDLERS.put(TemplateStringExpression.class, 51);
 		HANDLERS.put(ForOfStatement.class, 52);
+		HANDLERS.put(LetStatement.class, 53);
 		
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
@@ -212,6 +214,8 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 			return visitTemplateStringExpression((TemplateStringExpression)node);
 		case 52:
 		return visitForOfStatement((ForOfStatement)node);
+		case 53:
+			return visitLetStatement((LetStatement)node);
 		}
 		return visitUnknownNode(node);
 	}
@@ -395,6 +399,8 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 	public abstract E visitTagFunction(TagFunctionExpression node);
 	
 	public abstract E visitForOfStatement(ForOfStatement node);
+	
+	public abstract E visitLetStatement(LetStatement node);
 
 	/**
 	 * @since 2.0

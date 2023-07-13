@@ -54,6 +54,7 @@ import org.eclipse.dltk.javascript.core.dom.IfStatement;
 import org.eclipse.dltk.javascript.core.dom.IterationStatement;
 import org.eclipse.dltk.javascript.core.dom.Label;
 import org.eclipse.dltk.javascript.core.dom.LabeledStatement;
+import org.eclipse.dltk.javascript.core.dom.LetStatement;
 import org.eclipse.dltk.javascript.core.dom.NewExpression;
 import org.eclipse.dltk.javascript.core.dom.Node;
 import org.eclipse.dltk.javascript.core.dom.NullLiteral;
@@ -679,6 +680,13 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	private EClass forOfStatementEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass letStatementEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -2601,6 +2609,26 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getLetStatement() {
+		return letStatementEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getLetStatement_Declarations() {
+		return (EReference)letStatementEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getUnaryOperator() {
 		return unaryOperatorEEnum;
 	}
@@ -2910,6 +2938,9 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		createEReference(forOfStatementEClass, FOR_OF_STATEMENT__ITEM);
 		createEReference(forOfStatementEClass, FOR_OF_STATEMENT__COLLECTION);
 
+		letStatementEClass = createEClass(LET_STATEMENT);
+		createEReference(letStatementEClass, LET_STATEMENT__DECLARATIONS);
+
 		// Create enums
 		unaryOperatorEEnum = createEEnum(UNARY_OPERATOR);
 		binaryOperatorEEnum = createEEnum(BINARY_OPERATOR);
@@ -3036,6 +3067,8 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		templateStringExpressionEClass.getESuperTypes().add(this.getExpression());
 		tagFunctionEClass.getESuperTypes().add(this.getExpression());
 		forOfStatementEClass.getESuperTypes().add(this.getIterationStatement());
+		letStatementEClass.getESuperTypes().add(this.getStatement());
+		letStatementEClass.getESuperTypes().add(this.getIForInitializer());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(nodeEClass, Node.class, "Node", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -3303,6 +3336,9 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		initEClass(forOfStatementEClass, ForOfStatement.class, "ForOfStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getForOfStatement_Item(), this.getIForInitializer(), null, "item", null, 1, 1, ForOfStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getForOfStatement_Collection(), this.getExpression(), null, "collection", null, 1, 1, ForOfStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(letStatementEClass, LetStatement.class, "LetStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getLetStatement_Declarations(), this.getVariableDeclaration(), null, "declarations", null, 1, -1, LetStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(unaryOperatorEEnum, UnaryOperator.class, "UnaryOperator");

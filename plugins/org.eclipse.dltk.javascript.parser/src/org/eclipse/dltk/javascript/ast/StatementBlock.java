@@ -13,16 +13,18 @@
 package org.eclipse.dltk.javascript.ast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.dltk.ast.ASTVisitor;
 
-public class StatementBlock extends Statement implements ISourceableBlock {
+public class StatementBlock extends Statement implements ISourceableBlock, JSScope {
 
 	private final List<Statement> statements = new ArrayList<Statement>();
 	private int LC = -1;
 	private int RC = -1;
+	private List<JSDeclaration> declarations;
 
 	public StatementBlock(JSNode parent) {
 		super(parent);
@@ -80,5 +82,18 @@ public class StatementBlock extends Statement implements ISourceableBlock {
 
 	public boolean isBlock() {
 		return true;
+	}
+
+	@Override
+	public void addDeclaration(JSDeclaration declaration) {
+		if (declarations == null) {
+			declarations = new ArrayList<JSDeclaration>();
+		}
+		declarations.add(declaration);
+	}
+
+	public List<JSDeclaration> getDeclarations() {
+		return declarations != null ? declarations : Collections
+				.<JSDeclaration> emptyList();
 	}
 }

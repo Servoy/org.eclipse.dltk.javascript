@@ -4121,6 +4121,52 @@ public interface DomPackage extends EPackage {
 	int FOR_OF_STATEMENT_FEATURE_COUNT = ITERATION_STATEMENT_FEATURE_COUNT + 2;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.LetStatementImpl <em>Let Statement</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.LetStatementImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getLetStatement()
+	 * @generated
+	 */
+	int LET_STATEMENT = 82;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LET_STATEMENT__BEGIN = STATEMENT__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LET_STATEMENT__END = STATEMENT__END;
+
+	/**
+	 * The feature id for the '<em><b>Declarations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LET_STATEMENT__DECLARATIONS = STATEMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Let Statement</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LET_STATEMENT_FEATURE_COUNT = STATEMENT_FEATURE_COUNT + 1;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4128,7 +4174,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 82;
+	int UNARY_OPERATOR = 83;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -4138,7 +4184,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 83;
+	int BINARY_OPERATOR = 84;
 
 
 	/**
@@ -6084,6 +6130,27 @@ public interface DomPackage extends EPackage {
 	EReference getForOfStatement_Collection();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.LetStatement <em>Let Statement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Let Statement</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.LetStatement
+	 * @generated
+	 */
+	EClass getLetStatement();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.dltk.javascript.core.dom.LetStatement#getDeclarations <em>Declarations</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Declarations</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.LetStatement#getDeclarations()
+	 * @see #getLetStatement()
+	 * @generated
+	 */
+	EReference getLetStatement_Declarations();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7760,6 +7827,24 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FOR_OF_STATEMENT__COLLECTION = eINSTANCE.getForOfStatement_Collection();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.LetStatementImpl <em>Let Statement</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.LetStatementImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getLetStatement()
+		 * @generated
+		 */
+		EClass LET_STATEMENT = eINSTANCE.getLetStatement();
+
+		/**
+		 * The meta object literal for the '<em><b>Declarations</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference LET_STATEMENT__DECLARATIONS = eINSTANCE.getLetStatement_Declarations();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.

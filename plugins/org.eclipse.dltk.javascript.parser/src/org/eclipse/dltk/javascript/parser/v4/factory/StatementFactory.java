@@ -20,6 +20,7 @@ import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
 import org.eclipse.dltk.javascript.ast.WithStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DoStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ForOfStatementContext;
@@ -52,7 +53,7 @@ public class StatementFactory extends JSNodeFactory<StatementContext> {
 				return new ConstStatement(parent);
 			}
 			if (modifier.let_() != null) {
-				//TODO es6
+				return new LetStatement(parent);
 			}
 		}
 		if (ctx.importStatement() != null) {

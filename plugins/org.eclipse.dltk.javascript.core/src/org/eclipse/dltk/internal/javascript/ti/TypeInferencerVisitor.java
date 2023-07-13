@@ -94,6 +94,7 @@ import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -1696,9 +1697,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitStatementBlock(StatementBlock node) {
+//		final IValueCollection block = new ValueCollection(peekContext()) {
+//			@Override
+//			public boolean isScope() {
+//				return true;
+//			}
+//		};
+//		enterContext(block);
 		for (Statement statement : node.getStatements()) {
 			visit(statement);
 		}
+//		leaveContext();
 		return null;
 	}
 
@@ -2095,5 +2104,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		}
 		visit(node.getBody());
 		return null;
+	}
+
+	@Override
+	public IValueReference visitLetStatement(LetStatement node) {
+		final IValueCollection collection = peekContext();
+		IValueReference result = null;
+		for (VariableDeclaration declaration : node.getVariables()) {
+			result = collection.getChild(declaration.getVariableName());
+			assert result.exists();
+			initializeVariable(result, declaration);
+		}
+		return result;
 	}
 }

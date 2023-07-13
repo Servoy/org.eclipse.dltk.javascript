@@ -621,4 +621,13 @@ public interface DomFactory extends EFactory {
 	 */
 	ForOfStatement createForOfStatement();
 
+	/**
+	 * Returns a new object of class '<em>Let Statement</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Let Statement</em>'.
+	 * @generated
+	 */
+	LetStatement createLetStatement();
+
 } //DomFactory

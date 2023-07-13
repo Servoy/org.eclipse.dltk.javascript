@@ -97,6 +97,7 @@ import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -1819,6 +1820,23 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 							document));
 
 				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
+			}
+
+			@Override
+			public IFormatterNode visitLetStatement(LetStatement node) {
+				FormatterVariableDeclarationNode formatterNode = new FormatterVariableDeclarationNode(
+						document, isIndentVariableStatement(node));
+
+				formatterNode.setBegin(createTextNode(document,
+						node.getLetKeyword()));
+
+				push(formatterNode);
+
+				processVariableDeclarations(node);
+
+				checkedPop(formatterNode, node.sourceEnd());
+
 				return formatterNode;
 			}
 		});

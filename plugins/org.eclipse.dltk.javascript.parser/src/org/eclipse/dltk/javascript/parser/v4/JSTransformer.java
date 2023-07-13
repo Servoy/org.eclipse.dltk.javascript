@@ -84,6 +84,7 @@ import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
 import org.eclipse.dltk.javascript.parser.JSProblemIdentifier;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserProblems;
@@ -174,6 +175,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.TryStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.TypeofExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryMinusExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryPlusExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.VarModifierContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableDeclarationContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableDeclarationListContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableStatementContext;
@@ -191,6 +193,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	private Stack<JSNode> children = new Stack<JSNode>();
 	private Stack<List<Statement>> lists = new Stack<>();
 	private Stack<SymbolTable> scopes = new Stack<SymbolTable>();
+	private Stack<SymbolTable> blockScopes = new Stack<SymbolTable>();
 	private Reporter reporter;
 	private Script script;
 	private List<Token> tokens;
@@ -541,7 +544,16 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		if (ctx.variableDeclarationList().varModifier().Const() != null) {
 			setupConstStatement(ctx);
 		}
-		//TODO let
+		if (ctx.variableDeclarationList().varModifier().let_() != null) {
+			setupLetStatement(ctx);
+		}
+	}
+	
+	private void setupLetStatement(ParserRuleContext ctx) {
+		LetStatement statement = (LetStatement)getParent();
+		locateDocumentation(statement, ctx.getStart());
+		statement.setLetKeyword(createKeyword(statement, ctx.getStart(), Keywords.LET));
+		setRange(statement, ctx);
 	}
 
 	public void setupVariableStatement(ParserRuleContext ctx) {
@@ -612,8 +624,8 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			declaration.setIdentifier(identifier);
 		}
 
-		SymbolKind kind = SymbolKind.VAR; //TODO add LET?
-		final SymbolKind replaced = getScope().add(
+		SymbolKind kind = getSymbolKind(ctx);
+		final SymbolKind replaced = addVariableToScope(
 				declaration.getVariableName(), kind, declaration);
 		if (replaced != null && reporter != null) {
 			final Identifier identifier = declaration.getIdentifier();
@@ -632,6 +644,28 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		
 		setRange(declaration, ctx);
 		children.add(declaration);
+	}
+
+	private SymbolKind addVariableToScope(String variableName, SymbolKind kind,
+			VariableDeclaration declaration) {
+		SymbolKind added = null;
+		SymbolTable blockScope = !blockScopes.isEmpty() ? blockScopes.peek() : null;
+		if (kind == SymbolKind.LET && blockScope != null) {
+			return blockScope.add(variableName, kind, declaration);
+		}
+		added = getScope().add(variableName, kind, declaration);
+		if (blockScope != null) blockScope.add(variableName, kind, declaration);
+		return added;
+	}
+
+	private SymbolKind getSymbolKind(VariableDeclarationContext ctx) {
+		if (ctx.getParent() instanceof VariableDeclarationListContext) {
+			VarModifierContext varModifier = ((VariableDeclarationListContext) ctx.getParent()).varModifier();
+			if (varModifier.Var() != null) return SymbolKind.VAR;
+			if (varModifier.Const() != null) return SymbolKind.CONST;
+			if (varModifier.let_() != null) return SymbolKind.LET;
+		}
+		return null;
 	}
 
 	@Override
@@ -830,6 +864,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		if (ctx.getParent() instanceof TryStatementContext || ctx.getParent() instanceof CatchProductionContext || ctx.getParent() instanceof FinallyProductionContext) {
 			children.add(parents.pop());
 		}
+		blockScopes.pop();
 	}	
 		
 	@Override
@@ -975,7 +1010,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterFunctionDeclaration(FunctionDeclarationContext ctx) {
-		scopes.push(new SymbolTable((FunctionStatement)getParent()));
+		SymbolTable symbolTable = new SymbolTable((FunctionStatement)getParent());
+		scopes.push(symbolTable);
+		blockScopes.push(symbolTable);
 	}
 
 	@Override
@@ -1035,7 +1072,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	
 	@Override
 	public void enterAnonymousFunctionDecl(AnonymousFunctionDeclContext ctx) {
-		scopes.push(new SymbolTable((FunctionStatement)getParent()));
+		SymbolTable symbolTable = new SymbolTable((FunctionStatement)getParent());
+		scopes.push(symbolTable);
+		blockScopes.push(symbolTable);
 	}
 
 	@Override
@@ -1065,7 +1104,8 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			}
 		}
 		Collections.reverse(arguments);
-		final SymbolTable functionScope = scopes.pop();
+		final SymbolTable functionScope = blockScopes.pop(); //blockScope/scope should be the same in this case
+		scopes.pop();
 		for (int i = 0, childCount = arguments.size(); i < childCount; ++i) {
 			Argument argument = arguments.get(i);
 			if (i + 1 < childCount) {
@@ -1384,8 +1424,13 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterBlock(BlockContext ctx) {
-		if (getParent() instanceof StatementBlock) return;
+		if (getParent() instanceof StatementBlock) {
+			//created via factory
+			blockScopes.push(new SymbolTable((StatementBlock)getParent()));
+			return;
+		}
 		parents.push(new StatementBlock(getParent()));
+		blockScopes.push(new SymbolTable((StatementBlock)getParent()));
 	}
 
 	@Override

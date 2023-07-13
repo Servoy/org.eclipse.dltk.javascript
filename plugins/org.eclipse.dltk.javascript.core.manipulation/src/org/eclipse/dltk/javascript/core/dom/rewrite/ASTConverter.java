@@ -68,6 +68,7 @@ import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -755,6 +756,15 @@ public class ASTConverter extends ASTVisitor<Node> {
 		res.setItem((IForInitializer) visit(node.getItem()));
 		res.setCollection((Expression) visit(node.getIterator()));
 		res.setBody((Statement) visit(node.getBody()));
+		return res;
+	}
+
+	@Override
+	public Node visitLetStatement(LetStatement node) {
+		org.eclipse.dltk.javascript.core.dom.LetStatement res = DOM_FACTORY
+				.createLetStatement();
+		for (VariableDeclaration decl : node.getVariables())
+			res.getDeclarations().add(createVariableDeclaration(decl));
 		return res;
 	}
 }

@@ -815,6 +815,15 @@ public class DomSwitch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case DomPackage.LET_STATEMENT: {
+				LetStatement letStatement = (LetStatement)theEObject;
+				T result = caseLetStatement(letStatement);
+				if (result == null) result = caseStatement(letStatement);
+				if (result == null) result = caseIForInitializer(letStatement);
+				if (result == null) result = caseNode(letStatement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -2046,6 +2055,21 @@ public class DomSwitch<T> {
 	 * @generated
 	 */
 	public T caseForOfStatement(ForOfStatement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Let Statement</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Let Statement</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseLetStatement(LetStatement object) {
 		return null;
 	}
 

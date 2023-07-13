@@ -16,6 +16,9 @@ public enum SymbolKind {
 
 	VAR(JavaScriptParserProblems.DUPLICATE_VAR,
 			JavaScriptParserProblems.VAR_DUPLICATES_OTHER),
+	
+	LET(JavaScriptParserProblems.DUPLICATE_LET,
+			JavaScriptParserProblems.LET_DUPLICATES_OTHER),
 
 	CONST(JavaScriptParserProblems.DUPLICATE_CONST,
 			JavaScriptParserProblems.CONST_DUPLICATES_OTHER),

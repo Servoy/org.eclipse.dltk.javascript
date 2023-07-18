@@ -112,6 +112,7 @@ import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.PhantomValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
+import org.eclipse.dltk.javascript.typeinference.ValueCollectionFactory;
 import org.eclipse.dltk.javascript.typeinference.ValueReferenceUtil;
 import org.eclipse.dltk.javascript.typeinfo.CommonSuperTypeFinder;
 import org.eclipse.dltk.javascript.typeinfo.E4XTypes;
@@ -1697,17 +1698,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitStatementBlock(StatementBlock node) {
-//		final IValueCollection block = new ValueCollection(peekContext()) {
-//			@Override
-//			public boolean isScope() {
-//				return true;
-//			}
-//		};
-//		enterContext(block);
+		if (node.getParent() instanceof FunctionStatement == false) {
+			final IValueCollection block = ValueCollectionFactory
+					.createScopeValueCollection(peekContext());
+			enterContext(block);
+		}
 		for (Statement statement : node.getStatements()) {
 			visit(statement);
 		}
-//		leaveContext();
+		if (node.getParent() instanceof FunctionStatement == false) {
+			leaveContext();
+		}
 		return null;
 	}
 

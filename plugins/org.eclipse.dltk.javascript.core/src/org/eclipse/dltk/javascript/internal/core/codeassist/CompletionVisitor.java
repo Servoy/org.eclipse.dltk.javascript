@@ -18,6 +18,7 @@ import org.eclipse.dltk.internal.javascript.ti.ITypeInferenceContext;
 import org.eclipse.dltk.internal.javascript.ti.PositionReachedException;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
+import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 
@@ -42,7 +43,8 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 
 	@Override
 	public IValueReference visit(ASTNode node) {
-		if (node instanceof FunctionStatement) {
+		if (node instanceof FunctionStatement
+				|| node instanceof StatementBlock) {
 			if (levels.isEmpty() && positionReached == null
 					&& node.sourceStart() >= position) {
 				return null;
@@ -53,7 +55,9 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 		if (!levels.isEmpty() && levels.peek().enabled) {
 			return result;
 		}
-		if (savedCollection == null && node.sourceEnd() > position) {
+
+		if (savedCollection == null && node != null
+				&& node.sourceEnd() >= position) {
 			savedCollection = peekContext();
 			throw new PositionReachedException(node, result);
 		}
@@ -69,6 +73,24 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 		IValueReference result;
 		try {
 			result = super.visitFunctionStatement(node);
+		} finally {
+			levels.pop();
+		}
+		return result;
+	}
+
+	@Override
+	public IValueReference visitStatementBlock(StatementBlock node) {
+		if (node.getParent() instanceof FunctionStatement) {
+			return super.visitStatementBlock(node);
+		}
+		final Level level = new Level();
+		level.enabled = node.sourceEnd() < position
+				|| node.sourceStart() > position;
+		levels.push(level);
+		IValueReference result;
+		try {
+			result = super.visitStatementBlock(node);
 		} finally {
 			levels.pop();
 		}

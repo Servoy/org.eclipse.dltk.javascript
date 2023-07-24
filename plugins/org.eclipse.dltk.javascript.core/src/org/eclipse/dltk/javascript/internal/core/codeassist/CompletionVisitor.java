@@ -17,8 +17,13 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.internal.javascript.ti.ITypeInferenceContext;
 import org.eclipse.dltk.internal.javascript.ti.PositionReachedException;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
+import org.eclipse.dltk.javascript.ast.ForInStatement;
+import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
+import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.ast.JSScope;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
+import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 
@@ -43,8 +48,7 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 
 	@Override
 	public IValueReference visit(ASTNode node) {
-		if (node instanceof FunctionStatement
-				|| node instanceof StatementBlock) {
+		if (node instanceof JSScope) {
 			if (levels.isEmpty() && positionReached == null
 					&& node.sourceStart() >= position) {
 				return null;
@@ -80,14 +84,43 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 	}
 
 	@Override
+	public IValueReference visitForInStatement(ForInStatement node) {
+		addLevel(node);
+		IValueReference result;
+		try {
+			result = super.visitForInStatement(node);
+		} finally {
+			levels.pop();
+		}
+		return result;
+	}
+
+	@Override
+	public IValueReference visitForStatement(ForStatement node) {
+		addLevel(node);
+		try {
+			return super.visitForStatement(node);
+		} finally {
+			levels.pop();
+		}
+	}
+
+	@Override
+	public IValueReference visitForOfStatement(ForOfStatement node) {
+		addLevel(node);
+		try {
+			return super.visitForOfStatement(node);
+		} finally {
+			levels.pop();
+		}
+	}
+
+	@Override
 	public IValueReference visitStatementBlock(StatementBlock node) {
 		if (node.getParent() instanceof FunctionStatement) {
 			return super.visitStatementBlock(node);
 		}
-		final Level level = new Level();
-		level.enabled = node.sourceEnd() < position
-				|| node.sourceStart() > position;
-		levels.push(level);
+		addLevel(node);
 		IValueReference result;
 		try {
 			result = super.visitStatementBlock(node);
@@ -95,6 +128,13 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 			levels.pop();
 		}
 		return result;
+	}
+
+	private void addLevel(JSNode node) {
+		final Level level = new Level();
+		level.enabled = node.sourceEnd() < position
+				|| node.sourceStart() > position;
+		levels.push(level);
 	}
 
 	@Override
@@ -113,5 +153,4 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 		}
 		return super.getCollection();
 	}
-
 }

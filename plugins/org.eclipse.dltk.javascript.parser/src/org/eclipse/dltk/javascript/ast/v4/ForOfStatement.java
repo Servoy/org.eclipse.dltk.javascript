@@ -2,13 +2,13 @@ package org.eclipse.dltk.javascript.ast.v4;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTVisitor;
+import org.eclipse.dltk.javascript.ast.AbstractForStatement;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
-import org.eclipse.dltk.javascript.ast.LoopStatement;
 import org.eclipse.dltk.javascript.ast.Statement;
 
-public class ForOfStatement extends LoopStatement {
+public class ForOfStatement extends AbstractForStatement {
 
 	private Keyword forKeyword;
 	private Keyword ofKeyword;

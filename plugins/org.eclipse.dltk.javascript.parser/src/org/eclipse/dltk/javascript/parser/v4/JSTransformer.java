@@ -20,6 +20,7 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 import org.eclipse.dltk.compiler.util.Util;
 import org.eclipse.dltk.internal.core.util.WeakHashSet;
+import org.eclipse.dltk.javascript.ast.AbstractForStatement;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
@@ -432,12 +433,18 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		if (createErrorExpression(ctx)) return;
 		if (!JSNodeCreator.skipCreate(ctx)) {
 			parents.push(JSNodeCreator.create(ctx, getParent()));
+			if (getParent() instanceof AbstractForStatement) {
+				blockScopes.push(new SymbolTable((AbstractForStatement)getParent()));
+			}
 		}
 	}
 
 	@Override
 	public void exitStatement(StatementContext ctx) throws AssertionFailedException {
 		if (JSNodeCreator.skipCreate(ctx)) return;
+		if (getParent() instanceof AbstractForStatement) {
+			blockScopes.pop();
+		}
 		addStatement(ctx, parents.pop());
 	}
 
@@ -586,6 +593,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			parents.push(statement);
 			setupConstStatement(ctx);
 		}
+		if (ctx.varModifier().let_() != null && !getParent().getClass().equals(LetStatement.class)) {
+			LetStatement statement = new LetStatement(getParent());
+			parents.push(statement);
+			setupLetStatement(ctx);
+		}
 	}
 
 	@Override
@@ -650,11 +662,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			VariableDeclaration declaration) {
 		SymbolKind added = null;
 		SymbolTable blockScope = !blockScopes.isEmpty() ? blockScopes.peek() : null;
-		if (kind == SymbolKind.LET && blockScope != null) {
+		if ((kind == SymbolKind.LET ||  kind == SymbolKind.CONST) && blockScope != null) {
 			return blockScope.add(variableName, kind, declaration);
 		}
 		added = getScope().add(variableName, kind, declaration);
-		if (blockScope != null) blockScope.add(variableName, kind, declaration);
+		//if (blockScope != null) blockScope.add(variableName, kind, declaration);
 		return added;
 	}
 

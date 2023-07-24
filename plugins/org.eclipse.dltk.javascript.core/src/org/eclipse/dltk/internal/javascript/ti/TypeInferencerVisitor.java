@@ -945,17 +945,24 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitForInStatement(ForInStatement node) {
+		final IValueCollection collection = ValueCollectionFactory
+				.createScopeValueCollection(peekContext());
+		enterContext(collection);
 		final IValueReference item = visit(node.getItem());
 		if (item != null) {
 			assign(item, ConstantValue.of(RTypes.STRING));
 		}
 		visit(node.getIterator());
 		visit(node.getBody());
+		leaveContext();
 		return null;
 	}
 
 	@Override
 	public IValueReference visitForStatement(ForStatement node) {
+		final IValueCollection collection = ValueCollectionFactory
+				.createScopeValueCollection(peekContext());
+		enterContext(collection);
 		if (node.getInitial() != null)
 			visit(node.getInitial());
 		if (node.getCondition() != null)
@@ -964,6 +971,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			visit(node.getStep());
 		if (node.getBody() != null)
 			visit(node.getBody());
+		leaveContext();
 		return null;
 	}
 
@@ -1703,6 +1711,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					.createScopeValueCollection(peekContext());
 			enterContext(block);
 		}
+		handleDeclarations(node);
 		for (Statement statement : node.getStatements()) {
 			visit(statement);
 		}
@@ -2097,6 +2106,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitForOfStatement(ForOfStatement node) {
+		final IValueCollection collection = ValueCollectionFactory
+				.createScopeValueCollection(peekContext());
+		enterContext(collection);
 		IValueReference itemReference = visit(node.getItem());
 		IValueReference iteratorReference = visit(node.getIterator());
 		if (itemReference instanceof IValueProvider
@@ -2104,6 +2116,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			inferIteratorType(itemReference, iteratorReference);
 		}
 		visit(node.getBody());
+		leaveContext();
 		return null;
 	}
 

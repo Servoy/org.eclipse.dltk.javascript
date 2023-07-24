@@ -15,7 +15,7 @@ package org.eclipse.dltk.javascript.ast;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTVisitor;
 
-public class ForInStatement extends LoopStatement {
+public class ForInStatement extends AbstractForStatement {
 
 	private Keyword forKeyword;
 	private Keyword inKeyword;

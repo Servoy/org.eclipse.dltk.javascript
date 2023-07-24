@@ -14,7 +14,7 @@ package org.eclipse.dltk.javascript.ast;
 
 import org.eclipse.dltk.ast.ASTVisitor;
 
-public class ForStatement extends LoopStatement {
+public class ForStatement extends AbstractForStatement {
 
 	private Keyword forKeyword;
 	private Expression initial;

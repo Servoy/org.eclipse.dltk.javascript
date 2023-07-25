@@ -1045,6 +1045,27 @@ public class TestANTLR4Parser {
 		assertEquals("a += 1;\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
 	}
 	
+//	@Test
+//	public void testForOfLet() {
+//		String source = "for (let color in ['green', 'red', 'blue']) {\r\n"
+//				+ "		application.output(color);\r\n"
+//				+ "	}";
+//		Script scriptv4 = getScriptv4(source);
+//		assertNotNull(scriptv4);
+//		
+//		Statement statement = scriptv4.getStatements().get(0);
+//		assertNotNull(statement);
+//		assertTrue(statement instanceof ForOfStatement);
+//		ForOfStatement forOf = (ForOfStatement) statement;
+//		assertEquals("let color", forOf.getItem().toString());
+//		assertEquals("['green', 'red', 'blue']", forOf.getIterator().toString());
+//		assertNotNull(forOf.getOfKeyword());
+//		assertEquals(11, forOf.getOfKeyword().sourceStart());
+//		assertEquals(13, forOf.getOfKeyword().sourceEnd());
+//		assertNotNull(forOf.getBody());
+//		assertEquals("application.output(color);\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
+//	}
+	
 	@Test
 	public void testForOfConst() {
 		String source = "for (const e of obj) { a+= 1; }";
@@ -1079,5 +1100,55 @@ public class TestANTLR4Parser {
 		assertNotNull(scriptv4);
 		assertEquals(problems.size(), 3);
 		assertEquals(problems.get(0).getMessage(), "rule iterationStatement failed predicate: {this.p(\"of\")}?");
+	}
+	
+	@Test
+	public void testLet() {
+		String source = "{ let a = 5; }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		StatementBlock block = (StatementBlock) scriptv4.getStatements().get(0);
+		LetStatement let = (LetStatement)((VoidExpression)block.getStatements().get(0)).getExpression();
+		VariableDeclaration variableDeclaration = let.getVariables().get(0);
+		assertEquals("a", variableDeclaration.getVariableName());
+		assertEquals("5", variableDeclaration.getInitializer().toString());
+	}
+	
+	@Test
+	public void testLet_fnScope() {
+		String source = "function f(param){ let a; }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		FunctionStatement func = (FunctionStatement)scriptv4.getStatements().get(0).getChilds().get(0);
+		assertEquals(1, func.getDeclarations().size());	
+	}
+	
+	@Test
+	public void testScopes() {
+		String source = "function test(p){ if (p < 0) { "
+				+ " let a = 5; "
+				+ " var b = '';"
+				+ " const c = 'test';"
+				+ " for (let color in ['green', 'red', 'blue']) {}}"
+				+ "}";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		FunctionStatement func = (FunctionStatement)scriptv4.getStatements().get(0).getChilds().get(0);
+		assertEquals(1, func.getDeclarations().size());
+		assertEquals("b", func.getDeclarations().get(0).getIdentifier().getName());
+		
+		IfStatement if_ = (IfStatement) func.getBody().getStatements().get(0);
+		StatementBlock block = (StatementBlock) if_.getThenStatement();
+		assertEquals(2, block.getDeclarations().size());
+		assertEquals("a", block.getDeclarations().get(0).getIdentifier().getName());
+		assertEquals("c", block.getDeclarations().get(1).getIdentifier().getName());
+		
+		assertEquals(4, block.getStatements().size());
+		ForInStatement forin = (ForInStatement) block.getStatements().get(3);
+		assertEquals(1, forin.getDeclarations().size());
+		assertEquals("color", forin.getDeclarations().get(0).getIdentifier().getName());
 	}
 }

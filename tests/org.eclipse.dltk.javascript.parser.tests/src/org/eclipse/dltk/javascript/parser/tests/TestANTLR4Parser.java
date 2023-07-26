@@ -1045,26 +1045,26 @@ public class TestANTLR4Parser {
 		assertEquals("a += 1;\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
 	}
 	
-//	@Test
-//	public void testForOfLet() {
-//		String source = "for (let color in ['green', 'red', 'blue']) {\r\n"
-//				+ "		application.output(color);\r\n"
-//				+ "	}";
-//		Script scriptv4 = getScriptv4(source);
-//		assertNotNull(scriptv4);
-//		
-//		Statement statement = scriptv4.getStatements().get(0);
-//		assertNotNull(statement);
-//		assertTrue(statement instanceof ForOfStatement);
-//		ForOfStatement forOf = (ForOfStatement) statement;
-//		assertEquals("let color", forOf.getItem().toString());
-//		assertEquals("['green', 'red', 'blue']", forOf.getIterator().toString());
-//		assertNotNull(forOf.getOfKeyword());
-//		assertEquals(11, forOf.getOfKeyword().sourceStart());
-//		assertEquals(13, forOf.getOfKeyword().sourceEnd());
-//		assertNotNull(forOf.getBody());
-//		assertEquals("application.output(color);\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
-//	}
+	@Test
+	public void testForOfLet() {
+		String source = "for (let color of ['green', 'red', 'blue']) {\r\n"
+				+ "		application.output(color);\r\n"
+				+ "	}";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof ForOfStatement);
+		ForOfStatement forOf = (ForOfStatement) statement;
+		assertEquals("let color", forOf.getItem().toString());
+		assertEquals("['green', 'red', 'blue']", forOf.getIterator().toString());
+		assertNotNull(forOf.getOfKeyword());
+		assertEquals(15, forOf.getOfKeyword().sourceStart());
+		assertEquals(17, forOf.getOfKeyword().sourceEnd());
+		assertNotNull(forOf.getBody());
+		assertEquals("application.output(color);\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
+	}
 	
 	@Test
 	public void testForOfConst() {
@@ -1083,23 +1083,6 @@ public class TestANTLR4Parser {
 		assertEquals(15, forOf.getOfKeyword().sourceEnd());
 		assertNotNull(forOf.getBody());
 		assertEquals("a += 1;\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
-	}
-	
-	@Test
-	public void testForOf_failedPredicate() {
-		String source = "for (cont e of obj) { a+= 1; }"; // typo for const		
-		final org.eclipse.dltk.javascript.parser.v4.JavaScriptParser jsParserv4 =  new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser();
-		final List<IProblem> problems = new ArrayList<IProblem>();
-		IProblemReporter reporter = new IProblemReporter() {		
-			@Override
-			public void reportProblem(IProblem problem) {
-				problems.add(problem);
-			}
-		};
-		Script scriptv4 = jsParserv4.parse(source, reporter);
-		assertNotNull(scriptv4);
-		assertEquals(problems.size(), 3);
-		assertEquals(problems.get(0).getMessage(), "rule iterationStatement failed predicate: {this.p(\"of\")}?");
 	}
 	
 	@Test

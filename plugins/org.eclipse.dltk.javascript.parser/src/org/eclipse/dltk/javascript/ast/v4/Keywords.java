@@ -297,6 +297,7 @@ public class Keywords {
 		map.put(Integer.valueOf(JSParser.Instanceof), Keywords.INSTANCEOF);
 		map.put(Integer.valueOf(JSParser.Typeof), Keywords.TYPEOF);
 		map.put(Integer.valueOf(JSParser.In), Keywords.IN);
+		map.put(Integer.valueOf(JSParser.Of), Keywords.OF);
 	}
 
 	public static String fromToken(int token) {

@@ -1,6 +1,6 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from JavaScriptParser.g4 by ANTLR 4.12.0
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
  */
+@SuppressWarnings("CheckReturnValue")
 public class JavaScriptParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements JavaScriptParserVisitor<T> {
 	/**
 	 * {@inheritDoc}

@@ -2020,7 +2020,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		ForOfStatement statement = (ForOfStatement)getParent();
 		Statement body = (Statement) children.pop();
 		Expression iterator = (Expression) children.pop();
-		Identifier of = (Identifier) children.pop();
 		Expression item = (Expression) children.pop();
 		
 		statement.setForKeyword(createKeyword(statement, ctx.getStart(),  Keywords.FOR));
@@ -2028,9 +2027,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 				ctx.For().getSymbol().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
 		statement.setItem(item);
 
-		Keyword ofKeyword = new Keyword(Keywords.OF);
-		ofKeyword.setStart(of.sourceStart());
-		ofKeyword.setEnd(of.sourceStart() + Keywords.OF.length());
+		Keyword ofKeyword = createKeyword(statement, ctx.Of().getSymbol(), Keywords.OF);
 		statement.setOfKeyword(ofKeyword);
 		statement.setIterator(iterator);
 		if (ctx.CloseParen() != null) {

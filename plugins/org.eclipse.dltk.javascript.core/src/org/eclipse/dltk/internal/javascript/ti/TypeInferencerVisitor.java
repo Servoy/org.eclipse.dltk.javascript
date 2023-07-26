@@ -786,13 +786,14 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitConstDeclaration(ConstStatement node) {
 		final IValueCollection context = peekContext();
+		IValueReference reference = null;
 		for (VariableDeclaration declaration : node.getVariables()) {
-			final IValueReference reference = context.getChild(declaration
+			reference = context.getChild(declaration
 					.getVariableName());
 			assert reference.exists();
 			initializeVariable(reference, declaration);
 		}
-		return null;
+		return reference;
 	}
 
 	protected IValueReference createVariable(IValueCollection context,

@@ -1164,7 +1164,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		if (rt instanceof IRSimpleType) {
 			final Type t = ((IRSimpleType) rt).getTarget();
 			if (t.getKind() != TypeKind.UNKNOWN) {
-				if (value instanceof IValueProvider) {
+				if (value instanceof IValueProvider
+						&& ((IValueProvider) value).getValue() != null) {
 					((IValueProvider) value).getValue()
 							.addReference(new LazyEvaluatorValue(context, t));
 				}
@@ -2112,8 +2113,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		enterContext(collection);
 		IValueReference itemReference = visit(node.getItem());
 		IValueReference iteratorReference = visit(node.getIterator());
-		if (itemReference instanceof IValueProvider
-				&& ((IValueProvider) itemReference).getValue() != null) {
+		if (itemReference instanceof IValueProvider) {
 			inferIteratorType(itemReference, iteratorReference);
 		}
 		visit(node.getBody());

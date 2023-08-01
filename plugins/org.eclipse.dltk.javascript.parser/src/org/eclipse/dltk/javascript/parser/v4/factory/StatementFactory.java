@@ -117,6 +117,6 @@ public class StatementFactory extends JSNodeFactory<StatementContext> {
 
 	@Override
 	boolean skip(StatementContext ctx) {
-		return ctx.expressionStatement() != null;
+		return ctx.expressionStatement() != null || ctx.iterationStatement() != null && ctx.iterationStatement().exception != null;
 	}
 }

@@ -12,7 +12,7 @@ package org.eclipse.dltk.javascript.core;
 public class JavaScriptKeywords {
 
 	private static final String[] fgKeywords = { "break", "else", "new",
-			"const", "var", "case", "finally", "return", "void", "catch",
+			"const", "var", "let", "case", "finally", "return", "void", "catch",
 			"for", "switch", "while", "continue", "function", "this", "with",
 			"default", "if", "throw", "delete", "try", "do", "instanceof",
 			"typeof", "null", "true", "false" };

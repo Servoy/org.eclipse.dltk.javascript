@@ -2,6 +2,7 @@ package org.eclipse.dltk.javascript.parser.v4.factory;
 
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.DecimalLiteral;
+import org.eclipse.dltk.javascript.ast.ErrorExpression;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.NullExpression;
 import org.eclipse.dltk.javascript.ast.RegExpLiteral;
@@ -47,6 +48,9 @@ public class LiteralFactory extends JSNodeFactory<LiteralContext> {
 			TemplateStringLiteral templateStringLiteral = new TemplateStringLiteral(parent);
 			templateStringLiteral.setText(JSTransformer.intern(ctx.getText()));
 			return templateStringLiteral;
+		}
+		if (ctx.exception != null) {
+			return new ErrorExpression(parent, ctx.exception.getMessage());
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

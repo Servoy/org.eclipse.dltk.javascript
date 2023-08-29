@@ -9,6 +9,7 @@ import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.ConditionalOperator;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
+import org.eclipse.dltk.javascript.ast.ErrorExpression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.JSNode;
@@ -145,6 +146,9 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 		}
 		if (ctx instanceof TemplateStringExpressionContext) {
 			return new TagFunctionExpression(parent);
+		}
+		if (ctx.exception != null) {
+			return new ErrorExpression(parent, ctx.exception.getMessage());
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

@@ -5,6 +5,7 @@ import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.EmptyStatement;
+import org.eclipse.dltk.javascript.ast.ErrorExpression;
 import org.eclipse.dltk.javascript.ast.ForInStatement;
 import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
@@ -111,6 +112,9 @@ public class StatementFactory extends JSNodeFactory<StatementContext> {
 		}
 		if (ctx.withStatement() != null) {
 			return new WithStatement(parent);
+		}
+		if (ctx.exception != null) {
+			return new ErrorExpression(parent, ctx.exception.getMessage());
 		}
 		throw new UnsupportedOperationException("Cannot create JS node from "+ctx.getClass().getCanonicalName());
 	}

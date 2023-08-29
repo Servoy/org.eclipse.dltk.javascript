@@ -430,7 +430,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	
 	@Override
 	public void enterStatement(StatementContext ctx) {
-		if (createErrorExpression(ctx)) return;
 		if (!JSNodeCreator.skipCreate(ctx)) {
 			parents.push(JSNodeCreator.create(ctx, getParent()));
 			if (getParent() instanceof AbstractForStatement) {
@@ -461,33 +460,23 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterEveryRule(ParserRuleContext ctx) {
-		if (createErrorExpression(ctx)) return;
 		if (ctx instanceof SingleExpressionContext) {
 			if (JSNodeCreator.skipCreate(ctx)) return;
 			parents.push(JSNodeCreator.create(ctx, getParent()));
 		}
 	}
-
-	public boolean createErrorExpression(ParserRuleContext ctx) {
-		if (ctx.exception != null) {
-			ErrorExpression error = new ErrorExpression(getParent(),
-					ctx.exception.getMessage());
-			error.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-			if (ctx.getStop() != null) error.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
-			parents.push(error);
-			return true;
-		}
-		return false;
-	}
 	
 	@Override
 	public void exitEveryRule(ParserRuleContext ctx) {
-		if (ctx.exception != null) {
+		if (ctx.exception != null && !parents.isEmpty() && parents.peek() instanceof ErrorExpression) {
+			ErrorExpression error = (ErrorExpression) parents.pop();
+			error.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
+			if (ctx.getStop() != null) error.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
 			if (ctx instanceof StatementContext) {
-				addStatement((StatementContext)ctx, parents.pop());
+				addStatement((StatementContext)ctx, error);
 			}
 			else {
-				children.push(parents.pop());
+				children.push(error);
 			}
 		}
 		else {

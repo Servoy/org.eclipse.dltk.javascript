@@ -74,6 +74,7 @@ import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.core.JSBindings;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.internal.core.TemporaryBindings;
@@ -1922,6 +1923,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 
 		private void validateHidesByVariable(IValueCollection context,
 				VariableDeclaration declaration) {
+			if (declaration.getParent() instanceof LetStatement)
+				return;
 			final IValueReference child;
 			final Identifier identifier = declaration.getIdentifier();
 			final IValueCollection parentScope = getParentScope(context);

@@ -43,6 +43,7 @@ import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTag;
@@ -220,6 +221,19 @@ public class FlowValidation extends AbstractNavigationVisitor<FlowStatus>
 				}
 				reportInconsistentReturn(node);
 			}
+			return result;
+		} finally {
+			scope = savedScope;
+		}
+	}
+
+	@Override
+	public FlowStatus visitArrowFunction(ArrowFunctionStatement node) {
+		final FlowScope savedScope = scope;
+		scope = new FlowScope();
+		try {
+			final FlowStatus result = super.visitArrowFunction(node);
+			// do we need to check something here?
 			return result;
 		} finally {
 			scope = savedScope;

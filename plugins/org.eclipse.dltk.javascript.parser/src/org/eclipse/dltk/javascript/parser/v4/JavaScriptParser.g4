@@ -310,13 +310,14 @@ expressionSequence
 singleExpression
     : anonymousFunction                                                     # FunctionExpression
     | Class identifier? classTail                                           # ClassExpression
+    | singleExpression arguments                                            # ArgumentsExpression
     | singleExpression '?.' singleExpression                                # OptionalChainExpression
     | singleExpression '?.'? '[' expressionSequence ']'                     # MemberIndexExpression
     | singleExpression '?'? '.' '#'? identifierName                         # MemberDotExpression
     // Split to try `new Date()` first, then `new Date`.
+    | New identifier arguments            		                            # NewExpression
     | New singleExpression arguments                                        # NewExpression
     | New singleExpression                                                  # NewExpression
-    | singleExpression arguments                                            # ArgumentsExpression
     | New '.' identifier                                                    # MetaExpression // new.target
     | singleExpression {this.notLineTerminator()}? '++'                     # PostIncrementExpression
     | singleExpression {this.notLineTerminator()}? '--'                     # PostDecreaseExpression

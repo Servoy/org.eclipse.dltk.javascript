@@ -467,9 +467,35 @@ public class TestANTLR4Parser {
 		CallExpression callv4 = (CallExpression) expressionv4.getObjectClass();
 		assertEquals(call.getLP(), callv4.getLP());
 		assertEquals(call.getRP(), callv4.getRP());
-		assertEquals(callv4.getCommas().size(), callv4.getCommas().size());
+		assertEquals(call.getCommas().size(), callv4.getCommas().size());
 		assertEquals(callv4.getCommas().size(),1);
 		assertEquals(call.getCommas().first(), callv4.getCommas().first());
+	}
+	
+	@Test
+	public void testNewAndCall() {
+		String source = "new Date().getTime()";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+
+		CallExpression callexpression = (CallExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		CallExpression callexpressionv4 = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(callexpression.getLP(), callexpressionv4.getLP());
+		assertEquals(callexpression.getRP(), callexpressionv4.getRP());
+		assertEquals(callexpression.getCommas().size(), callexpressionv4.getCommas().size());
+		assertEquals(callexpressionv4.getCommas().size(),0);
+		PropertyExpression expression = (PropertyExpression) callexpression.getExpression();
+		PropertyExpression expressionv4 = (PropertyExpression) callexpressionv4.getExpression();
+		NewExpression object = (NewExpression) expression.getObject();
+		NewExpression objectv4 = (NewExpression) expressionv4.getObject();
+		assertTrue(equalsJSNode(object, objectv4));
+		Identifier id = (Identifier) expression.getProperty();
+		Identifier idv4 = (Identifier) expressionv4.getProperty();
+		assertTrue(equalsJSNode(id, idv4));
 	}
 	
 	@Test

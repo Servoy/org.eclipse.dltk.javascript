@@ -1363,10 +1363,16 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	@Override
 	public void exitNewExpression(NewExpressionContext ctx) {
 		Expression callExpression = ctx.singleExpression()	!= null ? transformCallExpression(ctx.singleExpression(), ctx.arguments()) : null;
-		parents.pop();
+		
+		if (callExpression == null && ctx.identifier() != null) { 
+			callExpression = setupCallExpression(ctx.arguments(), (CallExpression) parents.pop());
+		}
+		else {
+			parents.pop();
+		}
 		NewExpression expression = (NewExpression)getParent();
 		expression.setNewKeyword(createKeyword(expression, ctx.getStart(), Keywords.NEW));
-		if (ctx.singleExpression()	!= null) {
+		if (callExpression	!= null) {
 			expression.setObjectClass(callExpression);
 		} else {
 			final ErrorExpression error = new ErrorExpression(expression,
@@ -1397,6 +1403,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		Assert.isNotNull(ctx);
 		Assert.isNotNull(args);
 
+		return setupCallExpression(args, call);
+	}
+
+	private Expression setupCallExpression(ArgumentsContext args,
+			CallExpression call) {
 		List<Expression> _args = new ArrayList<>();
 		for(int i = 0; i < args.argument().size(); i++) {
 			_args.add((Expression) children.pop());

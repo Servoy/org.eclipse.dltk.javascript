@@ -9,6 +9,7 @@ import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.ti.IValueProvider;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValue;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValueCollection;
+import org.eclipse.dltk.internal.javascript.ti.NestedValueCollection;
 import org.eclipse.dltk.internal.javascript.ti.TopValueCollection;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencer2;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
@@ -153,5 +154,15 @@ public class ValueCollectionFactory {
 			IValue sourceValue = ((IValueProvider) source).getValue();
 			targetValue.mergeValue(sourceValue);
 		}
+	}
+
+	public static IValueCollection createNestedScopeValueCollection(
+			IValueCollection parent) {
+		return new NestedValueCollection(parent) {
+
+			public boolean isScope() {
+				return true;
+			}
+		};
 	}
 }

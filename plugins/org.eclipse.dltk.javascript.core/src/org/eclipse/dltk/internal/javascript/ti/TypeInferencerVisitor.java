@@ -947,7 +947,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitForInStatement(ForInStatement node) {
 		final IValueCollection collection = ValueCollectionFactory
-				.createScopeValueCollection(peekContext());
+				.createNestedScopeValueCollection(peekContext());
 		enterContext(collection);
 		final IValueReference item = visit(node.getItem());
 		if (item != null) {
@@ -962,7 +962,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitForStatement(ForStatement node) {
 		final IValueCollection collection = ValueCollectionFactory
-				.createScopeValueCollection(peekContext());
+				.createNestedScopeValueCollection(peekContext());
 		enterContext(collection);
 		if (node.getInitial() != null)
 			visit(node.getInitial());
@@ -1710,7 +1710,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	public IValueReference visitStatementBlock(StatementBlock node) {
 		if (node.getParent() instanceof FunctionStatement == false) {
 			final IValueCollection block = ValueCollectionFactory
-					.createScopeValueCollection(peekContext());
+					.createNestedScopeValueCollection(peekContext());
 			enterContext(block);
 		}
 		handleDeclarations(node);
@@ -2109,7 +2109,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitForOfStatement(ForOfStatement node) {
 		final IValueCollection collection = ValueCollectionFactory
-				.createScopeValueCollection(peekContext());
+				.createNestedScopeValueCollection(peekContext());
 		enterContext(collection);
 		IValueReference itemReference = visit(node.getItem());
 		IValueReference iteratorReference = visit(node.getIterator());

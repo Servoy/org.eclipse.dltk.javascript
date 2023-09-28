@@ -31,7 +31,6 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.BitNotExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BitOrExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BitShiftExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BitXOrExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ConditionalKeywordExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DeleteExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.EqualityExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionExpressionContext;
@@ -173,7 +172,7 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 
 	@Override
 	boolean skip(SingleExpressionContext ctx) {
-		return ctx instanceof IdentifierExpressionContext || ctx instanceof ConditionalKeywordExpressionContext || ctx instanceof LiteralExpressionContext
+		return ctx instanceof IdentifierExpressionContext || ctx instanceof LiteralExpressionContext
 				|| ctx instanceof YieldExpressionContext;
 	}
 }

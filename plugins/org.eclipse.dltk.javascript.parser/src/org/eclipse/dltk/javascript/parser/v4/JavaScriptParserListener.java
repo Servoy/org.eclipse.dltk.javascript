@@ -1277,18 +1277,6 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitMemberIndexExpression(JSParser.MemberIndexExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ConditionalKeywordExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ConditionalKeywordExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code IdentifierExpression}
 	 * labeled alternative in {@link JSParser#singleExpression}.
 	 * @param ctx the parse tree
@@ -1544,16 +1532,6 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitReservedWord(JSParser.ReservedWordContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link JSParser#conditionalKeyword}.
-	 * @param ctx the parse tree
-	 */
-	void enterConditionalKeyword(JSParser.ConditionalKeywordContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link JSParser#conditionalKeyword}.
-	 * @param ctx the parse tree
-	 */
-	void exitConditionalKeyword(JSParser.ConditionalKeywordContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSParser#keyword}.
 	 * @param ctx the parse tree

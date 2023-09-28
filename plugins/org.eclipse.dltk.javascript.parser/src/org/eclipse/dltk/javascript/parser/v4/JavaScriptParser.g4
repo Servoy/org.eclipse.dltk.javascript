@@ -398,7 +398,6 @@ singleExpression
     | arrayLiteral                                                          # ArrayLiteralExpression
     | objectLiteral                                                         # ObjectLiteralExpression
     | '(' expressionSequence ')'                                            # ParenthesizedExpression
-    | conditionalKeyword                                                    # ConditionalKeywordExpression
     ;
 
 initializer
@@ -411,7 +410,6 @@ assignable
     : identifier
     | arrayLiteral
     | objectLiteral
-    | conditionalKeyword
     ;
 
 objectLiteral
@@ -499,16 +497,8 @@ identifier
     : Identifier
     | NonStrictLet
     | Async
-    ;
-
-reservedWord
-    : keyword
-    | NullLiteral
-    | BooleanLiteral
-    ;
-
-conditionalKeyword
-    : NonStrictLet
+    | As
+    | From
     | Static
     | Implements
     | Interface
@@ -516,12 +506,14 @@ conditionalKeyword
     | Private
     | Public
     | Protected
-    | Async
-    | Await
-    | From
-    | As
     | Yield
     | Of
+    ;
+
+reservedWord
+    : keyword
+    | NullLiteral
+    | BooleanLiteral
     ;
 
 keyword
@@ -559,9 +551,19 @@ keyword
     | Const
     | Export
     | Import
+    | Implements
     | let_
-
-    | conditionalKeyword
+    | Private
+    | Public
+    | Interface
+    | Package
+    | Protected
+    | Static
+    | Yield
+    | Async
+    | Await
+    | From
+    | As
     ;
 
 let_

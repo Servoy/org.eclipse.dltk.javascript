@@ -762,13 +762,6 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMemberIndexExpression(JSParser.MemberIndexExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ConditionalKeywordExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code IdentifierExpression}
 	 * labeled alternative in {@link JSParser#singleExpression}.
 	 * @param ctx the parse tree
@@ -920,12 +913,6 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitReservedWord(JSParser.ReservedWordContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link JSParser#conditionalKeyword}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConditionalKeyword(JSParser.ConditionalKeywordContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link JSParser#keyword}.
 	 * @param ctx the parse tree

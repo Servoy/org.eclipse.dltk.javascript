@@ -1410,18 +1410,6 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConditionalKeywordExpression(JSParser.ConditionalKeywordExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterIdentifierExpression(JSParser.IdentifierExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -1705,18 +1693,6 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitReservedWord(JSParser.ReservedWordContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConditionalKeyword(JSParser.ConditionalKeywordContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConditionalKeyword(JSParser.ConditionalKeywordContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

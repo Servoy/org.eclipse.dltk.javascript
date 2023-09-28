@@ -115,8 +115,6 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.BlockContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.BreakStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.CaseClauseContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.CatchProductionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ConditionalKeywordContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ConditionalKeywordExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ContinueStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DefaultClauseContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.DeleteExpressionContext;
@@ -672,9 +670,12 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	@Override
 	public void enterIdentifier(IdentifierContext ctx) {
 		if (ctx.getParent() instanceof IdentifierNameContext) return;
-		Assert.isTrue(ctx.getStart().getType() == JSParser.Identifier ||
-				ctx.getStart().getType() == JSParser.Async ||
-				ctx.getStart().getType() == JSParser.NonStrictLet);
+		int type = ctx.getStart().getType();
+		Assert.isTrue(type == JSParser.Identifier || type == JSParser.Async ||
+				type == JSParser.NonStrictLet || type == JSParser.From || type == JSParser.As
+				|| type == JSParser.Static || type == JSParser.Implements || type == JSParser.Interface
+				|| type == JSParser.Package || type == JSParser.Private || type == JSParser.Public
+				|| type == JSParser.Protected || type == JSParser.Yield || type == JSParser.Of);
 		createIdentifier(ctx.getStart(), ctx.getText());
 	}
 	
@@ -1870,15 +1871,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		expression.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		expression.setEnd(expression.sourceStart() + ctx.getText().length());
 		children.push(expression);
-	}
-
-	
-	@Override
-	public void enterConditionalKeyword(ConditionalKeywordContext ctx) {
-		if (ctx.getParent() instanceof ConditionalKeywordExpressionContext ||
-				ctx.getParent() instanceof AssignableContext) {
-			createIdentifier(ctx.getStart(), ctx.getText());
-		}
 	}
 
 	private void createIdentifier(Token start, String text) {

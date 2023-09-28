@@ -2,12 +2,12 @@ package org.eclipse.dltk.javascript.parser.v4;
 
 import org.antlr.v4.runtime.*;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * All lexer methods that used in grammar (IsStrictMode)
  * should start with Upper Case Char similar to Lexer rules.
- * @since 6.0
  */
 public abstract class JavaScriptLexerBase extends Lexer
 {
@@ -15,7 +15,7 @@ public abstract class JavaScriptLexerBase extends Lexer
      * Stores values of nested modes. By default mode is strict or
      * defined externally (useStrictDefault)
      */
-    private Stack<Boolean> scopeStrictModes = new Stack<Boolean>();
+    private final Deque<Boolean> scopeStrictModes = new ArrayDeque<>();
 
     private Token lastToken = null;
     /**
@@ -149,5 +149,15 @@ public abstract class JavaScriptLexerBase extends Lexer
                 // In all other cases, a regex literal _is_ possible.
                 return true;
         }
+    }
+
+    @Override
+    public void reset() {
+        this.scopeStrictModes.clear();
+        this.lastToken = null;
+        this.useStrictDefault = false;
+        this.useStrictCurrent = false;
+        this.templateDepth = 0;
+        super.reset();
     }
 }

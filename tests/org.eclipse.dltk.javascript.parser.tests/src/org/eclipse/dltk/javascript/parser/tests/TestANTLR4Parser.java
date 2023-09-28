@@ -1160,4 +1160,28 @@ public class TestANTLR4Parser {
 		assertEquals(1, forin.getDeclarations().size());
 		assertEquals("color", forin.getDeclarations().get(0).getIdentifier().getName());
 	}
+	
+	@Test
+	public void testError() {
+		String source = "function onAction(event) {"
+				+ " event."
+				+ "}";
+		
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.v4.JavaScriptParser jsParserv4 =  new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = jsParserv4.parse(source, reporter);	
+		assertTrue(problems.size() == 1);
+		assertTrue(problems.get(0).getMessage().startsWith("mismatched input '}'"));
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
 }

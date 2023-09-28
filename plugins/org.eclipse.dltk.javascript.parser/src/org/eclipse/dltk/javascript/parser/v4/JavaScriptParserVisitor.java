@@ -1,6 +1,6 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
-// Generated from JavaScriptParser.g4 by ANTLR 4.12.0
+// Generated from JavaScriptParser.g4 by ANTLR 4.13.0
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -54,11 +54,29 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitImportFromBlock(JSParser.ImportFromBlockContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link JSParser#moduleItems}.
+	 * Visit a parse tree produced by {@link JSParser#importModuleItems}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitModuleItems(JSParser.ModuleItemsContext ctx);
+	T visitImportModuleItems(JSParser.ImportModuleItemsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#importAliasName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImportAliasName(JSParser.ImportAliasNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#moduleExportName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitModuleExportName(JSParser.ModuleExportNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#importedBinding}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImportedBinding(JSParser.ImportedBindingContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link JSParser#importDefault}.
 	 * @param ctx the parse tree
@@ -103,6 +121,18 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExportFromBlock(JSParser.ExportFromBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#exportModuleItems}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExportModuleItems(JSParser.ExportModuleItemsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#exportAliasName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExportAliasName(JSParser.ExportAliasNameContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link JSParser#declaration}.
 	 * @param ctx the parse tree
@@ -312,6 +342,24 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMethodDefinition(JSParser.MethodDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#fieldDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFieldDefinition(JSParser.FieldDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#classElementName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClassElementName(JSParser.ClassElementNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link JSParser#privateIdentifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrivateIdentifier(JSParser.PrivateIdentifierContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link JSParser#formalParameterList}.
 	 * @param ctx the parse tree
@@ -763,6 +811,12 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCoalesceExpression(JSParser.CoalesceExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link JSParser#initializer}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInitializer(JSParser.InitializerContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link JSParser#assignable}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -774,13 +828,6 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitObjectLiteral(JSParser.ObjectLiteralContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code FunctionDecl}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionDecl(JSParser.FunctionDeclContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code AnonymousFunctionDecl}
 	 * labeled alternative in {@link JSParser#anonymousFunction}.

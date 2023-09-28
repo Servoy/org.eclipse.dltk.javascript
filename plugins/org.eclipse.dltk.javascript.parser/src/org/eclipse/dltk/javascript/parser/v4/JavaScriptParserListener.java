@@ -1,6 +1,6 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
-// Generated from JavaScriptParser.g4 by ANTLR 4.12.0
+// Generated from JavaScriptParser.g4 by ANTLR 4.13.0
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -79,15 +79,45 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitImportFromBlock(JSParser.ImportFromBlockContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link JSParser#moduleItems}.
+	 * Enter a parse tree produced by {@link JSParser#importModuleItems}.
 	 * @param ctx the parse tree
 	 */
-	void enterModuleItems(JSParser.ModuleItemsContext ctx);
+	void enterImportModuleItems(JSParser.ImportModuleItemsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link JSParser#moduleItems}.
+	 * Exit a parse tree produced by {@link JSParser#importModuleItems}.
 	 * @param ctx the parse tree
 	 */
-	void exitModuleItems(JSParser.ModuleItemsContext ctx);
+	void exitImportModuleItems(JSParser.ImportModuleItemsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#importAliasName}.
+	 * @param ctx the parse tree
+	 */
+	void enterImportAliasName(JSParser.ImportAliasNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#importAliasName}.
+	 * @param ctx the parse tree
+	 */
+	void exitImportAliasName(JSParser.ImportAliasNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#moduleExportName}.
+	 * @param ctx the parse tree
+	 */
+	void enterModuleExportName(JSParser.ModuleExportNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#moduleExportName}.
+	 * @param ctx the parse tree
+	 */
+	void exitModuleExportName(JSParser.ModuleExportNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#importedBinding}.
+	 * @param ctx the parse tree
+	 */
+	void enterImportedBinding(JSParser.ImportedBindingContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#importedBinding}.
+	 * @param ctx the parse tree
+	 */
+	void exitImportedBinding(JSParser.ImportedBindingContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSParser#importDefault}.
 	 * @param ctx the parse tree
@@ -162,6 +192,26 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExportFromBlock(JSParser.ExportFromBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#exportModuleItems}.
+	 * @param ctx the parse tree
+	 */
+	void enterExportModuleItems(JSParser.ExportModuleItemsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#exportModuleItems}.
+	 * @param ctx the parse tree
+	 */
+	void exitExportModuleItems(JSParser.ExportModuleItemsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#exportAliasName}.
+	 * @param ctx the parse tree
+	 */
+	void enterExportAliasName(JSParser.ExportAliasNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#exportAliasName}.
+	 * @param ctx the parse tree
+	 */
+	void exitExportAliasName(JSParser.ExportAliasNameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSParser#declaration}.
 	 * @param ctx the parse tree
@@ -512,6 +562,36 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMethodDefinition(JSParser.MethodDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#fieldDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterFieldDefinition(JSParser.FieldDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#fieldDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitFieldDefinition(JSParser.FieldDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#classElementName}.
+	 * @param ctx the parse tree
+	 */
+	void enterClassElementName(JSParser.ClassElementNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#classElementName}.
+	 * @param ctx the parse tree
+	 */
+	void exitClassElementName(JSParser.ClassElementNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSParser#privateIdentifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrivateIdentifier(JSParser.PrivateIdentifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#privateIdentifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrivateIdentifier(JSParser.PrivateIdentifierContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSParser#formalParameterList}.
 	 * @param ctx the parse tree
@@ -1281,6 +1361,16 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitCoalesceExpression(JSParser.CoalesceExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link JSParser#initializer}.
+	 * @param ctx the parse tree
+	 */
+	void enterInitializer(JSParser.InitializerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#initializer}.
+	 * @param ctx the parse tree
+	 */
+	void exitInitializer(JSParser.InitializerContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link JSParser#assignable}.
 	 * @param ctx the parse tree
 	 */
@@ -1300,18 +1390,6 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitObjectLiteral(JSParser.ObjectLiteralContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code FunctionDecl}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionDecl(JSParser.FunctionDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code FunctionDecl}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunctionDecl(JSParser.FunctionDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code AnonymousFunctionDecl}
 	 * labeled alternative in {@link JSParser#anonymousFunction}.

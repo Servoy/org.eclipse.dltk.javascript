@@ -1,6 +1,6 @@
 package org.eclipse.dltk.javascript.parser.v4;
 
-// Generated from JavaScriptParser.g4 by ANTLR 4.12.0
+// Generated from JavaScriptParser.g4 by ANTLR 4.13.0
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -102,13 +102,49 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterModuleItems(JSParser.ModuleItemsContext ctx) { }
+	@Override public void enterImportModuleItems(JSParser.ImportModuleItemsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitModuleItems(JSParser.ModuleItemsContext ctx) { }
+	@Override public void exitImportModuleItems(JSParser.ImportModuleItemsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterImportAliasName(JSParser.ImportAliasNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImportAliasName(JSParser.ImportAliasNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterModuleExportName(JSParser.ModuleExportNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitModuleExportName(JSParser.ModuleExportNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterImportedBinding(JSParser.ImportedBindingContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImportedBinding(JSParser.ImportedBindingContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -193,6 +229,30 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExportFromBlock(JSParser.ExportFromBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExportModuleItems(JSParser.ExportModuleItemsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExportModuleItems(JSParser.ExportModuleItemsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExportAliasName(JSParser.ExportAliasNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExportAliasName(JSParser.ExportAliasNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -601,6 +661,42 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMethodDefinition(JSParser.MethodDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFieldDefinition(JSParser.FieldDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFieldDefinition(JSParser.FieldDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterClassElementName(JSParser.ClassElementNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitClassElementName(JSParser.ClassElementNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrivateIdentifier(JSParser.PrivateIdentifierContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrivateIdentifier(JSParser.PrivateIdentifierContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -1398,6 +1494,18 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterInitializer(JSParser.InitializerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInitializer(JSParser.InitializerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAssignable(JSParser.AssignableContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -1417,18 +1525,6 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitObjectLiteral(JSParser.ObjectLiteralContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFunctionDecl(JSParser.FunctionDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFunctionDecl(JSParser.FunctionDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

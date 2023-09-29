@@ -123,7 +123,7 @@ public class ExpressionFactory extends JSNodeFactory<SingleExpressionContext> {
 			return new PropertyExpression(parent);
 		}
 		if (ctx instanceof ArrayLiteralExpressionContext) {
-			return new ArrayInitializer(parent, ((ArrayLiteralExpressionContext)ctx).arrayLiteral().elementList().arrayElement().size());
+			return new ArrayInitializer(parent, ((ArrayLiteralExpressionContext)ctx).arrayLiteral().getChildCount() - 1);
 		}
 		if (ctx instanceof ParenthesizedExpressionContext) {
 			return new ParenthesizedExpression(parent);

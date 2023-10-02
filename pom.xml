@@ -15,28 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<eclipse.url>https://download.eclipse.org/eclipse/updates/4.28/</eclipse.url>
-		<orbit.url>https://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository</orbit.url>
-		<shiplibs.url>https://developer.servoy.com/p2_repository/ship_plugins/2023.06</shiplibs.url>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>eclipse</id>
-			<url>${eclipse.url}</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>orbit</id>
-			<url>${orbit.url}</url>
-			<layout>p2</layout>
-		</repository>
-        <repository>
-            <id>shiplibs</id>
-            <url>${shiplibs.url}</url>
-            <layout>p2</layout>
-        </repository>
-      </repositories>
 
 	<build>
 		<plugins>
@@ -51,6 +30,13 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho-version}</version>
 				<configuration>
+                <target>
+                        <artifact>
+                            <groupId>org.eclipse.dltk.javascript</groupId>
+                            <artifactId>org.eclipse.dltk.javascript.launch_target</artifactId>
+                            <version>${project.parent.version}</version>
+                        </artifact>
+                    </target>                    
 					<pomDependencies>consider</pomDependencies>
 					<resolver>p2</resolver>
 					<environments>
@@ -123,6 +109,7 @@
 	</build>
 
 	<modules>
+        <module>launch_target</module>
 		<module>plugins/org.eclipse.dltk.javascript.core</module>
 		<module>plugins/org.eclipse.dltk.javascript.core.manipulation</module>
 		<module>plugins/org.eclipse.dltk.javascript.debug</module>

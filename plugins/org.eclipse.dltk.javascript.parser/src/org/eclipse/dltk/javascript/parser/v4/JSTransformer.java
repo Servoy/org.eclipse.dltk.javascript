@@ -1688,15 +1688,18 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitArrayLiteralExpression(ArrayLiteralExpressionContext ctx) {
+		final int itemCount = ctx.arrayLiteral().getChildCount();
 		ArrayInitializer array = (ArrayInitializer)getParent();
 		ElementListContext elementList = ctx.arrayLiteral().elementList();
 		for (int i = 0; i < elementList.Comma().size(); i++) {
+			if (i >= itemCount - 1) break;
 			array.getCommas().add(getTokenOffset(elementList.Comma(i).getSymbol().getTokenIndex()));
 		}
 		if (array.getItems().size() != array.getCommas().size() - 1) {
 			//empty element(s)
 			for (int i = 0; i < elementList.getChildCount()-1 ; i++) {
 				if (elementList.Comma().contains(elementList.getChild(i)) && elementList.Comma().contains(elementList.getChild(i+1))) {
+					if (i >= itemCount - 1) break; //we don't append empty elements
 					EmptyExpression empty = new EmptyExpression(array);
 					Token comma = elementList.Comma(i).getSymbol();
 					empty.setStart(comma.getStartIndex());

@@ -829,7 +829,8 @@ public class TestANTLR4Parser {
 	
 	@Test
 	public void testEmptyExpression() {
-		String source = "var arr = [1, , 3];";
+		//empty element should be ignored if comma is on the last position
+		String source = "var arr = [1, , 3 ,];";
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);
 		
@@ -846,6 +847,8 @@ public class TestANTLR4Parser {
 		assertEquals(init.getItems().size(), initv4.getItems().size());
 		assertTrue(init.getItems().get(1) instanceof EmptyExpression);
 		assertTrue(initv4.getItems().get(1) instanceof EmptyExpression);
+		assertEquals(3, initv4.getItems().size());
+		assertEquals("3", ((DecimalLiteral)initv4.getItems().get(2)).getText());
 	}
 
 	@Test

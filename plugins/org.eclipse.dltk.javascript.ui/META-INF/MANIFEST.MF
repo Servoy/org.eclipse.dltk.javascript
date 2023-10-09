@@ -39,4 +39,4 @@ Export-Package: org.eclipse.dltk.javascript.internal.ui,
  org.eclipse.dltk.javascript.ui,
  org.eclipse.dltk.javascript.ui.text,
  org.eclipse.dltk.javascript.ui.typeinfo
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17

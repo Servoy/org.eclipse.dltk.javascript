@@ -8,7 +8,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.dltk.core;bundle-version="0.0.0",
  org.antlr.runtime;bundle-version="[3.0.0,3.1.0)",
  org.antlr.antlr4-runtime;bundle-version="4.13.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.dltk.javascript.ast,
  org.eclipse.dltk.javascript.ast.v4,

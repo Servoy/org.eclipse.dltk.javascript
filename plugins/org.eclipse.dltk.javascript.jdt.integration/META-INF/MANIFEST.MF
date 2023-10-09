@@ -9,6 +9,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.dltk.core;bundle-version="0.0.0",
  org.eclipse.dltk.javascript.core,
  org.eclipse.jdt.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.eclipse.dltk.javascript.jdt.integration;x-friends:="org.eclipse.dltk.javascript.jdt.integration.ui"
 Bundle-ActivationPolicy: lazy

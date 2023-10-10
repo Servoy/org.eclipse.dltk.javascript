@@ -2877,7 +2877,7 @@ public class JSParser extends JavaScriptParserBase {
 			case 1:
 				{
 				setState(430);
-				if (!(this.notLineTerminator())) throw new FailedPredicateException(this, "this.notLineTerminator()");
+				if (!(this.notLineTerminatorAhead())) throw new FailedPredicateException(this, "this.notLineTerminatorAhead()");
 				setState(431);
 				identifier();
 				}
@@ -9529,7 +9529,7 @@ public class JSParser extends JavaScriptParserBase {
 	private boolean continueStatement_sempred(ContinueStatementContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 1:
-			return this.notLineTerminator();
+			return this.notLineTerminatorAhead();
 		}
 		return true;
 	}

@@ -185,7 +185,7 @@ varModifier  // let, const - ECMAScript 6
     ;
 
 continueStatement
-    : Continue ({this.notLineTerminator()}? identifier)? eos
+    : Continue ({this.notLineTerminatorAhead()}? identifier)? eos
     ;
 
 breakStatement

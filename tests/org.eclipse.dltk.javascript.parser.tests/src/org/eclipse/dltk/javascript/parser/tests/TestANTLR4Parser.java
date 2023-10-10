@@ -1187,4 +1187,21 @@ public class TestANTLR4Parser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
 	}
+	
+	@Test
+	public void testContinueLineTerminator() {
+		String source = "for (var i = 0; i < [].length; i++) {\r\n"
+				+ "			var o = {}\r\n"
+				+ "			\r\n"
+				+ "         if (false) continue\r\n"
+				+ "			\r\n"
+				+ "			o[test] "
+				+ "		}";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
 }

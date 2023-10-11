@@ -11,8 +11,12 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.javascript.core.Types;
+import org.eclipse.dltk.javascript.internal.core.RRecordMember;
 import org.eclipse.dltk.javascript.typeinfo.model.SimpleType;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
@@ -97,6 +101,17 @@ public class RSimpleType extends RType implements IRSimpleType {
 			IRType rType = simple.toRType(ITypeSystem.CURRENT.get());
 			if (rType instanceof IRRecordType) {
 				return rType.isAssignableFrom(type);
+			}
+			else if (rType instanceof IRSimpleType) {
+				List<IRMember> members = ((IRSimpleType) rType).getDeclaration()
+						.getMembers();
+				List<IRRecordMember> recordMembers = new ArrayList<IRRecordMember>();
+				for (IRMember member : members) {
+					recordMembers.add(new RRecordMember(member.getName(),
+							member.getType(), member.getSource()));
+				}
+				IRRecordType fixedrType = RTypes.recordType(recordMembers);
+				return fixedrType.isAssignableFrom(type);
 			}
 		}
 		return testAssignableTo(type);

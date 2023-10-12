@@ -119,8 +119,4 @@ public abstract class JavaScriptParserBase extends Parser
         return (type == JSParser.MultiLineComment && (text.contains("\r") || text.contains("\n"))) ||
                 (type == JSParser.LineTerminator);
     }
-    
-    protected boolean notLineTerminatorAhead() {
-    	return !lineTerminatorAhead();
-    }
 }

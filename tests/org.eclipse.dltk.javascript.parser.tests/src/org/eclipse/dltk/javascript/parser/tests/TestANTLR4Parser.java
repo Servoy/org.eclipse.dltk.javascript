@@ -1204,4 +1204,20 @@ public class TestANTLR4Parser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
 	}
+	
+	@Test
+	public void testReturnLineTerminator() {
+		String source = "function a() {\r\n"
+				+ "			var o = {}\r\n"
+				+ "			\r\n"
+				+ "         if (false) return\r\n"
+				+ "			o[test] "
+				+ "		}";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
 }

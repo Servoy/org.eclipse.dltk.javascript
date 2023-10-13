@@ -71,6 +71,7 @@ public abstract class JavaScriptParserBase extends Parser
 
         // Get the token ahead of the current index.
         int possibleIndexEosToken = this.getCurrentToken().getTokenIndex() - 1;
+        if (possibleIndexEosToken < 0) return false;
         Token ahead = _input.get(possibleIndexEosToken);
 
         // Check if the token resides on the HIDDEN channel and if it's of the
@@ -93,6 +94,7 @@ public abstract class JavaScriptParserBase extends Parser
 
         // Get the token ahead of the current index.
         int possibleIndexEosToken = this.getCurrentToken().getTokenIndex() - 1;
+        if (possibleIndexEosToken < 0) return false;
         Token ahead = _input.get(possibleIndexEosToken);
 
         if (ahead.getChannel() != Lexer.HIDDEN) {
@@ -108,6 +110,7 @@ public abstract class JavaScriptParserBase extends Parser
         if (ahead.getType() == JSParser.WhiteSpaces) {
             // Get the token ahead of the current whitespaces.
             possibleIndexEosToken = this.getCurrentToken().getTokenIndex() - 2;
+            if (possibleIndexEosToken < 0) return false;
             ahead = _input.get(possibleIndexEosToken);
         }
 
@@ -118,5 +121,9 @@ public abstract class JavaScriptParserBase extends Parser
         // Check if the token is, or contains a line terminator.
         return (type == JSParser.MultiLineComment && (text.contains("\r") || text.contains("\n"))) ||
                 (type == JSParser.LineTerminator);
+    }
+    
+    protected boolean notLineTerminatorAhead() {
+    	return !lineTerminatorAhead();
     }
 }

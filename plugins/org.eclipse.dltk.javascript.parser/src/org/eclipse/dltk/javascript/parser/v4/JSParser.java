@@ -2877,7 +2877,7 @@ public class JSParser extends JavaScriptParserBase {
 			case 1:
 				{
 				setState(430);
-				if (!(!this.lineTerminatorAhead())) throw new FailedPredicateException(this, "!this.lineTerminatorAhead()");
+				if (!(this.notLineTerminatorAhead())) throw new FailedPredicateException(this, "this.notLineTerminatorAhead()");
 				setState(431);
 				identifier();
 				}
@@ -2940,7 +2940,7 @@ public class JSParser extends JavaScriptParserBase {
 			case 1:
 				{
 				setState(437);
-				if (!(!this.lineTerminatorAhead())) throw new FailedPredicateException(this, "!this.lineTerminatorAhead()");
+				if (!(this.notLineTerminatorAhead())) throw new FailedPredicateException(this, "this.notLineTerminatorAhead()");
 				setState(438);
 				identifier();
 				}
@@ -3003,7 +3003,7 @@ public class JSParser extends JavaScriptParserBase {
 			case 1:
 				{
 				setState(444);
-				if (!(!this.lineTerminatorAhead())) throw new FailedPredicateException(this, "!this.lineTerminatorAhead()");
+				if (!(this.notLineTerminatorAhead())) throw new FailedPredicateException(this, "this.notLineTerminatorAhead()");
 				setState(445);
 				expressionSequence();
 				}
@@ -9529,21 +9529,21 @@ public class JSParser extends JavaScriptParserBase {
 	private boolean continueStatement_sempred(ContinueStatementContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 1:
-			return !this.lineTerminatorAhead();
+			return this.notLineTerminatorAhead();
 		}
 		return true;
 	}
 	private boolean breakStatement_sempred(BreakStatementContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 2:
-			return !this.lineTerminatorAhead();
+			return this.notLineTerminatorAhead();
 		}
 		return true;
 	}
 	private boolean returnStatement_sempred(ReturnStatementContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 3:
-			return !this.lineTerminatorAhead();
+			return this.notLineTerminatorAhead();
 		}
 		return true;
 	}

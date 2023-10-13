@@ -38,7 +38,7 @@ import org.eclipse.dltk.core.IType;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.internal.ui.DLTKUIStatus;
 import org.eclipse.dltk.javascript.scriptdoc.PublicScanner;
-import org.eclipse.dltk.javascript.scriptdoc.ScriptdocContentAccess;
+import org.eclipse.dltk.javascript.ui.scriptdoc.ScriptdocContentAccess;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;

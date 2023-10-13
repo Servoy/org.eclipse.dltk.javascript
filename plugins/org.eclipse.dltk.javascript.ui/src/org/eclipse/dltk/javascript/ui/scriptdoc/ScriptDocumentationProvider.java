@@ -7,7 +7,7 @@
  *
  
  *******************************************************************************/
-package org.eclipse.dltk.javascript.scriptdoc;
+package org.eclipse.dltk.javascript.ui.scriptdoc;
 
 import java.io.Reader;
 
@@ -18,6 +18,7 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
+import org.eclipse.dltk.javascript.scriptdoc.JSDocContentAccess;
 import org.eclipse.dltk.ui.documentation.DocumentationUtils;
 import org.eclipse.dltk.ui.documentation.IDocumentationResponse;
 import org.eclipse.dltk.ui.documentation.IScriptDocumentationProvider;

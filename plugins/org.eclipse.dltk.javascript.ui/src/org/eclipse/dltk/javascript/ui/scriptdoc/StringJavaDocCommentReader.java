@@ -1,4 +1,4 @@
-package org.eclipse.dltk.javascript.scriptdoc;
+package org.eclipse.dltk.javascript.ui.scriptdoc;
 
 public class StringJavaDocCommentReader extends JavaDocCommentReader {
 

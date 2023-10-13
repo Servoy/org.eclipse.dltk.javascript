@@ -7,7 +7,7 @@
  *
  
  *******************************************************************************/
-package org.eclipse.dltk.javascript.scriptdoc;
+package org.eclipse.dltk.javascript.ui.scriptdoc;
 
 import org.eclipse.osgi.util.NLS;
 

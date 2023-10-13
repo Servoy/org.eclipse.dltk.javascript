@@ -9,7 +9,7 @@
  * Contributors:
  *     xored software, Inc. - initial API and Implementation (Alex Panchenko)
  *******************************************************************************/
-package org.eclipse.dltk.javascript.scriptdoc;
+package org.eclipse.dltk.javascript.ui.scriptdoc;
 
 import java.io.Reader;
 import java.io.StringReader;

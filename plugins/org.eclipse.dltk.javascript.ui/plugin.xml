@@ -600,17 +600,17 @@
   <extension
         point="org.eclipse.dltk.ui.scriptDocumentationProviders">
      <provider
-           class="org.eclipse.dltk.javascript.scriptdoc.ScriptDocumentationProvider"
+           class="org.eclipse.dltk.javascript.ui.scriptdoc.ScriptDocumentationProvider"
            id="org.eclipse.dltk.javascript.ui.javascriptDocumentationProvider"
            nature="org.eclipse.dltk.javascript.core.nature">           
      </provider>
      <provider
-           class="org.eclipse.dltk.javascript.scriptdoc.BuiltinElementDocumentationProvider"
+           class="org.eclipse.dltk.javascript.ui.scriptdoc.BuiltinElementDocumentationProvider"
            id="org.eclipse.dltk.javascript.ui.builtinDocumentationProvider"
            nature="org.eclipse.dltk.javascript.core.nature">
      </provider>
      <provider
-           class="org.eclipse.dltk.javascript.scriptdoc.ElementDocumentationProvider"
+           class="org.eclipse.dltk.javascript.ui.scriptdoc.ElementDocumentationProvider"
            id="org.eclipse.dltk.javascript.ui.builtinDocumentationProvider"
            nature="org.eclipse.dltk.javascript.core.nature">
      </provider>

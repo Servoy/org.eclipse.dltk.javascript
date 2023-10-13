@@ -7,7 +7,7 @@
  *
  
  *******************************************************************************/
-package org.eclipse.dltk.javascript.scriptdoc;
+package org.eclipse.dltk.javascript.ui.scriptdoc;
 
 import java.io.IOException;
 

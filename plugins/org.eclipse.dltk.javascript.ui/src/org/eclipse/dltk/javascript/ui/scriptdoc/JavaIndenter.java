@@ -10,7 +10,7 @@
 /**
  * 
  */
-package org.eclipse.dltk.javascript.scriptdoc;
+package org.eclipse.dltk.javascript.ui.scriptdoc;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.core.DLTKCore;

@@ -26,9 +26,9 @@ import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.PreferencesLookupDelegate;
 import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
-import org.eclipse.dltk.javascript.scriptdoc.IndentManipulation;
-import org.eclipse.dltk.javascript.scriptdoc.ScriptdocContentAccess;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
+import org.eclipse.dltk.javascript.ui.scriptdoc.IndentManipulation;
+import org.eclipse.dltk.javascript.ui.scriptdoc.ScriptdocContentAccess;
 import org.eclipse.dltk.ui.CodeFormatterConstants;
 
 public class JSCodeGeneration {

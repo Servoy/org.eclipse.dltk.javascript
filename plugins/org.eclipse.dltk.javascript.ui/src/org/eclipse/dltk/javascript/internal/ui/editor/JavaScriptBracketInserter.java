@@ -12,7 +12,7 @@ package org.eclipse.dltk.javascript.internal.ui.editor;
 import org.eclipse.dltk.internal.ui.editor.BracketInserter;
 import org.eclipse.dltk.internal.ui.editor.ScriptEditor;
 import org.eclipse.dltk.javascript.internal.ui.text.Symbols;
-import org.eclipse.dltk.javascript.scriptdoc.JavaHeuristicScanner;
+import org.eclipse.dltk.javascript.ui.scriptdoc.JavaHeuristicScanner;
 import org.eclipse.dltk.javascript.ui.text.IJavaScriptPartitions;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.jface.text.BadLocationException;

@@ -35,8 +35,8 @@ Export-Package: org.eclipse.dltk.javascript.internal.ui,
  org.eclipse.dltk.javascript.internal.ui.text.completion,
  org.eclipse.dltk.javascript.internal.ui.text.folding;x-internal:=true,
  org.eclipse.dltk.javascript.internal.ui.wizards,
- org.eclipse.dltk.javascript.scriptdoc,
  org.eclipse.dltk.javascript.ui,
+ org.eclipse.dltk.javascript.ui.scriptdoc,
  org.eclipse.dltk.javascript.ui.text,
  org.eclipse.dltk.javascript.ui.typeinfo
 Bundle-RequiredExecutionEnvironment: JavaSE-17

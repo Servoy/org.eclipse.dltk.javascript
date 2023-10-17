@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.dltk.core.builder.IBuildContext;
 import org.eclipse.dltk.core.builder.IBuildParticipant;
 import org.eclipse.dltk.internal.javascript.ti.JSDocSupport;
+import org.eclipse.dltk.internal.javascript.ti.JSDocSupport.TypeNode;
 import org.eclipse.dltk.javascript.ast.AbstractNavigationVisitor;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CaseClause;
@@ -32,6 +33,7 @@ import org.eclipse.dltk.javascript.ast.ForInStatement;
 import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.IfStatement;
+import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
@@ -48,6 +50,7 @@ import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTag;
 import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTags;
+import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
 import org.eclipse.osgi.util.NLS;
 
 public class FlowValidation extends AbstractNavigationVisitor<FlowStatus>
@@ -71,10 +74,29 @@ public class FlowValidation extends AbstractNavigationVisitor<FlowStatus>
 		final FlowEndKind kind = node.getValue() != null ? FlowEndKind.RETURNS_VALUE
 				: FlowEndKind.RETURNS;
 		if (scope.add(kind) && scope.size() > 1) {
-			reporter.setMessage(JavaScriptProblems.RETURN_INCONSISTENT,
-					"return statement is inconsistent with previous usage");
-			reporter.setRange(node.sourceStart(), node.sourceEnd());
-			reporter.report();
+			JSNode parent = node.getParent();
+			while (parent != null && !(parent instanceof FunctionStatement)) {
+				parent = parent.getParent();
+			}
+			TypeNode typeNode = null;
+			if (parent instanceof FunctionStatement) {
+				JSDocTags parse = JSDocSupport.parse(parent.getDocumentation());
+				JSDocTag returnTag = parse.get(JSDocTag.RETURN);
+				if (returnTag == null) {
+					returnTag = parse.get(JSDocTag.RETURNS);
+				}
+				if (returnTag != null) {
+					typeNode = JSDocSupport.parseType(returnTag);
+				}
+			}
+			if (typeNode == null
+					|| !typeNode.getTypeExpression()
+							.contains(ITypeNames.UNDEFINED)) {
+				reporter.setMessage(JavaScriptProblems.RETURN_INCONSISTENT,
+						"return statement is inconsistent with previous usage");
+				reporter.setRange(node.sourceStart(), node.sourceEnd());
+				reporter.report();
+			}
 		}
 		final FlowStatus status = new FlowStatus();
 		if (node.getValue() == null) {

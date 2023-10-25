@@ -75,6 +75,8 @@ import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.core.JSBindings;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.internal.core.TemporaryBindings;
@@ -967,6 +969,10 @@ public class TypeInfoValidator implements IBuildParticipant,
 					return null;
 				}
 			}
+			for (ASTNode argument : node.getArguments()) {
+				if (argument instanceof TemplateStringLiteral)
+					visit(argument);
+			}
 			final List<ASTNode> args = node.getArguments();
 			final IValueReference[] arguments = new IValueReference[args.size()];
 			for (int i = 0, size = args.size(); i < size; ++i) {
@@ -1803,6 +1809,21 @@ public class TypeInfoValidator implements IBuildParticipant,
 				}
 			}
 			return result;
+		}
+
+		@Override
+		public IValueReference visitTemplateStringExpression(
+				TemplateStringExpression node) {
+			return visit(node.getExpression());
+		}
+
+		@Override
+		public IValueReference visitTemplateStringLiteral(
+				TemplateStringLiteral node) {
+			for (Expression expression : node.getTemplateExpressions()) {
+				visit(expression);
+			}
+			return null;
 		}
 
 		private boolean isParentCallOrNew(Identifier node) {

@@ -271,15 +271,19 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			}
 
 			reporter.setFormattedMessage(
-					JavaScriptParserProblems.INTERNAL_ERROR, "Cannot transform node: " + context.getText());
+					JavaScriptParserProblems.INTERNAL_ERROR, "Cannot transform node: " + context.getStart().getText());
 			reporter.setSeverity(ProblemSeverity.ERROR);
 			reporter.setRange(getTokenOffset(context.getStart().getTokenIndex()),
 					getTokenOffset(context.getStop().getTokenIndex()));
 			reporter.report();
-			System.err.println();
 		}
 		else {
-			System.err.println("Cannot transform node (empty stack): " + context.getText());
+			reporter.setFormattedMessage(
+					JavaScriptParserProblems.INTERNAL_ERROR, "Cannot transform node (empty stack): " + context.getStart().getText());
+			reporter.setSeverity(ProblemSeverity.ERROR);
+			reporter.setRange(getTokenOffset(context.getStart().getTokenIndex()),
+					getTokenOffset(context.getStop().getTokenIndex()));
+			reporter.report();
 		}
 		return null;
 	}

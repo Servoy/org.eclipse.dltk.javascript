@@ -79,7 +79,8 @@ public class FlowValidation extends AbstractNavigationVisitor<FlowStatus>
 				parent = parent.getParent();
 			}
 			TypeNode typeNode = null;
-			if (parent instanceof FunctionStatement) {
+			if (parent instanceof FunctionStatement
+					&& parent.getDocumentation() != null) {
 				JSDocTags parse = JSDocSupport.parse(parent.getDocumentation());
 				JSDocTag returnTag = parse.get(JSDocTag.RETURN);
 				if (returnTag == null) {

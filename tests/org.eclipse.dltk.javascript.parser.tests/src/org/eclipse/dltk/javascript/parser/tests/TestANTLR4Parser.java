@@ -1220,4 +1220,28 @@ public class TestANTLR4Parser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
 	}
+	
+//	@Test
+//	public void testFunctionExpression2() {
+//		String source = "var x = (function test(){})()";
+//		Script script = getScript(source);	
+//		assertNotNull(script);
+//		
+//		Script scriptv4 = getScriptv4(source);
+//		assertNotNull(scriptv4);
+//		assertTrue(equalsJSNode(script, scriptv4));
+//	}
+	
+	@Test
+	public void testMultilineStringLiteral() {
+		String source =  "var sql = \"line 1 \\\r\n"
+				+ "		some other line \\\r\n"
+				+ "		last line\"";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
 }

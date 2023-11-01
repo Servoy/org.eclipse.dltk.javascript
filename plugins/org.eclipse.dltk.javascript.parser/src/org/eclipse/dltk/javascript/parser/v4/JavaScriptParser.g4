@@ -175,7 +175,7 @@ iterationStatement
     | While '(' expressionSequence ')' statement                                                                              # WhileStatement
     | For '(' (expressionSequence | variableDeclarationList)? ';' expressionSequence? ';' expressionSequence? ')' statement   # ForStatement
     | For '(' (singleExpression | variableDeclarationList) In expressionSequence ')' statement                                # ForInStatement
-    | For Await? '(' (singleExpression | variableDeclarationList) Of expressionSequence ')' statement  # ForOfStatement
+    | For Await? '(' (singleExpression | variableDeclarationList) Of expressionSequence ')' statement                         # ForOfStatement
     ;
 
 varModifier  // let, const - ECMAScript 6
@@ -354,7 +354,7 @@ singleExpression
     | singleExpression '?.'? '[' expressionSequence ']'                     # MemberIndexExpression
     | singleExpression '?'? '.' '#'? identifierName                         # MemberDotExpression
     // Split to try `new Date()` first, then `new Date`.
-    | New identifier arguments            		                            # NewExpression
+    | New identifier arguments                                              # NewExpression
     | New singleExpression arguments                                        # NewExpression
     | New singleExpression                                                  # NewExpression
     | singleExpression arguments                                            # ArgumentsExpression
@@ -417,8 +417,8 @@ objectLiteral
     ;
 
 anonymousFunction
-    : Async? Function_ '*'? '(' formalParameterList? ')' functionBody    # AnonymousFunctionDecl
-    | Async? arrowFunctionParameters '=>' arrowFunctionBody                     # ArrowFunction
+    : Async? Function_ '*'? identifier? '(' formalParameterList? ')' functionBody    # AnonymousFunctionDecl
+    | Async? arrowFunctionParameters '=>' arrowFunctionBody                                                           # ArrowFunction
     ;
 
 arrowFunctionParameters
@@ -499,6 +499,8 @@ identifier
     | Async
     | As
     | From
+    | Yield
+    | Of
     | Static
     | Implements
     | Interface
@@ -506,8 +508,6 @@ identifier
     | Private
     | Public
     | Protected
-    | Yield
-    | Of
     ;
 
 reservedWord
@@ -564,6 +564,7 @@ keyword
     | Await
     | From
     | As
+    | Of
     ;
 
 let_

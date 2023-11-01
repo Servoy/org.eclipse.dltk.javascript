@@ -1103,7 +1103,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		FunctionStatement fn = (FunctionStatement) getParent();
 		fn.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		fn.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
-		setupFunction(ctx.Function_(), ctx.formalParameterList(), null, ctx);
+		setupFunction(ctx.Function_(), ctx.formalParameterList(), ctx.identifier(), ctx);
 	}
 	
 	@Override

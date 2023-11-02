@@ -288,6 +288,35 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		return null;
 	}
 	
+	private <T extends JSNode> T checkedPeek(Class<? extends T> nodeType,
+			ParserRuleContext context, Stack<JSNode> stack) {
+		if (!stack.isEmpty()) {
+			if (nodeType.isInstance(stack.peek())) {
+				return nodeType.cast(stack.peek());
+			}
+
+			reporter.setFormattedMessage(
+					JavaScriptParserProblems.INTERNAL_ERROR, "Cannot transform node: " + context.getStart().getText());
+			reporter.setSeverity(ProblemSeverity.ERROR);
+			reporter.setRange(getTokenOffset(context.getStart().getTokenIndex()),
+					getTokenOffset(context.getStop().getTokenIndex()));
+			reporter.report();
+		}
+		else {
+			reporter.setFormattedMessage(
+					JavaScriptParserProblems.INTERNAL_ERROR, "Cannot transform node (empty stack): " + context.getStart().getText());
+			reporter.setSeverity(ProblemSeverity.ERROR);
+			reporter.setRange(getTokenOffset(context.getStart().getTokenIndex()),
+					getTokenOffset(context.getStop().getTokenIndex()));
+			reporter.report();
+		}
+		return null;
+	}
+	
+	private <T extends JSNode> T getParent(Class<? extends T> nodeType, ParserRuleContext context) {
+		return checkedPeek(nodeType, context, parents);
+	}
+	
 	private void locateDocumentation(final Documentable node, Token t) {
 		int tokenIndex = t.getTokenIndex();
 		while (tokenIndex > 0) {
@@ -578,21 +607,21 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 	
 	private void setupLetStatement(ParserRuleContext ctx) {
-		LetStatement statement = (LetStatement)getParent();
+		LetStatement statement = getParent(LetStatement.class, ctx);
 		locateDocumentation(statement, ctx.getStart());
 		statement.setLetKeyword(createKeyword(statement, ctx.getStart(), Keywords.LET));
 		setRange(statement, ctx);
 	}
 
 	public void setupVariableStatement(ParserRuleContext ctx) {
-		VariableStatement statement = (VariableStatement)getParent();
+		VariableStatement statement = getParent(VariableStatement.class, ctx);
 		locateDocumentation(statement, ctx.getStart());
 		statement.setVarKeyword(createKeyword(statement, ctx.getStart(), Keywords.VAR));
 		setRange(statement, ctx);
 	}
 	
 	public void setupConstStatement(ParserRuleContext ctx) {
-		ConstStatement statement = (ConstStatement)getParent();
+		ConstStatement statement = getParent(ConstStatement.class, ctx);
 		locateDocumentation(statement, ctx.getStart());
 		statement.setConstKeyword(createKeyword(statement, ctx.getStart(), Keywords.CONST));
 		if (ctx.getStop().getType() == JSParser.SemiColon) {
@@ -724,7 +753,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	public void setupBinaryOperation(SingleExpressionContext ctx) {
-		BinaryOperation operation = (BinaryOperation) getParent();		
+		BinaryOperation operation = getParent(BinaryOperation.class, ctx);		
 		
 		operation.setRightExpression(popChildren(Expression.class, ctx));
 		if (!children.isEmpty()) {
@@ -830,7 +859,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitIfStatement(IfStatementContext ctx) {
-		IfStatement ifStatement = (IfStatement) getParent();
+		IfStatement ifStatement = getParent(IfStatement.class, ctx);
 		ifStatement.setIfKeyword(createKeyword(ifStatement, ctx.getStart(), Keywords.IF));		
 		ifStatement.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		setEndByTokenIndex(ifStatement, ctx.getStop().getTokenIndex());
@@ -871,7 +900,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitBlock(BlockContext ctx) {
-		StatementBlock block = (StatementBlock) getParent();
+		StatementBlock block = getParent(StatementBlock.class, ctx);
 		List<Statement> statementList = lists.isEmpty() ? new ArrayList<>() : lists.pop();
 		for (int i = 0; i < statementList.size(); i++) {
 			block.getStatements().add(statementList.get(i));
@@ -905,7 +934,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		
 	@Override
 	public void exitWhileStatement(WhileStatementContext ctx) {
-		WhileStatement statement = (WhileStatement) getParent();
+		WhileStatement statement = getParent(WhileStatement.class, ctx);
 		statement.setWhileKeyword(createKeyword(statement, ctx.getStart(),  Keywords.WHILE));
 		statement.setLP(getTokenOffset(JSParser.OpenParen, 
 				ctx.getStart().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
@@ -919,7 +948,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	
 	@Override
 	public void exitDoStatement(DoStatementContext ctx) {
-		DoWhileStatement statement = (DoWhileStatement) getParent();
+		DoWhileStatement statement = getParent(DoWhileStatement.class, ctx);
 		Expression condition = popChildren(Expression.class, ctx);
 		Statement body = popChildren(Statement.class, ctx);
 		
@@ -940,7 +969,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitForStatement(ForStatementContext ctx) {
-		ForStatement statement = (ForStatement) getParent();
+		ForStatement statement = getParent(ForStatement.class, ctx);
 		Statement body = popChildren(Statement.class, ctx);
 		Expression step = null, condition = null, initial = null;
 		if (ctx.expressionSequence().size() == 3 || ctx.expressionSequence().size() == 2 
@@ -1012,7 +1041,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitForInStatement(ForInStatementContext ctx) {
-		ForInStatement statement = (ForInStatement)getParent();
+		ForInStatement statement = getParent(ForInStatement.class, ctx);
 		Statement body = popChildren(Statement.class, ctx);
 		Expression iterator = popChildren(Expression.class, ctx);
 		Expression item = popChildren(Expression.class, ctx);
@@ -1046,7 +1075,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterFunctionDeclaration(FunctionDeclarationContext ctx) {
-		SymbolTable symbolTable = new SymbolTable((FunctionStatement)getParent());
+		SymbolTable symbolTable = new SymbolTable(getParent(FunctionStatement.class, ctx));
 		scopes.push(symbolTable);
 		blockScopes.push(symbolTable);
 	}
@@ -1069,7 +1098,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitFunctionBody(FunctionBodyContext ctx) {
-		StatementBlock block = (StatementBlock) getParent();
+		StatementBlock block = getParent(StatementBlock.class, ctx);
 		List<Statement> statementList = !lists.isEmpty() ? lists.pop() : new ArrayList<>();
 		for (int i = 0; i < statementList.size(); i++) {
 			block.getStatements().add(statementList.get(i));
@@ -1100,7 +1129,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitAnonymousFunctionDecl(AnonymousFunctionDeclContext ctx) {
-		FunctionStatement fn = (FunctionStatement) getParent();
+		FunctionStatement fn = getParent(FunctionStatement.class, ctx);
 		fn.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		fn.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
 		setupFunction(ctx.Function_(), ctx.formalParameterList(), ctx.identifier(), ctx);
@@ -1108,14 +1137,14 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	
 	@Override
 	public void enterAnonymousFunctionDecl(AnonymousFunctionDeclContext ctx) {
-		SymbolTable symbolTable = new SymbolTable((FunctionStatement)getParent());
+		SymbolTable symbolTable = new SymbolTable(getParent(FunctionStatement.class, ctx));
 		scopes.push(symbolTable);
 		blockScopes.push(symbolTable);
 	}
 
 	@Override
 	public void exitFunctionDeclaration(FunctionDeclarationContext ctx) {
-		FunctionStatement fn = (FunctionStatement) getParent();
+		FunctionStatement fn = getParent(FunctionStatement.class, ctx);
 		fn.setLP(getTokenOffset(JSParser.OpenParen, 
 				ctx.identifier().getStop().getTokenIndex() + 1, ctx.OpenParen().getSymbol().getStartIndex()));
 		fn.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
@@ -1123,7 +1152,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 	
 	private void setupFunction(TerminalNode function_, FormalParameterListContext parameterList, IdentifierContext id, ParserRuleContext ctx) {		
-		FunctionStatement fn = (FunctionStatement) getParent();
+		FunctionStatement fn = getParent(FunctionStatement.class, ctx);
 		if (function_ != null) {
 			fn.setFunctionKeyword(createKeyword(fn, function_.getSymbol(), Keywords.FUNCTION));
 			locateDocumentation(fn, function_.getSymbol());
@@ -1217,57 +1246,57 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitPostIncrementExpression(PostIncrementExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.PlusPlus().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.PlusPlus().getSymbol());
 	}
 
 	@Override
 	public void exitPostDecreaseExpression(PostDecreaseExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.MinusMinus().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.MinusMinus().getSymbol());
 	}
 
 	@Override
 	public void exitPreIncrementExpression(PreIncrementExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.PlusPlus().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.PlusPlus().getSymbol());
 	}
 	
 	@Override
 	public void exitPreDecreaseExpression(PreDecreaseExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.MinusMinus().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.MinusMinus().getSymbol());
 	}
 	
 	@Override
 	public void exitBitNotExpression(BitNotExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.BitNot().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.BitNot().getSymbol());
 	}
 
 	@Override
 	public void exitNotExpression(NotExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.Not().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Not().getSymbol());
 	}
 	
 	@Override
 	public void exitUnaryMinusExpression(UnaryMinusExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.Minus().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Minus().getSymbol());
 	}
 	
 	@Override
 	public void exitUnaryPlusExpression(UnaryPlusExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.Plus().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Plus().getSymbol());
 	}
 
 	@Override
 	public void exitDeleteExpression(DeleteExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.Delete().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Delete().getSymbol());
 	}
 
 	@Override
 	public void exitTypeofExpression(TypeofExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.Typeof().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Typeof().getSymbol());
 	}
 
 	@Override
 	public void exitVoidExpression(VoidExpressionContext ctx) {
-		setupUnaryOperation(ctx, (UnaryOperation) getParent(), ctx.Void().getSymbol());
+		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Void().getSymbol());
 	}
 
 	public void setupUnaryOperation(SingleExpressionContext ctx,
@@ -1281,7 +1310,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterLabelledStatement(LabelledStatementContext ctx) {
-		LabelledStatement statement = (LabelledStatement)getParent();
+		LabelledStatement statement = getParent(LabelledStatement.class, ctx);
 
 		Label label = new Label(statement);
 		label.setText(intern(ctx.identifier().getText()));
@@ -1300,7 +1329,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitLabelledStatement(LabelledStatementContext ctx) {
-		LabelledStatement statement = (LabelledStatement)getParent();
+		LabelledStatement statement = getParent(LabelledStatement.class, ctx);
 		if (ctx.statement() != null) {
 			statement.setStatement(popChildren(Statement.class, ctx));
 		}
@@ -1311,7 +1340,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitContinueStatement(ContinueStatementContext ctx) {
-		ContinueStatement statement = (ContinueStatement)getParent();
+		ContinueStatement statement = getParent(ContinueStatement.class, ctx);
 		statement.setContinueKeyword(createKeyword(statement, ctx.getStart(), Keywords.CONTINUE));
 
 		if (ctx.identifier() != null) {
@@ -1333,7 +1362,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitReturnStatement(ReturnStatementContext ctx) {
-		ReturnStatement returnStatement = (ReturnStatement)getParent();
+		ReturnStatement returnStatement = getParent(ReturnStatement.class, ctx);
 
 		returnStatement.setReturnKeyword(createKeyword(returnStatement, ctx.getStart(), Keywords.RETURN));
 
@@ -1361,7 +1390,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitBreakStatement(BreakStatementContext ctx) {
-		BreakStatement statement = (BreakStatement)getParent();
+		BreakStatement statement = getParent(BreakStatement.class, ctx);
 		statement.setBreakKeyword(createKeyword(statement, ctx.getStart(), Keywords.BREAK));
 
 		if (ctx.identifier() != null) {
@@ -1383,7 +1412,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitThrowStatement(ThrowStatementContext ctx) {
-		ThrowStatement statement = (ThrowStatement)getParent();
+		ThrowStatement statement = getParent(ThrowStatement.class, ctx);
 		statement.setThrowKeyword(createKeyword(statement, ctx.getStart(), Keywords.THROW));
 
 		if (ctx.expressionSequence() != null) {
@@ -1406,7 +1435,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		else {
 			parents.pop();
 		}
-		NewExpression expression = (NewExpression)getParent();
+		NewExpression expression = getParent(NewExpression.class, ctx);
 		expression.setNewKeyword(createKeyword(expression, ctx.getStart(), Keywords.NEW));
 		if (callExpression	!= null) {
 			expression.setObjectClass(callExpression);
@@ -1434,7 +1463,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	private Expression transformCallExpression(SingleExpressionContext ctx, ArgumentsContext args) {
-		CallExpression call = (CallExpression)getParent();
+		CallExpression call = getParent(CallExpression.class, ctx);
 
 		Assert.isNotNull(ctx);
 		Assert.isNotNull(args);
@@ -1474,7 +1503,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void enterBlock(BlockContext ctx) {
 		if (getParent() instanceof StatementBlock) {
 			//created via factory
-			blockScopes.push(new SymbolTable((StatementBlock)getParent()));
+			blockScopes.push(new SymbolTable(getParent(StatementBlock.class, ctx)));
 			return;
 		}
 		parents.push(new StatementBlock(getParent()));
@@ -1483,7 +1512,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitTryStatement(TryStatementContext ctx) {
-		TryStatement statement = (TryStatement)getParent();
+		TryStatement statement = getParent(TryStatement.class, ctx);
 		statement.setTryKeyword(createKeyword(statement, ctx.getStart(), Keywords.TRY));
 
 //		boolean sawDefaultCatch = false;
@@ -1602,7 +1631,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitSwitchStatement(SwitchStatementContext ctx) {
-		SwitchStatement switchStatement = (SwitchStatement) getParent();
+		SwitchStatement switchStatement = getParent(SwitchStatement.class, ctx);
 		switchStatement.setSwitchKeyword(createKeyword(switchStatement, ctx.getStart(), Keywords.SWITCH));
 		switchStatement.setCondition(popChildren(Expression.class, ctx));
 		switchStatement.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
@@ -1631,7 +1660,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		for (Statement statement : statements) {
 			caseClause.getStatements().add(statement);
 		}
-		((SwitchStatement) getParent()).addCase(caseClause);
+		getParent(SwitchStatement.class, ctx).addCase(caseClause);
 		caseClause.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		caseClause.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
 	}
@@ -1650,21 +1679,21 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		for (Statement statement : statements) {
 			caseClause.getStatements().add(statement);
 		}
-		((SwitchStatement) getParent()).addCase(caseClause);
+		getParent(SwitchStatement.class, ctx).addCase(caseClause);
 		caseClause.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		caseClause.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
 	}
 
 	@Override
 	public void exitEmptyStatement_(EmptyStatement_Context ctx) {
-		EmptyStatement statement = (EmptyStatement)getParent();
+		EmptyStatement statement = getParent(EmptyStatement.class, ctx);
 		statement.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		statement.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));
 	}
 
 	@Override
 	public void exitWithStatement(WithStatementContext ctx) {
-		WithStatement statement = (WithStatement)getParent();
+		WithStatement statement = getParent(WithStatement.class, ctx);
 		statement.setWithKeyword(createKeyword(statement, ctx.getStart(), Keywords.WITH));
 		statement.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		statement.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
@@ -1678,7 +1707,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitMemberIndexExpression(MemberIndexExpressionContext ctx) {
-		GetArrayItemExpression item = (GetArrayItemExpression)getParent();
+		GetArrayItemExpression item = getParent(GetArrayItemExpression.class, ctx);
 		item.setLB(getTokenOffset(ctx.OpenBracket().getSymbol().getTokenIndex()));
 		if (ctx.expressionSequence() != null) {
 			item.setIndex(popChildren(Expression.class, ctx));
@@ -1699,7 +1728,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitMemberDotExpression(MemberDotExpressionContext ctx) {
-		PropertyExpression property = (PropertyExpression)getParent();
+		PropertyExpression property = getParent(PropertyExpression.class, ctx);
 		locateDocumentation(property, ctx.getStart());
 		int dotPosition = getTokenOffset(ctx.Dot().getSymbol().getTokenIndex());
 		property.setDotPosition(dotPosition);
@@ -1724,7 +1753,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	@Override
 	public void exitArrayLiteralExpression(ArrayLiteralExpressionContext ctx) {
 		final int itemCount = ctx.arrayLiteral().getChildCount();
-		ArrayInitializer array = (ArrayInitializer)getParent();
+		ArrayInitializer array = getParent(ArrayInitializer.class, ctx);
 		ElementListContext elementList = ctx.arrayLiteral().elementList();
 		for (int i = 0; i < elementList.Comma().size(); i++) {
 			if (i >= itemCount - 1) break;
@@ -1751,13 +1780,13 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitArrayElement(ArrayElementContext ctx) {
-		ArrayInitializer array = (ArrayInitializer)getParent();
+		ArrayInitializer array = getParent(ArrayInitializer.class, ctx);
 		array.getItems().add(popChildren(Expression.class, ctx));
 	}
 
 	@Override
 	public void exitParenthesizedExpression(ParenthesizedExpressionContext ctx) {
-		ParenthesizedExpression expression = (ParenthesizedExpression) getParent();
+		ParenthesizedExpression expression = getParent(ParenthesizedExpression.class, ctx);
 		expression.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		expression.setStart(expression.getLP());
 
@@ -1774,7 +1803,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitTernaryExpression(TernaryExpressionContext ctx) {
-		ConditionalOperator operator = (ConditionalOperator)getParent();
+		ConditionalOperator operator = getParent(ConditionalOperator.class, ctx);
 		operator.setFalseValue(popChildren(Expression.class, ctx));
 		operator.setTrueValue(popChildren(Expression.class, ctx));
 		operator.setCondition(popChildren(Expression.class, ctx));
@@ -1786,14 +1815,14 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitThisExpression(ThisExpressionContext ctx) {
-		ThisExpression expression = (ThisExpression)getParent();
+		ThisExpression expression = getParent(ThisExpression.class, ctx);
 		expression.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		expression.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()+1));
 	}
 
 	@Override
 	public void exitObjectLiteral(ObjectLiteralContext ctx) {
-		ObjectInitializer initializer = (ObjectInitializer) getParent();
+		ObjectInitializer initializer = getParent(ObjectInitializer.class, ctx);
 		
 		IntList commas = new IntList();
 		for (int i = 0; i < ctx.Comma().size(); i++) {
@@ -1926,12 +1955,12 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterArrowFunction(ArrowFunctionContext ctx) {
-		scopes.push(new SymbolTable((ArrowFunctionStatement)getParent()));
+		scopes.push(new SymbolTable(getParent(ArrowFunctionStatement.class, ctx)));
 	}
 
 	@Override
 	public void exitArrowFunction(ArrowFunctionContext ctx) {
-		ArrowFunctionStatement fn = (ArrowFunctionStatement) getParent();
+		ArrowFunctionStatement fn = getParent(ArrowFunctionStatement.class, ctx);
 		
 		Statement body = null;
 		if (children.peek() instanceof StatementBlock) {
@@ -2032,7 +2061,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			expression.setEnd(end);
 			expression.setTemplateStringStart(start);
 			expression.setTemplateCloseBrace(end);
-			((TemplateStringLiteral)getParent()).addTemplateStringExpression(expression);
+			getParent(TemplateStringLiteral.class, ctx).addTemplateStringExpression(expression);
 		}
 	}
 
@@ -2047,7 +2076,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	
 	@Override
 	public void exitForOfStatement(ForOfStatementContext ctx) {
-		ForOfStatement statement = (ForOfStatement)getParent();
+		ForOfStatement statement = getParent(ForOfStatement.class, ctx);
 		Statement body = popChildren(Statement.class, ctx);
 		Expression iterator = popChildren(Expression.class, ctx);
 		Expression item = popChildren(Expression.class, ctx);

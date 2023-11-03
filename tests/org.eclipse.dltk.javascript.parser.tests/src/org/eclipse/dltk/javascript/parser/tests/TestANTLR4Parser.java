@@ -1244,4 +1244,15 @@ public class TestANTLR4Parser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
 	}
+	
+	@Test
+	public void testNewFunction() {
+		String source =  "var x = new function() {  }";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
 }

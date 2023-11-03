@@ -1427,13 +1427,18 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitNewExpression(NewExpressionContext ctx) {
-		Expression callExpression = ctx.singleExpression()	!= null ? transformCallExpression(ctx.singleExpression(), ctx.arguments()) : null;
-		
+		Expression callExpression = null;
+		if (ctx.singleExpression() != null) {
+			if (ctx.arguments() != null) {
+				callExpression = transformCallExpression(ctx.singleExpression(), ctx.arguments());
+				parents.pop();//remove the call expression
+			}
+			else if (children.peek() instanceof Expression){
+				callExpression = (Expression) children.pop();
+			}
+		}
 		if (callExpression == null && ctx.identifier() != null) { 
 			callExpression = setupCallExpression(ctx.arguments(), popParents(CallExpression.class, ctx), ctx);
-		}
-		else {
-			parents.pop();
 		}
 		NewExpression expression = getParent(NewExpression.class, ctx);
 		expression.setNewKeyword(createKeyword(expression, ctx.getStart(), Keywords.NEW));

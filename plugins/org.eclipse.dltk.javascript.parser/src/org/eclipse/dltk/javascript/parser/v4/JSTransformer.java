@@ -1205,10 +1205,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 	
 	private Statement transformStatementNode(ParserRuleContext ctx, JSNode expression) {
-		if (expression == null) return null;
 		if (expression instanceof Statement)
 			return (Statement) expression;
-		else {
+		else if (expression instanceof Expression){
 			VoidExpression voidExpression = new VoidExpression(getParent() == null? script : getParent());
 			voidExpression.setExpression((Expression) expression);
 
@@ -1232,6 +1231,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 			return voidExpression;
 		}
+		 return null;
 	}
 	
 	@Override
@@ -1680,9 +1680,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		DefaultClause caseClause = popParents(DefaultClause.class, ctx);
 		caseClause.setDefaultKeyword(createKeyword(caseClause, ctx.getStart(), Keywords.DEFAULT));
 		caseClause.setColonPosition(getTokenOffset(ctx.Colon().getSymbol().getTokenIndex()));
-		List<Statement> statements = lists.pop();
-		for (Statement statement : statements) {
-			caseClause.getStatements().add(statement);
+		if (!lists.isEmpty()) {
+			List<Statement> statements = lists.pop();
+			for (Statement statement : statements) {
+				caseClause.getStatements().add(statement);
+			}
 		}
 		getParent(SwitchStatement.class, ctx).addCase(caseClause);
 		caseClause.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
@@ -2015,7 +2017,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		fn.setBody(body);
 		fn.setArrow(getTokenOffset(ctx.ARROW().getSymbol().getTokenIndex()));
 		fn.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-		fn.setEnd(fn.getBody().sourceEnd());
+		fn.setEnd(fn.getBody() != null ? fn.getBody().sourceEnd() : getTokenOffset(ctx.getStop().getTokenIndex()));
 	}
 
 	public void validateParameter(final SymbolTable functionScope,

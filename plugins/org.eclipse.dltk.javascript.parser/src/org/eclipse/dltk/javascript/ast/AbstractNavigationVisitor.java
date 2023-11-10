@@ -17,6 +17,7 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -224,6 +225,10 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 				final PropertyInitializer pi = (PropertyInitializer) part;
 				visit(pi.getName());
 				visit(pi.getValue());
+			}
+			else if (part instanceof PropertyShorthand) {
+				final PropertyShorthand p = (PropertyShorthand) part;
+				visit(p.getExpression());
 			}
 		}
 		return null;

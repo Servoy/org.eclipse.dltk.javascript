@@ -20,6 +20,7 @@ import org.eclipse.dltk.javascript.ast.StringLiteral;
 import org.eclipse.dltk.javascript.ast.XmlFragment;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
 import org.eclipse.dltk.ui.editor.highlighting.AbortSemanticHighlightingException;
@@ -74,6 +75,10 @@ public class JavaScriptXmlHighlighter extends AbstractJavaScriptHighlighter
 			} else if (node instanceof PropertyInitializer) {
 				if (bPropertyNames) {
 					handlePropertyInitializer((PropertyInitializer) node);
+				}
+			} else if (node instanceof PropertyShorthand) {
+				if (bPropertyNames) {
+					handlePropertyShorthand((PropertyShorthand) node);
 				}
 			} else if (node instanceof ForEachInStatement) {
 				handleForEachIn((ForEachInStatement) node);
@@ -133,6 +138,14 @@ public class JavaScriptXmlHighlighter extends AbstractJavaScriptHighlighter
 
 		private void handlePropertyInitializer(PropertyInitializer property) {
 			final Expression name = property.getName();
+			if (name instanceof Identifier || name instanceof StringLiteral) {
+				requestor.addPosition(name.sourceStart(), name.sourceEnd(),
+						HL_PROPERTY);
+			}
+		}
+
+		private void handlePropertyShorthand(PropertyShorthand property) {
+			final Expression name = property.getExpression();
 			if (name instanceof Identifier || name instanceof StringLiteral) {
 				requestor.addPosition(name.sourceStart(), name.sourceEnd(),
 						HL_PROPERTY);

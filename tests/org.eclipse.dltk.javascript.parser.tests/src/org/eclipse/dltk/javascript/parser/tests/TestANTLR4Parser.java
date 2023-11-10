@@ -1255,4 +1255,20 @@ public class TestANTLR4Parser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4));
 	}
+	
+	@Test
+	public void testPropertyShorthand() {
+		String source ="obj = { test }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ObjectInitializer initv4 = (ObjectInitializer) assignmentv4.getRightExpression();
+		assertEquals(1, initv4.getInitializers().size());
+		assertTrue(initv4.getInitializers().get(0) instanceof PropertyShorthand);
+		PropertyShorthand property = (PropertyShorthand) initv4.getInitializers().get(0);
+		assertEquals("test", property.getExpression().toString());
+	}
 }

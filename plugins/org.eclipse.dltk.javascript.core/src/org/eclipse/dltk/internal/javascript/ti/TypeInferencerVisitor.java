@@ -95,6 +95,7 @@ import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -1514,6 +1515,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				}
 				members.add(new RRecordMember(childName, type != null ? type
 						: RTypes.any(), source));
+			} else if (part instanceof PropertyShorthand) {
+				visit(((PropertyShorthand) part).getExpression());
 			} else {
 				// TODO handle get/set methods
 			}

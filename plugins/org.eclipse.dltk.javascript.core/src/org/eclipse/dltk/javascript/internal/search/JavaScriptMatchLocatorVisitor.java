@@ -43,6 +43,7 @@ import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.core.JSBindings;
 import org.eclipse.dltk.javascript.internal.core.TemporaryBindings;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
@@ -330,6 +331,14 @@ public class JavaScriptMatchLocatorVisitor extends
 					addFieldDeclaration(pi.getName(), null /* declaredType */);
 					visit(pi.getValue());
 				}
+			} else if (part instanceof PropertyShorthand) {
+				PropertyShorthand propertyShorthand = (PropertyShorthand) part;
+				if (propertyShorthand.getExpression() instanceof Identifier) { // TODO
+																				// check
+					addFieldDeclaration(propertyShorthand.getExpression(),
+							null /* declaredType */);
+				}
+				visit(propertyShorthand.getExpression());
 			}
 		}
 		return null;

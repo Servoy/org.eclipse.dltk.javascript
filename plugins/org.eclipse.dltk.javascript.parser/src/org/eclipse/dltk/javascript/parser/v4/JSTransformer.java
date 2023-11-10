@@ -86,6 +86,7 @@ import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
 import org.eclipse.dltk.javascript.parser.JSProblemIdentifier;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserProblems;
@@ -157,6 +158,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyExpressionAssignme
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyGetterContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyNameContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertySetterContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyShorthandContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ReturnStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
@@ -1885,6 +1887,30 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		((ObjectInitializer)getParent()).addInitializer(initializer);
 	}
 	
+	@Override
+	public void enterPropertyShorthand(PropertyShorthandContext ctx) {
+		parents.push(new PropertyShorthand(getParent()));
+	}
+
+	@Override
+	public void exitPropertyShorthand(PropertyShorthandContext ctx) {
+		PropertyShorthand initializer = popParents(PropertyShorthand.class, ctx);
+		final Expression value;
+		if (ctx.singleExpression() != null) {
+			value = popChildren(Expression.class, ctx);
+		}
+		else {
+			value = new ErrorExpression(initializer, Util.EMPTY_STRING);
+			value.setStart(ctx.getStart().getTokenIndex());
+			value.setEnd(ctx.getStop().getTokenIndex());
+		}
+		initializer.setExpression(value);
+		initializer.setStart(initializer.getExpression().sourceStart());
+		initializer.setEnd(value.sourceEnd());
+		
+		((ObjectInitializer)getParent()).addInitializer(initializer);
+	}
+
 	@Override
 	public void enterPropertyGetter(PropertyGetterContext ctx) {
 		parents.push(new GetMethod(getParent()));

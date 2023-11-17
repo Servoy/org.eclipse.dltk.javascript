@@ -109,6 +109,7 @@
     <genClasses ecoreClass="dom.ecore#//SimplePropertyAssignment">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference dom.ecore#//SimplePropertyAssignment/initializer"/>
     </genClasses>
+    <genClasses ecoreClass="dom.ecore#//PropertyShorthand"/>
     <genClasses image="false" ecoreClass="dom.ecore#//AccessorAssignment">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference dom.ecore#//AccessorAssignment/body"/>
     </genClasses>

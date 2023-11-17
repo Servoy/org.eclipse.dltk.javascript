@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.utils.IntList;
 
 public class ObjectInitializer extends Expression {
@@ -65,17 +66,26 @@ public class ObjectInitializer extends Expression {
 	}
 
 	public Expression getValue(String propertyName) {
-		final PropertyInitializer property = getEntry(propertyName);
-		if (property != null) {
-			return property.getValue();
+		final ObjectInitializerPart property = getEntry(propertyName);
+		if (property instanceof PropertyInitializer) {
+			return ((PropertyInitializer) property).getValue();
+		}
+		if (property instanceof PropertyShorthand) {
+			return ((PropertyShorthand) property).getExpression();
 		}
 		return null;
 	}
 
-	public PropertyInitializer getEntry(String propertyName) {
+	public ObjectInitializerPart getEntry(String propertyName) {
 		for (ObjectInitializerPart part : initializers) {
 			if (part instanceof PropertyInitializer) {
 				final PropertyInitializer property = (PropertyInitializer) part;
+				if (propertyName.equals(property.getNameAsString())) {
+					return property;
+				}
+			}
+			if (part instanceof PropertyShorthand) {
+				final PropertyShorthand property = (PropertyShorthand) part;
 				if (propertyName.equals(property.getNameAsString())) {
 					return property;
 				}

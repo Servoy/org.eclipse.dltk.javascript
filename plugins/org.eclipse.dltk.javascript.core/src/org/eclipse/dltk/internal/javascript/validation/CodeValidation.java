@@ -38,6 +38,7 @@ import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.osgi.util.NLS;
@@ -217,6 +218,18 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 									propertyName), property.getName()
 									.sourceStart(), property.getName()
 									.sourceEnd());
+				}
+			}
+			if (part instanceof PropertyShorthand) {
+				final PropertyShorthand property = (PropertyShorthand) part;
+				final String propertyName = property.getNameAsString();
+				if (propertyName != null && !processed.add(propertyName)) {
+					reporter.reportProblem(
+							JavaScriptProblems.DUPLICATE_PROPERTY_IN_LITERAL,
+							NLS.bind("Duplicate property {0} in object literal",
+									propertyName),
+							property.getExpression().sourceStart(),
+							property.getExpression().sourceEnd());
 				}
 			}
 		}

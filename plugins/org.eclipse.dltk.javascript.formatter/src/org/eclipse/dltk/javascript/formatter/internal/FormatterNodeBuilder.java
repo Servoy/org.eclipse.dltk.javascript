@@ -98,6 +98,7 @@ import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -295,6 +296,11 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 				} else if (node instanceof PropertyInitializer) {
 					nodes.push(node);
 					final IFormatterNode result = formatPropertyInitializer((PropertyInitializer) node);
+					nodes.pop();
+					return result;
+				} else if (node instanceof PropertyShorthand) {
+					nodes.push(node);
+					final IFormatterNode result = formatPropertyShorthand((PropertyShorthand) node);
 					nodes.pop();
 					return result;
 				} else if (node instanceof GetMethod) {
@@ -1233,6 +1239,24 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 				visit(node.getValue());
 
 				checkedPop(formatterNode, node.getValue().sourceStart());
+
+				return formatterNode;
+			}
+			
+			private IFormatterNode formatPropertyShorthand(
+					PropertyShorthand node) {
+
+				FormatterBlockNode formatterNode = new FormatterBlockNode(
+						document);
+
+				formatterNode.addChild(createEmptyTextNode(document,
+						node.sourceStart()));
+
+				push(formatterNode);
+
+				visit(node.getExpression());
+
+				checkedPop(formatterNode, node.getExpression().sourceStart());
 
 				return formatterNode;
 			}

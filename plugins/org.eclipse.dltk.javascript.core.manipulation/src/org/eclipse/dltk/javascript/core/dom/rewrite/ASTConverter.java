@@ -69,6 +69,7 @@ import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -394,6 +395,12 @@ public class ASTConverter extends ASTVisitor<Node> {
 						.createSimplePropertyAssignment();
 				elem.setName(createPropertyName(pi.getName()));
 				elem.setInitializer((Expression) visit(pi.getValue()));
+				cur = elem;
+			} else if (part instanceof PropertyShorthand) {
+				PropertyShorthand pi = (PropertyShorthand) part;
+				PropertyAssignment elem = DOM_FACTORY
+						.createPropertyShorthand();
+				elem.setName(createPropertyName(pi.getExpression()));
 				cur = elem;
 			} else if (part instanceof GetMethod) {
 				GetMethod gm = (GetMethod) part;

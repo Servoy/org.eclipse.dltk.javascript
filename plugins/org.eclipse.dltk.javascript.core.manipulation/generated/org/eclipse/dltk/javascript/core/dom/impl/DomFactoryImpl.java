@@ -75,6 +75,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 			case DomPackage.ELISION: return createElision();
 			case DomPackage.OBJECT_LITERAL: return createObjectLiteral();
 			case DomPackage.SIMPLE_PROPERTY_ASSIGNMENT: return createSimplePropertyAssignment();
+			case DomPackage.PROPERTY_SHORTHAND: return createPropertyShorthand();
 			case DomPackage.GETTER_ASSIGNMENT: return createGetterAssignment();
 			case DomPackage.SETTER_ASSIGNMENT: return createSetterAssignment();
 			case DomPackage.PARENTHESIZED_EXPRESSION: return createParenthesizedExpression();
@@ -319,6 +320,17 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	public SimplePropertyAssignment createSimplePropertyAssignment() {
 		SimplePropertyAssignmentImpl simplePropertyAssignment = new SimplePropertyAssignmentImpl();
 		return simplePropertyAssignment;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public PropertyShorthand createPropertyShorthand() {
+		PropertyShorthandImpl propertyShorthand = new PropertyShorthandImpl();
+		return propertyShorthand;
 	}
 
 	/**

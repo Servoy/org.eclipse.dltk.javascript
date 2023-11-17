@@ -152,6 +152,15 @@ public interface DomFactory extends EFactory {
 	SimplePropertyAssignment createSimplePropertyAssignment();
 
 	/**
+	 * Returns a new object of class '<em>Property Shorthand</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Property Shorthand</em>'.
+	 * @generated
+	 */
+	PropertyShorthand createPropertyShorthand();
+
+	/**
 	 * Returns a new object of class '<em>Getter Assignment</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

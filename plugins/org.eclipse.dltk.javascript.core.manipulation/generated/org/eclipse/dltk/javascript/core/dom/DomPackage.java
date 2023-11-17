@@ -881,6 +881,52 @@ public interface DomPackage extends EPackage {
 	int SIMPLE_PROPERTY_ASSIGNMENT_FEATURE_COUNT = PROPERTY_ASSIGNMENT_FEATURE_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.PropertyShorthandImpl <em>Property Shorthand</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.PropertyShorthandImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getPropertyShorthand()
+	 * @generated
+	 */
+	int PROPERTY_SHORTHAND = 19;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROPERTY_SHORTHAND__BEGIN = PROPERTY_ASSIGNMENT__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROPERTY_SHORTHAND__END = PROPERTY_ASSIGNMENT__END;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROPERTY_SHORTHAND__NAME = PROPERTY_ASSIGNMENT__NAME;
+
+	/**
+	 * The number of structural features of the '<em>Property Shorthand</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROPERTY_SHORTHAND_FEATURE_COUNT = PROPERTY_ASSIGNMENT_FEATURE_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.AccessorAssignmentImpl <em>Accessor Assignment</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -888,7 +934,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getAccessorAssignment()
 	 * @generated
 	 */
-	int ACCESSOR_ASSIGNMENT = 19;
+	int ACCESSOR_ASSIGNMENT = 20;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -943,7 +989,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getGetterAssignment()
 	 * @generated
 	 */
-	int GETTER_ASSIGNMENT = 20;
+	int GETTER_ASSIGNMENT = 21;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -998,7 +1044,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getSetterAssignment()
 	 * @generated
 	 */
-	int SETTER_ASSIGNMENT = 21;
+	int SETTER_ASSIGNMENT = 22;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1062,7 +1108,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getParenthesizedExpression()
 	 * @generated
 	 */
-	int PARENTHESIZED_EXPRESSION = 22;
+	int PARENTHESIZED_EXPRESSION = 23;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1108,7 +1154,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getArrayAccessExpression()
 	 * @generated
 	 */
-	int ARRAY_ACCESS_EXPRESSION = 23;
+	int ARRAY_ACCESS_EXPRESSION = 24;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1163,7 +1209,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getPropertyAccessExpression()
 	 * @generated
 	 */
-	int PROPERTY_ACCESS_EXPRESSION = 24;
+	int PROPERTY_ACCESS_EXPRESSION = 25;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1218,7 +1264,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getNewExpression()
 	 * @generated
 	 */
-	int NEW_EXPRESSION = 25;
+	int NEW_EXPRESSION = 26;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1273,7 +1319,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getCallExpression()
 	 * @generated
 	 */
-	int CALL_EXPRESSION = 26;
+	int CALL_EXPRESSION = 27;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1328,7 +1374,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryExpression()
 	 * @generated
 	 */
-	int UNARY_EXPRESSION = 27;
+	int UNARY_EXPRESSION = 28;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1383,7 +1429,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryExpression()
 	 * @generated
 	 */
-	int BINARY_EXPRESSION = 28;
+	int BINARY_EXPRESSION = 29;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1456,7 +1502,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getConditionalExpression()
 	 * @generated
 	 */
-	int CONDITIONAL_EXPRESSION = 29;
+	int CONDITIONAL_EXPRESSION = 30;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1520,7 +1566,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getStatement()
 	 * @generated
 	 */
-	int STATEMENT = 30;
+	int STATEMENT = 31;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1557,7 +1603,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBlockStatement()
 	 * @generated
 	 */
-	int BLOCK_STATEMENT = 31;
+	int BLOCK_STATEMENT = 32;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1603,7 +1649,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getVariableStatement()
 	 * @generated
 	 */
-	int VARIABLE_STATEMENT = 32;
+	int VARIABLE_STATEMENT = 33;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1649,7 +1695,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getVariableDeclaration()
 	 * @generated
 	 */
-	int VARIABLE_DECLARATION = 33;
+	int VARIABLE_DECLARATION = 34;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1704,7 +1750,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getEmptyStatement()
 	 * @generated
 	 */
-	int EMPTY_STATEMENT = 34;
+	int EMPTY_STATEMENT = 35;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1741,7 +1787,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getExpressionStatement()
 	 * @generated
 	 */
-	int EXPRESSION_STATEMENT = 35;
+	int EXPRESSION_STATEMENT = 36;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1787,7 +1833,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getIfStatement()
 	 * @generated
 	 */
-	int IF_STATEMENT = 36;
+	int IF_STATEMENT = 37;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1851,7 +1897,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getIterationStatement()
 	 * @generated
 	 */
-	int ITERATION_STATEMENT = 37;
+	int ITERATION_STATEMENT = 38;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1897,7 +1943,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getDoStatement()
 	 * @generated
 	 */
-	int DO_STATEMENT = 38;
+	int DO_STATEMENT = 39;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1952,7 +1998,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getWhileStatement()
 	 * @generated
 	 */
-	int WHILE_STATEMENT = 39;
+	int WHILE_STATEMENT = 40;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2007,7 +2053,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getForStatement()
 	 * @generated
 	 */
-	int FOR_STATEMENT = 40;
+	int FOR_STATEMENT = 41;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2080,7 +2126,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getIForInitializer()
 	 * @generated
 	 */
-	int IFOR_INITIALIZER = 41;
+	int IFOR_INITIALIZER = 42;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2117,7 +2163,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getForInStatement()
 	 * @generated
 	 */
-	int FOR_IN_STATEMENT = 42;
+	int FOR_IN_STATEMENT = 43;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2181,7 +2227,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getISelector()
 	 * @generated
 	 */
-	int ISELECTOR = 64;
+	int ISELECTOR = 65;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.ContinueStatementImpl <em>Continue Statement</em>}' class.
@@ -2191,7 +2237,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getContinueStatement()
 	 * @generated
 	 */
-	int CONTINUE_STATEMENT = 43;
+	int CONTINUE_STATEMENT = 44;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2237,7 +2283,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBreakStatement()
 	 * @generated
 	 */
-	int BREAK_STATEMENT = 44;
+	int BREAK_STATEMENT = 45;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2283,7 +2329,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getReturnStatement()
 	 * @generated
 	 */
-	int RETURN_STATEMENT = 45;
+	int RETURN_STATEMENT = 46;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2329,7 +2375,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getWithStatement()
 	 * @generated
 	 */
-	int WITH_STATEMENT = 46;
+	int WITH_STATEMENT = 47;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2384,7 +2430,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getSwitchStatement()
 	 * @generated
 	 */
-	int SWITCH_STATEMENT = 47;
+	int SWITCH_STATEMENT = 48;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2439,7 +2485,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getSwitchElement()
 	 * @generated
 	 */
-	int SWITCH_ELEMENT = 48;
+	int SWITCH_ELEMENT = 49;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2485,7 +2531,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getCaseClause()
 	 * @generated
 	 */
-	int CASE_CLAUSE = 49;
+	int CASE_CLAUSE = 50;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2540,7 +2586,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getDefaultClause()
 	 * @generated
 	 */
-	int DEFAULT_CLAUSE = 50;
+	int DEFAULT_CLAUSE = 51;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2586,7 +2632,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getLabeledStatement()
 	 * @generated
 	 */
-	int LABELED_STATEMENT = 51;
+	int LABELED_STATEMENT = 52;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2641,7 +2687,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getThrowStatement()
 	 * @generated
 	 */
-	int THROW_STATEMENT = 52;
+	int THROW_STATEMENT = 53;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2687,7 +2733,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTryStatement()
 	 * @generated
 	 */
-	int TRY_STATEMENT = 53;
+	int TRY_STATEMENT = 54;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2751,7 +2797,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getCatchClause()
 	 * @generated
 	 */
-	int CATCH_CLAUSE = 54;
+	int CATCH_CLAUSE = 55;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2815,7 +2861,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getFinallyClause()
 	 * @generated
 	 */
-	int FINALLY_CLAUSE = 55;
+	int FINALLY_CLAUSE = 56;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2861,7 +2907,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getFunctionExpression()
 	 * @generated
 	 */
-	int FUNCTION_EXPRESSION = 56;
+	int FUNCTION_EXPRESSION = 57;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2943,7 +2989,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getParameter()
 	 * @generated
 	 */
-	int PARAMETER = 57;
+	int PARAMETER = 58;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -2989,7 +3035,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getSource()
 	 * @generated
 	 */
-	int SOURCE = 58;
+	int SOURCE = 59;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3035,7 +3081,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getConstStatement()
 	 * @generated
 	 */
-	int CONST_STATEMENT = 59;
+	int CONST_STATEMENT = 60;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3081,7 +3127,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getPropertyIdentifier()
 	 * @generated
 	 */
-	int PROPERTY_IDENTIFIER = 60;
+	int PROPERTY_IDENTIFIER = 61;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3118,7 +3164,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getIProperty()
 	 * @generated
 	 */
-	int IPROPERTY = 61;
+	int IPROPERTY = 62;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3155,7 +3201,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getXmlInitializer()
 	 * @generated
 	 */
-	int XML_INITIALIZER = 62;
+	int XML_INITIALIZER = 63;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3201,7 +3247,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getAttributeIdentifier()
 	 * @generated
 	 */
-	int ATTRIBUTE_IDENTIFIER = 63;
+	int ATTRIBUTE_IDENTIFIER = 64;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3274,7 +3320,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getQualifiedIdentifier()
 	 * @generated
 	 */
-	int QUALIFIED_IDENTIFIER = 65;
+	int QUALIFIED_IDENTIFIER = 66;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3329,7 +3375,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getIUnqualifiedSelector()
 	 * @generated
 	 */
-	int IUNQUALIFIED_SELECTOR = 66;
+	int IUNQUALIFIED_SELECTOR = 67;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3366,7 +3412,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getWildcardIdentifier()
 	 * @generated
 	 */
-	int WILDCARD_IDENTIFIER = 67;
+	int WILDCARD_IDENTIFIER = 68;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3403,7 +3449,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getIPropertySelector()
 	 * @generated
 	 */
-	int IPROPERTY_SELECTOR = 68;
+	int IPROPERTY_SELECTOR = 69;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3440,7 +3486,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getExpressionSelector()
 	 * @generated
 	 */
-	int EXPRESSION_SELECTOR = 69;
+	int EXPRESSION_SELECTOR = 70;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3486,7 +3532,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getXmlFragment()
 	 * @generated
 	 */
-	int XML_FRAGMENT = 70;
+	int XML_FRAGMENT = 71;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3523,7 +3569,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getXmlTextFragment()
 	 * @generated
 	 */
-	int XML_TEXT_FRAGMENT = 71;
+	int XML_TEXT_FRAGMENT = 72;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3569,7 +3615,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getXmlExpressionFragment()
 	 * @generated
 	 */
-	int XML_EXPRESSION_FRAGMENT = 72;
+	int XML_EXPRESSION_FRAGMENT = 73;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3615,7 +3661,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getDescendantAccessExpression()
 	 * @generated
 	 */
-	int DESCENDANT_ACCESS_EXPRESSION = 73;
+	int DESCENDANT_ACCESS_EXPRESSION = 74;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3670,7 +3716,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getFilterExpression()
 	 * @generated
 	 */
-	int FILTER_EXPRESSION = 74;
+	int FILTER_EXPRESSION = 75;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3725,7 +3771,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getDefaultXmlNamespaceStatement()
 	 * @generated
 	 */
-	int DEFAULT_XML_NAMESPACE_STATEMENT = 75;
+	int DEFAULT_XML_NAMESPACE_STATEMENT = 76;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3771,7 +3817,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getForEachInStatement()
 	 * @generated
 	 */
-	int FOR_EACH_IN_STATEMENT = 76;
+	int FOR_EACH_IN_STATEMENT = 77;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3835,7 +3881,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getArrowFunction()
 	 * @generated
 	 */
-	int ARROW_FUNCTION = 77;
+	int ARROW_FUNCTION = 78;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3908,7 +3954,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTemplateStringLiteral()
 	 * @generated
 	 */
-	int TEMPLATE_STRING_LITERAL = 78;
+	int TEMPLATE_STRING_LITERAL = 79;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -3963,7 +4009,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTemplateStringExpression()
 	 * @generated
 	 */
-	int TEMPLATE_STRING_EXPRESSION = 79;
+	int TEMPLATE_STRING_EXPRESSION = 80;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -4009,7 +4055,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getTagFunction()
 	 * @generated
 	 */
-	int TAG_FUNCTION = 80;
+	int TAG_FUNCTION = 81;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -4064,7 +4110,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getForOfStatement()
 	 * @generated
 	 */
-	int FOR_OF_STATEMENT = 81;
+	int FOR_OF_STATEMENT = 82;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -4128,7 +4174,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getLetStatement()
 	 * @generated
 	 */
-	int LET_STATEMENT = 82;
+	int LET_STATEMENT = 83;
 
 	/**
 	 * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -4174,7 +4220,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 83;
+	int UNARY_OPERATOR = 84;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -4184,7 +4230,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 84;
+	int BINARY_OPERATOR = 85;
 
 
 	/**
@@ -4530,6 +4576,16 @@ public interface DomPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getSimplePropertyAssignment_Initializer();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.PropertyShorthand <em>Property Shorthand</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Property Shorthand</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.PropertyShorthand
+	 * @generated
+	 */
+	EClass getPropertyShorthand();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.AccessorAssignment <em>Accessor Assignment</em>}'.
@@ -6493,6 +6549,16 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EReference SIMPLE_PROPERTY_ASSIGNMENT__INITIALIZER = eINSTANCE.getSimplePropertyAssignment_Initializer();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.PropertyShorthandImpl <em>Property Shorthand</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.PropertyShorthandImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getPropertyShorthand()
+		 * @generated
+		 */
+		EClass PROPERTY_SHORTHAND = eINSTANCE.getPropertyShorthand();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.AccessorAssignmentImpl <em>Accessor Assignment</em>}' class.

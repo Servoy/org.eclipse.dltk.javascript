@@ -257,6 +257,14 @@ public class DomSwitch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case DomPackage.PROPERTY_SHORTHAND: {
+				PropertyShorthand propertyShorthand = (PropertyShorthand)theEObject;
+				T result = casePropertyShorthand(propertyShorthand);
+				if (result == null) result = casePropertyAssignment(propertyShorthand);
+				if (result == null) result = caseNode(propertyShorthand);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case DomPackage.ACCESSOR_ASSIGNMENT: {
 				AccessorAssignment accessorAssignment = (AccessorAssignment)theEObject;
 				T result = caseAccessorAssignment(accessorAssignment);
@@ -1110,6 +1118,21 @@ public class DomSwitch<T> {
 	 * @generated
 	 */
 	public T caseSimplePropertyAssignment(SimplePropertyAssignment object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Property Shorthand</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Property Shorthand</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T casePropertyShorthand(PropertyShorthand object) {
 		return null;
 	}
 

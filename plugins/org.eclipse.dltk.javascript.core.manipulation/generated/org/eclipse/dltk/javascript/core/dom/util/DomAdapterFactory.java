@@ -148,6 +148,10 @@ public class DomAdapterFactory extends AdapterFactoryImpl {
 				return createSimplePropertyAssignmentAdapter();
 			}
 			@Override
+			public Adapter casePropertyShorthand(PropertyShorthand object) {
+				return createPropertyShorthandAdapter();
+			}
+			@Override
 			public Adapter caseAccessorAssignment(AccessorAssignment object) {
 				return createAccessorAssignmentAdapter();
 			}
@@ -686,6 +690,20 @@ public class DomAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createSimplePropertyAssignmentAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.dltk.javascript.core.dom.PropertyShorthand <em>Property Shorthand</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.dltk.javascript.core.dom.PropertyShorthand
+	 * @generated
+	 */
+	public Adapter createPropertyShorthandAdapter() {
 		return null;
 	}
 

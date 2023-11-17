@@ -65,6 +65,7 @@ import org.eclipse.dltk.javascript.core.dom.ParenthesizedExpression;
 import org.eclipse.dltk.javascript.core.dom.PropertyAccessExpression;
 import org.eclipse.dltk.javascript.core.dom.PropertyAssignment;
 import org.eclipse.dltk.javascript.core.dom.PropertyIdentifier;
+import org.eclipse.dltk.javascript.core.dom.PropertyShorthand;
 import org.eclipse.dltk.javascript.core.dom.QualifiedIdentifier;
 import org.eclipse.dltk.javascript.core.dom.RegularExpressionLiteral;
 import org.eclipse.dltk.javascript.core.dom.ReturnStatement;
@@ -239,6 +240,13 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	private EClass simplePropertyAssignmentEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass propertyShorthandEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1091,6 +1099,16 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	@Override
 	public EReference getSimplePropertyAssignment_Initializer() {
 		return (EReference)simplePropertyAssignmentEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getPropertyShorthand() {
+		return propertyShorthandEClass;
 	}
 
 	/**
@@ -2724,6 +2742,8 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		simplePropertyAssignmentEClass = createEClass(SIMPLE_PROPERTY_ASSIGNMENT);
 		createEReference(simplePropertyAssignmentEClass, SIMPLE_PROPERTY_ASSIGNMENT__INITIALIZER);
 
+		propertyShorthandEClass = createEClass(PROPERTY_SHORTHAND);
+
 		accessorAssignmentEClass = createEClass(ACCESSOR_ASSIGNMENT);
 		createEReference(accessorAssignmentEClass, ACCESSOR_ASSIGNMENT__BODY);
 
@@ -2999,6 +3019,7 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		propertyAssignmentEClass.getESuperTypes().add(this.getNode());
 		iPropertyNameEClass.getESuperTypes().add(this.getNode());
 		simplePropertyAssignmentEClass.getESuperTypes().add(this.getPropertyAssignment());
+		propertyShorthandEClass.getESuperTypes().add(this.getPropertyAssignment());
 		accessorAssignmentEClass.getESuperTypes().add(this.getPropertyAssignment());
 		getterAssignmentEClass.getESuperTypes().add(this.getAccessorAssignment());
 		setterAssignmentEClass.getESuperTypes().add(this.getAccessorAssignment());
@@ -3122,6 +3143,8 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 
 		initEClass(simplePropertyAssignmentEClass, SimplePropertyAssignment.class, "SimplePropertyAssignment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSimplePropertyAssignment_Initializer(), this.getExpression(), null, "initializer", null, 1, 1, SimplePropertyAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(propertyShorthandEClass, PropertyShorthand.class, "PropertyShorthand", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(accessorAssignmentEClass, AccessorAssignment.class, "AccessorAssignment", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getAccessorAssignment_Body(), this.getBlockStatement(), null, "body", null, 1, 1, AccessorAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

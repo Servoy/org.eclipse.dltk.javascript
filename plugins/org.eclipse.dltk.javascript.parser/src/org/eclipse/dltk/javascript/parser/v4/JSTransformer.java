@@ -1848,7 +1848,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		initializer.setCommas(commas);
 
 		Token LC = ctx.OpenBrace().getSymbol();
-		Token RC = ctx.CloseBrace().getSymbol();
+		Token RC = ctx.CloseBrace() != null ? ctx.CloseBrace().getSymbol() : ctx.getStop();
 		initializer.setLC(getTokenOffset(LC.getTokenIndex()));
 		initializer.setRC(getTokenOffset(RC.getTokenIndex()));
 

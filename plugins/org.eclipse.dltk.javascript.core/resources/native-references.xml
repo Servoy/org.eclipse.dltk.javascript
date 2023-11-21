@@ -65,6 +65,12 @@
 			<itemType xsi:type="ref:SimpleType" target="String"/>
 		</type>
     </members>
+    <members xsi:type="ref:Method" name="getOwnPropertySymbols" directType="Object" description="Returns an array of all symbol properties found directly upon a given object" static="true">
+        <parameters name="object" directType="Object"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:SimpleType" target="Object"/>
+        </type>
+    </members>
     <members xsi:type="ref:Method" name="create" directType="Object" description="Creates a new object with the specified prototype object and properties." static="true">
     	<parameters name="object" directType="Object"/>
     	<parameters name="properties" directType="Object" kind="OPTIONAL"/>

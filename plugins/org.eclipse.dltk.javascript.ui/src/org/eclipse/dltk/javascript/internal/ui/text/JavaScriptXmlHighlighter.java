@@ -20,7 +20,10 @@ import org.eclipse.dltk.javascript.ast.StringLiteral;
 import org.eclipse.dltk.javascript.ast.XmlFragment;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
+import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
 import org.eclipse.dltk.ui.editor.highlighting.AbortSemanticHighlightingException;
@@ -82,6 +85,11 @@ public class JavaScriptXmlHighlighter extends AbstractJavaScriptHighlighter
 				}
 			} else if (node instanceof ForEachInStatement) {
 				handleForEachIn((ForEachInStatement) node);
+			} else if (node instanceof TemplateStringLiteral) {
+				handleTemplateStringLiteral((TemplateStringLiteral) node);
+			}
+			else if (node instanceof ArrowFunctionStatement) {
+				handleArrowFunction((ArrowFunctionStatement) node);
 			}
 			return true;
 		}
@@ -129,6 +137,39 @@ public class JavaScriptXmlHighlighter extends AbstractJavaScriptHighlighter
 			final Keyword keyword = forEach.getEachKeyword();
 			requestor.addPosition(keyword.sourceStart(), keyword.sourceEnd(),
 					HL_KEYWORD);
+		}
+
+		private void handleTemplateStringLiteral(TemplateStringLiteral node) {
+			if (node.getTemplateExpressions().isEmpty()) {
+				requestor.addPosition(node.sourceStart(), node.sourceEnd(),
+						HL_REGEXP);
+			} else {
+				int start = node.sourceStart();
+				for (TemplateStringExpression expr : node
+						.getTemplateExpressions()) {
+					if (expr.getTemplateStringStart() != start) {
+						requestor.addPosition(start,
+								expr.getTemplateStringStart() - 1,
+								HL_REGEXP);
+					}
+					requestor.addPosition(expr.getTemplateStringStart(),
+							expr.getTemplateStringStart() + 2,
+							HL_KEYWORD);
+					if (expr.getTemplateCloseBrace() > 1) {
+						requestor.addPosition(expr.getTemplateCloseBrace() - 1,
+							expr.getTemplateCloseBrace(),
+							HL_KEYWORD);
+					}
+					start = expr.getTemplateCloseBrace();
+				}
+				requestor.addPosition(start, node.sourceEnd(),
+						HL_REGEXP);
+			}
+		}
+
+		private void handleArrowFunction(ArrowFunctionStatement node) {
+			requestor.addPosition(node.getArrow(), node.getArrow() + 2,
+					HL_REGEXP);
 		}
 
 		private void handleRegExp(RegExpLiteral regExp) {

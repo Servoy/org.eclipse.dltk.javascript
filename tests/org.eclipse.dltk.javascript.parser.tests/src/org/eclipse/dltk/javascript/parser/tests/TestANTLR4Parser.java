@@ -828,6 +828,51 @@ public class TestANTLR4Parser {
 	}
 	
 	@Test
+	public void testObjectInitializerTrailingComma() {
+		String source = "o = { a: 'foo',\n"
+				+ " b: 42, };";
+		
+		org.eclipse.dltk.javascript.parser.JavaScriptParser jsParser =  new org.eclipse.dltk.javascript.parser.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		Script script = jsParser.parse(source, new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		});
+		
+		org.eclipse.dltk.javascript.parser.v4.JavaScriptParser jsParserv4 =  new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser();
+		final List<IProblem> problemsv4 = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problemsv4.add(problem);
+			}
+		};
+		Script scriptv4 = jsParserv4.parse(source, reporter);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ObjectInitializer init = (ObjectInitializer) assignment.getRightExpression();
+		ObjectInitializer initv4 = (ObjectInitializer) assignmentv4.getRightExpression();
+		assertEquals(init.getLC(), initv4.getLC());
+		assertEquals(init.getRC(), initv4.getRC());
+		assertEquals(2, init.getCommas().size());
+		assertEquals(init.getCommas().size(), initv4.getCommas().size());
+		assertEquals(init.getCommas().get(0), initv4.getCommas().get(0));
+		assertEquals(init.getCommas().get(1), initv4.getCommas().get(1));
+		assertEquals(init.isMultiline(), initv4.isMultiline());
+		
+		assertEquals(1, problems.size());
+		assertEquals(problems.size(), problemsv4.size());
+		assertEquals("trailing comma is not legal in ECMA-262 object initializers", problemsv4.get(0).getMessage() );
+	}	
+	
+	
+	@Test
 	public void testEmptyExpression() {
 		//empty element should be ignored if comma is on the last position
 		String source = "var arr = [1, , 3 ,];";

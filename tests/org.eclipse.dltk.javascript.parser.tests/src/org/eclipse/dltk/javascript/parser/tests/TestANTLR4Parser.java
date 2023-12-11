@@ -1258,7 +1258,7 @@ public class TestANTLR4Parser {
 	
 	@Test
 	public void testPropertyShorthand() {
-		String source ="obj = { test }";
+		String source ="obj = { test, property: value, property_shorthand }";
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
 		
@@ -1266,9 +1266,15 @@ public class TestANTLR4Parser {
 		assertNotNull(statement);
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		ObjectInitializer initv4 = (ObjectInitializer) assignmentv4.getRightExpression();
-		assertEquals(1, initv4.getInitializers().size());
+		assertEquals(3, initv4.getInitializers().size());
 		assertTrue(initv4.getInitializers().get(0) instanceof PropertyShorthand);
-		PropertyShorthand property = (PropertyShorthand) initv4.getInitializers().get(0);
-		assertEquals("test", property.getExpression().toString());
+		PropertyShorthand property1 = (PropertyShorthand) initv4.getInitializers().get(0);
+		assertEquals("test", property1.getExpression().toString());
+		assertTrue(initv4.getInitializers().get(1) instanceof PropertyInitializer);
+		PropertyInitializer property2 = (PropertyInitializer) initv4.getInitializers().get(1);
+		assertEquals("property", property2.getName().toString());
+		assertEquals("value", property2.getValue().toString());
+		PropertyShorthand property3 = (PropertyShorthand) initv4.getInitializers().get(2);
+		assertEquals("property_shorthand", property3.getExpression().toString());
 	}
 }

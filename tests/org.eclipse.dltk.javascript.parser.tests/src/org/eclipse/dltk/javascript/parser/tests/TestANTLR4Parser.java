@@ -526,7 +526,17 @@ public class TestANTLR4Parser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));		
+		assertTrue(equalsJSNode(script, scriptv4));
+		TryStatement statement = (TryStatement)((StatementBlock)( script.getStatements().get(0))).getStatements().get(0);
+		TryStatement statementv4 = (TryStatement)((StatementBlock)( scriptv4.getStatements().get(0))).getStatements().get(0);
+		assertEquals(1, statementv4.getCatches().size()); //only 1 catch allowed in v4
+		assertEquals(statement.getCatches().size(), statementv4.getCatches().size());
+		CatchClause catchClause = statement.getCatches().get(0);
+		CatchClause catchClausev4 = statementv4.getCatches().get(0);
+		assertTrue(equalsJSNode(catchClause, catchClausev4));
+		assertEquals(catchClause.getLP(), catchClausev4.getLP());
+		assertEquals(catchClause.getRP(), catchClausev4.getRP());
+		assertTrue(equalsJSNode(statement.getFinally(), statementv4.getFinally()));
 	}
 	
 	@Test

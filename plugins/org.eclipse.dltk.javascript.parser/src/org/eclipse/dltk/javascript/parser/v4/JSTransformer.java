@@ -1583,7 +1583,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 //					node.getChild(statementIndex++), catchClause));
 //		}
 
-		catchClause.setRP(getTokenOffset(ctx.getStop().getTokenIndex()));
+		if (ctx.CloseParen() != null) { 
+			catchClause.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
+		}
 		if (children.peek() instanceof Statement) {
 			catchClause.setStatement(popChildren(Statement.class, ctx));
 		}

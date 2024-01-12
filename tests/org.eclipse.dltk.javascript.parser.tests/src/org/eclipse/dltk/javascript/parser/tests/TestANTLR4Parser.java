@@ -153,6 +153,9 @@ public class TestANTLR4Parser {
 		StatementBlock statementv4 = (StatementBlock) scriptv4.getStatements().get(0);
 		assertEquals(statement.getLC(), statementv4.getLC());
 		assertEquals(statement.getRC(), statementv4.getRC());
+		for (int i = 0; i < statement.getStatements().size(); i++) {
+			assertTrue(equalsJSNode(statement.getStatements().get(i), statementv4.getStatements().get(i)));
+		}
 	}
 	
 	@Test
@@ -565,6 +568,11 @@ public class TestANTLR4Parser {
 		assertEquals(statement.getRP(), statementv4.getRP());
 		assertEquals(statement.getLC(), statementv4.getLC());
 		assertEquals(statement.getRC(), statementv4.getRC());
+		assertEquals(statement.getCaseClauses().size(), statementv4.getCaseClauses().size());
+		for (int i = 0; i < statement.getCaseClauses().size(); i++) {
+			assertTrue(equalsJSNode(statement.getCaseClauses().get(i), statementv4.getCaseClauses().get(i)));
+			assertEquals(statement.getCaseClauses().get(i).getColonPosition(), statementv4.getCaseClauses().get(i).getColonPosition());
+		}
 	}
 	
 	@Test

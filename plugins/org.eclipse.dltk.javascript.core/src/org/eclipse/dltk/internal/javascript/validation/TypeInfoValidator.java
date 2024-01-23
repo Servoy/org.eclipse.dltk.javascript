@@ -2194,6 +2194,20 @@ public class TypeInfoValidator implements IBuildParticipant,
 						.getParent();
 				return bo.isLogicalAnd() || bo.isLogicalOr();
 			}
+			IfStatement ifStatement = expression.getAncestor(IfStatement.class);
+			if (ifStatement != null
+					&& ifStatement.getCondition() instanceof BinaryOperation) {
+				final BinaryOperation bo = (BinaryOperation) ifStatement
+						.getCondition();
+				if (bo.isLogicalAnd() || bo.isLogicalOr()) {
+					return (bo.getLeftExpression() != null && bo
+							.getLeftExpression()
+						.toString().equals(expression.toString()))
+						|| (bo.getRightExpression() != null
+								&& bo.getRightExpression().toString()
+										.equals(expression.toString()));
+				}
+			}
 			return false;
 		}
 

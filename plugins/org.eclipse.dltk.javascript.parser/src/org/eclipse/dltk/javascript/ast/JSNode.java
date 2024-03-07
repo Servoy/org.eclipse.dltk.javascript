@@ -68,13 +68,14 @@ public abstract class JSNode extends ASTNode {
 	@SuppressWarnings("unchecked")
 	public <T extends JSNode> T getAncestor(Class<T> clazz) {
 		JSNode current = this;
-		for (;;) {
+		while (current != null) {
 			if (clazz.isInstance(current)) {
 				return (T) current;
 			} else {
 				current = current.parent;
 			}
 		}
+		return null;
 	}
 
 	public Comment getDocumentation() {

@@ -941,7 +941,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				setIRType(itemReference, itemType, true);
 			} else if (ITypeNames.XMLLIST.equals(type.getName())) {
 				itemReference.setDeclaredType(E4XTypes.XML);
+			} else {
+				itemReference.setDeclaredType(RTypes.any());
 			}
+		} else {
+			itemReference.setDeclaredType(RTypes.any());
 		}
 	}
 

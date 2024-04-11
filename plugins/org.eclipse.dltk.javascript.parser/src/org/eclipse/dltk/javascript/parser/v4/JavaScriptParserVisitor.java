@@ -822,6 +822,13 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitObjectLiteral(JSParser.ObjectLiteralContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code NamedFunction}
+	 * labeled alternative in {@link JSParser#anonymousFunction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNamedFunction(JSParser.NamedFunctionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code AnonymousFunctionDecl}
 	 * labeled alternative in {@link JSParser#anonymousFunction}.
 	 * @param ctx the parse tree

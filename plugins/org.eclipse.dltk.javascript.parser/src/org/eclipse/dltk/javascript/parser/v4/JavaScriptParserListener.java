@@ -1379,6 +1379,18 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitObjectLiteral(JSParser.ObjectLiteralContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code NamedFunction}
+	 * labeled alternative in {@link JSParser#anonymousFunction}.
+	 * @param ctx the parse tree
+	 */
+	void enterNamedFunction(JSParser.NamedFunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code NamedFunction}
+	 * labeled alternative in {@link JSParser#anonymousFunction}.
+	 * @param ctx the parse tree
+	 */
+	void exitNamedFunction(JSParser.NamedFunctionContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code AnonymousFunctionDecl}
 	 * labeled alternative in {@link JSParser#anonymousFunction}.
 	 * @param ctx the parse tree

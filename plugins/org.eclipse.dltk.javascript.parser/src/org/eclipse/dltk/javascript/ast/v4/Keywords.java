@@ -95,6 +95,7 @@ public class Keywords {
 	public static final String NAMESPACE = "namespace";
 
 	public static final String YIELD = "yield";
+	public static final String YIELD_STAR = "yield*";
 
 	//
 	//
@@ -159,6 +160,7 @@ public class Keywords {
 	public static final String SHLASS = "<<=";
 	public static final String SHRASS = ">>=";
 	public static final String SHUASS = ">>>=";
+	public static final String NULLISH_COALESCING_ASSIGN = "??=";
 
 	//
 	//
@@ -298,6 +300,7 @@ public class Keywords {
 		map.put(Integer.valueOf(JSParser.Typeof), Keywords.TYPEOF);
 		map.put(Integer.valueOf(JSParser.In), Keywords.IN);
 		map.put(Integer.valueOf(JSParser.Of), Keywords.OF);
+		map.put(Integer.valueOf(JSParser.NullishCoalescingAssign), Keywords.NULLISH_COALESCING_ASSIGN);
 	}
 
 	public static String fromToken(int token) {

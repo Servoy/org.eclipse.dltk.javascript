@@ -494,6 +494,10 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void enterStatement(StatementContext ctx) {
 		if (!JSNodeCreator.skipCreate(ctx)) {
 			parents.push(JSNodeCreator.create(ctx, getParent()));
+			if (parents.peek() instanceof ErrorExpression) {
+				//make sure the error expression has the end position
+				parents.peek().setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+			}
 			if (getParent() instanceof AbstractForStatement) {
 				blockScopes.push(new SymbolTable((AbstractForStatement)getParent()));
 			}
@@ -1134,7 +1138,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		FunctionStatement fn = getParent(FunctionStatement.class, ctx);
 		fn.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		fn.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
-		setupFunction(ctx.Function_(), ctx.formalParameterList(), ctx.identifier(), ctx);
+		setupFunction(ctx.Function_(), ctx.formalParameterList(), null, ctx);
 	}
 	
 	@Override

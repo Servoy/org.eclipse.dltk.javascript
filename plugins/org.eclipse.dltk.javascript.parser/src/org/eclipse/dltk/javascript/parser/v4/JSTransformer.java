@@ -143,6 +143,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.LiteralContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LogicalAndExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LogicalOrExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberDotExpressionContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberIndexExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.MultiplicativeExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.NewExpressionContext;
@@ -1432,6 +1433,39 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
+	public void enterMemberExpression(MemberExpressionContext ctx) {
+		if (ctx.Dot() != null) {
+			parents.push(new PropertyExpression(getParent()));
+		}
+	}
+
+	@Override
+	public void exitMemberExpression(MemberExpressionContext ctx) {
+		if (ctx.Dot() == null) return;
+		PropertyExpression property = popParents(PropertyExpression.class, ctx);
+		locateDocumentation(property, ctx.getStart());
+		int dotPosition = getTokenOffset(ctx.Dot().getSymbol().getTokenIndex());
+		property.setDotPosition(dotPosition);
+		if (ctx.identifier() != null) {
+			property.setProperty(popChildren(Expression.class, ctx));
+		} else {
+			final ErrorExpression error = new ErrorExpression(property,
+					Util.EMPTY_STRING);
+			error.setStart(dotPosition + 1);
+			error.setEnd(dotPosition + 1);
+			property.setProperty(error);
+		}
+		property.setObject(popChildren(Expression.class, ctx));
+
+		assert property.getObject().sourceStart() >= 0;
+		assert property.getProperty().sourceEnd() > 0;
+
+		property.setStart(property.getObject().sourceStart());
+		property.setEnd(property.getProperty().sourceEnd());
+		children.add(property);
+	}
+
+	@Override
 	public void exitNewExpression(NewExpressionContext ctx) {
 		Expression callExpression = null;
 		if (ctx.singleExpression() != null) {
@@ -1443,7 +1477,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 				callExpression = (Expression) children.pop();
 			}
 		}
-		if (callExpression == null && ctx.identifier() != null) { 
+		if (callExpression == null && ctx.memberExpression() != null) { 
 			callExpression = setupCallExpression(ctx.arguments(), popParents(CallExpression.class, ctx), ctx);
 		}
 		NewExpression expression = getParent(NewExpression.class, ctx);

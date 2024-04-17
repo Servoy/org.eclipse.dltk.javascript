@@ -785,6 +785,16 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitExpressionSequence(JSParser.ExpressionSequenceContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link JSParser#memberExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMemberExpression(JSParser.MemberExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSParser#memberExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMemberExpression(JSParser.MemberExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code TemplateStringExpression}
 	 * labeled alternative in {@link JSParser#singleExpression}.
 	 * @param ctx the parse tree

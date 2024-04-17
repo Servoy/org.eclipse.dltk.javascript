@@ -475,6 +475,12 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpressionSequence(JSParser.ExpressionSequenceContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link JSParser#memberExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMemberExpression(JSParser.MemberExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code TemplateStringExpression}
 	 * labeled alternative in {@link JSParser#singleExpression}.
 	 * @param ctx the parse tree

@@ -548,11 +548,25 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			}
 		}
 		else {
-		if (ctx instanceof SingleExpressionContext) {
-			if (!JSNodeCreator.skipCreate(ctx)) {
-				children.push(parents.pop());
+			if (transformers.length != 0) {
+				JSNode node = getParent();
+				if (node != null) {
+					final JSNode parent = node.getParent();
+					for (NodeTransformer transformer : transformers) {
+						final ASTNode transformed = transformer.transform(node,
+								parent);
+						if (transformed != null && transformed != node) {
+							parents.pop();
+							parents.push((JSNode) transformed);
+						}
+					}
+				}
 			}
-		}
+			if (ctx instanceof SingleExpressionContext) {
+				if (!JSNodeCreator.skipCreate(ctx)) {
+					children.push(parents.pop());
+				}
+			}
 		}
 	}
 

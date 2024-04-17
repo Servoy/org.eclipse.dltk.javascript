@@ -29,13 +29,13 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.builder.ISourceLineTracker;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.Script;
+import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ProgramContext;
 import org.eclipse.dltk.javascript.parser.v4.internal.JSCommonTokenStream;
 import org.eclipse.dltk.utils.TextUtils;
-
-import org.eclipse.dltk.javascript.parser.JSProblem;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
+import org.eclipse.dltk.javascript.parser.NodeTransformer;
 
 public class JavaScriptParser implements ISourceParser {
 
@@ -99,9 +99,6 @@ public class JavaScriptParser implements ISourceParser {
 					((JSTokenStream)parser.getTokenStream()).getTokens(), parser.getNumberOfSyntaxErrors() > 0);
 			jsTransformerListener.setReporter(reporter);
 			return (Expression) jsTransformerListener.transform(root);
-		} catch (ClassCastException e) {
-			//ignore 
-			return null;
 		} catch (Exception e) {
 			if (DLTKCore.DEBUG)
 				e.printStackTrace();
@@ -134,16 +131,16 @@ public class JavaScriptParser implements ISourceParser {
 		try {
 			final JSParser parser = createTreeParser(stream, reporter);
 			final ProgramContext root = parser.program();
-			JSTransformer jsTransformerListener = new JSTransformer(((JSTokenStream)parser.getTokenStream()).getTokens());
+			final NodeTransformer[] transformers = NodeTransformerManager
+					.createTransformers(element, reporter);
+			JSTransformer jsTransformerListener = new JSTransformer(transformers,
+					stream.getTokens(), parser.getNumberOfSyntaxErrors() > 0);
 			jsTransformerListener.setReporter(reporter);
 			final Script script = jsTransformerListener.transformScript(root);
 			if (element != null && element instanceof ISourceModule) {
 				script.setAttribute(JavaScriptParserUtil.ATTR_MODULE, element);
 			}
 			return script;
-		}
-		catch (ClassCastException|EmptyStackException e) {
-			return new Script();
 		}
 		catch (Exception e) {
 			JavaScriptParserPlugin.error(e);

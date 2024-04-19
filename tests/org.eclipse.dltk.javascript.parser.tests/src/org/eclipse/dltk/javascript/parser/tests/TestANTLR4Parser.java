@@ -1340,4 +1340,32 @@ public class TestANTLR4Parser {
 		PropertyShorthand property3 = (PropertyShorthand) initv4.getInitializers().get(2);
 		assertEquals("property_shorthand", property3.getExpression().toString());
 	}
+	
+	@Test
+	public void testNewPropertyExression_and_Call() {
+		String source =  "new java.lang.String(string).getBytes()";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+		
+		CallExpression callexpression = (CallExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		CallExpression callexpressionv4 = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(callexpression.getLP(), callexpressionv4.getLP());
+		assertEquals(callexpression.getRP(), callexpressionv4.getRP());
+		assertEquals(callexpression.getCommas().size(), callexpressionv4.getCommas().size());
+		assertEquals(callexpressionv4.getCommas().size(),0);
+		PropertyExpression expression = (PropertyExpression) callexpression.getExpression();
+		PropertyExpression expressionv4 = (PropertyExpression) callexpressionv4.getExpression();
+		NewExpression object = (NewExpression) expression.getObject();
+		NewExpression objectv4 = (NewExpression) expressionv4.getObject();
+		assertTrue(equalsJSNode(object, objectv4));
+		CallExpression call = (CallExpression)object.getObjectClass();
+		CallExpression callv4 = (CallExpression)objectv4.getObjectClass();
+		PropertyExpression id = (PropertyExpression) call.getExpression();
+		PropertyExpression idv4 = (PropertyExpression) callv4.getExpression();
+		assertTrue(equalsJSNode(id, idv4));
+	}
 }

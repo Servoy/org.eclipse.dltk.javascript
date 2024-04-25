@@ -497,7 +497,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			parents.push(JSNodeCreator.create(ctx, getParent()));
 			if (parents.peek() instanceof ErrorExpression) {
 				//make sure the error expression has the end position
-				parents.peek().setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+				if (ctx.getStop() != null) parents.peek().setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
 			}
 			if (getParent() instanceof AbstractForStatement) {
 				blockScopes.push(new SymbolTable((AbstractForStatement)getParent()));
@@ -1927,7 +1927,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		if (ctx.singleExpression() != null) {
 			value = popChildren(Expression.class, ctx);
 		}
-		//TODO FunctionProperty, PropertyShorthand
+		//TODO FunctionProperty
 		else {
 			value = new ErrorExpression(initializer, Util.EMPTY_STRING);
 			value.setStart(ctx.Colon() != null ? initializer.getColon() : ctx.getStart().getTokenIndex());
@@ -1938,7 +1938,10 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		initializer.setStart(initializer.getName().sourceStart());
 		initializer.setEnd(value.sourceEnd());
 		
-		((ObjectInitializer)getParent()).addInitializer(initializer);
+		ObjectInitializer parent = checkedPeek(ObjectInitializer.class, ctx.getParent(), parents);
+		if (parent != null) {
+			parent.addInitializer(initializer);
+		}
 	}
 	
 	@Override
@@ -1962,7 +1965,10 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		initializer.setStart(initializer.getExpression().sourceStart());
 		initializer.setEnd(value.sourceEnd());
 		
-		((ObjectInitializer)getParent()).addInitializer(initializer);
+		ObjectInitializer parent = checkedPeek(ObjectInitializer.class, ctx.getParent(), parents);
+		if (parent != null) {
+			parent.addInitializer(initializer);
+		}
 	}
 
 	@Override
@@ -1988,7 +1994,10 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 		method.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));		
-		((ObjectInitializer)getParent()).addInitializer(method);
+		ObjectInitializer parent = checkedPeek(ObjectInitializer.class, ctx.getParent(), parents);
+		if (parent != null) {
+			parent.addInitializer(method);
+		}
 	}
 
 	@Override
@@ -2015,7 +2024,10 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 		method.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		method.setEnd(getTokenOffset(ctx.getStop().getTokenIndex() + 1));		
-		((ObjectInitializer)getParent()).addInitializer(method);
+		ObjectInitializer parent = checkedPeek(ObjectInitializer.class, ctx.getParent(), parents);
+		if (parent != null) {
+			parent.addInitializer(method);
+		}
 	}
 
 	@Override
@@ -2087,7 +2099,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 					validateParameter(functionScope, argument);
 				}
 			}
-		} else if (children.peek() instanceof Identifier) {
+		} else if (checkedPeek(Identifier.class, ctx, children) != null) {
 			Argument argument = new Argument(fn);
 			argument.setIdentifier(popChildren(Identifier.class, ctx));
 			fn.addArgument(argument);

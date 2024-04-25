@@ -14,10 +14,16 @@ package org.eclipse.dltk.javascript.parser.v4;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.EmptyStackException;
 
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
+import org.antlr.v4.runtime.atn.DecisionInfo;
+import org.antlr.v4.runtime.atn.DecisionState;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.parser.ISourceParser;
@@ -30,12 +36,13 @@ import org.eclipse.dltk.core.builder.ISourceLineTracker;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
+import org.eclipse.dltk.javascript.parser.JSProblem;
+import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
+import org.eclipse.dltk.javascript.parser.NodeTransformer;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.ProgramContext;
 import org.eclipse.dltk.javascript.parser.v4.internal.JSCommonTokenStream;
 import org.eclipse.dltk.utils.TextUtils;
-import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
-import org.eclipse.dltk.javascript.parser.NodeTransformer;
 
 public class JavaScriptParser implements ISourceParser {
 
@@ -130,15 +137,80 @@ public class JavaScriptParser implements ISourceParser {
 			Reporter reporter) {
 		try {
 			final JSParser parser = createTreeParser(stream, reporter);
-			final ProgramContext root = parser.program();
-			final NodeTransformer[] transformers = NodeTransformerManager
-					.createTransformers(element, reporter);
-			JSTransformer jsTransformerListener = new JSTransformer(transformers,
-					stream.getTokens(), parser.getNumberOfSyntaxErrors() > 0);
-			jsTransformerListener.setReporter(reporter);
-			final Script script = jsTransformerListener.transformScript(root);
-			if (element != null && element instanceof ISourceModule) {
-				script.setAttribute(JavaScriptParserUtil.ATTR_MODULE, element);
+		
+			boolean enableProfiling = false;
+			parser.setProfile(enableProfiling);
+			//parser.getInterpreter().debug = true;
+			parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+			parser.removeErrorListeners();
+			parser.setErrorHandler(new BailErrorStrategy());
+			//parser.setBuildParseTree(false);
+			
+			long s = System.currentTimeMillis();
+			Script script = null;
+			try {
+				final ProgramContext root = parser.program();
+				//System.out.println(root.toStringTree(parser));
+				System.out.println("new parser "+ (System.currentTimeMillis() - s) + "ms");
+				
+				final NodeTransformer[] transformers = NodeTransformerManager
+						.createTransformers(element, reporter);
+				JSTransformer jsTransformerListener = new JSTransformer(transformers,
+						stream.getTokens(), parser.getNumberOfSyntaxErrors() > 0);
+				jsTransformerListener.setReporter(reporter);
+				
+				s = System.currentTimeMillis();
+				script = jsTransformerListener.transformScript(root);
+				long t = System.currentTimeMillis() - s;
+				System.out.println("new transformer "+ t + "ms");
+				
+			
+				if (element != null && element instanceof ISourceModule) {
+					script.setAttribute(JavaScriptParserUtil.ATTR_MODULE, element);
+				}
+			}
+			catch (ParseCancellationException ex) {
+				  // thrown by BailErrorStrategy
+				  ((CommonTokenStream) parser.getTokenStream()).reset();
+				  // rewind input stream
+				  parser.reset();
+				  // back to standard listeners/handlers
+				  parser.addErrorListener(new ParseErrorListener(reporter));
+				  parser.setErrorHandler(new DefaultErrorStrategy());
+				  // full now with full LL(*)
+				  parser.getInterpreter().setPredictionMode(PredictionMode.LL);
+				  final ProgramContext root = parser.program();
+					//System.out.println("new parser LL "+ (System.currentTimeMillis() - s) + "ms");
+					JSTransformer jsTransformerListener = new JSTransformer(((JSTokenStream)parser.getTokenStream()).getTokens());
+					jsTransformerListener.setReporter(reporter);
+					s = System.currentTimeMillis();
+					script = jsTransformerListener.transformScript(root);
+					//System.out.println("new transformer "+ (System.currentTimeMillis() - s) + "ms");//TODO rem
+					if (element != null && element instanceof ISourceModule) {
+						script.setAttribute(JavaScriptParserUtil.ATTR_MODULE, element);
+					}
+			}
+			if (enableProfiling) {
+		         System.out.print(String.format("%-" + 35 + "s", "rule"));
+		         System.out.print(String.format("%-" + 15 + "s", "time"));
+		         System.out.print(String.format("%-" + 15 + "s", "invocations"));
+		         System.out.print(String.format("%-" + 15 + "s", "lookahead"));
+		         System.out.print(String.format("%-" + 15 + "s", "lookahead(max)"));
+		         System.out.print(String.format("%-" + 15 + "s", "ambiguities"));
+		         System.out.println(String.format("%-" + 15 + "s", "errors"));
+			    for (DecisionInfo decisionInfo : parser.getParseInfo().getDecisionInfo()) {
+			    	DecisionState ds = parser.getATN().getDecisionState(decisionInfo.decision);
+			        String rule = parser.getRuleNames()[ds.ruleIndex]; 
+			        if (decisionInfo.timeInPrediction > 0) {
+			            System.out.print(String.format("%-" + 35 + "s", rule));
+			            System.out.print(String.format("%-" + 15 + "s", decisionInfo.timeInPrediction));
+			            System.out.print(String.format("%-" + 15 + "s", decisionInfo.invocations));
+			            System.out.print(String.format("%-" + 15 + "s", decisionInfo.SLL_TotalLook));
+			            System.out.print(String.format("%-" + 15 + "s", decisionInfo.SLL_MaxLook));
+			            System.out.print(String.format("%-" + 15 + "s", decisionInfo.ambiguities.size()));
+			            System.out.println(String.format("%-" + 15 + "s", decisionInfo.errors));
+			        }
+			    }
 			}
 			return script;
 		}

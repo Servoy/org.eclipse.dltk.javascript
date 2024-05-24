@@ -290,7 +290,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitBinaryOperation(BinaryOperation node) {
 		final IValueReference left = visit(node.getLeftExpression());
-		if (node.isAssignOperator()) {
+		if (node.isAssignment()) {
 			if (left != null) {
 				for (IModelBuilder modelBuilder : context.getModelBuilders()) {
 					if (modelBuilder instanceof IModelBuilderExtension) {

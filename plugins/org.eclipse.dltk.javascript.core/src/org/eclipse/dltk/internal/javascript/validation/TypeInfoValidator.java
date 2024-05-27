@@ -59,7 +59,9 @@ import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.CallExpression;
+import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.Expression;
+import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.Identifier;
@@ -1835,6 +1837,19 @@ public class TypeInfoValidator implements IBuildParticipant,
 				visit(expression);
 			}
 			return null;
+		}
+
+		@Override
+		public IValueReference visitForStatement(ForStatement node) {
+			IValueReference retValue = super.visitForStatement(node);
+			if (node.getInitial() instanceof ConstStatement
+					&& node.getStep() != null) {
+				reporter.reportProblem(PROTECT_CONST.problemId(),
+						PROTECT_CONST.problemMessage(),
+						node.getStep().sourceStart(),
+						node.getStep().sourceEnd());
+			}
+			return retValue;
 		}
 
 		private boolean isParentCallOrNew(Identifier node) {

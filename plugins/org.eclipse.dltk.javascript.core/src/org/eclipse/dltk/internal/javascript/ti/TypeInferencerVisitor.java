@@ -2125,6 +2125,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		final IValueCollection collection = ValueCollectionFactory
 				.createNestedScopeValueCollection(peekContext());
 		enterContext(collection);
+		handleDeclarations(node);
 		IValueReference itemReference = visit(node.getItem());
 		IValueReference iteratorReference = visit(node.getIterator());
 		if (itemReference instanceof IValueProvider) {

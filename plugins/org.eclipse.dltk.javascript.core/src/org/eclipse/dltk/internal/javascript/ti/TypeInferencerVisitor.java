@@ -143,6 +143,7 @@ import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
 import org.eclipse.dltk.javascript.typeinfo.RModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.ReferenceSource;
+import org.eclipse.dltk.javascript.typeinfo.TypeCompatibility;
 import org.eclipse.dltk.javascript.typeinfo.TypeMode;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.ArrayType;
@@ -913,20 +914,26 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		Set<IRType> typeSet = JavaScriptValidations.getTypes(iteratorReference);
 		if (!typeSet.isEmpty()) {
 			IRType type = null;
-			// try to get the best type, just take the first one, and if the the
-			// latter just have Any or None types skip those.
+			// try to get the best type, just take the first one, and look at
+			// the others but only take one of the others if they are a subtype
+			// (more specific type)
 			for (IRType irType : typeSet) {
 				if (type == null) {
 					type = irType;
-				} else if (irType instanceof IRArrayType) {
-					IRType itemType = ((IRArrayType) irType).getItemType();
-					if (itemType != RTypes.none() && itemType != RTypes.any()) {
-						type = irType;
-					}
-				} else if (irType instanceof IRMapType) {
-					IRType itemType = ((IRMapType) irType).getValueType();
-					if (itemType != RTypes.none() && itemType != RTypes.any()) {
-						type = irType;
+				} else if (type
+						.isAssignableFrom(irType) == TypeCompatibility.TRUE) {
+					if (irType instanceof IRArrayType) {
+						IRType itemType = ((IRArrayType) irType).getItemType();
+						if (itemType != RTypes.none()
+								&& itemType != RTypes.any()) {
+							type = irType;
+						}
+					} else if (irType instanceof IRMapType) {
+						IRType itemType = ((IRMapType) irType).getValueType();
+						if (itemType != RTypes.none()
+								&& itemType != RTypes.any()) {
+							type = irType;
+						}
 					}
 				}
 			}

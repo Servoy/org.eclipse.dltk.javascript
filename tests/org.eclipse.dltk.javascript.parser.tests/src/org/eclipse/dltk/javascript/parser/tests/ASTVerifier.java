@@ -656,6 +656,9 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 			if (argument.getCommaPosition() != -1) {
 				testChar(',', argument.getCommaPosition());
 			}
+			if (argument.getEllipsisPosition() != -1) {
+				testString("...", argument.getEllipsisPosition(), argument.getEllipsisPosition() + 3);
+			}
 		}
 		visit(node.getBody());
 
@@ -768,6 +771,10 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 			if (argument.getCommaPosition() != -1) {
 				testChar(',', argument.getCommaPosition());
 			}
+			if (argument.getEllipsisPosition() != -1) {
+				testString("...", argument.getEllipsisPosition(), argument.getEllipsisPosition() + 3);
+			}
+			
 		}
 		testString("=>", node.getArrow(), node.getArrow() + 2);
 		visit(node.getBody());

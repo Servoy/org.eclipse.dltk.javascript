@@ -1368,4 +1368,70 @@ public class TestANTLR4Parser {
 		PropertyExpression idv4 = (PropertyExpression) callv4.getExpression();
 		assertTrue(equalsJSNode(id, idv4));
 	}
+	
+	@Test
+	public void testRestArguments1() {
+		String source ="function myFn(...myArgs) { }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statementv4 = scriptv4.getStatements().get(0);
+		assertNotNull(statementv4);
+		assertTrue(statementv4.getChilds().get(0) instanceof FunctionStatement);
+		FunctionStatement fn = (FunctionStatement) statementv4.getChilds().get(0);
+		assertEquals("myFn", fn.getName().toString());
+		List<Argument> arguments = fn.getArguments();
+		assertEquals(1, arguments.size());
+		Argument lastArg = arguments.get(0);
+		assertEquals("myArgs", lastArg.getArgumentName());
+		assertEquals(14, lastArg.getEllipsisPosition());
+		assertEquals("...myArgs", lastArg.toString());
+	}
+	
+	@Test
+	public void testRestArguments2() {
+		String source ="function myFn(firstArg, secondArg, ...myArgs) { }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statementv4 = scriptv4.getStatements().get(0);
+		assertNotNull(statementv4);
+		assertTrue(statementv4.getChilds().get(0) instanceof FunctionStatement);
+		FunctionStatement fn = (FunctionStatement) statementv4.getChilds().get(0);
+		assertEquals("myFn", fn.getName().toString());
+		List<Argument> arguments = fn.getArguments();
+		assertEquals(3, arguments.size());
+		Argument firstArg = arguments.get(0);
+		assertEquals("firstArg", firstArg.getArgumentName());
+		assertEquals(-1, firstArg.getEllipsisPosition());
+		assertEquals(22, firstArg.getCommaPosition());
+		assertEquals("firstArg", firstArg.toString());
+		Argument secondArg = arguments.get(1);
+		assertEquals("secondArg", secondArg.getArgumentName());
+		assertEquals(-1, secondArg.getEllipsisPosition());
+		assertEquals(33, secondArg.getCommaPosition());
+		assertEquals("secondArg", secondArg.toString());
+		Argument lastArg = arguments.get(2);
+		assertEquals("myArgs", lastArg.getArgumentName());
+		assertEquals(35, lastArg.getEllipsisPosition());
+		assertEquals(-1, lastArg.getCommaPosition());
+		assertEquals("...myArgs", lastArg.toString());
+	}
+	
+	@Test
+	public void testRestArguments3() {
+		String source ="function myFn(...myArgs, firstArg) { }";
+		org.eclipse.dltk.javascript.parser.v4.JavaScriptParser jsParserv4 =  new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser();
+		final List<IProblem> problemsv4 = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problemsv4.add(problem);
+			}
+		};
+		Script scriptv4 = jsParserv4.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(2, problemsv4.size());
+		assertEquals("no viable alternative at input 'function myFn(...myArgs,'", problemsv4.get(0).getMessage());
+	}
 }

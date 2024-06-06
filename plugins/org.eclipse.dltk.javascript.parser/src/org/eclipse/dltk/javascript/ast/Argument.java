@@ -17,6 +17,7 @@ public class Argument extends JSNode implements ISourceable {
 
 	private Identifier identifier;
 	private int commaPosition = -1;
+	private int ellipsisPosition = -1;
 
 	public Argument(JSNode parent) {
 		super(parent);
@@ -52,9 +53,20 @@ public class Argument extends JSNode implements ISourceable {
 	public void setCommaPosition(int commaPosition) {
 		this.commaPosition = commaPosition;
 	}
+	
+	public void setEllipsisPosition(int ellipsisPosition) {
+		this.ellipsisPosition = ellipsisPosition;
+	}
+	
+	public int getEllipsisPosition() {
+		return ellipsisPosition;
+	}
 
 	@Override
 	public String toSourceString(String indentationString) {
+		if (ellipsisPosition != -1) {
+			return "..." + identifier.toSourceString(indentationString);
+		}
 		return identifier.toSourceString(indentationString);
 	}
 
@@ -64,5 +76,4 @@ public class Argument extends JSNode implements ISourceable {
 			identifier.traverse(visitor);
 		}
 	}
-
 }

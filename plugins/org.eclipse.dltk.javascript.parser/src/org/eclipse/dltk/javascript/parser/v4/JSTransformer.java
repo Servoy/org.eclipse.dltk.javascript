@@ -139,6 +139,7 @@ import org.eclipse.dltk.javascript.parser.v4.JSParser.IfStatementContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.InExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.InstanceofExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LabelledStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.LastFormalParameterArgContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LiteralContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LogicalAndExpressionContext;
 import org.eclipse.dltk.javascript.parser.v4.JSParser.LogicalOrExpressionContext;
@@ -497,7 +498,8 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			parents.push(JSNodeCreator.create(ctx, getParent()));
 			if (parents.peek() instanceof ErrorExpression) {
 				//make sure the error expression has the end position
-				if (ctx.getStop() != null) parents.peek().setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+				parents.peek().setEnd(getTokenOffset(ctx.getStop() != null ? ctx.getStop().getTokenIndex() + 1 : //
+					ctx.getStart().getTokenIndex() + 1 ));
 			}
 			if (getParent() instanceof AbstractForStatement) {
 				blockScopes.push(new SymbolTable((AbstractForStatement)getParent()));
@@ -539,7 +541,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		if (ctx.exception != null && !parents.isEmpty() && parents.peek() instanceof ErrorExpression) {
 			ErrorExpression error = popParents(ErrorExpression.class, ctx);
 			error.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
-			if (ctx.getStop() != null) error.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+			error.setEnd(getTokenOffset(ctx.getStop() != null ? ctx.getStop().getTokenIndex() : ctx.getStart().getTokenIndex() + 1));
 			if (ctx instanceof StatementContext) {
 				addStatement((StatementContext)ctx, error);
 			}
@@ -1188,6 +1190,11 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 					arguments.add(popChildren(Argument.class, ctx));
 				}
 			}
+			if (parameterList.lastFormalParameterArg() != null) {
+				if (children.peek() instanceof Argument) {
+					arguments.add(popChildren(Argument.class, ctx));
+				}
+			}
 		}
 		Collections.reverse(arguments);
 		final SymbolTable functionScope = blockScopes.pop(); //blockScope/scope should be the same in this case
@@ -1260,6 +1267,16 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		Argument arg = new Argument(getParent());
 		arg.setIdentifier(popChildren(Identifier.class, ctx));
 		//TODO impl set initializer (es6)
+		arg.setStart(ctx.getStart().getTokenIndex());
+		arg.setEnd(ctx.getStop().getTokenIndex());
+		children.add(arg);
+	}
+
+	@Override
+	public void exitLastFormalParameterArg(LastFormalParameterArgContext ctx) {
+		Argument arg = new Argument(getParent());
+		arg.setIdentifier(popChildren(Identifier.class, ctx));
+		arg.setEllipsisPosition(getTokenOffset(ctx.Ellipsis().getSymbol().getTokenIndex()));
 		arg.setStart(ctx.getStart().getTokenIndex());
 		arg.setEnd(ctx.getStop().getTokenIndex());
 		children.add(arg);

@@ -238,6 +238,9 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 			parameter.setName(argument.getIdentifier().getName());
 			parameter.setLocation(ReferenceLocation.create(source,
 					argument.sourceStart(), argument.sourceEnd()));
+			if (argument.getEllipsisPosition() > 0) {
+				parameter.setKind(ParameterKind.VARARGS);
+			}
 			getParameters().add(parameter);
 		}
 		final Comment documentation = JSDocSupport.getComment(node);
@@ -286,6 +289,9 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 			parameter.setName(argument.getIdentifier().getName());
 			parameter.setLocation(ReferenceLocation.create(source,
 					argument.sourceStart(), argument.sourceEnd()));
+			if (argument.getEllipsisPosition() > 0) {
+				parameter.setKind(ParameterKind.VARARGS);
+			}
 			getParameters().add(parameter);
 		}
 		final Comment documentation = JSDocSupport.getComment(node);

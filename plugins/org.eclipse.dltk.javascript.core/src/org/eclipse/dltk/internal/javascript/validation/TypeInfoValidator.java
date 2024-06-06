@@ -76,6 +76,7 @@ import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -785,6 +786,14 @@ public class TypeInfoValidator implements IBuildParticipant,
 			final IRMethod method = (IRMethod) reference.getAttribute(R_METHOD);
 			leaveFunctionScope(method, node);
 
+			return reference;
+		}
+
+		@Override
+		public IValueReference visitArrowFunction(ArrowFunctionStatement node) {
+			enterFunctionScope();
+			IValueReference reference = super.visitArrowFunction(node);
+			leaveFunctionScope(null, null);
 			return reference;
 		}
 

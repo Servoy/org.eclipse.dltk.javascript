@@ -134,6 +134,10 @@
     <members xsi:type="ref:Method" name="fromEntries" directType="Object" description="Transforms a list of key-value pairs into an object." static="true">
         <parameters name="entries" directType="Object"/>
     </members>
+    <members xsi:type="ref:Method" name="setPrototypeOf" description="Sets the prototype of a specified object to another object or null." static="true">
+        <parameters name="obj" directType="Object"/>
+        <parameters name="prototype" directType="Object"/>
+    </members>
   </ref:Type>
   <ref:TypeAlias source="regexp" target="RegExp"/>
   <ref:Type name="RegExp" kind="PREDEFINED" superType="Object">

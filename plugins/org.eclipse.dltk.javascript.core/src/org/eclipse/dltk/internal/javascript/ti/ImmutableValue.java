@@ -11,8 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
+import org.eclipse.dltk.javascript.typeinfo.IRSimpleType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
+import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
+import org.eclipse.dltk.javascript.typeinfo.MemberPredicates;
+import org.eclipse.dltk.javascript.typeinfo.RTypeMemberQuery;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 
 public class ImmutableValue implements IValue, IValue2 {
@@ -263,9 +267,20 @@ public class ImmutableValue implements IValue, IValue2 {
 				// so when using multiple levels of prototyping
 				// all inherited children will get included
 				|| this.getAttribute(IReferenceAttributes.THIS_VALUE) != null) {
-			if (getDeclaredType() instanceof IRLocalType) {
+			IRType type = getDeclaredType();
+			if (type instanceof IRLocalType) {
 				result.addAll(((IRLocalType) getDeclaredType())
 						.getDirectChildren());
+			} else {
+				RTypeMemberQuery typeQuery = new RTypeMemberQuery();
+				if (type instanceof IRSimpleType) {
+					final IRTypeDeclaration t = ((IRSimpleType) type)
+							.getDeclaration();
+					typeQuery.add(t, t.getSource().memberPredicateFor(type,
+							MemberPredicates.NON_STATIC));
+					typeQuery.ignoreDuplicates()
+							.forEach(member -> result.add(member.getName()));
+				}
 			}
 		}
 		if ((flags & NO_LOCAL_TYPES) == 0) {

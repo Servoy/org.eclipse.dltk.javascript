@@ -298,9 +298,9 @@ public class Value extends ImmutableValue {
 			}
 			if (src.declaredType != null) {
 				types.add(src.declaredType);
-			} else {
-				types.addAll(src.types);
 			}
+			types.addAll(src.types);
+
 			// (references will be copied later)
 			if (src.attributes != null) {
 				if (attributes == null) {

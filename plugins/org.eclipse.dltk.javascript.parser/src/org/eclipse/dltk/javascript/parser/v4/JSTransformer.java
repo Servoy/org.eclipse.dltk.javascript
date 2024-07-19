@@ -81,12 +81,12 @@ import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.Keywords;
+import org.eclipse.dltk.javascript.ast.v4.LetStatement;
+import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
 import org.eclipse.dltk.javascript.ast.v4.UnaryOperation;
-import org.eclipse.dltk.javascript.ast.v4.LetStatement;
-import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.internal.parser.NodeTransformerManager;
 import org.eclipse.dltk.javascript.parser.JSProblemIdentifier;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserProblems;
@@ -95,97 +95,7 @@ import org.eclipse.dltk.javascript.parser.NodeTransformerExtension;
 import org.eclipse.dltk.javascript.parser.Reporter;
 import org.eclipse.dltk.javascript.parser.SymbolKind;
 import org.eclipse.dltk.javascript.parser.SymbolTable;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AdditiveExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AnonymousFunctionDeclContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ArgumentsExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrayElementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrayLiteralExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrowFunctionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ArrowFunctionParametersContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignableContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.AssignmentOperatorExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.BitAndExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.BitNotExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.BitOrExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.BitShiftExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.BitXOrExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.BlockContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.BreakStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.CaseClauseContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.CatchProductionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ContinueStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.DefaultClauseContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.DeleteExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.DoStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ElementListContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.EmptyStatement_Context;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.EqualityExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionSequenceContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ExpressionStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.FinallyProductionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ForInStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ForOfStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ForStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterArgContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.FormalParameterListContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionBodyContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.FunctionDeclarationContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.IdentifierNameContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.IfStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.InExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.InstanceofExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.LabelledStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.LastFormalParameterArgContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.LiteralContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.LogicalAndExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.LogicalOrExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberDotExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.MemberIndexExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.MultiplicativeExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.NewExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.NotExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ObjectLiteralContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ParenthesizedExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PostDecreaseExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PostIncrementExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PreDecreaseExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PreIncrementExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ProgramContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyExpressionAssignmentContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyGetterContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyNameContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertySetterContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.PropertyShorthandContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.RelationalExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ReturnStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.SingleExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.SourceElementsContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.StatementListContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.SwitchStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.TemplateStringAtomContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.TemplateStringExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.TemplateStringLiteralContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.TernaryExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ThisExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.ThrowStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.TryStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.TypeofExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryMinusExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.UnaryPlusExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.VarModifierContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableDeclarationContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableDeclarationListContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.VariableStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.VoidExpressionContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.WhileStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.WithStatementContext;
-import org.eclipse.dltk.javascript.parser.v4.JSParser.YieldStatementContext;
+import org.eclipse.dltk.javascript.parser.v4.JSParser.*;
 import org.eclipse.dltk.javascript.parser.v4.factory.JSNodeCreator;
 import org.eclipse.dltk.utils.IntList;
 
@@ -530,7 +440,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterEveryRule(ParserRuleContext ctx) {
-		if (ctx instanceof SingleExpressionContext) {
+		if (ctx instanceof AssignmentExpressionContext || ctx instanceof PrimaryExpressionContext 
+				|| ctx instanceof LeftHandSideExpressionContext || ctx instanceof BinaryExpressionContext
+				|| ctx instanceof UnaryExpressionContext) {
 			if (JSNodeCreator.skipCreate(ctx)) return;
 			parents.push(JSNodeCreator.create(ctx, getParent()));
 		}
@@ -564,8 +476,15 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 					}
 				}
 			}
-			if (ctx instanceof SingleExpressionContext) {
+			if (ctx instanceof AssignmentExpressionContext || ctx instanceof PrimaryExpressionContext || 
+					ctx instanceof LeftHandSideExpressionContext || ctx instanceof BinaryExpressionContext || ctx instanceof UnaryExpressionContext) {
 				if (!JSNodeCreator.skipCreate(ctx)) {
+					if (ctx instanceof BinaryExpressionContext) {
+						setupBinaryOperation(ctx);
+					}
+					if (ctx instanceof UnaryExpressionContext) {
+						setupUnaryOperation((UnaryExpressionContext) ctx);
+					}
 					children.push(parents.pop());
 				}
 			}
@@ -582,7 +501,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void exitExpressionSequence(ExpressionSequenceContext ctx) {
 		if (ctx.Comma().isEmpty()) return;
 		CommaExpression expression = popParents(CommaExpression.class, ctx);
-		List<SingleExpressionContext> ruleContexts = ctx.getRuleContexts(SingleExpressionContext.class);
+		List<AssignmentExpressionContext> ruleContexts = ctx.getRuleContexts(AssignmentExpressionContext.class);
 		List<ASTNode> items = new ArrayList<>();
 		IntList commas = new IntList();
 		int i = 0;
@@ -765,17 +684,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		createIdentifier(ctx.getStart(), ctx.getText());
 	}
 	
-	@Override
-	public void exitAdditiveExpression(AdditiveExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-	
-	@Override
-	public void exitInExpression(InExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	public void setupBinaryOperation(SingleExpressionContext ctx) {
+	public void setupBinaryOperation(ParserRuleContext ctx) {
 		BinaryOperation operation = getParent(BinaryOperation.class, ctx);		
 		
 		operation.setRightExpression(popChildren(Expression.class, ctx));
@@ -809,37 +718,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
-	public void exitBitXOrExpression(BitXOrExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitBitShiftExpression(BitShiftExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitBitAndExpression(BitAndExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitBitOrExpression(BitOrExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitMultiplicativeExpression(MultiplicativeExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-
-	@Override
-	public void exitAssignmentExpression(AssignmentExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
 	public void enterAssignmentOperator(AssignmentOperatorContext ctx) {
 		if (getParent() instanceof BinaryOperation) {
 			((BinaryOperation)getParent()).setOperation(ctx.getStart().getType());
@@ -851,32 +729,12 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
+	public void exitAssignmentExpr(AssignmentExprContext ctx) {
+		setupBinaryOperation(ctx);
+	}
+
+	@Override
 	public void exitAssignmentOperatorExpression(AssignmentOperatorExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitRelationalExpression(RelationalExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitLogicalAndExpression(LogicalAndExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitLogicalOrExpression(LogicalOrExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-
-	@Override
-	public void exitEqualityExpression(EqualityExpressionContext ctx) {
-		setupBinaryOperation(ctx);
-	}
-	
-	@Override
-	public void exitInstanceofExpression(InstanceofExpressionContext ctx) {
 		setupBinaryOperation(ctx);
 	}
 
@@ -1151,15 +1009,15 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
-	public void exitAnonymousFunctionDecl(AnonymousFunctionDeclContext ctx) {
+	public void exitAsyncFunctionExpression(AsyncFunctionExpressionContext ctx) {
 		FunctionStatement fn = getParent(FunctionStatement.class, ctx);
 		fn.setLP(getTokenOffset(ctx.OpenParen().getSymbol().getTokenIndex()));
 		fn.setRP(getTokenOffset(ctx.CloseParen().getSymbol().getTokenIndex()));
-		setupFunction(ctx.Function_(), ctx.formalParameterList(), null, ctx);
+		setupFunction(ctx.Function_(), ctx.formalParameterList(), ctx.identifier(), ctx);
 	}
 	
 	@Override
-	public void enterAnonymousFunctionDecl(AnonymousFunctionDeclContext ctx) {
+	public void enterAsyncFunctionExpression(AsyncFunctionExpressionContext ctx) {
 		SymbolTable symbolTable = new SymbolTable(getParent(FunctionStatement.class, ctx));
 		scopes.push(symbolTable);
 		blockScopes.push(symbolTable);
@@ -1282,64 +1140,13 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		children.add(arg);
 	}
 
-	@Override
-	public void exitPostIncrementExpression(PostIncrementExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.PlusPlus().getSymbol());
-	}
-
-	@Override
-	public void exitPostDecreaseExpression(PostDecreaseExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.MinusMinus().getSymbol());
-	}
-
-	@Override
-	public void exitPreIncrementExpression(PreIncrementExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.PlusPlus().getSymbol());
-	}
-	
-	@Override
-	public void exitPreDecreaseExpression(PreDecreaseExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.MinusMinus().getSymbol());
-	}
-	
-	@Override
-	public void exitBitNotExpression(BitNotExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.BitNot().getSymbol());
-	}
-
-	@Override
-	public void exitNotExpression(NotExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Not().getSymbol());
-	}
-	
-	@Override
-	public void exitUnaryMinusExpression(UnaryMinusExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Minus().getSymbol());
-	}
-	
-	@Override
-	public void exitUnaryPlusExpression(UnaryPlusExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Plus().getSymbol());
-	}
-
-	@Override
-	public void exitDeleteExpression(DeleteExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Delete().getSymbol());
-	}
-
-	@Override
-	public void exitTypeofExpression(TypeofExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Typeof().getSymbol());
-	}
-
-	@Override
-	public void exitVoidExpression(VoidExpressionContext ctx) {
-		setupUnaryOperation(ctx, getParent(UnaryOperation.class, ctx), ctx.Void().getSymbol());
-	}
-
-	public void setupUnaryOperation(SingleExpressionContext ctx,
-			UnaryOperation operation, Token symbol) {
-		operation.setOperationPosition(getTokenOffset(symbol.getTokenIndex()));
+	public void setupUnaryOperation(UnaryExpressionContext ctx) {
+		UnaryOperation operation = getParent(UnaryOperation.class, ctx);
+		ParseTree child = ctx.getChild(operation.isPostfix() ? 1 : 0);
+		Token symbol = child instanceof TerminalNode ? ((TerminalNode)child).getSymbol() : null;
+		if (symbol != null) {
+			operation.setOperationPosition(getTokenOffset(symbol.getTokenIndex()));
+		}
 		assert operation.getOperationPosition() > -1;
 
 		operation.setExpression(popChildren(Expression.class, ctx));
@@ -1464,52 +1271,16 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
-	public void enterMemberExpression(MemberExpressionContext ctx) {
-		if (ctx.Dot() != null) {
-			parents.push(new PropertyExpression(getParent()));
-		}
-	}
-
-	@Override
-	public void exitMemberExpression(MemberExpressionContext ctx) {
-		if (ctx.Dot() == null) return;
-		PropertyExpression property = popParents(PropertyExpression.class, ctx);
-		locateDocumentation(property, ctx.getStart());
-		int dotPosition = getTokenOffset(ctx.Dot().getSymbol().getTokenIndex());
-		property.setDotPosition(dotPosition);
-		if (ctx.identifier() != null) {
-			property.setProperty(popChildren(Expression.class, ctx));
-		} else {
-			final ErrorExpression error = new ErrorExpression(property,
-					Util.EMPTY_STRING);
-			error.setStart(dotPosition + 1);
-			error.setEnd(dotPosition + 1);
-			property.setProperty(error);
-		}
-		property.setObject(popChildren(Expression.class, ctx));
-
-		assert property.getObject().sourceStart() >= 0;
-		assert property.getProperty().sourceEnd() > 0;
-
-		property.setStart(property.getObject().sourceStart());
-		property.setEnd(property.getProperty().sourceEnd());
-		children.add(property);
-	}
-
-	@Override
 	public void exitNewExpression(NewExpressionContext ctx) {
 		Expression callExpression = null;
-		if (ctx.singleExpression() != null) {
+		if (ctx.memberExpression() != null) {
 			if (ctx.arguments() != null) {
-				callExpression = transformCallExpression(ctx.singleExpression(), ctx.arguments());
+				callExpression = transformCallExpression(ctx.memberExpression(), ctx.arguments());
 				parents.pop();//remove the call expression
 			}
 			else if (children.peek() instanceof Expression){
 				callExpression = (Expression) children.pop();
 			}
-		}
-		if (callExpression == null && ctx.memberExpression() != null) { 
-			callExpression = setupCallExpression(ctx.arguments(), popParents(CallExpression.class, ctx), ctx);
 		}
 		NewExpression expression = getParent(NewExpression.class, ctx);
 		expression.setNewKeyword(createKeyword(expression, ctx.getStart(), Keywords.NEW));
@@ -1528,7 +1299,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void exitArgumentsExpression(ArgumentsExpressionContext ctx) {
-		transformCallExpression(ctx.singleExpression(), ctx.arguments());
+		transformCallExpression(ctx.leftHandSideExpression(), ctx.arguments());
 	}
 	
 	@Override
@@ -1538,7 +1309,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		}
 	}
 
-	private Expression transformCallExpression(SingleExpressionContext ctx, ArgumentsContext args) {
+	private Expression transformCallExpression(ParserRuleContext ctx, ArgumentsContext args) {
 		CallExpression call = getParent(CallExpression.class, ctx);
 
 		Assert.isNotNull(ctx);
@@ -1805,6 +1576,34 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 			item.setEnd(item.getIndex().sourceEnd());
 		}
 	}
+	
+	@Override
+	public void enterMemberIndexExpr(MemberIndexExprContext ctx) {
+		parents.push(new GetArrayItemExpression(getParent()));
+	}
+	
+	@Override
+	public void exitMemberIndexExpr(MemberIndexExprContext ctx) {
+		//TODO refactor?
+		GetArrayItemExpression item = popParents(GetArrayItemExpression.class, ctx);
+		item.setLB(getTokenOffset(ctx.OpenBracket().getSymbol().getTokenIndex()));
+		if (ctx.expressionSequence() != null) {
+			item.setIndex(popChildren(Expression.class, ctx));
+			item.setRB(getTokenOffset(ctx.CloseBracket().getSymbol().getTokenIndex()));
+		} else {
+			item.setIndex(new ErrorExpression(item, Util.EMPTY_STRING));
+			item.setRB(getTokenOffset(getTokenOffset(ctx.getStop().getTokenIndex() + 1)));
+		}
+		item.setArray(popChildren(Expression.class, ctx));
+
+		item.setStart(item.getArray().sourceStart());
+		if (item.getRB() > -1) {
+			item.setEnd(item.getRB() + 1);
+		} else {
+			item.setEnd(item.getIndex().sourceEnd());
+		}
+		children.push(item);
+	}
 
 	@Override
 	public void exitMemberDotExpression(MemberDotExpressionContext ctx) {
@@ -1828,6 +1627,36 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 		property.setStart(property.getObject().sourceStart());
 		property.setEnd(property.getProperty().sourceEnd());
+	}
+	
+	public void enterMemberDotExpr(MemberDotExprContext ctx) {
+		parents.push(new PropertyExpression(getParent()));
+	}
+	
+	@Override
+	public void exitMemberDotExpr(MemberDotExprContext ctx) {
+		//TODO refactor?
+		PropertyExpression property = popParents(PropertyExpression.class, ctx);
+		locateDocumentation(property, ctx.getStart());
+		int dotPosition = getTokenOffset(ctx.Dot().getSymbol().getTokenIndex());
+		property.setDotPosition(dotPosition);
+		if (ctx.identifierName() != null) {
+			property.setProperty(popChildren(Expression.class, ctx));
+		} else {
+			final ErrorExpression error = new ErrorExpression(property,
+					Util.EMPTY_STRING);
+			error.setStart(dotPosition + 1);
+			error.setEnd(dotPosition + 1);
+			property.setProperty(error);
+		}
+		property.setObject(popChildren(Expression.class, ctx));
+
+		assert property.getObject().sourceStart() >= 0;
+		assert property.getProperty().sourceEnd() > 0;
+
+		property.setStart(property.getObject().sourceStart());
+		property.setEnd(property.getProperty().sourceEnd());
+		children.push(property);
 	}
 
 	@Override
@@ -1941,7 +1770,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		if (ctx.Colon() != null) {
 			initializer.setColon(getTokenOffset(ctx.Colon().getSymbol().getTokenIndex()));
 		}
-		if (ctx.singleExpression() != null) {
+		if (ctx.assignmentExpression() != null) {
 			value = popChildren(Expression.class, ctx);
 		}
 		//TODO FunctionProperty
@@ -1970,7 +1799,7 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	public void exitPropertyShorthand(PropertyShorthandContext ctx) {
 		PropertyShorthand initializer = popParents(PropertyShorthand.class, ctx);
 		final Expression value;
-		if (ctx.singleExpression() != null) {
+		if (ctx.assignmentExpression() != null) {
 			value = popChildren(Expression.class, ctx);
 		}
 		else {
@@ -2071,7 +1900,9 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 
 	@Override
 	public void enterArrowFunction(ArrowFunctionContext ctx) {
-		scopes.push(new SymbolTable(getParent(ArrowFunctionStatement.class, ctx)));
+		SymbolTable symbolTable = new SymbolTable(getParent(ArrowFunctionStatement.class, ctx));
+		scopes.push(symbolTable);
+		blockScopes.push(symbolTable);
 	}
 
 	@Override
@@ -2182,12 +2013,18 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 	}
 
 	@Override
+	public void enterTemplateStringExpression(TemplateStringExpressionContext ctx) {
+		parents.push(new TagFunctionExpression(getParent()));	
+	}
+
+	@Override
 	public void exitTemplateStringExpression(TemplateStringExpressionContext ctx) {
-		TagFunctionExpression tagFunction = (TagFunctionExpression) getParent();
+		TagFunctionExpression tagFunction = popParents(TagFunctionExpression.class, ctx);
 		tagFunction.setLiteral(popChildren(TemplateStringLiteral.class, ctx));
 		tagFunction.setTagFunction(popChildren(Expression.class, ctx));
 		tagFunction.setStart(getTokenOffset(ctx.getStart().getTokenIndex()));
 		tagFunction.setEnd(getTokenOffset(ctx.getStop().getTokenIndex()));
+		children.push(tagFunction);
 	}
 	
 	@Override

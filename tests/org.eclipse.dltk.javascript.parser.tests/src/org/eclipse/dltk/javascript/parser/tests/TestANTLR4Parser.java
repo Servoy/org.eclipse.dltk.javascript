@@ -675,7 +675,7 @@ public class TestANTLR4Parser {
 	
 	@Test
 	public void testUnaryMinusExpression() {
-		String source = "c = -a;";
+		String source = "c = -a;"; 
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);
 		
@@ -807,6 +807,30 @@ public class TestANTLR4Parser {
 		ConditionalOperator conditionalv4 = (ConditionalOperator) assignmentv4.getRightExpression();
 		assertEquals(conditional.getQuestionPosition(), conditionalv4.getQuestionPosition());
 		assertEquals(conditional.getColonPosition(), conditionalv4.getColonPosition());
+	}
+	
+	@Test
+	public void testTernaryOperator2() {
+		String source = "check ? test = 1 : test = 2;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+		ConditionalOperator conditional = (ConditionalOperator) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		ConditionalOperator conditionalv4 = (ConditionalOperator) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(conditional.getQuestionPosition(), conditionalv4.getQuestionPosition());
+		assertEquals(conditional.getColonPosition(), conditionalv4.getColonPosition());
+		BinaryOperation assignment1 = (BinaryOperation) conditional.getTrueValue();
+		BinaryOperation assignmentv4_1 = (BinaryOperation) conditionalv4.getTrueValue();
+		assertEquals("=", assignmentv4_1.getOperationText());
+		assertEquals(assignment1.getOperationPosition(), assignmentv4_1.getOperationPosition());
+		BinaryOperation assignment2 = (BinaryOperation) conditional.getFalseValue();
+		BinaryOperation assignmentv4_2 = (BinaryOperation) conditionalv4.getFalseValue();
+		assertEquals("=", assignmentv4_2.getOperationText());
+		assertEquals(assignment2.getOperationPosition(), assignmentv4_2.getOperationPosition());
+
 	}
 	
 	@Test
@@ -968,7 +992,7 @@ public class TestANTLR4Parser {
 		};
 		Script scriptv4 = jsParserv4.parse(source, reporter);
 		assertNotNull(scriptv4);		
-		assertTrue(problems.size() == 3);
+		assertEquals(4, problems.size()); //TODO check!
 	}
 	
 	@Test

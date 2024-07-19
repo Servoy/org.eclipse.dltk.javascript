@@ -1,6 +1,6 @@
+// Generated from JavaScriptParser.g4 by ANTLR 4.13.0
 package org.eclipse.dltk.javascript.parser.v4;
 
-// Generated from JavaScriptParser.g4 by ANTLR 4.13.0
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -785,579 +785,677 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitExpressionSequence(JSParser.ExpressionSequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link JSParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemberExpression(JSParser.MemberExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link JSParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemberExpression(JSParser.MemberExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code TemplateStringExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code TemplateStringExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code TernaryExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Enter a parse tree produced by the {@code OptionalChainExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterTernaryExpression(JSParser.TernaryExpressionContext ctx);
+	void enterOptionalChainExpr(JSParser.OptionalChainExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code TernaryExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Exit a parse tree produced by the {@code OptionalChainExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitTernaryExpression(JSParser.TernaryExpressionContext ctx);
+	void exitOptionalChainExpr(JSParser.OptionalChainExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code LogicalAndExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Enter a parse tree produced by the {@code MemberDotExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterLogicalAndExpression(JSParser.LogicalAndExpressionContext ctx);
+	void enterMemberDotExpr(JSParser.MemberDotExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code LogicalAndExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Exit a parse tree produced by the {@code MemberDotExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitLogicalAndExpression(JSParser.LogicalAndExpressionContext ctx);
+	void exitMemberDotExpr(JSParser.MemberDotExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code PowerExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Enter a parse tree produced by the {@code PrimaryExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterPowerExpression(JSParser.PowerExpressionContext ctx);
+	void enterPrimaryExpr(JSParser.PrimaryExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code PowerExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Exit a parse tree produced by the {@code PrimaryExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitPowerExpression(JSParser.PowerExpressionContext ctx);
+	void exitPrimaryExpr(JSParser.PrimaryExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code PreIncrementExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Enter a parse tree produced by the {@code MemberIndexExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterPreIncrementExpression(JSParser.PreIncrementExpressionContext ctx);
+	void enterMemberIndexExpr(JSParser.MemberIndexExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code PreIncrementExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Exit a parse tree produced by the {@code MemberIndexExpr}
+	 * labeled alternative in {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitPreIncrementExpression(JSParser.PreIncrementExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ObjectLiteralExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterObjectLiteralExpression(JSParser.ObjectLiteralExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ObjectLiteralExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitObjectLiteralExpression(JSParser.ObjectLiteralExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code MetaExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMetaExpression(JSParser.MetaExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code MetaExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMetaExpression(JSParser.MetaExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code InExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterInExpression(JSParser.InExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code InExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitInExpression(JSParser.InExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code LogicalOrExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterLogicalOrExpression(JSParser.LogicalOrExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code LogicalOrExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitLogicalOrExpression(JSParser.LogicalOrExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code OptionalChainExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterOptionalChainExpression(JSParser.OptionalChainExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code OptionalChainExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitOptionalChainExpression(JSParser.OptionalChainExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code NotExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterNotExpression(JSParser.NotExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code NotExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitNotExpression(JSParser.NotExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code PreDecreaseExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterPreDecreaseExpression(JSParser.PreDecreaseExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code PreDecreaseExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitPreDecreaseExpression(JSParser.PreDecreaseExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ArgumentsExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterArgumentsExpression(JSParser.ArgumentsExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ArgumentsExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitArgumentsExpression(JSParser.ArgumentsExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code AwaitExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAwaitExpression(JSParser.AwaitExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code AwaitExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAwaitExpression(JSParser.AwaitExpressionContext ctx);
+	void exitMemberIndexExpr(JSParser.MemberIndexExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ThisExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterThisExpression(JSParser.ThisExpressionContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code ThisExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitThisExpression(JSParser.ThisExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code FunctionExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionExpression(JSParser.FunctionExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code FunctionExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunctionExpression(JSParser.FunctionExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code UnaryMinusExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterUnaryMinusExpression(JSParser.UnaryMinusExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code UnaryMinusExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitUnaryMinusExpression(JSParser.UnaryMinusExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code AssignmentExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAssignmentExpression(JSParser.AssignmentExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code AssignmentExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAssignmentExpression(JSParser.AssignmentExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code PostDecreaseExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterPostDecreaseExpression(JSParser.PostDecreaseExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code PostDecreaseExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitPostDecreaseExpression(JSParser.PostDecreaseExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code TypeofExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterTypeofExpression(JSParser.TypeofExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code TypeofExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitTypeofExpression(JSParser.TypeofExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code InstanceofExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterInstanceofExpression(JSParser.InstanceofExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code InstanceofExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitInstanceofExpression(JSParser.InstanceofExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code UnaryPlusExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterUnaryPlusExpression(JSParser.UnaryPlusExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code UnaryPlusExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitUnaryPlusExpression(JSParser.UnaryPlusExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code DeleteExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterDeleteExpression(JSParser.DeleteExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code DeleteExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitDeleteExpression(JSParser.DeleteExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ImportExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterImportExpression(JSParser.ImportExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ImportExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitImportExpression(JSParser.ImportExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code EqualityExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterEqualityExpression(JSParser.EqualityExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code EqualityExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitEqualityExpression(JSParser.EqualityExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code BitXOrExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterBitXOrExpression(JSParser.BitXOrExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code BitXOrExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitBitXOrExpression(JSParser.BitXOrExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code SuperExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterSuperExpression(JSParser.SuperExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code SuperExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitSuperExpression(JSParser.SuperExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code MultiplicativeExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMultiplicativeExpression(JSParser.MultiplicativeExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code MultiplicativeExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMultiplicativeExpression(JSParser.MultiplicativeExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code BitShiftExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterBitShiftExpression(JSParser.BitShiftExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code BitShiftExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitBitShiftExpression(JSParser.BitShiftExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ParenthesizedExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterParenthesizedExpression(JSParser.ParenthesizedExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ParenthesizedExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitParenthesizedExpression(JSParser.ParenthesizedExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code AdditiveExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAdditiveExpression(JSParser.AdditiveExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code AdditiveExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAdditiveExpression(JSParser.AdditiveExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code RelationalExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterRelationalExpression(JSParser.RelationalExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code RelationalExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitRelationalExpression(JSParser.RelationalExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code PostIncrementExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterPostIncrementExpression(JSParser.PostIncrementExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code PostIncrementExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitPostIncrementExpression(JSParser.PostIncrementExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code YieldExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterYieldExpression(JSParser.YieldExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code YieldExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitYieldExpression(JSParser.YieldExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code BitNotExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterBitNotExpression(JSParser.BitNotExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code BitNotExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitBitNotExpression(JSParser.BitNotExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code NewExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterNewExpression(JSParser.NewExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code NewExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitNewExpression(JSParser.NewExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code LiteralExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterLiteralExpression(JSParser.LiteralExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code LiteralExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitLiteralExpression(JSParser.LiteralExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ArrayLiteralExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrayLiteralExpression(JSParser.ArrayLiteralExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ArrayLiteralExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrayLiteralExpression(JSParser.ArrayLiteralExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code MemberDotExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemberDotExpression(JSParser.MemberDotExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code MemberDotExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemberDotExpression(JSParser.MemberDotExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ClassExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterClassExpression(JSParser.ClassExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ClassExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitClassExpression(JSParser.ClassExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code MemberIndexExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemberIndexExpression(JSParser.MemberIndexExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code MemberIndexExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemberIndexExpression(JSParser.MemberIndexExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code IdentifierExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterIdentifierExpression(JSParser.IdentifierExpressionContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code IdentifierExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitIdentifierExpression(JSParser.IdentifierExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code BitAndExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Enter a parse tree produced by the {@code SuperExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterBitAndExpression(JSParser.BitAndExpressionContext ctx);
+	void enterSuperExpression(JSParser.SuperExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code BitAndExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Exit a parse tree produced by the {@code SuperExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitBitAndExpression(JSParser.BitAndExpressionContext ctx);
+	void exitSuperExpression(JSParser.SuperExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code BitOrExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Enter a parse tree produced by the {@code LiteralExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterBitOrExpression(JSParser.BitOrExpressionContext ctx);
+	void enterLiteralExpression(JSParser.LiteralExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code BitOrExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Exit a parse tree produced by the {@code LiteralExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitBitOrExpression(JSParser.BitOrExpressionContext ctx);
+	void exitLiteralExpression(JSParser.LiteralExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code AssignmentOperatorExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Enter a parse tree produced by the {@code ArrayLiteralExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterAssignmentOperatorExpression(JSParser.AssignmentOperatorExpressionContext ctx);
+	void enterArrayLiteralExpression(JSParser.ArrayLiteralExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code AssignmentOperatorExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * Exit a parse tree produced by the {@code ArrayLiteralExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitAssignmentOperatorExpression(JSParser.AssignmentOperatorExpressionContext ctx);
+	void exitArrayLiteralExpression(JSParser.ArrayLiteralExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ObjectLiteralExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterObjectLiteralExpression(JSParser.ObjectLiteralExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ObjectLiteralExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitObjectLiteralExpression(JSParser.ObjectLiteralExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AsyncFunctionExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAsyncFunctionExpression(JSParser.AsyncFunctionExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AsyncFunctionExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAsyncFunctionExpression(JSParser.AsyncFunctionExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ClassExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterClassExpression(JSParser.ClassExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ClassExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitClassExpression(JSParser.ClassExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ParenthesizedExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterParenthesizedExpression(JSParser.ParenthesizedExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParenthesizedExpression}
+	 * labeled alternative in {@link JSParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitParenthesizedExpression(JSParser.ParenthesizedExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ArgumentsExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgumentsExpression(JSParser.ArgumentsExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ArgumentsExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgumentsExpression(JSParser.ArgumentsExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MemberExpr}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMemberExpr(JSParser.MemberExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MemberExpr}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMemberExpr(JSParser.MemberExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code NewExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewExpression(JSParser.NewExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code NewExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewExpression(JSParser.NewExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MetaExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMetaExpression(JSParser.MetaExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MetaExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMetaExpression(JSParser.MetaExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code OptionalChainExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterOptionalChainExpression(JSParser.OptionalChainExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code OptionalChainExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitOptionalChainExpression(JSParser.OptionalChainExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MemberDotExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMemberDotExpression(JSParser.MemberDotExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MemberDotExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMemberDotExpression(JSParser.MemberDotExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MemberIndexExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMemberIndexExpression(JSParser.MemberIndexExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MemberIndexExpression}
+	 * labeled alternative in {@link JSParser#leftHandSideExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMemberIndexExpression(JSParser.MemberIndexExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code LHSExpr}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLHSExpr(JSParser.LHSExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code LHSExpr}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLHSExpr(JSParser.LHSExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code PostIncrementExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterPostIncrementExpression(JSParser.PostIncrementExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code PostIncrementExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitPostIncrementExpression(JSParser.PostIncrementExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code PostDecreaseExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterPostDecreaseExpression(JSParser.PostDecreaseExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code PostDecreaseExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitPostDecreaseExpression(JSParser.PostDecreaseExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code DeleteExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeleteExpression(JSParser.DeleteExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code DeleteExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeleteExpression(JSParser.DeleteExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code VoidExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#unaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterVoidExpression(JSParser.VoidExpressionContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code VoidExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#unaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitVoidExpression(JSParser.VoidExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code TypeofExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypeofExpression(JSParser.TypeofExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code TypeofExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypeofExpression(JSParser.TypeofExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code PreIncrementExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterPreIncrementExpression(JSParser.PreIncrementExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code PreIncrementExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitPreIncrementExpression(JSParser.PreIncrementExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code PreDecreaseExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterPreDecreaseExpression(JSParser.PreDecreaseExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code PreDecreaseExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitPreDecreaseExpression(JSParser.PreDecreaseExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code UnaryPlusExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryPlusExpression(JSParser.UnaryPlusExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code UnaryPlusExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryPlusExpression(JSParser.UnaryPlusExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code UnaryMinusExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryMinusExpression(JSParser.UnaryMinusExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code UnaryMinusExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryMinusExpression(JSParser.UnaryMinusExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code BitNotExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBitNotExpression(JSParser.BitNotExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code BitNotExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBitNotExpression(JSParser.BitNotExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code NotExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterNotExpression(JSParser.NotExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code NotExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitNotExpression(JSParser.NotExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AwaitExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAwaitExpression(JSParser.AwaitExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AwaitExpression}
+	 * labeled alternative in {@link JSParser#unaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAwaitExpression(JSParser.AwaitExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AdditiveExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAdditiveExpression(JSParser.AdditiveExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AdditiveExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAdditiveExpression(JSParser.AdditiveExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code RelationalExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterRelationalExpression(JSParser.RelationalExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code RelationalExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitRelationalExpression(JSParser.RelationalExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code LogicalAndExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLogicalAndExpression(JSParser.LogicalAndExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code LogicalAndExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLogicalAndExpression(JSParser.LogicalAndExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code PowerExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterPowerExpression(JSParser.PowerExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code PowerExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitPowerExpression(JSParser.PowerExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code InExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterInExpression(JSParser.InExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code InExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitInExpression(JSParser.InExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code LogicalOrExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLogicalOrExpression(JSParser.LogicalOrExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code LogicalOrExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLogicalOrExpression(JSParser.LogicalOrExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code BitAndExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBitAndExpression(JSParser.BitAndExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code BitAndExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBitAndExpression(JSParser.BitAndExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code InstanceofExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstanceofExpression(JSParser.InstanceofExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code InstanceofExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstanceofExpression(JSParser.InstanceofExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code BitOrExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBitOrExpression(JSParser.BitOrExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code BitOrExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBitOrExpression(JSParser.BitOrExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code UnaryExp}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryExp(JSParser.UnaryExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code UnaryExp}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryExp(JSParser.UnaryExpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code EqualityExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqualityExpression(JSParser.EqualityExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code EqualityExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqualityExpression(JSParser.EqualityExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code BitXOrExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBitXOrExpression(JSParser.BitXOrExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code BitXOrExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBitXOrExpression(JSParser.BitXOrExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MultiplicativeExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultiplicativeExpression(JSParser.MultiplicativeExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MultiplicativeExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultiplicativeExpression(JSParser.MultiplicativeExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code CoalesceExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#binaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterCoalesceExpression(JSParser.CoalesceExpressionContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code CoalesceExpression}
-	 * labeled alternative in {@link JSParser#singleExpression}.
+	 * labeled alternative in {@link JSParser#binaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitCoalesceExpression(JSParser.CoalesceExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code BitShiftExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBitShiftExpression(JSParser.BitShiftExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code BitShiftExpression}
+	 * labeled alternative in {@link JSParser#binaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBitShiftExpression(JSParser.BitShiftExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code TernaryExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterTernaryExpression(JSParser.TernaryExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code TernaryExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitTernaryExpression(JSParser.TernaryExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code YieldExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterYieldExpression(JSParser.YieldExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code YieldExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitYieldExpression(JSParser.YieldExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ArrowFunction}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrowFunction(JSParser.ArrowFunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ArrowFunction}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrowFunction(JSParser.ArrowFunctionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AssignmentExpr}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignmentExpr(JSParser.AssignmentExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AssignmentExpr}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignmentExpr(JSParser.AssignmentExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AssignmentOperatorExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignmentOperatorExpression(JSParser.AssignmentOperatorExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AssignmentOperatorExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignmentOperatorExpression(JSParser.AssignmentOperatorExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code BinaryExpr}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinaryExpr(JSParser.BinaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code BinaryExpr}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinaryExpr(JSParser.BinaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ImportExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterImportExpression(JSParser.ImportExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ImportExpression}
+	 * labeled alternative in {@link JSParser#assignmentExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitImportExpression(JSParser.ImportExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSParser#initializer}.
 	 * @param ctx the parse tree
@@ -1388,42 +1486,6 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitObjectLiteral(JSParser.ObjectLiteralContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code NamedFunction}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void enterNamedFunction(JSParser.NamedFunctionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code NamedFunction}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void exitNamedFunction(JSParser.NamedFunctionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code AnonymousFunctionDecl}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void enterAnonymousFunctionDecl(JSParser.AnonymousFunctionDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code AnonymousFunctionDecl}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void exitAnonymousFunctionDecl(JSParser.AnonymousFunctionDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ArrowFunction}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrowFunction(JSParser.ArrowFunctionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ArrowFunction}
-	 * labeled alternative in {@link JSParser#anonymousFunction}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrowFunction(JSParser.ArrowFunctionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSParser#arrowFunctionParameters}.
 	 * @param ctx the parse tree

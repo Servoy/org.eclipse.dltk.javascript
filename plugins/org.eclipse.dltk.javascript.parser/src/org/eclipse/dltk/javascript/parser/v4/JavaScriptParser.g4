@@ -350,13 +350,16 @@ argument
 expressionSequence
     : assignmentExpression (',' assignmentExpression)*
     ;
-
+    
 memberExpression
-    : primaryExpression                                       # PrimaryExpr  
-    | memberExpression '?.' assignmentExpression              # OptionalChainExpr
-    | memberExpression  '[' expressionSequence ']'            # MemberIndexExpr 
-    | memberExpression  '.' identifierName                    # MemberDotExpr
-    | memberExpression templateStringLiteral                  # TemplateStringExpression // ECMAScript 6  spec is primaryExpression - CHECK
+    : primaryExpression memberExpressionSuffix*
+    ;
+
+memberExpressionSuffix
+    : '?.' assignmentExpression                                # OptionalChainExpr
+    | '[' expressionSequence ']'                               # MemberIndexExpr
+    | '.' identifierName                                       # MemberDotExpr
+    | templateStringLiteral                                    # TemplateStringExpression // ECMAScript 6  spec is primaryExpression - CHECK
     ;
     
 primaryExpression

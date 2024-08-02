@@ -785,65 +785,63 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitExpressionSequence(JSParser.ExpressionSequenceContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code TemplateStringExpression}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * Enter a parse tree produced by {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
+	void enterMemberExpression(JSParser.MemberExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code TemplateStringExpression}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * Exit a parse tree produced by {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
+	void exitMemberExpression(JSParser.MemberExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code OptionalChainExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
 	 * @param ctx the parse tree
 	 */
 	void enterOptionalChainExpr(JSParser.OptionalChainExprContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code OptionalChainExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
 	 * @param ctx the parse tree
 	 */
 	void exitOptionalChainExpr(JSParser.OptionalChainExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code MemberDotExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemberDotExpr(JSParser.MemberDotExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code MemberDotExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemberDotExpr(JSParser.MemberDotExprContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code PrimaryExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterPrimaryExpr(JSParser.PrimaryExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code PrimaryExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitPrimaryExpr(JSParser.PrimaryExprContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code MemberIndexExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
 	 * @param ctx the parse tree
 	 */
 	void enterMemberIndexExpr(JSParser.MemberIndexExprContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code MemberIndexExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
 	 * @param ctx the parse tree
 	 */
 	void exitMemberIndexExpr(JSParser.MemberIndexExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MemberDotExpr}
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
+	 * @param ctx the parse tree
+	 */
+	void enterMemberDotExpr(JSParser.MemberDotExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MemberDotExpr}
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
+	 * @param ctx the parse tree
+	 */
+	void exitMemberDotExpr(JSParser.MemberDotExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code TemplateStringExpression}
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
+	 * @param ctx the parse tree
+	 */
+	void enterTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code TemplateStringExpression}
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
+	 * @param ctx the parse tree
+	 */
+	void exitTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ThisExpression}
 	 * labeled alternative in {@link JSParser#primaryExpression}.

@@ -690,6 +690,17 @@ public class TestANTLR4Parser {
 	}
 	
 	@Test
+	public void testStringConcatenation() {
+		String source = "c = 'str0'+'str1'+'str2'+'str3'+'str4'+'str5'+'str6'+'str7'+'str8'+'str9'+'str10';"; 
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4));
+	}
+	
+	@Test
 	public void testOtherUnaryOperations() {
 		String source = "i--; x = ~a;" 
 						+ "y = !a;"

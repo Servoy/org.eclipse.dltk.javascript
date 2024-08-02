@@ -1,6 +1,6 @@
+// Generated from JavaScriptParser.g4 by ANTLR 4.13.0
 package org.eclipse.dltk.javascript.parser.v4;
 
-// Generated from JavaScriptParser.g4 by ANTLR 4.13.0
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -475,40 +475,39 @@ public interface JavaScriptParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpressionSequence(JSParser.ExpressionSequenceContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code TemplateStringExpression}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * Visit a parse tree produced by {@link JSParser#memberExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
+	T visitMemberExpression(JSParser.MemberExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code OptionalChainExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitOptionalChainExpr(JSParser.OptionalChainExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code MemberIndexExpr}
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMemberIndexExpr(JSParser.MemberIndexExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code MemberDotExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMemberDotExpr(JSParser.MemberDotExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code PrimaryExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
+	 * Visit a parse tree produced by the {@code TemplateStringExpression}
+	 * labeled alternative in {@link JSParser#memberExpressionSuffix}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPrimaryExpr(JSParser.PrimaryExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code MemberIndexExpr}
-	 * labeled alternative in {@link JSParser#memberExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemberIndexExpr(JSParser.MemberIndexExprContext ctx);
+	T visitTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ThisExpression}
 	 * labeled alternative in {@link JSParser#primaryExpression}.

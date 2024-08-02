@@ -918,13 +918,13 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx) { }
+	@Override public void enterMemberExpression(JSParser.MemberExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx) { }
+	@Override public void exitMemberExpression(JSParser.MemberExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -942,6 +942,18 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMemberIndexExpr(JSParser.MemberIndexExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMemberIndexExpr(JSParser.MemberIndexExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMemberDotExpr(JSParser.MemberDotExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -954,25 +966,13 @@ public class JavaScriptParserBaseListener implements JavaScriptParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPrimaryExpr(JSParser.PrimaryExprContext ctx) { }
+	@Override public void enterTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPrimaryExpr(JSParser.PrimaryExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMemberIndexExpr(JSParser.MemberIndexExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMemberIndexExpr(JSParser.MemberIndexExprContext ctx) { }
+	@Override public void exitTemplateStringExpression(JSParser.TemplateStringExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

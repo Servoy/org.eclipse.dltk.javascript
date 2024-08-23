@@ -224,8 +224,6 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 		testKeyword(node.getConstKeyword());
 		visitVariableDeclarations(node.getVariables());
 
-		testChar(Keywords.SEMI, node.getSemicolonPosition());
-
 		return true;
 	}
 

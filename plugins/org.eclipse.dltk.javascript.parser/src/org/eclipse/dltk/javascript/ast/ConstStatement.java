@@ -28,7 +28,6 @@ public class ConstStatement extends Expression implements IVariableStatement, Do
 	private Keyword constKeyword;
 	private final List<VariableDeclaration> consts = new ArrayList<VariableDeclaration>();
 	private Comment documentation;
-	private int semic = -1;
 
 	public ConstStatement(JSNode parent) {
 		super(parent);
@@ -67,14 +66,6 @@ public class ConstStatement extends Expression implements IVariableStatement, Do
 		this.constKeyword = keyword;
 	}
 
-	public int getSemicolonPosition() {
-		return this.semic;
-	}
-
-	public void setSemicolonPosition(int semic) {
-		this.semic = semic;
-	}
-
 	@Override
 	public String toSourceString(String indentationString) {
 		Assert.isTrue(sourceStart() >= 0);
@@ -91,7 +82,6 @@ public class ConstStatement extends Expression implements IVariableStatement, Do
 				buffer.append(", ");
 			buffer.append(consts.get(i).toSourceString(indentationString));
 		}
-		if (semic > 0 ) buffer.append(";\n");
 
 		return buffer.toString();
 	}

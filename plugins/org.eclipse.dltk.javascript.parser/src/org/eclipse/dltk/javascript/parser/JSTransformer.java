@@ -2103,9 +2103,6 @@ public class JSTransformer {
 
 		processVariableDeclarations(node, declaration, SymbolKind.CONST);
 
-		declaration.setSemicolonPosition(getTokenOffset(JSParser.SEMIC,
-				node.getTokenStopIndex(), node.getTokenStopIndex()));
-
 		declaration.setStart(getTokenOffset(node.getTokenStartIndex()));
 		declaration.setEnd(getTokenOffset(node.getTokenStopIndex() + 1));
 

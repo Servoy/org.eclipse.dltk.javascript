@@ -647,9 +647,6 @@ public class JSTransformer extends JavaScriptParserBaseListener {
 		ConstStatement statement = getParent(ConstStatement.class, ctx);
 		locateDocumentation(statement, ctx.getStart());
 		statement.setConstKeyword(createKeyword(statement, ctx.getStart(), Keywords.CONST));
-		if (ctx.getStop().getType() == JSParser.SemiColon) {
-			statement.setSemicolonPosition(getTokenOffset(ctx.getStop().getTokenIndex()));
-		}
 		setRange(statement, ctx);
 	}
 

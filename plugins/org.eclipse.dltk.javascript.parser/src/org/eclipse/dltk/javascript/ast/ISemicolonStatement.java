@@ -12,9 +12,13 @@
 package org.eclipse.dltk.javascript.ast;
 
 public interface ISemicolonStatement {
+	
+	void setSemicolonPosition(int semic);
 
 	int getSemicolonPosition();
 
 	int sourceEnd();
+	
+	int sourceStart();
 
 }

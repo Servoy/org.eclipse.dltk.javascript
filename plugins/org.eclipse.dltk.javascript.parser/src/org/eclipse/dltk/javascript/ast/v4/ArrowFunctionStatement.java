@@ -9,6 +9,8 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.CallExpression;
+import org.eclipse.dltk.javascript.ast.Comment;
+import org.eclipse.dltk.javascript.ast.Documentable;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.ISourceableBlock;
 import org.eclipse.dltk.javascript.ast.JSDeclaration;
@@ -21,7 +23,7 @@ import org.eclipse.dltk.javascript.ast.StatementBlock;
 /**
  * @author emera
  */
-public class ArrowFunctionStatement extends Expression implements ISourceableBlock, JSScope {
+public class ArrowFunctionStatement extends Expression implements ISourceableBlock, JSScope, Documentable {
 	
 	private List<Argument> arguments = null;
 	private int LP = -1;
@@ -29,6 +31,7 @@ public class ArrowFunctionStatement extends Expression implements ISourceableBlo
 	private int ARROW = -1;
 	private Statement body;
 	private List<JSDeclaration> declarations;
+	private Comment documentation;
 
 	public ArrowFunctionStatement(JSNode parent) {
 		super(parent);
@@ -148,5 +151,14 @@ public class ArrowFunctionStatement extends Expression implements ISourceableBlo
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public Comment getDocumentation() {
+		return documentation;
+	}
+
+	public void setDocumentation(Comment documentation) {
+		this.documentation = documentation;
 	}
 }

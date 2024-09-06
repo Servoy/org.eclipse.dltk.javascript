@@ -38,7 +38,7 @@ public abstract class JSNode extends ASTNode {
 		return node != null ? node.toSourceString(indentationString) : "?";
 	}
 
-	private final JSNode parent;
+	private JSNode parent;
 
 	public JSNode(JSNode parent) {
 		this.parent = parent;
@@ -93,4 +93,7 @@ public abstract class JSNode extends ASTNode {
 		return new SourceRange(sourceStart(), sourceEnd() - sourceStart());
 	}
 
+	public void setParent(JSNode parent) {
+		this.parent = parent;		
+	}
 }

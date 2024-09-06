@@ -32,6 +32,12 @@ public class ArrayInitializer extends Expression {
 		commas = new IntList(itemCount > 0 ? itemCount - 1 : 0);
 	}
 
+	public ArrayInitializer(JSNode parent) {
+		super(parent);
+		this.commas = new IntList();
+		items = new ArrayList<Expression>();
+	}
+
 	/**
 	 * @see org.eclipse.dltk.ast.ASTNode#traverse(org.eclipse.dltk.ast.ASTVisitor)
 	 */

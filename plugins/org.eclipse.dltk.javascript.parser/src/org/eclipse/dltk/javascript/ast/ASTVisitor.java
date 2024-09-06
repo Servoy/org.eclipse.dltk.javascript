@@ -101,8 +101,10 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
+		HANDLERS.put(org.eclipse.dltk.javascript.ast.rhino.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.UnaryOperation.class, 34);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.UnaryOperation.class, 34);
+		HANDLERS.put(org.eclipse.dltk.javascript.ast.rhino.UnaryOperation.class, 34);
 	}
 
 	// generated function

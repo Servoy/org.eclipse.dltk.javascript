@@ -34,7 +34,7 @@ public class FunctionStatement extends Expression implements ISourceableBlock,
 	@Deprecated
 	private int colonPosition = -1;
 	private Comment documentation;
-	private final boolean declaration;
+	private boolean declaration;
 	private List<JSDeclaration> declarations;
 
 	public FunctionStatement(JSNode parent, boolean declaration) {
@@ -238,5 +238,9 @@ public class FunctionStatement extends Expression implements ISourceableBlock,
 	public List<JSDeclaration> getDeclarations() {
 		return declarations != null ? declarations : Collections
 				.<JSDeclaration> emptyList();
+	}
+
+	public void setIsDeclaration(boolean declaration) {
+		this.declaration = declaration;
 	}
 }

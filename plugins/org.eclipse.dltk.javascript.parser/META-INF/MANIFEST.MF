@@ -17,6 +17,8 @@ Export-Package: org.eclipse.dltk.javascript.ast,
  org.eclipse.dltk.javascript.parser.v4,
  org.eclipse.dltk.javascript.parser.jsdoc,
  org.eclipse.dltk.javascript.parser.util
+Import-Package: org.mozilla.javascript,
+ org.mozilla.javascript.ast
 Bundle-Localization: plugin
 Bundle-Vendor: %pluginProvider
 Bundle-Activator: org.eclipse.dltk.javascript.parser.JavaScriptParserPlugin

@@ -25,4 +25,6 @@ public abstract class AbstractForStatement extends LoopStatement implements JSSc
 				.<JSDeclaration> emptyList();
 	}
 
+	public abstract void setLP(int lp);
+	public abstract void setRP(int rp);
 }

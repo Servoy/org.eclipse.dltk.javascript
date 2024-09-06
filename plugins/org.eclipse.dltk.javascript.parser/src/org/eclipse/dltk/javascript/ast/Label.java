@@ -13,21 +13,15 @@
 package org.eclipse.dltk.javascript.ast;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.internal.parser.JSLiterals;
 
-public class Label extends ASTNode implements ISourceable {
+public class Label extends Expression implements ISourceable {
 
 	private String text;
-	private ASTNode parent;
 
-	public Label(ASTNode parent) {
-		this.parent = parent;
-	}
-
-	public ASTNode getParent() {
-		return this.parent;
+	public Label(JSNode parent) {
+		super(parent);
 	}
 
 	public String getText() {

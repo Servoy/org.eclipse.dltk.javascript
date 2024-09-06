@@ -36,4 +36,8 @@ public class EmptyStatement extends Statement implements ISemicolonStatement {
 		return sourceStart();
 	}
 
+	@Override
+	public void setSemicolonPosition(int semic) {
+		//nop
+	}
 }

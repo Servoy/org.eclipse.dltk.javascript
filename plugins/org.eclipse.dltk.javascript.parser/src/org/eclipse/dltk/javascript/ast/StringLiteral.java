@@ -12,6 +12,7 @@
 
 package org.eclipse.dltk.javascript.ast;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTVisitor;
 
 public class StringLiteral extends Literal implements Documentable {
@@ -52,6 +53,8 @@ public class StringLiteral extends Literal implements Documentable {
 	}
 
 	public void setText(String text) {
+		final char ch0 = text.charAt(0);
+		Assert.isTrue(ch0 == '"' || ch0 == '\'');
 		this.text = text;
 	}
 

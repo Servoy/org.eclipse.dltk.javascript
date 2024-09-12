@@ -38,7 +38,7 @@ public class JavaScriptParserUtil {
 			return (Script) declaration;
 		}
 		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
-		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse((IModuleSource) module, reporter)
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser().parse((IModuleSource) module, reporter)
 				: new JavaScriptParser().parse((IModuleSource) module, reporter);
 	}
 
@@ -47,13 +47,13 @@ public class JavaScriptParserUtil {
 			return parse((ISourceModule) module, reporter);
 		}
 		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
-		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse(module, reporter)
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser().parse(module, reporter)
 				: new JavaScriptParser().parse(module, reporter);
 	}
 
 	public static Script parse(String source, IProblemReporter reporter) {
 		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
-		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser().parse(source, reporter)
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser().parse(source, reporter)
 				: new JavaScriptParser().parse(source, reporter);
 	}
 }

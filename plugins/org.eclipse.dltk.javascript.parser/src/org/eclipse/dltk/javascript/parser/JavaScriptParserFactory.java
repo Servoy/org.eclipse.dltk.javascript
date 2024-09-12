@@ -18,7 +18,7 @@ public class JavaScriptParserFactory implements ISourceParserFactory {
 
 	public ISourceParser createSourceParser() {
 		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
-		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser() : new JavaScriptParser();
+		return antlr4Parser ? new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser() : new JavaScriptParser();
 	}
 
 }

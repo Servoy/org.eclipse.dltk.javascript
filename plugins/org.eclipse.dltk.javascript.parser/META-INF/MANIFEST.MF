@@ -7,7 +7,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.dltk.core;bundle-version="0.0.0",
  org.antlr.runtime;bundle-version="[3.0.0,3.1.0)",
- org.antlr.antlr4-runtime;bundle-version="4.13.0"
+ org.antlr.antlr4-runtime;bundle-version="4.13.0",
+ org.eclipse.dltk.javascript.rhino;bundle-version="1.7.15"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.dltk.javascript.ast,
@@ -18,8 +19,6 @@ Export-Package: org.eclipse.dltk.javascript.ast,
  org.eclipse.dltk.javascript.parser.rhino,
  org.eclipse.dltk.javascript.parser.util,
  org.eclipse.dltk.javascript.parser.v4
-Import-Package: org.mozilla.javascript,
- org.mozilla.javascript.ast
 Bundle-Localization: plugin
 Bundle-Vendor: %pluginProvider
 Bundle-Activator: org.eclipse.dltk.javascript.parser.JavaScriptParserPlugin

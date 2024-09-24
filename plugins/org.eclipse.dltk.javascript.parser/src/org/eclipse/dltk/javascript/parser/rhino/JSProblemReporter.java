@@ -20,7 +20,7 @@ public class JSProblemReporter implements ErrorReporter {
 			String lineSource, int lineOffset) {
 		if (reporter == null)
 			return;
-		reporter.setId(JavaScriptParserProblems.NULL);
+		reporter.setId(JavaScriptParserProblems.SYNTAX_ERROR);
 		reporter.setMessage(message);
 		reporter.setSeverity(ProblemSeverity.WARNING);
 		reporter.setLine(line - 1);

@@ -18,6 +18,7 @@ import java.util.Stack;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
+import org.eclipse.dltk.compiler.util.Util;
 import org.eclipse.dltk.javascript.ast.AbstractForStatement;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
@@ -228,7 +229,6 @@ public class Parser implements IParser{
 	}
 
 	private Keyword createKeyword(int type, int start) {
-		//TODO how to check text
 		String text = Token.keywordToName(type);
 		if (text == null) return null;
 		final Keyword keyword = new Keyword(text);
@@ -289,11 +289,11 @@ public class Parser implements IParser{
 		addError(messageId, null, position, length);
 	}
 
-	String addError(String messageId, String messageArg) {
+	void addError(String messageId, String messageArg) {
 		if (ts == null) {
-			return addError(messageId, messageArg, 0, 0);
+			addError(messageId, messageArg, 0, 0);
 		} else {
-			return addError(messageId, messageArg, ts.getTokenBeg(), ts.getTokenEnd() - ts.getTokenBeg());
+			addError(messageId, messageArg, ts.getTokenBeg(), ts.getTokenEnd() - ts.getTokenBeg());
 		}
 	}
 
@@ -302,7 +302,7 @@ public class Parser implements IParser{
 		addError(messageId, messageArg);
 	}
 
-	String addError(String messageId, String messageArg, int position, int length) {
+	void addError(String messageId, String messageArg, int position, int length) {
 		++syntaxErrorCount;
 		String message = lookupMessage(messageId, messageArg);
 		if (errorCollector != null) {
@@ -320,7 +320,6 @@ public class Parser implements IParser{
 			reporter.setRange(beg, end);
 			reporter.report();
 		}
-		return message;
 	}
 
 	private void addStrictWarning(
@@ -393,17 +392,16 @@ public class Parser implements IParser{
 		}
 	}
 
-	String reportError(String messageId, int position, int length) {
-		return reportError(messageId, null, position, length);
+	void reportError(String messageId, int position, int length) {
+		reportError(messageId, null, position, length);
 	}
 
-	String reportError(String messageId, String messageArg, int position, int length) {
-		String msg = addError(messageId, messageArg, position, length);
+	void reportError(String messageId, String messageArg, int position, int length) {
+		addError(messageId, messageArg, position, length);
 
 		if (!compilerEnv.recoverFromErrors()) {
 			throw new ParserException();
 		}
-		return msg;
 	}
 
 	private void recordComment(int lineno, String comment) {
@@ -1353,7 +1351,7 @@ public class Parser implements IParser{
 
 		case Token.ERROR:
 			consumeToken();
-			return makeErrorNode("");
+			return makeErrorNode();
 
 		case Token.SEMI:
 			consumeToken();
@@ -2321,7 +2319,7 @@ public class Parser implements IParser{
 		//      ExpressionStatement es = new ExpressionStatement(dxmln, true);
 		//      return es;
 		reportError("msg.XML.not.available");
-		return makeErrorNode("");
+		return makeErrorNode();
 	}
 
 	private void recordLabel(Label label, LabelledStatement bundle) throws IOException {
@@ -2366,7 +2364,7 @@ public class Parser implements IParser{
 		ASTNode expr = expr(false);
 
 		if (expr instanceof Label == false) {
-			return expr instanceof JSNode ? (JSNode) expr : makeErrorNode("");
+			return expr instanceof JSNode ? (JSNode) expr : makeErrorNode();
 		}
 
 		LabelledStatement bundle = new LabelledStatement(getParent());
@@ -2565,7 +2563,7 @@ public class Parser implements IParser{
 		//            popScope();
 		//        }
 		//        return pn;
-		return makeErrorNode("");
+		return makeErrorNode();
 	}
 
 	void defineSymbol(int declType, Identifier name) {
@@ -2985,7 +2983,7 @@ public class Parser implements IParser{
 
 		case Token.ERROR:
 			consumeToken();
-			return makeErrorNode("");
+			return makeErrorNode();
 		case Token.LT:
 			// XML stream encountered in expression.
 			if (compilerEnv.isXmlAvailable()) {
@@ -3012,7 +3010,7 @@ public class Parser implements IParser{
 		int pos = ts.getTokenBeg(), tt = ts.getFirstXMLToken();
 		if (tt != Token.XML && tt != Token.XMLEND) {
 			reportError("msg.syntax", pos, ts.getTokenEnd() - pos);
-			makeErrorNode("");
+			makeErrorNode();
 		}
 
 		//        XmlLiteral pn = new XmlLiteral(pos);
@@ -3041,7 +3039,7 @@ public class Parser implements IParser{
 
 			default:
 				reportError("msg.syntax", pos, ts.getTokenEnd() - pos);
-				makeErrorNode("");
+				makeErrorNode();
 			}
 		}
 	}
@@ -3351,7 +3349,7 @@ public class Parser implements IParser{
 				}
 			}
 			addError("msg.no.name.after.dot", dotPos, 1);
-			ref = makeErrorNode("");
+			ref = makeErrorNode();
 		}
 
 		if (ref instanceof XmlAttributeIdentifier) { //TODO impl
@@ -3365,7 +3363,7 @@ public class Parser implements IParser{
 			//             result.setRight(ref);
 			//             return result;
 			reportError("msg.XML.not.available");
-			return makeErrorNode("");
+			return makeErrorNode();
 		}
 		else
 		{
@@ -3419,7 +3417,7 @@ public class Parser implements IParser{
 
 		default:
 			addError("msg.no.name.after.xmlAttr", atPos, ts.getTokenEnd() - atPos);
-			return makeErrorNode("");
+			return makeErrorNode();
 		}
 	}
 
@@ -3460,8 +3458,8 @@ public class Parser implements IParser{
 				//                    return xmlElemRef(atPos, ns, colonPos);
 				//
 			default:
-				String msg = reportError("msg.no.name.after.coloncolon", pos, colonPos);
-				return makeErrorNode(msg);
+				reportError("msg.no.name.after.coloncolon", pos, colonPos);
+				makeErrorNode();
 			}
 		}
 
@@ -3476,7 +3474,7 @@ public class Parser implements IParser{
 		//        ref.setPropName(name);
 		//        ref.setLineno(lineno);
 		//        return ref;
-		return makeErrorNode("");
+		return makeErrorNode();
 	}
 
 	/**
@@ -3499,7 +3497,7 @@ public class Parser implements IParser{
 		//        ref.setBrackets(lb, rb);
 		//        return ref;
 		reportError("msg.XML.not.available");
-		return makeErrorNode("");
+		return makeErrorNode();
 	}
 
 	private Expression destructuringPrimaryExpr() throws IOException, ParserException {
@@ -3615,7 +3613,7 @@ public class Parser implements IParser{
 		}
 		// should only be reachable in IDE/error-recovery mode
 		consumeToken();
-		return makeErrorNode("");
+		return makeErrorNode();
 	}
 
 	private Expression parenExpr() throws IOException {
@@ -3639,7 +3637,7 @@ public class Parser implements IParser{
 			}
 			if ((hasTrailingComma || e instanceof EmptyExpression) && peekToken() != Token.ARROW) {
 				reportError("msg.syntax");
-				return makeErrorNode("");
+				return makeErrorNode();
 			}
 
 			ParenthesizedExpression pn = new ParenthesizedExpression(getParent());
@@ -4298,7 +4296,7 @@ public class Parser implements IParser{
 			tt = ts.readTemplateLiteral(isTaggedLiteral);
 		}
 		if (tt == Token.ERROR) {
-			return makeErrorNode("");
+			return makeErrorNode();
 		}
 		assert tt == Token.TEMPLATE_LITERAL;
 		//mustMatchToken(Token.TEMPLATE_LITERAL, "msg.syntax", true);
@@ -4395,8 +4393,8 @@ public class Parser implements IParser{
 			reportError(expr.getOperation() == Token.INC ? "msg.bad.incr" : "msg.bad.decr");
 	}
 
-	private ErrorExpression makeErrorNode(String msg) {
-		ErrorExpression pn = new ErrorExpression(getParent(), msg);
+	private ErrorExpression makeErrorNode() {
+		ErrorExpression pn = new ErrorExpression(getParent(), Util.EMPTY_STRING);
 		pn.setStart(ts.getTokenBeg());
 		pn.setEnd(ts.getTokenBeg());
 		return pn;
@@ -4464,7 +4462,13 @@ public class Parser implements IParser{
 				pos = ((JSNode) elems.get(0)).sourceStart();
 			}
 			pos = Math.max(pos, lineBeginningFor(commaPos));
-			addWarning("msg.extra.trailing.comma", pos, commaPos - pos);
+			//addWarning("msg.extra.trailing.comma", pos, commaPos - pos);
+			
+			reporter.setMessage(JavaScriptParserProblems.TRAILING_COMMA_OBJECT_INITIALIZER, 
+					lookupMessage("msg.extra.trailing.comma", null));
+			reporter.setSeverity(ProblemSeverity.WARNING);
+			reporter.setRange(ts.getTokenBeg(), ts.getTokenEnd());
+			reporter.report();
 		}
 	}
 

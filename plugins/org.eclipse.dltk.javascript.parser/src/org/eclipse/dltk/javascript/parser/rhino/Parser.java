@@ -3720,9 +3720,14 @@ public class Parser implements IParser{
 					warnTrailingComma(pos, pn.getItems(), afterComma);
 				}
 				break;
-				//TODO destructuring
-				//            } else if (tt == Token.FOR && !after_lb_or_comma && elements.size() == 1) {
-				//                return arrayComprehension(elements.get(0), pos);
+			} else if (tt == Token.FOR && !after_lb_or_comma && pn.getItems().size() == 1) {
+				reportError("msg.syntax", pos, ts.getTokenEnd() - pos);
+				makeErrorNode();
+				while (peekToken() != Token.RB && peekToken() != Token.EOF) {
+		            consumeToken();
+		        }
+				rb = ts.getTokenBeg();
+				break;
 			} else if (tt == Token.EOF) {
 				reportError("msg.no.bracket.arg");
 				break;
@@ -3743,116 +3748,6 @@ public class Parser implements IParser{
 		parents.pop();
 		return pn;
 	}
-
-	/**
-	 * Parse a JavaScript 1.7 Array comprehension.
-	 *
-	 * @param result the first expression after the opening left-bracket
-	 * @param pos start of LB token that begins the array comprehension
-	 * @return the array comprehension or an error node
-	 */
-	//TODO impl or remove?
-	private Expression arrayComprehension(JSNode result, int pos) throws IOException {
-		//        List<ArrayComprehensionLoop> loops = new ArrayList<>();
-		//        while (peekToken() == Token.FOR) {
-		//            loops.add(arrayComprehensionLoop());
-		//        }
-		//        int ifPos = -1;
-		//        ConditionData data = null;
-		//        if (peekToken() == Token.IF) {
-		//            consumeToken();
-		//            ifPos = ts.getTokenBeg() - pos;
-		//            data = condition();
-		//        }
-		//        mustMatchToken(Token.RB, "msg.no.bracket.arg", true);
-		//        ArrayComprehension pn = new ArrayComprehension(pos, ts.getTokenEnd() - pos);
-		//        pn.setResult(result);
-		//        pn.setLoops(loops);
-		//        if (data != null) {
-		//            pn.setIfPosition(ifPos);
-		//            pn.setFilter(data.condition);
-		//            pn.setFilterLp(data.lp - pos);
-		//            pn.setFilterRp(data.rp - pos);
-		//        }
-		//        return pn;
-		return null;
-	}
-
-//	private ArrayComprehensionLoop arrayComprehensionLoop() throws IOException {
-//		if (nextToken() != Token.FOR) codeBug();
-//		int pos = ts.getTokenBeg();
-//		int eachPos = -1, lp = -1, rp = -1, inPos = -1;
-//		boolean isForOf = false;
-//		ArrayComprehensionLoop pn = new ArrayComprehensionLoop(pos);
-//
-//		//        pushScope(pn);
-//		try {
-//			if (matchToken(Token.NAME, true)) {
-//				if (ts.getString().equals("each")) {
-//					eachPos = ts.getTokenBeg() - pos;
-//				} else {
-//					reportError("msg.no.paren.for");
-//				}
-//			}
-//			if (mustMatchToken(Token.LP, "msg.no.paren.for", true)) {
-//				lp = ts.getTokenBeg() - pos;
-//			}
-//
-//			AstNode iter = null;
-//			switch (peekToken()) {
-//			case Token.LB:
-//			case Token.LC:
-//				// handle destructuring assignment
-//				iter = null;// TODO destructuringPrimaryExpr();
-//				//                    markDestructuring(iter);
-//				break;
-//			case Token.NAME:
-//				consumeToken();
-//				//                    iter = createNameNode();
-//				break;
-//			default:
-//				reportError("msg.bad.var");
-//			}
-//
-//			// Define as a let since we want the scope of the variable to
-//			// be restricted to the array comprehension
-//			if (iter.getType() == Token.NAME) {
-//				defineSymbol(Token.LET, ts.getString(), true, null); //TODO JSDeclaration
-//			}
-//
-//			switch (nextToken()) {
-//			case Token.IN:
-//				inPos = ts.getTokenBeg() - pos;
-//				break;
-//			case Token.NAME:
-//				if ("of".equals(ts.getString())) {
-//					if (eachPos != -1) {
-//						reportError("msg.invalid.for.each");
-//					}
-//					inPos = ts.getTokenBeg() - pos;
-//					isForOf = true;
-//					break;
-//				}
-//				// fall through
-//			default:
-//				reportError("msg.in.after.for.name");
-//			}
-//			Expression obj = expr(false);
-//			if (mustMatchToken(Token.RP, "msg.no.paren.for.ctrl", true)) rp = ts.getTokenBeg() - pos;
-//
-//			pn.setLength(ts.getTokenEnd() - pos);
-//			pn.setIterator(iter);
-//			pn.setIteratedObject(obj);
-//			pn.setInPosition(inPos);
-//			pn.setEachPosition(eachPos);
-//			pn.setIsForEach(eachPos != -1);
-//			pn.setParens(lp, rp);
-//			pn.setIsForOf(isForOf);
-//			return pn;
-//		} finally {
-//			//            popScope();
-//		}
-//	}
 
 //	private AstNode generatorExpression(AstNode result, int pos) throws IOException {
 //		return generatorExpression(result, pos, false);

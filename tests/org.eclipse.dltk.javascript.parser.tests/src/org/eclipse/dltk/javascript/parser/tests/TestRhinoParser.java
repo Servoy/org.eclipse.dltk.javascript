@@ -1355,6 +1355,30 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testError2() {
+		//array comprehension feature (obsolete)
+		String source = "var numbers = [1, 2, 3, 4];\r\n"
+				+ "var doubled = [i * 2 for (i of numbers)];";
+		
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);	
+		assertEquals(2, problems.size());
+		assertTrue(problems.get(1).getMessage().startsWith("syntax error"));
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+//		assertTrue(equalsJSNode(script, scriptv4)); //do not compare because the new parser parses a bit more
+	}
+	
+	@Test
 	public void testContinueLineTerminator() {
 		String source = "for (var i = 0; i < [].length; i++) {\r\n"
 				+ "			var o = {}\r\n"

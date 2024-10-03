@@ -77,7 +77,7 @@ public class JavaScriptParser implements ISourceParser {
 		ideEnvirons.setRecordingLocalJsDocComments(true);
 		ideEnvirons.setLanguageVersion(Context.VERSION_ES6);
 		ideEnvirons.setXmlAvailable(xmlEnabled);
-		//ideEnvirons.setWarnTrailingComma(false);
+		ideEnvirons.setWarnTrailingComma(false);
 		try {
 			Parser p = new Parser(ideEnvirons, new JSProblemReporter(reporter));
 			return p.parse(source, modelElement != null ?
@@ -110,7 +110,7 @@ public class JavaScriptParser implements ISourceParser {
 		ideEnvirons.setRecordingLocalJsDocComments(true);
 		ideEnvirons.setLanguageVersion(Context.VERSION_ES6);
 		ideEnvirons.setXmlAvailable(xmlEnabled);
-		//ideEnvirons.setWarnTrailingComma(false);
+		ideEnvirons.setWarnTrailingComma(false);
 		try {
 			Parser p = new Parser(ideEnvirons, new JSProblemReporter(reporter));
 			return p.standaloneExpression(source);

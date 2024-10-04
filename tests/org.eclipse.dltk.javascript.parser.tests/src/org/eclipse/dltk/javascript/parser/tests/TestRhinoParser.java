@@ -985,9 +985,10 @@ public class TestRhinoParser {
 		assertEquals(init.getCommas().get(1), initv4.getCommas().get(1));
 		assertEquals(init.isMultiline(), initv4.isMultiline());
 		
+		assertEquals(0, problemsv4.size());
 		assertEquals(1, problems.size());
-		assertEquals(problems.size(), problemsv4.size());
-		assertEquals("Trailing comma is not legal in an ECMA-262 object initializer", problemsv4.get(0).getMessage() );
+		//the warning is only with the old parser
+		assertEquals("trailing comma is not legal in ECMA-262 object initializers", problems.get(0).getMessage() );
 	}	
 	
 	

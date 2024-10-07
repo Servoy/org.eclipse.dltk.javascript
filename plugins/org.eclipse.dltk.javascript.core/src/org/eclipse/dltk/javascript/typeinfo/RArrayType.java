@@ -47,14 +47,18 @@ class RArrayType extends RType implements IRArrayType {
 
 	@Override
 	public int hashCode() {
-		return itemType.hashCode();
+		return itemType != null ? itemType.hashCode() : super.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RArrayType) {
 			final RArrayType other = (RArrayType) obj;
-			return itemType.equals(other.itemType);
+			if (itemType != null) {
+				return itemType.equals(other.itemType);
+			} else {
+				super.equals(obj);
+			}
 		}
 		return false;
 	}

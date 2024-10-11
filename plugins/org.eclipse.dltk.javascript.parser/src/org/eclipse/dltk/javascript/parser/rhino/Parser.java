@@ -2284,7 +2284,7 @@ public class Parser implements IParser{
 			if (mustMatchToken(Token.RC, "msg.no.brace.block", true)) {
 				block.setRC(ts.getTokenBeg());
 			}
-			block.setEnd(ts.getTokenBeg());
+			block.setEnd(ts.getTokenEnd());
 
 			return block;
 		} finally {

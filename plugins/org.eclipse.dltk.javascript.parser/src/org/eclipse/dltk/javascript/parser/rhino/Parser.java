@@ -813,7 +813,7 @@ public class Parser implements IParser{
 		}
 		getAndResetJsDoc();
 		if (pn != null && !isExpressionClosure && mustMatchToken(Token.RC, "msg.no.brace.after.body", true)) {
-			((StatementBlock) pn).setRC(ts.getTokenEnd());
+			((StatementBlock) pn).setRC(ts.getTokenBeg());
 		}
 		return pn;
 	}
@@ -1186,7 +1186,7 @@ public class Parser implements IParser{
 			//TODO comment
 		}
 		block.setEnd(ts.getTokenEnd());
-		if (tt == Token.RC) block.setRC(ts.getTokenEnd());
+		if (tt == Token.RC) block.setRC(ts.getTokenBeg());
 		return block;
 	}
 
@@ -2282,9 +2282,9 @@ public class Parser implements IParser{
 			block.setStart(pos);
 			block.setLC(pos);
 			if (mustMatchToken(Token.RC, "msg.no.brace.block", true)) {
-				block.setRC(ts.getTokenEnd() - 1);
+				block.setRC(ts.getTokenBeg());
 			}
-			block.setEnd(ts.getTokenEnd());
+			block.setEnd(ts.getTokenBeg());
 
 			return block;
 		} finally {

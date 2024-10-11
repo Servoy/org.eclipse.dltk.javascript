@@ -3,7 +3,9 @@ package org.eclipse.dltk.javascript.parser.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,76 +47,121 @@ public class TestRhinoParser {
 		return scriptv4;
 	}
 	
-	private boolean equalsJSNode(ASTNode node1, ASTNode node2) {
-		if (node1.toString().equals(node2.toString()) &&
-			node1.sourceStart() == node2.sourceStart() &&
-			node1.sourceEnd() == node2.sourceEnd() &&
-			node1.getChilds().size() == node2.getChilds().size()) {
-			List<ASTNode> node1_children = node1.getChilds();
-			List<ASTNode> node2_children = node2.getChilds();
-			for (int i = 0; i < node1_children.size(); i++) {
-				ASTNode child1 = node1_children.get(i);
-				ASTNode child2 = node2_children.get(i);
-				//TODO check old transformer - the parent of fn arg identifier is wrong (is fn.getParent instead of fn!)
-//				if (child1 instanceof JSNode ) {
-//					if (!((JSNode) child1).getParent().getClass().getSimpleName().equals(((JSNode) child2).getParent().getClass().getSimpleName())) {
-//						return false;
-//					}
-//				}
-				if (child1 instanceof VoidExpression && ((VoidExpression)node1_children.get(i)).getExpression() instanceof VariableStatement ||
-						node1_children.get(i) instanceof IVariableStatement && child2 instanceof IVariableStatement) {
-					//need to compare var statements separately because of bug in old antlr parser sourceEnd
-					return compareVarStatements(child1, child2);
+	private boolean equalsJSNode(ASTNode node1, ASTNode node2, ArrayDeque<String> stack) {
+		stack.push(node1.getClass().getSimpleName());
+		try {
+			if (node1.toString().equals(node2.toString())
+					&& node1.sourceStart() == node2.sourceStart()
+					&& node1.sourceEnd() == node2.sourceEnd()
+					&& node1.getChilds().size() == node2.getChilds().size()) {
+				List<ASTNode> node1_children = node1.getChilds();
+				List<ASTNode> node2_children = node2.getChilds();
+				for (int i = 0; i < node1_children.size(); i++) {
+					ASTNode child1 = node1_children.get(i);
+					ASTNode child2 = node2_children.get(i);
+					//TODO check old transformer - the parent of fn arg identifier is wrong (is fn.getParent instead of fn!)
+					//				if (child1 instanceof JSNode ) {
+					//					if (!((JSNode) child1).getParent().getClass().getSimpleName().equals(((JSNode) child2).getParent().getClass().getSimpleName())) {
+					//						return false;
+					//					}
+					//				}
+					if (child1 instanceof VoidExpression
+							&& ((VoidExpression) node1_children.get(i))
+									.getExpression() instanceof VariableStatement
+							|| node1_children
+									.get(i) instanceof IVariableStatement
+									&& child2 instanceof IVariableStatement) {
+						//need to compare var statements separately because of bug in old antlr parser sourceEnd
+						if (!compareVarStatements(child1, child2, stack)) {
+							return false;
+						}
+						continue;
+					}
+					if (!equalsJSNode(child1, child2, stack)) {
+						return false;
+					}
 				}
-				if (!equalsJSNode(child1, child2)) {
-					return false;
+				if (node1 instanceof JSScope) {
+					JSScope scope1 = (JSScope) node1;
+					JSScope scope2 = (JSScope) node2;
+					if (scope1.getDeclarations().size() == scope2
+							.getDeclarations().size()) {
+						for (int i = 0; i < scope1.getDeclarations()
+								.size(); i++) {
+							JSDeclaration decl1 = scope1.getDeclarations()
+									.get(i);
+							JSDeclaration decl2 = scope2.getDeclarations()
+									.get(i);
+							if (!equalsJSNode(decl1.getIdentifier(),
+									decl2.getIdentifier(), stack)) {
+								return false;
+							}
+						}
+					} else {
+						fail("the node fails for declaration size: " + scope1.getDeclarations().size() +" != "  + scope2.getDeclarations().size()+ " stack: " + stack + ", node:\n" + scope1);
+						return false;
+					}
+								
 				}
-			}
-			if (node1 instanceof JSScope) {
-				JSScope scope1 = (JSScope) node1;
-				JSScope scope2 = (JSScope) node2;
-				if (scope1.getDeclarations().size() == scope2.getDeclarations().size()) {
-					for (int i = 0; i < scope1.getDeclarations().size(); i++) {
-						JSDeclaration decl1 = scope1.getDeclarations().get(i);
-						JSDeclaration decl2 = scope2.getDeclarations().get(i);
-						if (!equalsJSNode(decl1.getIdentifier(), decl2.getIdentifier())) {
+				if (node1 instanceof Documentable) {
+					Comment documentation1 = ((JSNode) node1)
+							.getDocumentation();
+					Comment documentation2 = ((JSNode) node2)
+							.getDocumentation();
+					if (documentation1 != null) {
+						if (documentation2 == null) {
+							fail("the node fails mising documentation for  " + node2 + " that should be "  + node1 + "\nstack: " + stack );
+							return false;
+						}
+						if (!equalsJSNode(documentation1, documentation2,
+								stack)) {
+							fail("the nodes documentation not equals for  " + documentation1 + " that should be "  + documentation2 + "\nstack: " + stack );
 							return false;
 						}
 					}
-					return true;
 				}
-				return false;
-			}
-			if (node1 instanceof Documentable) {
-				Comment documentation1 = ((JSNode)node1).getDocumentation();
-				Comment documentation2 = ((JSNode)node2).getDocumentation();
-				if (documentation1 != null) {
-					if (documentation2 == null) {
+				if (node1 instanceof StatementBlock sb1) {
+					if (node2 instanceof StatementBlock sb2) {
+						if (!(sb1.getLC() == sb2.getLC()
+								&& sb1.getRC() == sb2.getRC())) {
+							fail("StatementBlocks don't have the same LC and/or RC, stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
+							return false;
+						}
+					} else {
+						fail("both nodes are not instance of StatementBlocks, stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
 						return false;
 					}
-					return equalsJSNode(documentation1, documentation2);
 				}
+				return true;
 			}
-			return true;
+			fail("nodes are not equal in source end/start or don't have the same childre, stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
+			return false;
+		} finally {
+			stack.pop();
 		}
-		return false;
 	}
 
-	private boolean compareVarStatements(ASTNode child1, ASTNode child2) {
-		IVariableStatement var1 = (IVariableStatement)(child1 instanceof VoidExpression ? 
-				((VoidExpression)child1).getExpression(): child1);
-		IVariableStatement var2 = (IVariableStatement) (child2 instanceof VoidExpression ? 
-				((VoidExpression)child2).getExpression(): child2);
-		if (child1.sourceStart() == child2.sourceStart() && 
-				var1.getVariables().size() == var2.getVariables().size()) {
-			for(int j = 0; j < var1.getVariables().size(); j++) {
-				if (!equalsJSNode(var1.getVariables().get(j), var2.getVariables().get(j))) {
-					return false;
+	private boolean compareVarStatements(ASTNode child1, ASTNode child2, ArrayDeque<String> stack) {
+		stack.push(child1.getClass().getSimpleName());
+		try {
+			IVariableStatement var1 = (IVariableStatement)(child1 instanceof VoidExpression ? 
+					((VoidExpression)child1).getExpression(): child1);
+			IVariableStatement var2 = (IVariableStatement) (child2 instanceof VoidExpression ? 
+					((VoidExpression)child2).getExpression(): child2);
+			if (child1.sourceStart() == child2.sourceStart() && 
+					var1.getVariables().size() == var2.getVariables().size()) {
+				for(int j = 0; j < var1.getVariables().size(); j++) {
+					if (!equalsJSNode(var1.getVariables().get(j), var2.getVariables().get(j), stack)) {
+						return false;
+					}
 				}
+				return true;
 			}
-			return true;
+			fail("Var statements are not equal, var1: " + var1 + " , var2: " + var2 + ", stack: " + stack);
+			return false;
+		} finally {
+			stack.pop();
 		}
-		return false;
 	}
 	
 	@Test
@@ -132,17 +179,17 @@ public class TestRhinoParser {
 		assertEquals(expression.sourceEnd(), expressionv4.sourceEnd());
 		VariableStatement statement = (VariableStatement) expression.getExpression();
 		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
-		assertTrue(equalsJSNode(statement.getDocumentation(), statementv4.getDocumentation()));
+		assertTrue(equalsJSNode(statement.getDocumentation(), statementv4.getDocumentation(), new ArrayDeque<>()));
 		VariableDeclaration variableDeclaration = statement.getVariables().get(0);
 		VariableDeclaration variableDeclarationv4 = statementv4.getVariables().get(0);
 		assertEquals(variableDeclaration.sourceStart(), variableDeclarationv4.sourceStart());
 		assertEquals(variableDeclaration.sourceEnd(), variableDeclarationv4.sourceEnd());
-		assertTrue(equalsJSNode(variableDeclaration, variableDeclarationv4));
-		assertTrue(equalsJSNode(statement, statementv4));
-		assertTrue(equalsJSNode(expression, expressionv4));
+		assertTrue(equalsJSNode(variableDeclaration, variableDeclarationv4, new ArrayDeque<>()));
+		assertTrue(equalsJSNode(statement, statementv4, new ArrayDeque<>()));
+		assertTrue(equalsJSNode(expression, expressionv4, new ArrayDeque<>()));
 		
 		assertEquals(script.sourceEnd(), scriptv4.sourceEnd());
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -162,13 +209,13 @@ public class TestRhinoParser {
 		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
 		assertEquals(statement.getVariables().get(0).sourceStart(), statementv4.getVariables().get(0).sourceStart());
 		assertEquals(statement.getVariables().get(0).sourceEnd(), statementv4.getVariables().get(0).sourceEnd());
-		assertTrue(equalsJSNode(statement.getVariables().get(0), statementv4.getVariables().get(0)));
-		assertTrue(equalsJSNode(statement.getVariables().get(1), statementv4.getVariables().get(1)));
-		assertTrue(equalsJSNode(statement, statementv4));
-		assertTrue(equalsJSNode(expression, expressionv4));
+		assertTrue(equalsJSNode(statement.getVariables().get(0), statementv4.getVariables().get(0), new ArrayDeque<>()));
+		assertTrue(equalsJSNode(statement.getVariables().get(1), statementv4.getVariables().get(1), new ArrayDeque<>()));
+		assertTrue(equalsJSNode(statement, statementv4, new ArrayDeque<>()));
+		assertTrue(equalsJSNode(expression, expressionv4, new ArrayDeque<>()));
 		
 		assertEquals(script.sourceEnd(), scriptv4.sourceEnd());
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -179,14 +226,14 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		StatementBlock statement = (StatementBlock) script.getStatements().get(0);
 		StatementBlock statementv4 = (StatementBlock) scriptv4.getStatements().get(0);
 		assertEquals(statement.getLC(), statementv4.getLC());
 		assertEquals(statement.getRC(), statementv4.getRC());
 		for (int i = 0; i < statement.getStatements().size(); i++) {
-			assertTrue(equalsJSNode(statement.getStatements().get(i), statementv4.getStatements().get(i)));
+			assertTrue(equalsJSNode(statement.getStatements().get(i), statementv4.getStatements().get(i), new ArrayDeque<>()));
 		}
 	}
 	
@@ -198,7 +245,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
@@ -215,7 +262,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		IfStatement statement = (IfStatement) script.getStatements().get(0);
 		IfStatement statementv4 = (IfStatement) scriptv4.getStatements().get(0);
@@ -231,7 +278,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -242,7 +289,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -253,7 +300,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		WhileStatement statement = (WhileStatement) script.getStatements().get(0);
 		WhileStatement statementv4 = (WhileStatement) scriptv4.getStatements().get(0);
 		assertEquals(statement.getLP(), statementv4.getLP());
@@ -268,7 +315,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		DoWhileStatement statement = (DoWhileStatement) script.getStatements().get(0);
 		DoWhileStatement statementv4 = (DoWhileStatement) scriptv4.getStatements().get(0);
 		assertEquals(statement.getLP(), statementv4.getLP());
@@ -284,7 +331,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		ForStatement statement = (ForStatement) script.getStatements().get(0);
 		ForStatement statementv4 = (ForStatement) scriptv4.getStatements().get(0);
@@ -302,7 +349,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		ForInStatement statement = (ForInStatement) script.getStatements().get(0);
 		ForInStatement statementv4 = (ForInStatement) scriptv4.getStatements().get(0);
@@ -357,8 +404,8 @@ public class TestRhinoParser {
 		assertEquals(2, func_v4.getArguments().size());
 		assertEquals("a", func_v4.getArguments().get(0).getArgumentName());
 		assertEquals("b", func_v4.getArguments().get(1).getArgumentName());
-		assertTrue(equalsJSNode(func, func_v4));
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(func, func_v4, new ArrayDeque<>()));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}	
 	
 	@Test
@@ -377,7 +424,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -388,7 +435,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4,new ArrayDeque<>() ));
 		ForInStatement statement = (ForInStatement) script.getStatements().get(0);
 		ForInStatement statementv4 = (ForInStatement) scriptv4.getStatements().get(0);
 		StatementBlock block = (StatementBlock) statement.getBody();
@@ -406,7 +453,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -417,7 +464,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		FunctionStatement statement = (FunctionStatement) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		FunctionStatement statementv4 = (FunctionStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		StatementBlock block = (StatementBlock) statement.getBody();
@@ -439,7 +486,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -450,7 +497,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -462,7 +509,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -473,7 +520,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -484,7 +531,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		ForInStatement statement = (ForInStatement)((LabelledStatement) script.getStatements().get(0)).getStatement();
 		ForInStatement statementv4 = (ForInStatement) ((LabelledStatement)scriptv4.getStatements().get(0)).getStatement();
 		StatementBlock block = (StatementBlock) ((ForInStatement)statement.getBody()).getBody();
@@ -502,7 +549,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		CallExpression expression = (CallExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		CallExpression expressionv4 = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
@@ -520,7 +567,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 
 		NewExpression expression = (NewExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		NewExpression expressionv4 = (NewExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
@@ -541,7 +588,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 
 		CallExpression callexpression = (CallExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		CallExpression callexpressionv4 = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
@@ -553,10 +600,10 @@ public class TestRhinoParser {
 		PropertyExpression expressionv4 = (PropertyExpression) callexpressionv4.getExpression();
 		NewExpression object = (NewExpression) expression.getObject();
 		NewExpression objectv4 = (NewExpression) expressionv4.getObject();
-		assertTrue(equalsJSNode(object, objectv4));
+		assertTrue(equalsJSNode(object, objectv4, new ArrayDeque<>()));
 		Identifier id = (Identifier) expression.getProperty();
 		Identifier idv4 = (Identifier) expressionv4.getProperty();
-		assertTrue(equalsJSNode(id, idv4));
+		assertTrue(equalsJSNode(id, idv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -567,7 +614,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		IfStatement statement = (IfStatement) script.getStatements().get(0);
 		IfStatement statementv4 = (IfStatement) scriptv4.getStatements().get(0);
@@ -587,17 +634,17 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		TryStatement statement = (TryStatement)((StatementBlock)( script.getStatements().get(0))).getStatements().get(0);
 		TryStatement statementv4 = (TryStatement)((StatementBlock)( scriptv4.getStatements().get(0))).getStatements().get(0);
 		assertEquals(1, statementv4.getCatches().size()); //only 1 catch allowed in v4
 		assertEquals(statement.getCatches().size(), statementv4.getCatches().size());
 		CatchClause catchClause = statement.getCatches().get(0);
 		CatchClause catchClausev4 = statementv4.getCatches().get(0);
-		assertTrue(equalsJSNode(catchClause, catchClausev4));
+		assertTrue(equalsJSNode(catchClause, catchClausev4, new ArrayDeque<>()));
 		assertEquals(catchClause.getLP(), catchClausev4.getLP());
 		assertEquals(catchClause.getRP(), catchClausev4.getRP());
-		assertTrue(equalsJSNode(statement.getFinally(), statementv4.getFinally()));
+		assertTrue(equalsJSNode(statement.getFinally(), statementv4.getFinally(), new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -608,7 +655,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -619,7 +666,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		SwitchStatement statement = (SwitchStatement) script.getStatements().get(0);
 		SwitchStatement statementv4 = (SwitchStatement) scriptv4.getStatements().get(0);
 		assertEquals(statement.getLP(), statementv4.getLP());
@@ -628,7 +675,7 @@ public class TestRhinoParser {
 		assertEquals(statement.getRC(), statementv4.getRC());
 		assertEquals(statement.getCaseClauses().size(), statementv4.getCaseClauses().size());
 		for (int i = 0; i < statement.getCaseClauses().size(); i++) {
-			assertTrue(equalsJSNode(statement.getCaseClauses().get(i), statementv4.getCaseClauses().get(i)));
+			assertTrue(equalsJSNode(statement.getCaseClauses().get(i), statementv4.getCaseClauses().get(i), new ArrayDeque<>()));
 			assertEquals(statement.getCaseClauses().get(i).getColonPosition(), statementv4.getCaseClauses().get(i).getColonPosition());
 		}
 	}
@@ -651,7 +698,7 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		assertEquals(1, problems.size());
 		assertEquals("double default label in the switch statement", problems.get(0).getMessage());
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -662,7 +709,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -676,7 +723,7 @@ public class TestRhinoParser {
 			
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -690,7 +737,7 @@ public class TestRhinoParser {
 			
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -701,7 +748,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		WithStatement statement = (WithStatement) script.getStatements().get(0);
 		WithStatement statementv4 = (WithStatement) scriptv4.getStatements().get(0);
 		assertEquals(statement.getLP(), statementv4.getLP());
@@ -716,7 +763,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
@@ -733,7 +780,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		UnaryOperation increment = (UnaryOperation) ((ForStatement) script.getStatements().get(0)).getStep();
 		UnaryOperation incrementv4 = (UnaryOperation) ((ForStatement) scriptv4.getStatements().get(0)).getStep();
 		assertEquals(increment.getOperationPosition(), incrementv4.getOperationPosition());
@@ -747,7 +794,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		UnaryOperation minus = (UnaryOperation) assignment.getRightExpression();
@@ -770,7 +817,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -781,7 +828,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		PropertyExpression expression = (PropertyExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		PropertyExpression expressionv4 = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		assertEquals(expression.getDotPosition(), expressionv4.getDotPosition());
@@ -795,7 +842,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		GetArrayItemExpression expression = (GetArrayItemExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		GetArrayItemExpression expressionv4 = (GetArrayItemExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		assertEquals(expression.getLB(), expressionv4.getLB());
@@ -810,7 +857,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		VariableStatement statement = (VariableStatement) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		VariableStatement statementv4 = (VariableStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
@@ -831,7 +878,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		CommaExpression expr = (CommaExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		CommaExpression exprv4 = (CommaExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		assertEquals(expr.getCommas().size(), exprv4.getCommas().size());
@@ -846,7 +893,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		ParenthesizedExpression pexpr = (ParenthesizedExpression) assignment.getRightExpression();
@@ -866,7 +913,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		ConditionalOperator conditional = (ConditionalOperator) assignment.getRightExpression();
@@ -883,7 +930,7 @@ public class TestRhinoParser {
 
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		ConditionalOperator conditional = (ConditionalOperator) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		ConditionalOperator conditionalv4 = (ConditionalOperator) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		assertEquals(conditional.getQuestionPosition(), conditionalv4.getQuestionPosition());
@@ -917,7 +964,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -932,7 +979,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		ObjectInitializer init = (ObjectInitializer) assignment.getRightExpression();
@@ -972,7 +1019,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		ObjectInitializer init = (ObjectInitializer) assignment.getRightExpression();
@@ -1001,7 +1048,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		VariableStatement statement = (VariableStatement) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		VariableStatement statementv4 = (VariableStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		ArrayInitializer init = (ArrayInitializer) ((VariableDeclaration)statement.getVariables().get(0)).getInitializer();
@@ -1025,7 +1072,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	 
 	@Test
@@ -1036,7 +1083,7 @@ public class TestRhinoParser {
 			
 			assertNotNull(script);
 			assertNotNull(scriptv4);
-			assertTrue(equalsJSNode(script, scriptv4));
+			assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1049,7 +1096,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1352,7 +1399,7 @@ public class TestRhinoParser {
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1393,7 +1440,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1409,7 +1456,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1420,7 +1467,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1440,7 +1487,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1456,7 +1503,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1483,9 +1530,9 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		for (int i = 0; i < script.getComments().size(); i++) {
-			assertTrue(equalsJSNode(script.getComments().get(i), scriptv4.getComments().get(i)));
+			assertTrue(equalsJSNode(script.getComments().get(i), scriptv4.getComments().get(i), new ArrayDeque<>()));
 		}
 	}
 	
@@ -1499,7 +1546,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1512,8 +1559,8 @@ public class TestRhinoParser {
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
 		assertEquals(script.getComments().get(0).toString(), scriptv4.getComments().get(0).toString());
-		assertTrue(equalsJSNode(script.getComments().get(0), scriptv4.getComments().get(0)));
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script.getComments().get(0), scriptv4.getComments().get(0), new ArrayDeque<>()));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 
 	}
 	
@@ -1531,10 +1578,10 @@ public class TestRhinoParser {
 		assertEquals(script.getComments().get(0).toString(), scriptv4.getComments().get(0).toString());
 		assertEquals(script.getComments().get(1).toString(), scriptv4.getComments().get(1).toString());
 		assertEquals(script.getComments().get(2).toString(), scriptv4.getComments().get(2).toString());
-		assertTrue(equalsJSNode(script.getComments().get(0), scriptv4.getComments().get(0)));
-		assertTrue(equalsJSNode(script.getComments().get(1), scriptv4.getComments().get(1)));
-		assertTrue(equalsJSNode(script.getComments().get(2), scriptv4.getComments().get(2)));
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script.getComments().get(0), scriptv4.getComments().get(0), new ArrayDeque<>()));
+		assertTrue(equalsJSNode(script.getComments().get(1), scriptv4.getComments().get(1), new ArrayDeque<>()));
+		assertTrue(equalsJSNode(script.getComments().get(2), scriptv4.getComments().get(2), new ArrayDeque<>()));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 
 	}
 	
@@ -1549,8 +1596,8 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		assertEquals(2, scriptv4.getComments().size());
 		assertEquals(script.getComments().get(0).toString(), scriptv4.getComments().get(0).toString());
-		assertTrue(equalsJSNode(script.getComments().get(0), scriptv4.getComments().get(0)));
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script.getComments().get(0), scriptv4.getComments().get(0), new ArrayDeque<>()));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 
 	}
 	
@@ -1562,7 +1609,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test
@@ -1595,7 +1642,7 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
-		assertTrue(equalsJSNode(script, scriptv4));
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 		
 		CallExpression callexpression = (CallExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
 		CallExpression callexpressionv4 = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
@@ -1607,12 +1654,12 @@ public class TestRhinoParser {
 		PropertyExpression expressionv4 = (PropertyExpression) callexpressionv4.getExpression();
 		NewExpression object = (NewExpression) expression.getObject();
 		NewExpression objectv4 = (NewExpression) expressionv4.getObject();
-		assertTrue(equalsJSNode(object, objectv4));
+		assertTrue(equalsJSNode(object, objectv4, new ArrayDeque<>()));
 		CallExpression call = (CallExpression)object.getObjectClass();
 		CallExpression callv4 = (CallExpression)objectv4.getObjectClass();
 		PropertyExpression id = (PropertyExpression) call.getExpression();
 		PropertyExpression idv4 = (PropertyExpression) callv4.getExpression();
-		assertTrue(equalsJSNode(id, idv4));
+		assertTrue(equalsJSNode(id, idv4, new ArrayDeque<>()));
 	}
 	
 	@Test

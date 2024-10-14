@@ -31,7 +31,7 @@ import org.mozilla.javascript.Context;
 
 public class JavaScriptParser implements ISourceParser {
 
-	private boolean xmlEnabled = false; //TODO impl xml literals
+	private boolean xmlEnabled = true;
 
 	public boolean isXmlEnabled() {
 		return xmlEnabled;

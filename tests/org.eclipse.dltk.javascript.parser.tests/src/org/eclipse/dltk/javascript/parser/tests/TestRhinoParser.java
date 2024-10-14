@@ -1755,4 +1755,42 @@ public class TestRhinoParser {
 		assertEquals(1, problemsv4.size());
 		assertEquals("parameter after rest parameter", problemsv4.get(0).getMessage());
 	}
+	
+	@Test
+	public void testXMLLiteral() {
+		String source = "<SQL>select * from tbl</SQL>";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		XmlLiteral literal = (XmlLiteral) ((VoidExpression)script.getStatements().get(0)).getExpression();
+		XmlLiteral literalv4 = (XmlLiteral) ((VoidExpression)scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(literal.getFragments().size(), literalv4.getFragments().size());
+		assertEquals(1, literalv4.getFragments().size());
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		assertTrue(equalsJSNode(literal.getFragments().get(0), literalv4.getFragments().get(0), stack));
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testXMLExpressionFragment() {
+		String source = "<person>\r\n"
+				+ "  <name>{firstName}{lastName}</name>\r\n"
+				+ "  <age>{30 + 5}</age>\r\n"
+				+ "</person>;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		XmlLiteral literal = (XmlLiteral) ((VoidExpression)script.getStatements().get(0)).getExpression();
+		XmlLiteral literalv4 = (XmlLiteral) ((VoidExpression)scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(literal.getFragments().size(), literalv4.getFragments().size());
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		for (int i = 0 ; i < literal.getFragments().size(); i++ ) {
+			assertTrue(equalsJSNode(literal.getFragments().get(i), literalv4.getFragments().get(i), stack));
+		}
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}	
 }

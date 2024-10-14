@@ -9,6 +9,8 @@ package org.eclipse.dltk.javascript.parser.rhino;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,6 +87,10 @@ import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
 import org.eclipse.dltk.javascript.ast.WithStatement;
 import org.eclipse.dltk.javascript.ast.XmlAttributeIdentifier;
+import org.eclipse.dltk.javascript.ast.XmlExpressionFragment;
+import org.eclipse.dltk.javascript.ast.XmlFragment;
+import org.eclipse.dltk.javascript.ast.XmlLiteral;
+import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.rhino.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.rhino.UnaryOperation;
@@ -3019,35 +3025,69 @@ public class Parser implements IParser{
 			makeErrorNode();
 		}
 
-		//        XmlLiteral pn = new XmlLiteral(pos);
-		//        pn.setLineno(ts.getLineno());
-		//
+		XmlLiteral pn = new XmlLiteral(getParent());
+		parents.push(pn);
+		pn.setStart(pos);
+		final List<XmlFragment> fragments = new ArrayList<XmlFragment>();
+
 		for (; ; tt = ts.getNextXMLToken()) {
 			switch (tt) {
-			//                case Token.XML:
-			//                    pn.addFragment(new XmlString(ts.getTokenBeg(), ts.getString()));
-			//                    mustMatchToken(Token.LC, "msg.syntax", true);
-			//                    int beg = ts.getTokenBeg();
-			//                    AstNode expr =
-			//                            (peekToken() == Token.RC)
-			//                                    ? new EmptyExpression(beg, ts.getTokenEnd() - beg)
-			//                                    : expr(false);
-			//                    mustMatchToken(Token.RC, "msg.syntax", true);
-			//                    XmlExpression xexpr = new XmlExpression(beg, expr);
-			//                    xexpr.setIsXmlAttribute(ts.isXMLAttribute());
-			//                    xexpr.setLength(ts.getTokenEnd() - beg);
-			//                    pn.addFragment(xexpr);
-			//                    break;
-			//
-			//                case Token.XMLEND:
-			//                    pn.addFragment(new XmlString(ts.getTokenBeg(), ts.getString()));
-			//                    return pn;
+			case Token.XML:
+				//ts.getString does not preserve the exact line terminators
+				fragments.add(createXMLTextFragment(ts.getTokenBeg(), ts.getSourceString().substring(ts.getTokenBeg(), ts.getTokenEnd())));
+				mustMatchToken(Token.LC, "msg.syntax", true);
+				int beg = ts.getTokenBeg();
+				int end = -1;
+				XmlExpressionFragment xexpr = new XmlExpressionFragment(pn);
+				parents.push(xexpr);
+				
+				Expression expr =null;
+				if (peekToken() == Token.RC) {
+					expr = new EmptyExpression(pn);
+					end = ts.getTokenEnd();
+				}
+				else {
+					expr = expr(false);
+					beg = expr.sourceStart();
+					end = expr.sourceEnd();
+				}
+				xexpr.setExpression(expr);
+				mustMatchToken(Token.RC, "msg.syntax", true);
+				//TODO check xexpr.setIsXmlAttribute(ts.isXMLAttribute());
+				xexpr.setStart(beg);
+				xexpr.setEnd(end);
+				parents.pop();
+				fragments.add(xexpr);
+				break;
+
+			case Token.XMLEND:
+				fragments.add(createXMLTextFragment(ts.getTokenBeg(), ts.getSourceString().substring(ts.getTokenBeg(), ts.getTokenEnd())));
+				if (fragments.size() > 1) {
+					Collections.sort(fragments, new Comparator<XmlFragment>() {
+						public int compare(XmlFragment o1, XmlFragment o2) {
+							return o1.sourceStart() - o2.sourceStart();
+						}
+					});
+				}
+				pn.setFragments(fragments);
+				pn.setEnd(ts.getTokenEnd());
+				parents.pop();
+				return pn;
 
 			default:
 				reportError("msg.syntax", pos, ts.getTokenEnd() - pos);
 				makeErrorNode();
+				parents.pop();
 			}
 		}
+	}
+
+	private XmlFragment createXMLTextFragment(int tokenBeg, String xmlString) {
+		XmlTextFragment fragment = new XmlTextFragment((XmlLiteral) getParent());
+		fragment.setStart(ts.getTokenBeg());
+		fragment.setXml(xmlString);
+		fragment.setEnd(ts.getTokenBeg() + xmlString.length());
+		return fragment;
 	}
 
 	private void argumentList(CallExpression call) throws IOException {

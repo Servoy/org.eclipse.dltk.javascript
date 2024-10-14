@@ -358,6 +358,20 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testForInLet() {
+		String source = "for (let e in obj) { a += 1; }";
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(scriptv4);
+		
+		ForInStatement statementv4 = (ForInStatement) scriptv4.getStatements().get(0);
+		assertEquals(4, statementv4.getLP());
+		assertEquals(17, statementv4.getRP());
+		assertEquals(1, statementv4.getDeclarations().size());
+		assertEquals(0, scriptv4.getDeclarations().size());
+	}
+	
+	@Test
 	public void testFunctionDeclaration() {
 		String source = "function abc(a,b){ a+=1;} "
 				+ "function getHash (value, algorithm) {"
@@ -1440,6 +1454,20 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
+		
+		ForStatement statement = (ForStatement) script.getStatements().get(0);
+		ForStatement statementv4 = (ForStatement) scriptv4.getStatements().get(0);
+		assertEquals(statement.getLP(), statementv4.getLP());
+		assertEquals(statement.getRP(), statementv4.getRP());
+		StatementBlock body = (StatementBlock) statement.getBody();
+		StatementBlock bodyV4 = (StatementBlock) statementv4.getBody();
+		IfStatement if_ = (IfStatement) body.getStatements().get(1);
+		IfStatement if_v4 = (IfStatement) bodyV4.getStatements().get(1);
+		
+		ContinueStatement cont = (ContinueStatement) if_.getThenStatement();
+		ContinueStatement contv4 = (ContinueStatement) if_v4.getThenStatement();
+		assertEquals(cont.sourceEnd(), contv4.sourceEnd());
+		
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	

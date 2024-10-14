@@ -1621,6 +1621,7 @@ public class Parser implements IParser{
 			end = ts.getTokenEnd();
 			pn.setSemicolonPosition(ts.getTokenBeg());
 		}
+		pn.setStart(pos);
 		pn.setEnd(end);
 		return pn;
 	}
@@ -1765,11 +1766,10 @@ public class Parser implements IParser{
 					}
 					else if (((IVariableStatement) init).getVariables().size() == 1){
 						VariableDeclaration d = ((IVariableStatement) init).getVariables().get(0);
-						//TODO use temp scope to check for dupl?
-						SymbolKind kind = SymbolKind.VAR;
-						if (init instanceof LetStatement) kind = SymbolKind.LET;
-						if (init instanceof ConstStatement) kind = SymbolKind.CONST;
-						blockScopes.peek().add(d.getVariableName(), kind, d);
+						//no need to check for duplicates here, was done in variables(..)
+						if (init instanceof LetStatement) {
+							blockScopes.peek().add(d.getVariableName(), SymbolKind.LET, d);
+						}
 					}
 				}
 				if (isForOf && isForEach) {
@@ -2027,6 +2027,9 @@ public class Parser implements IParser{
 			breakLabel = createLabelNode();
 			end = breakLabel.end();
 		}
+		else {
+			end = prevTokenEnd - 1;
+		}
 
 		// matchJumpLabelName only matches if there is one
 		LabelledStatement labels = matchJumpLabelName();
@@ -2062,6 +2065,9 @@ public class Parser implements IParser{
 			label = createLabelNode();
 			end = label.end();
 			pn.setLabel(label);
+		}
+		else {
+			end = prevTokenEnd - 1;
 		}
 
 		// matchJumpLabelName only matches if there is one
@@ -2598,9 +2604,9 @@ public class Parser implements IParser{
 		}
 		switch (declType) {
 		case Token.LET:
-			if (!ignoreNotInBlock
-					//was ifStatement instead of block
-					&& ((getParent() instanceof StatementBlock) || getParent() instanceof LoopStatement)) {
+			if (ignoreNotInBlock) return; // is for loop init
+			//was ifStatement instead of block
+			if ((getParent() instanceof StatementBlock) || getParent() instanceof LoopStatement) {
 				addError("msg.let.decl.not.in.block");
 				return;
 			}

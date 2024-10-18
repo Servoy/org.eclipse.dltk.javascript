@@ -1010,6 +1010,10 @@ public class JSTransformer {
 		for (int i = 0, childCount = argsNode.getChildCount(); i < childCount; ++i) {
 			final Tree argNode = argsNode.getChild(i);
 			Argument argument = transformArgument(argNode, fn);
+			if (argument.getIdentifier() != null) {
+				//make sure the id parent is correct
+				argument.getIdentifier().setParent(fn);
+			}
 			if (i + 1 < childCount) {
 				argument.setCommaPosition(getTokenOffset(JSParser.COMMA,
 						argNode.getTokenStopIndex() + 1,

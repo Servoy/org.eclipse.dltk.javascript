@@ -3153,6 +3153,7 @@ public class Parser implements IParser{
 			consumeToken();
 			int pos = ts.getTokenBeg();
 			NewExpression nx = new NewExpression(getParent());
+			parents.push(nx);
 			nx.setNewKeyword(createKeyword(Token.NEW, pos));
 			nx.setStart(pos);
 
@@ -3178,6 +3179,7 @@ public class Parser implements IParser{
 				nx.setObjectClass(target);
 			}
 
+			parents.pop();
 			// Experimental syntax: allow an object literal to follow a new
 			// expression, which will mean a kind of anonymous class built with
 			// the JavaAdapter.  the object literal will be passed as an

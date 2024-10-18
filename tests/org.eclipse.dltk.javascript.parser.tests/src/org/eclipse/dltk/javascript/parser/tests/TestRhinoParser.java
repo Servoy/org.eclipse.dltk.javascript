@@ -59,12 +59,12 @@ public class TestRhinoParser {
 				for (int i = 0; i < node1_children.size(); i++) {
 					ASTNode child1 = node1_children.get(i);
 					ASTNode child2 = node2_children.get(i);
-					//TODO check old transformer - the parent of fn arg identifier is wrong (is fn.getParent instead of fn!)
-					//				if (child1 instanceof JSNode ) {
-					//					if (!((JSNode) child1).getParent().getClass().getSimpleName().equals(((JSNode) child2).getParent().getClass().getSimpleName())) {
-					//						return false;
-					//					}
-					//				}
+					if (child1 instanceof JSNode) {
+						if (!((JSNode) child1).getParent().getClass().getSimpleName().equals(((JSNode) child2).getParent().getClass().getSimpleName())) {
+							fail("the node fails parent comparison for  " + ((JSNode) node2).getParent().getClass().getSimpleName() + " that should be "  + node1 + "\nstack: " + stack );
+							return false;
+						}
+					}
 					if (child1 instanceof VoidExpression
 							&& ((VoidExpression) node1_children.get(i))
 									.getExpression() instanceof VariableStatement

@@ -1776,7 +1776,7 @@ public class TestRhinoParser {
 	@Test
 	public void testXMLExpressionFragment() {
 		String source = "<person>\r\n"
-				+ "  <name>{firstName}{lastName}</name>\r\n"
+				+ "  <name>{firstName} {lastName}</name>\r\n"
 				+ "  <age>{30 + 5}</age>\r\n"
 				+ "</person>;";
 		Script script = getScript(source);
@@ -1793,4 +1793,72 @@ public class TestRhinoParser {
 		}
 		assertTrue(equalsJSNode(script, scriptv4, stack));
 	}	
+	
+	@Test
+	public void testXMLAttributeIdentifier() {
+		String source = "person.@firstName;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		PropertyExpression literal = (PropertyExpression) ((VoidExpression)script.getStatements().get(0)).getExpression();
+		PropertyExpression literalv4 = (PropertyExpression) ((VoidExpression)scriptv4.getStatements().get(0)).getExpression();
+		XmlAttributeIdentifier id = (XmlAttributeIdentifier) literal.getProperty();
+		XmlAttributeIdentifier idv4 = (XmlAttributeIdentifier) literalv4.getProperty();
+		assertEquals(id.getAttributeName(), idv4.getAttributeName());
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testXMLGetLocalName() {
+		String source = "ns::firstName;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		GetLocalNameExpression id = (GetLocalNameExpression) ((VoidExpression)script.getStatements().get(0)).getExpression();
+		GetLocalNameExpression idv4 = (GetLocalNameExpression) ((VoidExpression)scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(id.getNamespace().toString(), idv4.getNamespace().toString());
+		assertEquals(id.getLocalName().toString(), idv4.getLocalName().toString());
+		assertEquals(id.getColonColonPosition(), idv4.getColonColonPosition());
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testXMLAsteriskExpression() {
+		String source = "ns::*;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		GetLocalNameExpression id = (GetLocalNameExpression) ((VoidExpression)script.getStatements().get(0)).getExpression();
+		GetLocalNameExpression idv4 = (GetLocalNameExpression) ((VoidExpression)scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(id.getNamespace().toString(), idv4.getNamespace().toString());
+		assertEquals(id.getLocalName().toString(), idv4.getLocalName().toString());
+		assertEquals(id.getColonColonPosition(), idv4.getColonColonPosition());
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testXMLGetAllChildren() {
+		String source = "foo..bar;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		GetAllChildrenExpression id = (GetAllChildrenExpression) ((VoidExpression)script.getStatements().get(0)).getExpression();
+		GetAllChildrenExpression idv4 = (GetAllChildrenExpression) ((VoidExpression)scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(id.getObject().toString(), idv4.getObject().toString());
+		assertEquals(id.getProperty().toString(), idv4.getProperty().toString());
+		assertEquals(id.getDotDotPosition(), idv4.getDotDotPosition());
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
 }

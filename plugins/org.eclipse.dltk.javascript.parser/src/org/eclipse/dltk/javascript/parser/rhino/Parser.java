@@ -24,6 +24,7 @@ import org.eclipse.dltk.compiler.util.Util;
 import org.eclipse.dltk.javascript.ast.AbstractForStatement;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
+import org.eclipse.dltk.javascript.ast.AsteriskExpression;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -47,7 +48,9 @@ import org.eclipse.dltk.javascript.ast.ForEachInStatement;
 import org.eclipse.dltk.javascript.ast.ForInStatement;
 import org.eclipse.dltk.javascript.ast.ForStatement;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
+import org.eclipse.dltk.javascript.ast.GetAllChildrenExpression;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
+import org.eclipse.dltk.javascript.ast.GetLocalNameExpression;
 import org.eclipse.dltk.javascript.ast.GetMethod;
 import org.eclipse.dltk.javascript.ast.ISemicolonStatement;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
@@ -3034,7 +3037,8 @@ public class Parser implements IParser{
 			switch (tt) {
 			case Token.XML:
 				//ts.getString does not preserve the exact line terminators
-				fragments.add(createXMLTextFragment(ts.getTokenBeg(), ts.getSourceString().substring(ts.getTokenBeg(), ts.getTokenEnd())));
+				String text = ts.getSourceString().substring(ts.getTokenBeg(), ts.getTokenEnd());
+				fragments.add(createXMLTextFragment(ts.getTokenBeg(), text));
 				mustMatchToken(Token.LC, "msg.syntax", true);
 				int beg = ts.getTokenBeg();
 				int end = -1;
@@ -3084,8 +3088,8 @@ public class Parser implements IParser{
 
 	private XmlFragment createXMLTextFragment(int tokenBeg, String xmlString) {
 		XmlTextFragment fragment = new XmlTextFragment((XmlLiteral) getParent());
-		fragment.setStart(ts.getTokenBeg());
-		fragment.setXml(xmlString);
+		fragment.setStart("".equals(xmlString.trim()) ? ts.getTokenEnd() : ts.getTokenBeg());
+		fragment.setXml(xmlString.trim());
 		fragment.setEnd(ts.getTokenBeg() + xmlString.length());
 		return fragment;
 	}
@@ -3178,7 +3182,7 @@ public class Parser implements IParser{
 				nx.setEnd(target.end());
 				nx.setObjectClass(target);
 			}
-
+			
 			parents.pop();
 			// Experimental syntax: allow an object literal to follow a new
 			// expression, which will mean a kind of anonymous class built with
@@ -3218,6 +3222,7 @@ public class Parser implements IParser{
 					break;
 				case Token.DOT:
 				case Token.DOTDOT:
+					//TODO .. is GetAllChildrenExpression 
 					pn = propertyAccess(tt, pn);
 					break;
 
@@ -3334,22 +3339,20 @@ public class Parser implements IParser{
 			memberTypeFlags = Node.DESCENDANTS_FLAG;
 		}
 
-		//        if (!compilerEnv.isXmlAvailable()) {
-		//            int maybeName = nextToken();
-		//            if (maybeName != Token.NAME
-		//                    && !(compilerEnv.isReservedKeywordAsIdentifier()
-		//                            && TokenStream.isKeyword(
-		//                                    ts.getString(),
-		//                                    compilerEnv.getLanguageVersion(),
-		//                                    inUseStrictDirective))) {
-		//                reportError("msg.no.name.after.dot");
-		//            }
+		if (!compilerEnv.isXmlAvailable()) {
+			int maybeName = nextToken();
+			if (maybeName != Token.NAME
+					&& !(compilerEnv.isReservedKeywordAsIdentifier()
+							&& TokenStream.isKeyword(
+									ts.getString(),
+									compilerEnv.getLanguageVersion(),
+									inUseStrictDirective))) {
+				reportError("msg.no.name.after.dot");
+			}
 
-		//            Name name = createNameNode(true, Token.GETPROP);
-		//            PropertyGet pg = new PropertyGet(pn, name, dotPos);
-		//            pg.setLineno(lineno);
-		//            return pg;
-		//        }
+			Identifier name = createNameNode(true, Token.GETPROP);
+			return createPropertyExpression(pn, dotPos, name);
+		}
 
 		Expression ref = null; // right side of . or .. operator
 
@@ -3400,42 +3403,45 @@ public class Parser implements IParser{
 			ref = makeErrorNode();
 		}
 
-		if (ref instanceof XmlAttributeIdentifier) { //TODO impl
-			//        	 Expression result = new org.eclipse.dltk.javascript.ast.XmlLiteral(getParent());    	
-			//             //if (xml && tt == Token.DOT) result.setType(Token.DOT);
-			//             int pos = pn.start();
-			//             result.setLength(getNodeEnd(ref) - pos);
-			//             result.setOperatorPosition(dotPos - pos);
-			//             result.setLineno(pn.getLineno());
-			//             result.setLeft(pn); // do this after setting position
-			//             result.setRight(ref);
-			//             return result;
-			reportError("msg.XML.not.available");
-			return makeErrorNode();
+		if (memberTypeFlags == Node.DESCENDANTS_FLAG) {
+			GetAllChildrenExpression result = new GetAllChildrenExpression(getParent());
+			result.setObject(pn);
+			pn.setParent(result);
+			result.setDotDotPosition(dotPos);
+			result.setProperty(ref);
+			ref.setParent(result);
+			result.setStart(pn.start());
+			result.setEnd(ref.end());
+			return result;
 		}
 		else
 		{
-			PropertyExpression result = new PropertyExpression(getParent());   
-			if (pn instanceof Documentable) {
-				//the original rhino parser doesn't do this
-				if (pn.getDocumentation() == null) {
-					Comment doc = getAndResetJsDoc();
-					((Documentable) pn).setDocumentation(doc);
-				}
-				result.setDocumentation(pn.getDocumentation());
-			}
-			else {
-				result.setDocumentation(getAndResetJsDoc());
-			}
-			result.setStart(pn.start());
-			result.setEnd(ref.end());
-			result.setObject(pn);
-			pn.setParent(result);
-			result.setProperty(ref);
-			ref.setParent(result);
-			result.setDotPosition(dotPos);
-			return result;
+			return createPropertyExpression(pn, dotPos, ref);
 		}
+	}
+
+	private Expression createPropertyExpression(Expression pn, int dotPos,
+			Expression ref) {
+		PropertyExpression result = new PropertyExpression(getParent());   
+		if (pn instanceof Documentable) {
+			//the original rhino parser doesn't do this
+			if (pn.getDocumentation() == null) {
+				Comment doc = getAndResetJsDoc();
+				((Documentable) pn).setDocumentation(doc);
+			}
+			result.setDocumentation(pn.getDocumentation());
+		}
+		else {
+			result.setDocumentation(getAndResetJsDoc());
+		}
+		result.setStart(pn.start());
+		result.setEnd(ref.end());
+		result.setObject(pn);
+		pn.setParent(result);
+		result.setProperty(ref);
+		ref.setParent(result);
+		result.setDotPosition(dotPos);
+		return result;
 	}
 
 	/**
@@ -3449,24 +3455,35 @@ public class Parser implements IParser{
 	private Expression attributeAccess() throws IOException {
 		int tt = nextToken(), atPos = ts.getTokenBeg();
 
+		XmlAttributeIdentifier res = new XmlAttributeIdentifier(getParent());
+		parents.push(res);
+		Expression expr = null;
 		switch (tt) {
 		// handles: @name, @ns::name, @ns::*, @ns::[expr]
 		case Token.NAME:
-			return propertyName(atPos, 0);
+			expr = propertyName(atPos, 0);
+			break;
 
 			// handles: @*, @*::name, @*::*, @*::[expr]
 		case Token.MUL:
 			saveNameTokenData(ts.getTokenBeg(), "*", ts.getLineno());
-			return propertyName(atPos, 0);
+			expr = propertyName(atPos, 0);
+			break;
 
 			// handles @[expr]
 		case Token.LB:
-			return xmlElemRef(atPos, null, -1);
+			expr = xmlElemRef(atPos, null, -1);
+			break;
 
 		default:
 			addError("msg.no.name.after.xmlAttr", atPos, ts.getTokenEnd() - atPos);
-			return makeErrorNode();
+			expr = makeErrorNode();
 		}
+		res.setStart(atPos - 1);
+		res.setExpression(expr);
+		res.setEnd(expr.sourceEnd());
+		parents.pop();
+		return res;
 	}
 
 	/**
@@ -3486,34 +3503,50 @@ public class Parser implements IParser{
 		Identifier ns = null;
 
 		if (matchToken(Token.COLONCOLON, true)) {
-			ns = name;
+			GetLocalNameExpression res = new GetLocalNameExpression(getParent());
+			parents.push(res);
+			res.setNamespace(name);
+			name.setParent(res);
+			res.setStart(name.sourceStart());
 			colonPos = ts.getTokenBeg();
+			res.setColonColonPosition(ts.getTokenBeg());
 
 			switch (nextToken()) {
 			// handles name::name
 			case Token.NAME:
 				name = createNameNode();
+				res.setLocalName(name);
+				res.setEnd(name.sourceEnd());
 				break;
 
 				// handles name::*
 			case Token.MUL:
 				saveNameTokenData(ts.getTokenBeg(), "*", ts.getLineno());
-				name = createNameNode(false, -1);
+				AsteriskExpression expr = new AsteriskExpression(res);
+				expr.setStart(ts.getTokenBeg());
+				expr.setEnd(ts.getTokenEnd());
+				res.setLocalName(expr);
+				res.setEnd(ts.getTokenEnd());
 				break;
 
 				// handles name::[expr] or *::[expr]
-				//                case Token.LB:
-				//                    return xmlElemRef(atPos, ns, colonPos);
-				//
+			case Token.LB:
+				Expression ref = xmlElemRef(atPos, ns, colonPos);
+				res.setLocalName(ref);
+				res.setEnd(ref.sourceEnd());
+				break;
+
 			default:
 				reportError("msg.no.name.after.coloncolon", pos, colonPos);
 				makeErrorNode();
 			}
+			parents.pop();
+			return res;
 		}
 
-		if (ns == null && memberTypeFlags == 0 && atPos == -1) {
+		//if (memberTypeFlags == 0) { // was  && atPos == -1) {
 			return name;
-		}
+		//}
 
 		//        XmlPropRef ref = new XmlPropRef(pos, getNodeEnd(name) - pos);
 		//        ref.setAtPos(atPos);
@@ -3522,7 +3555,7 @@ public class Parser implements IParser{
 		//        ref.setPropName(name);
 		//        ref.setLineno(lineno);
 		//        return ref;
-		return makeErrorNode();
+		//return makeErrorNode();
 	}
 
 	/**
@@ -3530,22 +3563,10 @@ public class Parser implements IParser{
 	 * ns::[expr].
 	 */
 	private Expression xmlElemRef(int atPos, Identifier namespace, int colonPos) throws IOException {
-		//        int lb = ts.getTokenBeg(), rb = -1, pos = atPos != -1 ? atPos : lb;
-		//        AstNode expr = expr(false);
-		//        int end = getNodeEnd(expr);
-		//        if (mustMatchToken(Token.RB, "msg.no.bracket.index", true)) {
-		//            rb = ts.getTokenBeg();
-		//            end = ts.getTokenEnd();
-		//        }
-		//        XmlElemRef ref = new XmlElemRef(pos, end - pos);
-		//        ref.setNamespace(namespace);
-		//        ref.setColonPos(colonPos);
-		//        ref.setAtPos(atPos);
-		//        ref.setExpression(expr);
-		//        ref.setBrackets(lb, rb);
-		//        return ref;
-		reportError("msg.XML.not.available");
-		return makeErrorNode();
+		//TODO not supported in the dltk model, old parser returns the expr without []
+		Expression expr = expr(false);
+		mustMatchToken(Token.RB, "msg.no.bracket.index", true);
+		return expr;
 	}
 
 	private Expression destructuringPrimaryExpr() throws IOException, ParserException {

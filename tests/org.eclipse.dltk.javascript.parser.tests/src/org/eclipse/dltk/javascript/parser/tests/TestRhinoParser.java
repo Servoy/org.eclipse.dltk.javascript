@@ -1778,7 +1778,8 @@ public class TestRhinoParser {
 		String source = "<person>\r\n"
 				+ "  <name>{firstName} {lastName}</name>\r\n"
 				+ "  <age>{30 + 5}</age>\r\n"
-				+ "</person>;";
+				+ "</person>;"
+				+ "<item type=\"oranges\" price=\"4\"/>;";
 		Script script = getScript(source);
 		Script scriptv4 = getScriptv4(source);
 		
@@ -1860,5 +1861,31 @@ public class TestRhinoParser {
 		assertEquals(id.getProperty().toString(), idv4.getProperty().toString());
 		assertEquals(id.getDotDotPosition(), idv4.getDotDotPosition());
 		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testDefaultXMLNamespace() {
+		String source = "default xml namespace = \"http://example.com/namespace\";";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testVariousXMLExpressions() {
+		String source = "ns..@*;"
+				+ "name::[expr];" //the old parser ignores the [], therefore so does the new one
+				+ "sales.item.(@type == \"oranges\").@quantity;"
+				+ "sales..@price;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 }

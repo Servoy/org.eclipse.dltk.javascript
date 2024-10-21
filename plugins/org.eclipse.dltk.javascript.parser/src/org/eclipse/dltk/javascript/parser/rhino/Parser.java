@@ -37,6 +37,7 @@ import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DecimalLiteral;
 import org.eclipse.dltk.javascript.ast.DefaultClause;
+import org.eclipse.dltk.javascript.ast.DefaultXmlNamespaceStatement;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.Documentable;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
@@ -2308,33 +2309,53 @@ public class Parser implements IParser{
 		}
 	}
 
-	private Expression defaultXmlNamespace() throws IOException {
+	private Statement defaultXmlNamespace() throws IOException {
 		if (currentToken != Token.DEFAULT) codeBug();
 		consumeToken();
 		mustHaveXML();
-		//      setRequiresActivation();
-		//      int lineno = ts.getLineno(), pos = ts.getTokenBeg();
-		//
-		//      if (!(matchToken(Token.NAME, true) && "xml".equals(ts.getString()))) {
-		//          reportError("msg.bad.namespace");
-		//      }
-		//      if (!(matchToken(Token.NAME, true) && "namespace".equals(ts.getString()))) {
-		//          reportError("msg.bad.namespace");
-		//      }
-		//      if (!matchToken(Token.ASSIGN, true)) {
-		//          reportError("msg.bad.namespace");
-		//      }
-		//
-		//      AstNode e = null; //TODO expr(false);
-		//      UnaryExpression dxmln = new UnaryExpression(pos, getNodeEnd(e) - pos);
-		//      dxmln.setOperator(Token.DEFAULTNAMESPACE);
-		//      dxmln.setOperand(e);
-		//      dxmln.setLineno(lineno);
-		//
-		//      ExpressionStatement es = new ExpressionStatement(dxmln, true);
-		//      return es;
-		reportError("msg.XML.not.available");
-		return makeErrorNode();
+		setRequiresActivation();
+		int pos = ts.getTokenBeg();
+
+		int xmlpos = -1, namespacepos = -1, assignpos = -1;
+		if (!(matchToken(Token.NAME, true) && "xml".equals(ts.getString()))) {
+			reportError("msg.bad.namespace");
+		}
+		else {
+			xmlpos = ts.getTokenBeg();
+		}
+		if (!(matchToken(Token.NAME, true) && "namespace".equals(ts.getString()))) {
+			reportError("msg.bad.namespace");
+		}
+		else {
+			namespacepos = ts.getTokenBeg();
+		}
+		if (!matchToken(Token.ASSIGN, true)) {
+			reportError("msg.bad.namespace");
+		}
+		else {
+			assignpos = ts.getTokenBeg();
+		}
+
+		DefaultXmlNamespaceStatement dxmln = new DefaultXmlNamespaceStatement(getParent());
+		Keyword keyword = createKeyword(Token.DEFAULT, pos);
+		dxmln.setDefaultKeyword(keyword);
+		final Keyword xml = new Keyword("xml");
+		xml.setStart(xmlpos);
+		xml.setEnd(xmlpos + "xml".length());
+		dxmln.setXmlKeyword(xml);
+		final Keyword namespace = new Keyword("namespace");
+		namespace.setStart(namespacepos);
+		namespace.setEnd(namespacepos + "namespace".length());
+		dxmln.setNamespaceKeyword(namespace);
+		dxmln.setStart(pos);
+		dxmln.setAssignOperation(assignpos);
+		parents.push(dxmln);
+		
+		Expression e = expr(false);
+		dxmln.setEnd(e.sourceEnd());
+		dxmln.setValue(e);
+		parents.pop();
+		return dxmln;
 	}
 
 	private void recordLabel(Label label, LabelledStatement bundle) throws IOException {
@@ -3057,7 +3078,6 @@ public class Parser implements IParser{
 				}
 				xexpr.setExpression(expr);
 				mustMatchToken(Token.RC, "msg.syntax", true);
-				//TODO check xexpr.setIsXmlAttribute(ts.isXMLAttribute());
 				xexpr.setStart(beg);
 				xexpr.setEnd(end);
 				parents.pop();
@@ -3222,30 +3242,29 @@ public class Parser implements IParser{
 					break;
 				case Token.DOT:
 				case Token.DOTDOT:
-					//TODO .. is GetAllChildrenExpression 
 					pn = propertyAccess(tt, pn);
 					break;
 
 				case Token.DOTQUERY:
-					//TODO not supported in DLTK
 					consumeToken();
-					//                    int opPos = ts.getTokenBeg(), rp = -1;
-					//                    lineno = ts.getLineno();
-					//                    mustHaveXML();
-					//                    setRequiresActivation();
-					//                    AstNode filter = expr(false);
-					//                    int end = getNodeEnd(filter);
-					//                    if (mustMatchToken(Token.RP, "msg.no.paren", true)) {
-					//                        rp = ts.getTokenBeg();
-					//                        end = ts.getTokenEnd();
-					//                    }
-					//                    XmlDotQuery q = new XmlDotQuery(pos, end - pos);
-					//                    q.setLeft(pn);
-					//                    q.setRight(filter);
-					//                    q.setOperatorPosition(opPos);
-					//                    q.setRp(rp - pos);
-					//                    q.setLineno(lineno);
-					//                    pn = q;
+					int opPos = ts.getTokenBeg(), rp = -1;
+					mustHaveXML();
+					setRequiresActivation();
+					Expression filter = expr(false);
+					int endFilter = filter.sourceEnd();
+					if (mustMatchToken(Token.RP, "msg.no.paren", true)) {
+						rp = ts.getTokenBeg();
+						endFilter = ts.getTokenEnd();
+					}
+					
+					ParenthesizedExpression q = new ParenthesizedExpression(getParent());
+					q.setExpression(filter);
+					filter.setParent(q);
+					q.setStart(opPos + 1);
+					q.setEnd(endFilter);
+					q.setLP(opPos + 1);
+					q.setRP(rp);
+					pn = createPropertyExpression(pn, opPos, q);
 					break;
 
 				case Token.LB:
@@ -3544,18 +3563,7 @@ public class Parser implements IParser{
 			return res;
 		}
 
-		//if (memberTypeFlags == 0) { // was  && atPos == -1) {
-			return name;
-		//}
-
-		//        XmlPropRef ref = new XmlPropRef(pos, getNodeEnd(name) - pos);
-		//        ref.setAtPos(atPos);
-		//        ref.setNamespace(ns);
-		//        ref.setColonPos(colonPos);
-		//        ref.setPropName(name);
-		//        ref.setLineno(lineno);
-		//        return ref;
-		//return makeErrorNode();
+		return name;
 	}
 
 	/**

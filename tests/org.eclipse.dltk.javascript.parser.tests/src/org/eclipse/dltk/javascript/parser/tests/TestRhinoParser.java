@@ -1565,6 +1565,43 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testMISC2() {
+		String source = "/**\r\n"
+				+ " * current calendar view\r\n"
+				+ " * \r\n"
+				+ " * @protected\r\n"
+				+ " * \r\n"
+				+ " * @type {String}\r\n"
+				+ " *\r\n"
+				+ " * @properties={typeid:35}\r\n"
+				+ " */\r\n"
+				+ "var currentView = fullCalendar.CALENDAR_VIEW_TYPE.AGENDAWEEK\r\n"
+				+ "\r\n"
+				+ "/** \r\n"
+				+ " * Callback method when form is (re)loaded.\r\n"
+				+ " *\r\n"
+				+ " * @param {JSEvent} event the event that triggered the action\r\n"
+				+ " *\r\n"
+				+ " * @protected\r\n"
+				+ " *\r\n"
+				+ " * @properties={typeid:24}\r\n"
+				+ " * @AllowToRunInFind\r\n"
+				+ " */\r\n"
+				+ "function onLoad(event) {\r\n"
+				+ "	calendar = elements.fullcalendar_1;\r\n"
+				+ "}";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		for (int i = 0; i < script.getComments().size(); i++) {
+			assertTrue(equalsJSNode(script.getComments().get(i), scriptv4.getComments().get(i), new ArrayDeque<>()));
+		}
+	}
+	
+	@Test
 	public void testMultilineStringLiteral() {
 		String source =  "var sql = \"line 1 \\\r\n"
 				+ "		some other line \\\r\n"

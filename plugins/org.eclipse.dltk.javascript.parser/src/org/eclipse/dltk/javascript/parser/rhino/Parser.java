@@ -954,12 +954,12 @@ public class Parser implements IParser{
 		int functionSourceStart = ts.getTokenBeg(); // start of "function" kwd
 		Identifier name = null;
 		Expression memberExprNode = null;
+		Comment doc = getAndResetJsDoc();
 		FunctionStatement fnNode = new FunctionStatement(getParent(), type == FunctionNode.FUNCTION_STATEMENT);
 		SymbolTable fnScope = new SymbolTable(fnNode);
 		scopes.push(fnScope);
 		blockScopes.push(fnScope);
 		parents.push(fnNode);
-		Comment doc = getAndResetJsDoc();
 		if (matchToken(Token.NAME, true)) {
 			fnNode.setIsDeclaration(true);
 			name = createNameNode(true, Token.NAME);
@@ -3444,7 +3444,7 @@ public class Parser implements IParser{
 		PropertyExpression result = new PropertyExpression(getParent());   
 		if (pn instanceof Documentable) {
 			//the original rhino parser doesn't do this
-			if (pn.getDocumentation() == null) {
+			if (pn.getDocumentation() == null && currentJsDocComment != null && currentJsDocComment.sourceStart() < pn.start()) {
 				Comment doc = getAndResetJsDoc();
 				((Documentable) pn).setDocumentation(doc);
 			}

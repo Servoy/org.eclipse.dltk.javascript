@@ -16,6 +16,7 @@ import org.eclipse.dltk.javascript.ast.*;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.v4.*;
+import org.eclipse.dltk.javascript.parser.JavaScriptParserProblems;
 import org.junit.Test;
 
 /**
@@ -1924,5 +1925,61 @@ public class TestRhinoParser {
 		assertNotNull(script);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testDuplicateDeclaration() {
+		String source = "var test = {}; var test = {};\n"
+				+ "function f(){}\n"
+				+ "function f(a, a){}\n"
+				+ "var f;\n"
+				+ "function test(f){}\n ";
+		
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);	
+		assertEquals(5, problems.size());
+		assertEquals(JavaScriptParserProblems.DUPLICATE_VAR, problems.get(0).getID());
+		assertEquals("Duplicate declaration of test", problems.get(0).getMessage());
+		assertEquals(JavaScriptParserProblems.DUPLICATE_PARAMETER, problems.get(1).getID());
+		assertEquals("Duplicate parameter a", problems.get(1).getMessage());
+		assertEquals(JavaScriptParserProblems.DUPLICATE_FUNCTION, problems.get(2).getID());
+		assertEquals("Duplicate declaration of f", problems.get(2).getMessage());
+		assertEquals(JavaScriptParserProblems.VAR_DUPLICATES_OTHER, problems.get(3).getID());
+		assertEquals("Variable f hides function", problems.get(3).getMessage());
+		assertEquals(JavaScriptParserProblems.FUNCTION_DUPLICATES_OTHER, problems.get(4).getID());
+		assertEquals("Function test hides var", problems.get(4).getMessage());
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testLetRedecl() {
+		String source = "let a = 1;\n"
+				+ " {let a = 2;}\n"
+				+ "for (let a in obj) {} \n"
+				+ "let a = 3;\n";
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(1, problems.size());
+		assertEquals("TypeError: redeclaration of variable a.", problems.get(0).getMessage());
+		assertEquals(3, problems.get(0).getSourceLineNumber());
 	}
 }

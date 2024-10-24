@@ -235,6 +235,8 @@ public class Parser implements IParser{
 		if (declType == Token.VAR) return SymbolKind.VAR;
 		if (declType == Token.CONST) return SymbolKind.CONST;
 		if (declType == Token.LET) return SymbolKind.LET;
+		if (declType == Token.LP) return SymbolKind.PARAM;
+		if (declType == Token.FUNCTION) return SymbolKind.FUNCTION;
 		return null;
 	}
 
@@ -2645,14 +2647,37 @@ public class Parser implements IParser{
 
 		case Token.VAR:
 		case Token.CONST:
-		case Token.FUNCTION:
-			if (kind != null) {
-				if (kind == SymbolKind.VAR) addStrictWarning("msg.var.redecl", name.getName());
-				else if (kind == SymbolKind.PARAM) {
-					addStrictWarning("msg.var.hides.arg", name.getName());
+			SymbolKind k = getSymbolKind(declType);
+			final SymbolKind replaced = getScope().add(name.getName(), k, declaration);
+			if (replaced != null && reporter != null) {
+				final Identifier identifier = declaration.getIdentifier();
+				reporter.setRange(identifier.sourceStart(),
+						identifier.sourceEnd());
+				if (replaced == k) {
+					reporter.setFormattedMessage(k.duplicateProblem,
+							name.getName());
+				} else {
+					reporter.setFormattedMessage(k.hideProblem,
+							name.getName(),
+							replaced.verboseName());
 				}
-			} else {
-				getScope().add(name.getName(), getSymbolKind(declType), declaration);
+				reporter.report();
+			}
+			return;
+		case Token.FUNCTION:
+			final SymbolKind replaced1 = getScope().add(name.getName(), getSymbolKind(declType), declaration);
+			if (replaced1 != null && reporter != null) {
+				if (replaced1 == SymbolKind.FUNCTION) {
+					reporter.setFormattedMessage(
+							JavaScriptParserProblems.DUPLICATE_FUNCTION,
+							name.getName());
+				} else {
+					reporter.setFormattedMessage(
+							JavaScriptParserProblems.FUNCTION_DUPLICATES_OTHER,
+							name.getName(), replaced1.verboseName());
+				}
+				reporter.setRange(name.sourceStart(), name.sourceEnd());
+				reporter.report();
 			}
 			return;
 
@@ -2660,7 +2685,11 @@ public class Parser implements IParser{
 			if (kind != null) {
 				// must be duplicate parameter. Second parameter hides the
 				// first, so go ahead and add the second parameter
-				addWarning("msg.dup.parms", name.getName());
+				reporter.setFormattedMessage(
+						JavaScriptParserProblems.DUPLICATE_PARAMETER,
+						name.getName());
+				reporter.setRange(name.sourceStart(), name.sourceEnd());
+				reporter.report();
 			}
 			getScope().add(name.getName(), getSymbolKind(declType), declaration);
 			return;

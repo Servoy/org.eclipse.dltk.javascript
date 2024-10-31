@@ -948,10 +948,10 @@ public class Parser implements IParser{
 	}
 
 	private FunctionStatement function(int type) throws IOException {
-		return function(type, false);
+		return function(type, false, true);
 	}
 
-	private FunctionStatement function(int type, boolean isGenerator) throws IOException {
+	private FunctionStatement function(int type, boolean isGenerator, boolean scope) throws IOException {
 		int syntheticType = type;
 		int functionSourceStart = ts.getTokenBeg(); // start of "function" kwd
 		Identifier name = null;
@@ -959,7 +959,7 @@ public class Parser implements IParser{
 		Comment doc = getAndResetJsDoc();
 		FunctionStatement fnNode = new FunctionStatement(getParent(), type == FunctionNode.FUNCTION_STATEMENT);
 		SymbolTable fnScope = new SymbolTable(fnNode);
-		scopes.push(fnScope);
+		if (scope) scopes.push(fnScope);
 		blockScopes.push(fnScope);
 		parents.push(fnNode);
 		if (matchToken(Token.NAME, true)) {
@@ -987,7 +987,7 @@ public class Parser implements IParser{
 		} else if (matchToken(Token.MUL, true)
 				&& (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6)) {
 			// ES6 generator function
-			return function(type, true);
+			return function(type, true, true);
 		} else {
 			if (compilerEnv.isAllowMemberExprAsFunctionName()) {
 				// Note that memberExpr can not start with '(' like
@@ -1055,7 +1055,7 @@ public class Parser implements IParser{
 		//            fnNode.setParentScope(currentScope);
 		//        }
 		parents.pop();
-		scopes.pop();
+		if (scope) scopes.pop();
 		blockScopes.pop();
 		if (syntheticType != FunctionNode.FUNCTION_EXPRESSION
 				&& name != null
@@ -1191,6 +1191,9 @@ public class Parser implements IParser{
 		int tt;
 		while ((tt = peekToken()) > Token.EOF && tt != Token.RC) {
 			ASTNode statement = statement();
+			if (statement instanceof Expression) {
+				statement = toVoidExpression((Expression) statement);
+			}
 			if (statement instanceof Statement) {
 				block.getStatements().add((Statement) statement);
 				((Statement) statement).setParent(block);
@@ -2617,22 +2620,11 @@ public class Parser implements IParser{
 		}
 		SymbolTable definingScope = !blockScopes.isEmpty() ? blockScopes.peek() : getScope();
 		SymbolKind kind = getScope().canAdd(name.getName());
-		if (kind != null
-				&& (kind == SymbolKind.CONST
-				|| declType == Token.CONST
-				|| (definingScope == getScope() && kind == SymbolKind.LET))) {
-			addError(
-					kind == SymbolKind.CONST
-					? "msg.const.redecl"
-							: kind == SymbolKind.LET
-							? "msg.let.redecl"
-									: kind == SymbolKind.VAR
-									? "msg.var.redecl"
-											: kind == SymbolKind.FUNCTION
-											? "msg.fn.redecl"
-													: "msg.parm.redecl",
-													name.getName());
-			return;
+		if (kind != null) {
+			if (definingScope == getScope() && kind == SymbolKind.LET) {
+				addError("msg.let.redecl", name.getName());
+				return;
+			}
 		}
 		switch (declType) {
 		case Token.LET:
@@ -2852,20 +2844,20 @@ public class Parser implements IParser{
 
 	private Expression orExpr() throws IOException {
 		Expression pn = andExpr();
-		if (matchToken(Token.OR, true)) {
+		while (matchToken(Token.OR, true)) {
 			int opPos = ts.getTokenBeg();
-			pn = createBinaryOperation(Token.OR, opPos, pn, orExpr(), getParent());
+			pn = createBinaryOperation(Token.OR, opPos, pn, andExpr(), getParent());
 		}
 		return pn;
 	}
 
 	private Expression andExpr() throws IOException {
 		Expression pn = bitOrExpr();
-		if (matchToken(Token.AND, true)) {
-			int opPos = ts.getTokenBeg();
-			pn = createBinaryOperation(Token.AND, opPos, pn, andExpr(), getParent());
-		}
-		return pn;
+		while (matchToken(Token.AND, true)) {
+	        int opPos = ts.getTokenBeg();
+	        pn = createBinaryOperation(Token.AND, opPos, pn, bitOrExpr(), getParent());
+	    }
+	    return pn;
 	}
 
 	private Expression bitOrExpr() throws IOException {
@@ -4143,7 +4135,7 @@ public class Parser implements IParser{
 
 	private Method methodDefinition(int pos, Identifier propName, int entryKind)
 			throws IOException { 
-		FunctionStatement fn = function(FunctionNode.FUNCTION_EXPRESSION);
+		FunctionStatement fn = function(FunctionNode.FUNCTION_EXPRESSION, false, false);
 		// We've already parsed the function name, so fn should be anonymous.
 		Identifier name = fn.getName();
 		if (name != null && name.getName().length() != 0) {

@@ -51,10 +51,7 @@ public class TestRhinoParser {
 	private boolean equalsJSNode(ASTNode node1, ASTNode node2, ArrayDeque<String> stack) {
 		stack.push(node1.getClass().getSimpleName());
 		try {
-			if (node1.toString().equals(node2.toString())
-					&& node1.sourceStart() == node2.sourceStart()
-					&& node1.sourceEnd() == node2.sourceEnd()
-					&& node1.getChilds().size() == node2.getChilds().size()) {
+			if (node1.getChilds().size() == node2.getChilds().size()) {
 				List<ASTNode> node1_children = node1.getChilds();
 				List<ASTNode> node2_children = node2.getChilds();
 				for (int i = 0; i < node1_children.size(); i++) {
@@ -133,7 +130,12 @@ public class TestRhinoParser {
 						return false;
 					}
 				}
-				return true;
+				if (node1.toString().equals(node2.toString())
+						&& node1.sourceStart() == node2.sourceStart()
+						&& node1.sourceEnd() == node2.sourceEnd())
+				{
+					return true;
+				}
 			}
 			fail("nodes are not equal in source end/start or don't have the same childre, stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
 			return false;
@@ -1981,5 +1983,74 @@ public class TestRhinoParser {
 		assertEquals(1, problems.size());
 		assertEquals("TypeError: redeclaration of variable a.", problems.get(0).getMessage());
 		assertEquals(3, problems.get(0).getSourceLineNumber());
+	}
+	
+	@Test
+	public void testHides() {
+		String source = "x.filter(function (detail) {const detail = {};});";
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		assertEquals(1, problems.size());
+		assertEquals("Constant detail hides param", problems.get(0).getMessage());
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testDuplicateDeclaration_ObjectInitializer() {
+		String source = "o = {"
+				+ "get property() { const comp = 1;},\n"
+				+ "set property(value) { const comp = 2;}"
+				+ "};";
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(1, problems.size());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testAND_ORAssociativity() {
+		String source = "a && b && c;\n"
+				+ "a || b || c";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testUndeclaredVar() {
+		String source = "function test() {\r\n"
+				+ "	if (true) {\r\n"
+				+ "	  function b() {\r\n"
+				+ "		  attributeInfo = getAttributeInfo(accountAttribute, context)\r\n"
+				+ "	  }\r\n"
+				+ "	}\r\n"
+				+ "}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 }

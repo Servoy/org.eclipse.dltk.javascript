@@ -2,6 +2,7 @@ package org.eclipse.dltk.javascript.parser.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -2010,7 +2011,10 @@ public class TestRhinoParser {
 	public void testDuplicateDeclaration_ObjectInitializer() {
 		String source = "o = {"
 				+ "get property() { const comp = 1;},\n"
-				+ "set property(value) { const comp = 2;}"
+				+ "set text(value) { const comp = 2;}\n"
+				+ "};"
+				+ "obj = {"
+				+ "set text(value) {}"
 				+ "};";
 		Script script = getScript(source);
 		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
@@ -2049,6 +2053,41 @@ public class TestRhinoParser {
 				+ "	}\r\n"
 				+ "}";
 		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testFn_NotApplicableForArgs() {
+		String source = "function f() {\r\n"
+				+ "	/** @type {String} */  // SOME COMMENT\r\n"
+				+ "	var module = {};\r\n"
+				+ "	i18n.getI18NMessage(module);\r\n"
+				+ "}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		
+		FunctionStatement statement = (FunctionStatement) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		FunctionStatement statementv4 = (FunctionStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		StatementBlock block = (StatementBlock) statement.getBody();
+		StatementBlock blockv4 = (StatementBlock) statementv4.getBody();
+		VariableStatement vs = (VariableStatement)((VoidExpression)block.getStatements().get(0)).getExpression();
+		VariableStatement vs4 = (VariableStatement)((VoidExpression)blockv4.getStatements().get(0)).getExpression();
+		assertNull("the old parser does not set the doc if it is followed by another comment", vs.getDocumentation());
+		assertNotNull("the new parser should set the doc", vs4.getDocumentation());
+		assertEquals("/** @type {String} */", vs4.getDocumentation().getText());
+	}
+	
+	@Test
+	public void testConstSourceEnd() {
+		String source = " const org = context.org\r\n"
+				+ " const ID = context.id\r\n";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));

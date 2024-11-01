@@ -2540,6 +2540,10 @@ public class Parser implements IParser{
 		}
 		Expression ex = (Expression) variableStatement;
 		ex.setStart(pos);
+		int nextTokenBeg = ts.getTokenBeg();
+		if (nextTokenBeg - 1 > end) {
+			end = nextTokenBeg - 1;
+		}
 		ex.setEnd(end);
 		return ex;
 	}
@@ -2674,7 +2678,8 @@ public class Parser implements IParser{
 			return;
 
 		case Token.LP:
-			if (kind != null) {
+			//params are duplicate if they are in the same list
+			if (definingScope.canAdd(name.getName()) != null) {
 				// must be duplicate parameter. Second parameter hides the
 				// first, so go ahead and add the second parameter
 				reporter.setFormattedMessage(

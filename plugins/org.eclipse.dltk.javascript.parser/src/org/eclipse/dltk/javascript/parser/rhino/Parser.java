@@ -198,6 +198,7 @@ public class Parser implements IParser{
 	private Stack<SymbolTable> scopes = new Stack<SymbolTable>();
 	private Stack<SymbolTable> blockScopes = new Stack<SymbolTable>();
 
+	private int prevTokenStart;
 	private int prevTokenEnd;
 
 	private int lastCommentLineno;
@@ -470,6 +471,7 @@ public class Parser implements IParser{
 		}
 
 		int lineno = ts.getLineno();
+		prevTokenStart = ts.getTokenBeg();
 		prevTokenEnd = ts.getTokenEnd();
 		int tt = ts.getToken();
 		boolean sawEOL = false;
@@ -1250,7 +1252,7 @@ public class Parser implements IParser{
 									pn.end() - beg);
 				}
 				int ntt = peekToken();
-				if (ts.getLineno() - lineno > 2 && prevTokenEnd > pn.end()) {
+				if (ts.getLineno() - lineno > 2 && prevTokenStart == pn.start() && prevTokenEnd > pn.end()) {
 					//this is to match the end with the old dltk tree when the next token is following multiple newlines
 					//only void expr for now
 

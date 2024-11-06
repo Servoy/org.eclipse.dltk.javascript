@@ -2092,4 +2092,23 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
+	
+	@Test
+	public void testForEach() {
+		String source =  "	arr.forEach(function(record) {\r\n"
+				+ "		x[a.id] = record\r\n"
+				+ "	})\r\n"
+				+ "\r\n"
+				+ "	/* ---------------- comment ----------------*/\r\n"
+				+ "	//another comment\r\n"
+				+ "	if (a.b && a.b.c) {\r\n"
+				+ "		x[a.b.attr] = createAttribute(record)\r\n"
+				+ "	}\r\n";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
 }

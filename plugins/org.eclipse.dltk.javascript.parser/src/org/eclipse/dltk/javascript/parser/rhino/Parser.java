@@ -1186,7 +1186,17 @@ public class Parser implements IParser{
 		if (currentToken != Token.LC // assertion can be invalid in bad code
 				&& !compilerEnv.isIdeMode()) codeBug();
 		int pos = ts.getTokenBeg();
-		StatementBlock block = parent instanceof StatementBlock ? (StatementBlock) parent : new StatementBlock(getParent());
+		StatementBlock block;
+		boolean popParents = false;
+		if (parent instanceof StatementBlock) {
+			block = (StatementBlock) parent;
+		}
+		else 
+		{
+			block = new StatementBlock(getParent());
+			parents.push(block);
+			popParents = true;
+		}
 		block.setLC(pos);
 		block.setStart(pos);
 
@@ -1204,6 +1214,7 @@ public class Parser implements IParser{
 		}
 		block.setEnd(ts.getTokenEnd());
 		if (tt == Token.RC) block.setRC(ts.getTokenBeg());
+		if (popParents) parents.pop();
 		return block;
 	}
 
@@ -1475,7 +1486,7 @@ public class Parser implements IParser{
 		}
 		Statement endNode = ifFalse != null ? ifFalse : ifTrue;
 		pn.setStart(pos);
-		pn.setEnd(endNode.end());
+		pn.setEnd(getSourceEnd(endNode));
 		pn.setCondition(data.condition);
 		pn.setLP(data.lp);
 		pn.setRP(data.rp);
@@ -1486,6 +1497,15 @@ public class Parser implements IParser{
 		}
 		parents.pop();
 		return pn;
+	}
+
+	private int getSourceEnd(Statement endNode) throws IOException {
+		int end = endNode.end();
+		if (endNode instanceof ISemicolonStatement sc && sc.getSemicolonPosition() == -1)
+		{
+			end = Math.max(prevTokenStart, end);
+		}
+		return end; 
 	}
 
 	private SwitchStatement switchStatement() throws IOException {
@@ -1512,10 +1532,11 @@ public class Parser implements IParser{
 
 			boolean hasDefault = false;
 			int tt;
+			SwitchComponent comp = null;
+			ASTNode nextStmt = null;
 			switchLoop:
 				for (; ; ) {
 					tt = nextToken();
-					SwitchComponent comp = null;
 					switch (tt) {
 					case Token.RC:
 						pn.setRC(ts.getTokenBeg());
@@ -1523,6 +1544,7 @@ public class Parser implements IParser{
 						break switchLoop;
 
 					case Token.CASE:
+						adjustEnd(comp, nextStmt);
 						comp = new CaseClause(pn);
 						parents.push(comp);
 						((CaseClause) comp).setCaseKeyword(createKeyword(Token.CASE, ts.getTokenBeg()));
@@ -1536,6 +1558,7 @@ public class Parser implements IParser{
 						break;
 
 						case Token.DEFAULT:
+							adjustEnd(comp, nextStmt);
 							if (hasDefault) {
 								//reportError("msg.double.switch.default");
 								reporter.setMessage(JavaScriptParserProblems.DOUBLE_SWITCH_DEFAULT);
@@ -1572,7 +1595,7 @@ public class Parser implements IParser{
 							consumeToken();
 							continue;
 						}
-						ASTNode nextStmt = statement();
+						nextStmt = statement();
 						comp.getStatements().add((Statement) nextStmt);
 						comp.setEnd(nextStmt.end() > 0 ? nextStmt.end() : ts.getTokenEnd());
 					}
@@ -1583,6 +1606,12 @@ public class Parser implements IParser{
 			parents.pop();
 		}
 		return pn;
+	}
+
+	private void adjustEnd(SwitchComponent comp, ASTNode nextStmt) {
+		if (comp != null && nextStmt instanceof ISemicolonStatement sc && sc.getSemicolonPosition() == -1) {
+			comp.setEnd(prevTokenEnd + 1);
+		}
 	}
 
 	private WhileStatement whileLoop() throws IOException {
@@ -2507,10 +2536,8 @@ public class Parser implements IParser{
 			}
 
 			Comment jsdocNode = getAndResetJsDoc();
-			if (jsdocNode != null) 
-			{
-				((Documentable)variableStatement).setDocumentation(jsdocNode);
-			}
+			((Documentable)variableStatement).setDocumentation(jsdocNode != null ? jsdocNode : varjsdocNode);
+			if (name != null) name.setDocumentation(jsdocNode != null ? jsdocNode : varjsdocNode);
 			VariableDeclaration variableDeclaration = new VariableDeclaration(variableStatement); 
 			parents.push(variableDeclaration);
 			Expression init = null;
@@ -3479,7 +3506,11 @@ public class Parser implements IParser{
 			result.setDocumentation(pn.getDocumentation());
 		}
 		else {
-			result.setDocumentation(getAndResetJsDoc());
+			Comment comment = getAndResetJsDoc();
+			result.setDocumentation(comment);
+			if (ref.getDocumentation() == null && ref instanceof Documentable doc) {
+				doc.setDocumentation(comment);
+			}
 		}
 		result.setStart(pn.start());
 		result.setEnd(ref.end());
@@ -3646,7 +3677,12 @@ public class Parser implements IParser{
 
 		case Token.NAME:
 			consumeToken();
-			return name(ttFlagged, tt);
+			Expression name = name(ttFlagged, tt);
+			if (name instanceof Documentable doc && name.getDocumentation() == null && currentJsDocComment != null
+					&& currentJsDocComment.sourceStart() < name.start()) {
+				doc.setDocumentation(getAndResetJsDoc());
+			}
+			return name;
 
 		case Token.NUMBER:
 		case Token.BIGINT:

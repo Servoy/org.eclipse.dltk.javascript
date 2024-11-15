@@ -109,7 +109,7 @@ public class TestRhinoParser {
 							.getDocumentation();
 					if (documentation1 != null) {
 						if (documentation2 == null) {
-							fail("the node fails mising documentation for  " + node2 + " that should be "  + node1 + "\nstack: " + stack );
+						 	fail("the node fails mising documentation for  " + node2 + " that should be "  + node1 + "\nstack: " + stack );
 							return false;
 						}
 						if (!equalsJSNode(documentation1, documentation2,
@@ -118,6 +118,10 @@ public class TestRhinoParser {
 							return false;
 						}
 					}
+//					else if (documentation2 != null && documentation1 == null)
+//					{
+//						System.out.println(node1 +" is missing documentation in the old parser.");
+//					}
 				}
 				if (node1 instanceof StatementBlock sb1) {
 					if (node2 instanceof StatementBlock sb2) {
@@ -131,14 +135,21 @@ public class TestRhinoParser {
 						return false;
 					}
 				}
-				if (node1.toString().equals(node2.toString())
-						&& node1.sourceStart() == node2.sourceStart()
-						&& node1.sourceEnd() == node2.sourceEnd())
+				if (!node1.toString().equals(node2.toString()))
 				{
-					return true;
+					fail("nodes are not equal in source toString or don't have the same children, stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
 				}
+				if (node1.sourceStart() != node2.sourceStart())
+				{
+					fail("nodes are not equal in source start "+node1.sourceStart() +" !=" + node2.sourceStart()+", stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
+				}
+				if (node1.sourceEnd() != node2.sourceEnd())
+				{
+					fail("nodes are not equal in source end "+node1.sourceEnd() +" !=" + node2.sourceEnd()+", stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
+				}
+				return true;
 			}
-			fail("nodes are not equal in source end/start or don't have the same childre, stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
+			fail("nodes adon't have the same children, stack: " + stack + "\nnode1:\n" + node1 + "\nnode2:\n" + node2);
 			return false;
 		} finally {
 			stack.pop();
@@ -2109,6 +2120,73 @@ public class TestRhinoParser {
 		
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testBreakNoSemiColon() {
+		String source = "			switch (fieldType) {\r\n"
+				+ "				case JSColumn.DATETIME:\r\n"
+				+ "					columnValue = row[attr.valueDate];\r\n"
+				+ "					break\r\n" //break is not followed by ;
+				+ "				default:\r\n"
+				+ "					columnValue = row[attr.value];\r\n"
+				+ "					break;\r\n"
+				+ "			}\r\n";
+		Script script = getScript(source);	
+		assertNotNull(script);
+
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testReturnNoSemiColonThenComment() {
+		String source = "if (true) return []\r\n"
+				+ "	/** @type {Array} */\r\n"
+				+ "	var a1 = arr.slice(0) // Start with a copy\r\n";
+		Script script = getScript(source);	
+		assertNotNull(script);
+
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test		
+	public void testReturnDoc() {
+		String source = "/** @type {JSDataSet<{\r\n"
+				+ "     *  unique_identifier: String\r\n"
+				+ "     *  attribute_id: Number,\r\n"
+				+ "     *  }>}\r\n"
+				+ "     */\r\n"
+				+ "	return databaseManager.getDataSetByQuery(select, -1)";
+		Script script = getScript(source);	
+		assertNotNull(script);
+
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertEquals(script.getComments().get(0).getText(), scriptv4.getComments().get(0).getText());
+		assertEquals(script.getComments().get(0).sourceStart(), scriptv4.getComments().get(0).sourceStart());
+		assertEquals(script.getComments().get(0).sourceEnd(), scriptv4.getComments().get(0).sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test		
+	public void testIdentifierDoc() {
+		String source =  " /** @type {JsRecord} */\r\n"
+				+ "		this.record = record\r\n"
+				+ "		/** @type {RegExp} */\r\n"
+				+ "		some_expr = 1\r\n";
+		Script script = getScript(source);	
+		assertNotNull(script);
+
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertEquals(script.getComments().get(0).getText(), scriptv4.getComments().get(0).getText());
+		assertEquals(script.getComments().get(0).sourceStart(), scriptv4.getComments().get(0).sourceStart());
+		assertEquals(script.getComments().get(0).sourceEnd(), scriptv4.getComments().get(0).sourceEnd());
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 }

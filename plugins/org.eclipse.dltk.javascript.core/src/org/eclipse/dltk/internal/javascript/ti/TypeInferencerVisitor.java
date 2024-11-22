@@ -455,28 +455,32 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 										.getProperty().sourceEnd()));
 					} else {
 						if (leftParent != null) {
-							final IRType declaredType = leftParent
-									.getDeclaredType();
-							if (declaredType != null
-									&& !declaredType.isExtensible()
-									&& !declaredType.isJavaScriptObject()) {
-								// skip assignment
-								return right;
-							} else {
-								// if the assignment is done on the prototype property
-								// then make sure it is not IRProperty (the one from Object itself)
-								// replace that with a AnonymousValue
-								Object attribute = leftParent
-										.getAttribute(IReferenceAttributes.ELEMENT);
-								if (attribute instanceof IRProperty
-										&& ((IRProperty) attribute).getName()
-												.equals(IRLocalType.PROTOTYPE_PROPERTY)) {
-									leftParent.getParent()
-											.createChild(
-													IRLocalType.PROTOTYPE_PROPERTY)
-											.setValue(new AnonymousValue());
+							IValueReference currentParent = leftParent;
+							while (currentParent != null) {
+								final IRType declaredType = currentParent
+										.getDeclaredType();
+								if (declaredType != null
+										&& !declaredType.isExtensible()
+										&& !declaredType.isJavaScriptObject()) {
+									// skip assignment
+									return right;
 								}
-
+								currentParent = currentParent.getParent();
+							}
+							// if the assignment is done on the prototype
+							// property
+							// then make sure it is not IRProperty (the one from
+							// Object itself)
+							// replace that with a AnonymousValue
+							Object attribute = leftParent
+									.getAttribute(IReferenceAttributes.ELEMENT);
+							if (attribute instanceof IRProperty
+									&& ((IRProperty) attribute).getName()
+											.equals(IRLocalType.PROTOTYPE_PROPERTY)) {
+								leftParent.getParent()
+										.createChild(
+												IRLocalType.PROTOTYPE_PROPERTY)
+										.setValue(new AnonymousValue());
 							}
 						}
 					}

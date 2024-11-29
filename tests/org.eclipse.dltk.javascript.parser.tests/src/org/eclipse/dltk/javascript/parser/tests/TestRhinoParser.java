@@ -1645,6 +1645,90 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testSymbol() {
+		//with special character 🌈
+		String source = "'🌈'";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testStringLiteral_special() {
+		String source = "'test 🌈' + 'abc'";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testXMLLiteral_special() {
+		String source = "<SQL>test 🌈 </SQL>";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		XmlLiteral literal = (XmlLiteral) ((VoidExpression)script.getStatements().get(0)).getExpression();
+		XmlLiteral literalv4 = (XmlLiteral) ((VoidExpression)scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(literal.getFragments().size(), literalv4.getFragments().size());
+		assertEquals(1, literalv4.getFragments().size());
+		ArrayDeque<String> stack = new ArrayDeque<>();
+		assertTrue(equalsJSNode(literal.getFragments().get(0), literalv4.getFragments().get(0), stack));
+		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testTemplateString_special() {
+		String source ="`test 🌟✨ ${abc+c} 🌟✨`";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		TemplateStringLiteral expr = (TemplateStringLiteral) ((VoidExpression) statement).getExpression();
+		assertEquals(source, expr.toString().trim());
+		assertEquals(1, expr.getTemplateExpressions().size());
+		assertEquals("${abc + c}", expr.getTemplateExpressions().get(0).toString());
+	}
+	
+	@Test
+	public void testMISC_special() {
+		String source = " /**\r\n"
+				+ "     * Sets the property value for this 🌟 property.\r\n"
+				+ "     * \r\n"
+				+ "     * @public\r\n"
+				+ "     * @param {String} propertyValue ✨ \r\n"
+				+ "     * @return {Property ✨} This property for call-chaining support.\r\n"
+				+ "     * @this {Property}\r\n"
+				+ "     */\r\n"
+				+ "    Property.prototype.setPropertyValue = function(propertyValue) {\r\n"
+				+ "    	if (!textLengthIsValid(propertyValue, MAX_VALUE_LENGTH)) {\r\n"
+				+ "    		throw new Error(utils.stringFormat('PropertyValue ✨ must be between 0 and %1$s characters long.', [MAX_VALUE_LENGTH]));\r\n"
+				+ "    	}\r\n"
+				+ "    	\r\n"
+				+ "    	this.record.property_value = '🌈🌟✨'; // ✨ \r\n"
+				+ "        return this;\r\n"
+				+ "    }";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		for (int i = 0; i < script.getComments().size(); i++) {
+			assertTrue(equalsJSNode(script.getComments().get(i), scriptv4.getComments().get(i), new ArrayDeque<>()));
+		}
+	}
+	
+	@Test
 	public void testSingleLineComments() {
 		String source = "//test🌈 / June, 9 1:27 PM---\r\n" 
 				+ "objectFields[subName].is_calculate_on_top = isCalculateOnTop // it's for tax only\r\n"
@@ -1662,7 +1746,6 @@ public class TestRhinoParser {
 		assertTrue(equalsJSNode(script.getComments().get(1), scriptv4.getComments().get(1), new ArrayDeque<>()));
 		assertTrue(equalsJSNode(script.getComments().get(2), scriptv4.getComments().get(2), new ArrayDeque<>()));
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
-
 	}
 	
 	@Test
@@ -1678,7 +1761,6 @@ public class TestRhinoParser {
 		assertEquals(script.getComments().get(0).toString(), scriptv4.getComments().get(0).toString());
 		assertTrue(equalsJSNode(script.getComments().get(0), scriptv4.getComments().get(0), new ArrayDeque<>()));
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
-
 	}
 	
 	@Test

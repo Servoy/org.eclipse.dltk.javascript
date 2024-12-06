@@ -6,7 +6,7 @@ import org.osgi.service.prefs.BackingStoreException;
 public class JavascriptParserPreferences {
 	
 	protected final IEclipsePreferences eclipsePreferences;
-	private static final String ES6_Prefernce = "ES6_Parser";
+	private static final String ES6_Preference = "ES6_Parser";
 
 	public JavascriptParserPreferences()
 	{
@@ -14,11 +14,11 @@ public class JavascriptParserPreferences {
 	}
 
 	public boolean useES6Parser() {
-		return eclipsePreferences.getBoolean(ES6_Prefernce, false);
+		return eclipsePreferences.getBoolean(ES6_Preference, true);
 	}
 	
 	public void useES6Parser(boolean use) {
-		eclipsePreferences.putBoolean(ES6_Prefernce, use);
+		eclipsePreferences.putBoolean(ES6_Preference, use);
 	}
 
 	public void save()

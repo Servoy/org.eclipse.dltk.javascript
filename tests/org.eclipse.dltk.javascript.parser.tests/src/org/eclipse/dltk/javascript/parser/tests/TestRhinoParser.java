@@ -1277,6 +1277,8 @@ public class TestRhinoParser {
 		TemplateStringLiteral templateStringLiteral = (TemplateStringLiteral) expr.getInitializer();
 		assertEquals(1, templateStringLiteral.getTemplateExpressions().size());
 		assertEquals("${abc + c}", templateStringLiteral.getTemplateExpressions().get(0).toString());
+		assertEquals(7, templateStringLiteral.getStartBackTick());
+		assertEquals(23, templateStringLiteral.getEndBackTick());
 	}
 	
 	@Test
@@ -1697,6 +1699,21 @@ public class TestRhinoParser {
 		assertEquals(source, expr.toString().trim());
 		assertEquals(1, expr.getTemplateExpressions().size());
 		assertEquals("${abc + c}", expr.getTemplateExpressions().get(0).toString());
+	}
+	
+	@Test		
+	public void testTemplateLiteral() {
+		String source =  "`This is a test,\r\n"
+				+ "	test\r\n"
+				+ "	`";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		TemplateStringLiteral expression = (TemplateStringLiteral) ((VoidExpression) statement).getExpression();
+		assertEquals(0, expression.getStartBackTick());
+		assertEquals(27, expression.getEndBackTick());
 	}
 	
 	@Test

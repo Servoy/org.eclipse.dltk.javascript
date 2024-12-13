@@ -4340,7 +4340,7 @@ public class Parser implements IParser{
 		pn.setEnd(ts.getTokenEnd());
 		text.append('`');
 		pn.setText('`'+ts.getSourceString().substring(posChars, ts.getTokenEnd()));
-		pn.setEndBackTick(ts.getTokenBeg());
+		pn.setEndBackTick(ts.getTokenEnd());
 
 		parents.pop();
 		return pn;

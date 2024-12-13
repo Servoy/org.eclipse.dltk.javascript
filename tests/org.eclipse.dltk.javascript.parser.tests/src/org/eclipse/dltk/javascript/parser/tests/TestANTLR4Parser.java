@@ -1434,4 +1434,33 @@ public class TestANTLR4Parser {
 		assertEquals(2, problemsv4.size());
 		assertEquals("no viable alternative at input 'function myFn(...myArgs,'", problemsv4.get(0).getMessage());
 	}
+	
+	@Test		
+	public void testTemplateLiteral() {
+		String source =  "`This is a test,\r\n"
+				+ "	test\r\n"
+				+ "	`";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		TemplateStringLiteral expression = (TemplateStringLiteral) ((VoidExpression) statement).getExpression();
+		assertEquals(0, expression.getStartBackTick());
+		assertEquals(26, expression.getEndBackTick());
+	}
+	
+	@Test		
+	public void testTemplateLiteral2() {
+		String source =  "application.output(`Error: ${xmlData}`, LOGGINGLEVEL.ERROR)";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		CallExpression expression = (CallExpression) ((VoidExpression) statement).getExpression();
+		TemplateStringLiteral arg = (TemplateStringLiteral) expression.getArguments().get(0);
+		assertEquals(19, arg.getStartBackTick());
+		assertEquals(37, arg.getEndBackTick());
+	}
 }

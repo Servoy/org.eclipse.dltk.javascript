@@ -1463,4 +1463,18 @@ public class TestANTLR4Parser {
 		assertEquals(19, arg.getStartBackTick());
 		assertEquals(37, arg.getEndBackTick());
 	}
+	
+	@Test
+	public void testArrowFunction4() {
+		String source ="x.filter(value =>{return value.length})";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		CallExpression expression = (CallExpression) ((VoidExpression) statement).getExpression();
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) expression.getArguments().get(0);
+		assertEquals(9, fn.start());
+		assertEquals(38, fn.end());
+	}
 }

@@ -1201,6 +1201,34 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testArrowFunction4() {
+		String source ="x.filter(value => value.length)";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		CallExpression expression = (CallExpression) ((VoidExpression) statement).getExpression();
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) expression.getArguments().get(0);
+		assertEquals(9, fn.start());
+		assertEquals(30, fn.end());
+	}
+	
+	@Test
+	public void testArrowFunction5() {
+		String source ="x.filter(value =>{return value.length})";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		CallExpression expression = (CallExpression) ((VoidExpression) statement).getExpression();
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) expression.getArguments().get(0);
+		assertEquals(9, fn.start());
+		assertEquals(38, fn.end());
+	}
+	
+	@Test
 	public void testFunc() {
 		String source ="/**\r\n"
 				+ "	 * @properties={typeid:24,uuid:\"46504F39-D010-4933-B11E-639EA779E496\"}\r\n"

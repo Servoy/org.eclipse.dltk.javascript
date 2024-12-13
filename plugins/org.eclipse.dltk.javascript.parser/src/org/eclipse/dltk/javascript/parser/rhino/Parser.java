@@ -1110,9 +1110,10 @@ public class Parser implements IParser{
 				//                fnNode.putProp(Node.DESTRUCTURING_PARAMS, destructuringNode);
 			}
 
-			fnNode.setBody(parseFunctionBody(FunctionNode.ARROW_FUNCTION, fnNode));
+			Statement functionBody = parseFunctionBody(FunctionNode.ARROW_FUNCTION, fnNode);
+			fnNode.setBody(functionBody);
 			fnNode.setStart(functionSourceStart);
-			fnNode.setEnd( ts.getTokenEnd());
+			fnNode.setEnd(functionBody.end());
 		} finally {
 			savedVars.restore();
 		}

@@ -1306,7 +1306,7 @@ public class TestRhinoParser {
 		assertEquals(1, templateStringLiteral.getTemplateExpressions().size());
 		assertEquals("${abc + c}", templateStringLiteral.getTemplateExpressions().get(0).toString());
 		assertEquals(7, templateStringLiteral.getStartBackTick());
-		assertEquals(23, templateStringLiteral.getEndBackTick());
+		assertEquals(22, templateStringLiteral.getEndBackTick());
 	}
 	
 	@Test

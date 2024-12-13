@@ -1098,6 +1098,8 @@ public class TestANTLR4Parser {
 		TemplateStringLiteral templateStringLiteral = (TemplateStringLiteral) expr.getInitializer();
 		assertEquals(1, templateStringLiteral.getTemplateExpressions().size());
 		assertEquals("${abc + c}", templateStringLiteral.getTemplateExpressions().get(0).toString());
+		assertEquals(7, templateStringLiteral.getStartBackTick());
+		assertEquals(22, templateStringLiteral.getEndBackTick());
 	}
 	
 	@Test

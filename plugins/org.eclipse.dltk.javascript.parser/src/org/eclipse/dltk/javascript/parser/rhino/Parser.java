@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 import org.eclipse.dltk.compiler.util.Util;
@@ -625,6 +626,8 @@ public class Parser implements IParser{
 					((NodeTransformerExtension) transformer).postConstruct(script);
 				}
 			}
+			parents.pop();
+			Assert.isTrue(parents.isEmpty());
 			return script;
 		}
 		catch (RuntimeException e) {
@@ -1124,6 +1127,7 @@ public class Parser implements IParser{
 		//            return makeErrorNode();
 		//        }
 
+		parents.pop();
 		return fnNode;
 	}
 

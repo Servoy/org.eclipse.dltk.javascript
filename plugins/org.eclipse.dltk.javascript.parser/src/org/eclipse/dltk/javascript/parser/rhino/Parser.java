@@ -826,7 +826,7 @@ public class Parser implements IParser{
 		} finally {
 			--nestingOfFunction;
 			inUseStrictDirective = savedStrictMode;
-			parents.pop();
+			if (!isExpressionClosure) parents.pop();
 		}
 		getAndResetJsDoc();
 		if (pn != null && !isExpressionClosure && mustMatchToken(Token.RC, "msg.no.brace.after.body", true)) {

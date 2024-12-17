@@ -864,6 +864,21 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testPropertyExpression2() {
+		String source = "myobj.//\n"
+				+ "test;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		PropertyExpression expression = (PropertyExpression) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		PropertyExpression expressionv4 = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(expression.getDotPosition(), expressionv4.getDotPosition());
+	}
+	
+	@Test
 	public void testArrayItemExpression() {
 		String source = "arr[2];";
 		Script script = getScript(source);

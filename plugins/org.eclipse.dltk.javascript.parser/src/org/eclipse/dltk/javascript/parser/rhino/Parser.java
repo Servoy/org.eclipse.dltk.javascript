@@ -3436,6 +3436,11 @@ public class Parser implements IParser{
 		Expression ref = null; // right side of . or .. operator
 
 		int token = nextToken();
+		if (token == Token.COMMENT) {
+			//the original parser does not do this
+			token = peekUntilNonComment(token);
+			consumeToken();
+		}
 		switch (token) {
 		case Token.THROW:
 			// needed for generator.throw();

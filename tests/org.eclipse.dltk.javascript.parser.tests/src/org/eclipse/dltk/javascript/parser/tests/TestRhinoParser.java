@@ -2357,4 +2357,49 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
+	
+	@Test
+	public void testFunctionExpressionComment() {
+		String source = "var x = new "
+				+ "\r\n"
+				+ "/** @parse  */\r\n"
+				+ "function() {\r\n"
+				+ "		/**\r\n"
+				+ "		 * @type String\r\n"
+				+ "		 */\r\n"
+				+ "		var _sStyleSheet = 'dialogs_default';\r\n"
+				+ "}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testAnonymousFunctionStatementError() {
+		String source = "function() {\r\n"
+				+ "		/**\r\n"
+				+ "		 * @type String\r\n"
+				+ "		 */\r\n"
+				+ "		var _sStyleSheet = 'dialogs_default';\r\n"
+				+ "}";
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		
+		assertEquals(1, problems.size());
+		assertTrue(problems.get(0).getMessage().startsWith("Unexpected ("));
+	}
 }

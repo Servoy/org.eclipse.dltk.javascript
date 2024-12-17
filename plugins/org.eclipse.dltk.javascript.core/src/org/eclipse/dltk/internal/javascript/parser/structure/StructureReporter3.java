@@ -139,8 +139,15 @@ public class StructureReporter3 extends
 		} else {
 			functionNode = new FunctionExpression(peek(), node, method);
 		}
-		method.setLocation(ReferenceLocation.create(referenceSource,
-				node.start(), node.end(), functionNode.getNameNode()));
+		ReferenceLocation loc = null;
+		if (functionNode.getNameNode() != null) {
+			loc = ReferenceLocation.create(referenceSource, node.start(),
+					node.end(), functionNode.getNameNode());
+		} else {
+			loc = ReferenceLocation.create(referenceSource, node.start(),
+					node.end());
+		}
+		method.setLocation(loc);
 		functionNode.buildArgumentNodes();
 		push(functionNode);
 		declarations.push(node.getDeclarations());

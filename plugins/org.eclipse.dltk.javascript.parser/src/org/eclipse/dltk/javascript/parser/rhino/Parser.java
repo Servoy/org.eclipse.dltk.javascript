@@ -988,6 +988,15 @@ public class Parser implements IParser{
 			// Anonymous function:  leave name as null
 			//no need to create the function again, it is created above
 			//        	fnNode = new FunctionStatement(getParent(), false);
+			if (type == FunctionNode.FUNCTION_STATEMENT) {
+				++syntaxErrorCount;
+				reporter.setMessage(
+						JavaScriptParserProblems.SYNTAX_ERROR,
+						"Unexpected (");
+				reporter.setSeverity(ProblemSeverity.ERROR);
+				reporter.setRange(functionSourceStart, ts.getTokenEnd());
+				reporter.report();
+			}
 
 		} else if (matchToken(Token.MUL, true)
 				&& (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6)) {
@@ -3659,6 +3668,12 @@ public class Parser implements IParser{
 		int ttFlagged = peekFlaggedToken();
 		int tt = ttFlagged & CLEAR_TI_MASK;
 
+		if (tt == Token.COMMENT) {
+			//the original parser does not do this
+			tt = peekUntilNonComment(tt);
+			consumeToken();
+		}
+		
 		switch (tt) {
 		case Token.FUNCTION:
 			consumeToken();

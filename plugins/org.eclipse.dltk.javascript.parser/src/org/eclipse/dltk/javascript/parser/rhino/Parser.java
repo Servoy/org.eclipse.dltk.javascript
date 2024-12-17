@@ -4387,7 +4387,7 @@ public class Parser implements IParser{
 		DecimalLiteral number = new DecimalLiteral(getParent());
 		number.setText(s);
 		number.setStart(ts.getTokenBeg());
-		number.setEnd(ts.getTokenEnd());
+		number.setEnd(ts.getTokenBeg() + s.length());
 
 		return number;
 		//        }
@@ -4435,7 +4435,8 @@ public class Parser implements IParser{
 				|| op instanceof GetMethod
 				|| op instanceof GetArrayItemExpression
 				// TODO what is get ref?  || tt == Token.GET_REF
-				|| op instanceof CallExpression))
+				|| op instanceof CallExpression
+				|| op instanceof PropertyExpression))
 			reportError(expr.getOperation() == Token.INC ? "msg.bad.incr" : "msg.bad.decr");
 	}
 

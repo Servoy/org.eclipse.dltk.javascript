@@ -2346,4 +2346,15 @@ public class TestRhinoParser {
 		assertEquals(script.getComments().get(0).sourceEnd(), scriptv4.getComments().get(0).sourceEnd());
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
+	
+	@Test
+	public void testIncrement() {
+		String source = " ++this.x == 1";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
 }

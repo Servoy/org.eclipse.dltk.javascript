@@ -1010,6 +1010,7 @@ public class Parser implements IParser{
 				reporter.setSeverity(ProblemSeverity.ERROR);
 				reporter.setRange(functionSourceStart, ts.getTokenEnd());
 				reporter.report();
+				fnNode.setIsDeclaration(false);
 			}
 
 		} else if (matchToken(Token.MUL, true)

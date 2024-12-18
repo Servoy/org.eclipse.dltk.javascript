@@ -204,6 +204,8 @@ public class Parser implements IParser{
 
 	private int lastCommentLineno;
 
+	private NodeTransformer[] transformers;
+
 	// Exception to unwind
 	private static class ParserException extends RuntimeException {
 		private static final long serialVersionUID = 5882582646773765630L;
@@ -613,6 +615,7 @@ public class Parser implements IParser{
 	 *     ErrorReporter} from {@link CompilerEnvirons}.) 
 	 */
 	public Script parse(String sourceString, String sourceURI, int lineno, NodeTransformer[] transformers) {
+		this.transformers = transformers;
 		if (parseFinished) throw new IllegalStateException("parser reused");
 		this.sourceURI = sourceURI;
 		if (compilerEnv.isIdeMode()) {
@@ -707,6 +710,17 @@ public class Parser implements IParser{
 										calledByCompileFunction
 										? FunctionNode.FUNCTION_EXPRESSION
 												: FunctionNode.FUNCTION_STATEMENT);
+						if (transformers.length != 0) {
+							final JSNode parent = getParent();
+							for (NodeTransformer transformer : transformers) {
+								final ASTNode transformed = transformer.transform(n, parent);
+								if (transformed != null && transformed != n) {
+									script.addStatement((Statement) n);
+									end = n.end();
+									continue;
+								}
+							}
+						}
 						script.addStatement(toVoidExpression((JSNode) n));
 						end = n.end();
 					} catch (ParserException e) {
@@ -1292,6 +1306,15 @@ public class Parser implements IParser{
 						((Documentable)pn).setDocumentation(scannedComments.get(scannedComments.size() - 1));
 					}
 					consumeToken();
+				}
+				if (transformers.length != 0) {
+					final JSNode parent = getParent();
+					for (NodeTransformer transformer : transformers) {
+						final ASTNode transformed = transformer.transform(pn, parent);
+						if (transformed != null && transformed != pn) {
+							return transformed;
+						}
+					}
 				}
 				return pn;
 			}

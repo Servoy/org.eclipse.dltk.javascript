@@ -2574,7 +2574,6 @@ public class Parser implements IParser{
 			}
 
 			Comment jsdocNode = getAndResetJsDoc();
-			((Documentable)variableStatement).setDocumentation(jsdocNode != null ? jsdocNode : varjsdocNode);
 			if (name != null) name.setDocumentation(jsdocNode != null ? jsdocNode : varjsdocNode);
 			VariableDeclaration variableDeclaration = new VariableDeclaration(variableStatement); 
 			parents.push(variableDeclaration);
@@ -2591,11 +2590,13 @@ public class Parser implements IParser{
 				//                    reportError("msg.destruct.assign.no.init");
 				//                }
 				//                vi.setTarget(destructuring);
+				variableDeclaration.setStart(kidPos);
 			} else {
 				variableDeclaration.setIdentifier(name);   
 				name.setParent(variableDeclaration);
+				variableDeclaration.setStart(name.start());
+				if (init == null) end = name.end();
 			}
-			variableDeclaration.setStart(kidPos);
 			variableDeclaration.setEnd(end);
 			variableDeclaration.setInitializer(init);
 			variableDeclaration.setAssignPosition(assignPos);

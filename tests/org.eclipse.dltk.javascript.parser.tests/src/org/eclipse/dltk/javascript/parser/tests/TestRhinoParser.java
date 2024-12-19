@@ -2402,4 +2402,71 @@ public class TestRhinoParser {
 		assertEquals(1, problems.size());
 		assertTrue(problems.get(0).getMessage().startsWith("Unexpected ("));
 	}
+	
+	@Test
+	public void testVarsDoc1() {
+		//the new parser sets docs for all declarations (identifiers) if the doc is before the var keyword
+		//the old parser sets it only for the first declaration
+		String source = "/** @type {JSRecord<db:/ams/planung_stilllagen>} */\r\n"
+				+ "var recordStilllage,\r\n"
+				+ "a,\r\n"
+				+ "anzStorniert = 0;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		assertEquals(script.toString(), scriptv4.toString());
+		VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		assertEquals(expression.sourceStart(), expressionv4.sourceStart());
+		assertEquals(expression.sourceEnd(), expressionv4.sourceEnd());
+		
+		VariableStatement statement = (VariableStatement) expression.getExpression();
+		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
+		assertTrue(equalsJSNode(statement.getDocumentation(), statementv4.getDocumentation(), new ArrayDeque<>()));
+		
+		VariableDeclaration variableDeclaration_0 = statement.getVariables().get(0);
+		VariableDeclaration variableDeclarationv4_0 = statementv4.getVariables().get(0);
+		assertNull("first var declaration does NOT have doc in the old parser", variableDeclaration_0.getDocumentation());
+		assertNotNull("first var declaration HAS doc in the new parser", variableDeclarationv4_0.getDocumentation());
+		
+		VariableDeclaration variableDeclaration_1 = statement.getVariables().get(1);
+		VariableDeclaration variableDeclarationv4_1 = statementv4.getVariables().get(1);
+		assertNull("second var declaration does NOT have doc in the old parser", variableDeclaration_1.getDocumentation());
+		assertNotNull("second var declaration HAS doc in the new parser", variableDeclarationv4_1.getDocumentation());
+	}
+	
+	@Test
+	public void testVarsDoc2() {
+		String source = "var /** Number */ minifiedNavCb,\r\n"
+				+ "/** String */ fixedHeaderCb, \r\n"
+				+ "/** JSRecord */fixedNavCb, \r\n"
+				+ "/** String */ mobileNavCb;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		assertEquals(script.toString(), scriptv4.toString());
+		VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		assertEquals(expression.sourceStart(), expressionv4.sourceStart());
+		assertEquals(expression.sourceEnd(), expressionv4.sourceEnd());
+		
+		VariableStatement statement = (VariableStatement) expression.getExpression();
+		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
+		assertNull(statement.getDocumentation());
+		assertNull(statementv4.getDocumentation());
+		
+		VariableDeclaration variableDeclaration_0 = statement.getVariables().get(0);
+		VariableDeclaration variableDeclarationv4_0 = statementv4.getVariables().get(0);
+		assertTrue(equalsJSNode(variableDeclaration_0.getDocumentation(), variableDeclarationv4_0.getDocumentation(), new ArrayDeque<>()));
+		
+		VariableDeclaration variableDeclaration_1 = statement.getVariables().get(1);
+		VariableDeclaration variableDeclarationv4_1 = statementv4.getVariables().get(1);
+		assertTrue(equalsJSNode(variableDeclaration_1.getDocumentation(), variableDeclarationv4_1.getDocumentation(), new ArrayDeque<>()));
+	}
 }

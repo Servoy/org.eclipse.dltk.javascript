@@ -2575,6 +2575,7 @@ public class Parser implements IParser{
 
 			Comment jsdocNode = getAndResetJsDoc();
 			((Documentable)variableStatement).setDocumentation(jsdocNode != null ? jsdocNode : varjsdocNode);
+			if (name != null) name.setDocumentation(jsdocNode != null ? jsdocNode : varjsdocNode);
 			VariableDeclaration variableDeclaration = new VariableDeclaration(variableStatement); 
 			parents.push(variableDeclaration);
 			Expression init = null;

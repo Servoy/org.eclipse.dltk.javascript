@@ -1453,6 +1453,14 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testLet_NoSemic() {
+		String source = "let var1";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(scriptv4.getDeclarations().size() > 0);
+	}
+	
+	@Test
 	public void testError() {
 		String source = "function onAction(event) {"
 				+ " event."

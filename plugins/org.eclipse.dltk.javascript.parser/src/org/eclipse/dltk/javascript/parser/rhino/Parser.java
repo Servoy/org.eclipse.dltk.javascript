@@ -1397,7 +1397,7 @@ public class Parser implements IParser{
 
 		case Token.LET:
 			pn = letStatement();
-			if (pn instanceof LetStatement && peekToken() == Token.SEMI) break;
+			if (pn instanceof LetStatement) break;
 			return pn;
 
 		case Token.RETURN:

@@ -877,6 +877,27 @@
     <members xsi:type="ref:Property" name="value" directType="Object" description="the value for this iterable object" static="false"/>
     <members xsi:type="ref:Property" name="done" directType="Boolean" description="a boolean telling if this was the last one (true) or not (false)" static="false"/>
  </ref:GenericType>
+ <ref:GenericType name="BigInt" kind="PREDEFINED" superType="Object" description="BigInt is a built-in object that provides a way to represent whole numbers larger than 2^53-1.">
+  <staticConstructor name="BigInt" directType="BigInt">
+    <parameters name="value" directType="Object"/>
+  </staticConstructor>
+  <members xsi:type="ref:Method" name="asIntN" directType="BigInt" static="true" description="Wraps a BigInt value to a signed integer between -2^(width-1) and 2^(width-1)-1.">
+    <parameters name="width" directType="Number"/>
+    <parameters name="value" directType="BigInt"/>
+  </members>
+  <members xsi:type="ref:Method" name="asUintN" directType="BigInt" static="true" description="Wraps a BigInt value to an unsigned integer between 0 and 2^width-1.">
+    <parameters name="width" directType="Number"/>
+    <parameters name="value" directType="BigInt"/>
+  </members>
+  <members xsi:type="ref:Method" name="toString" directType="String" description="Returns a string representation of the BigInt value, optionally in a specified base.">
+    <parameters name="radix" directType="Number" kind="OPTIONAL"/>
+  </members>
+  <members xsi:type="ref:Method" name="valueOf" directType="BigInt" description="Returns the primitive value of the BigInt object."/>
+  <members xsi:type="ref:Method" name="toLocaleString" directType="String" description="Returns a locale-aware string representation of the BigInt value.">
+    <parameters name="locales" directType="Object" kind="OPTIONAL"/>
+    <parameters name="options" directType="Object" kind="OPTIONAL"/>
+  </members>
+ </ref:GenericType>
  	<ref:TypeLiteral target="Error"/>
 	<ref:TypeLiteral target="EvalError"/>
 	<ref:TypeLiteral target="RangeError"/>

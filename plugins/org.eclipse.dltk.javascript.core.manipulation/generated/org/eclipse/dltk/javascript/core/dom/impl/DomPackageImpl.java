@@ -11,6 +11,7 @@ import org.eclipse.dltk.javascript.core.dom.ArrayAccessExpression;
 import org.eclipse.dltk.javascript.core.dom.ArrayLiteral;
 import org.eclipse.dltk.javascript.core.dom.ArrowFunction;
 import org.eclipse.dltk.javascript.core.dom.AttributeIdentifier;
+import org.eclipse.dltk.javascript.core.dom.BigIntLiteral;
 import org.eclipse.dltk.javascript.core.dom.BinaryExpression;
 import org.eclipse.dltk.javascript.core.dom.BinaryOperator;
 import org.eclipse.dltk.javascript.core.dom.BlockStatement;
@@ -695,6 +696,13 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	private EClass letStatementEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass bigIntLiteralEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -2647,6 +2655,26 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getBigIntLiteral() {
+		return bigIntLiteralEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getBigIntLiteral_Text() {
+		return (EAttribute)bigIntLiteralEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getUnaryOperator() {
 		return unaryOperatorEEnum;
 	}
@@ -2961,6 +2989,9 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		letStatementEClass = createEClass(LET_STATEMENT);
 		createEReference(letStatementEClass, LET_STATEMENT__DECLARATIONS);
 
+		bigIntLiteralEClass = createEClass(BIG_INT_LITERAL);
+		createEAttribute(bigIntLiteralEClass, BIG_INT_LITERAL__TEXT);
+
 		// Create enums
 		unaryOperatorEEnum = createEEnum(UNARY_OPERATOR);
 		binaryOperatorEEnum = createEEnum(BINARY_OPERATOR);
@@ -3090,6 +3121,8 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		forOfStatementEClass.getESuperTypes().add(this.getIterationStatement());
 		letStatementEClass.getESuperTypes().add(this.getStatement());
 		letStatementEClass.getESuperTypes().add(this.getIForInitializer());
+		bigIntLiteralEClass.getESuperTypes().add(this.getExpression());
+		bigIntLiteralEClass.getESuperTypes().add(this.getIPropertyName());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(nodeEClass, Node.class, "Node", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -3363,6 +3396,9 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		initEClass(letStatementEClass, LetStatement.class, "LetStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getLetStatement_Declarations(), this.getVariableDeclaration(), null, "declarations", null, 1, -1, LetStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(bigIntLiteralEClass, BigIntLiteral.class, "BigIntLiteral", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getBigIntLiteral_Text(), ecorePackage.getEString(), "text", null, 1, 1, BigIntLiteral.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		// Initialize enums and add enum literals
 		initEEnum(unaryOperatorEEnum, UnaryOperator.class, "UnaryOperator");
 		addEEnumLiteral(unaryOperatorEEnum, UnaryOperator.POSTFIX_INC);
@@ -3470,6 +3506,12 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		   });
 		addAnnotation
 		  (getTemplateStringLiteral_Text(),
+		   source,
+		   new String[] {
+			   "value", "1"
+		   });
+		addAnnotation
+		  (getBigIntLiteral_Text(),
 		   source,
 		   new String[] {
 			   "value", "1"

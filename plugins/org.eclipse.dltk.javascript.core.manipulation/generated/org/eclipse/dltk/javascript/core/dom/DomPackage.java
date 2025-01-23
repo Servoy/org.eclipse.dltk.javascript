@@ -4213,6 +4213,52 @@ public interface DomPackage extends EPackage {
 	int LET_STATEMENT_FEATURE_COUNT = STATEMENT_FEATURE_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.BigIntLiteralImpl <em>Big Int Literal</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.BigIntLiteralImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBigIntLiteral()
+	 * @generated
+	 */
+	int BIG_INT_LITERAL = 84;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BIG_INT_LITERAL__BEGIN = EXPRESSION__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BIG_INT_LITERAL__END = EXPRESSION__END;
+
+	/**
+	 * The feature id for the '<em><b>Text</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BIG_INT_LITERAL__TEXT = EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Big Int Literal</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BIG_INT_LITERAL_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4220,7 +4266,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 84;
+	int UNARY_OPERATOR = 85;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -4230,7 +4276,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 85;
+	int BINARY_OPERATOR = 86;
 
 
 	/**
@@ -6207,6 +6253,27 @@ public interface DomPackage extends EPackage {
 	EReference getLetStatement_Declarations();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.BigIntLiteral <em>Big Int Literal</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Big Int Literal</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.BigIntLiteral
+	 * @generated
+	 */
+	EClass getBigIntLiteral();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.dltk.javascript.core.dom.BigIntLiteral#getText <em>Text</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Text</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.BigIntLiteral#getText()
+	 * @see #getBigIntLiteral()
+	 * @generated
+	 */
+	EAttribute getBigIntLiteral_Text();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7911,6 +7978,24 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EReference LET_STATEMENT__DECLARATIONS = eINSTANCE.getLetStatement_Declarations();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.BigIntLiteralImpl <em>Big Int Literal</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.BigIntLiteralImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBigIntLiteral()
+		 * @generated
+		 */
+		EClass BIG_INT_LITERAL = eINSTANCE.getBigIntLiteral();
+
+		/**
+		 * The meta object literal for the '<em><b>Text</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BIG_INT_LITERAL__TEXT = eINSTANCE.getBigIntLiteral_Text();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.

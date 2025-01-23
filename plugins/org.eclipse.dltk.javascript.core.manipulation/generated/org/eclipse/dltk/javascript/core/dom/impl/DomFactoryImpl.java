@@ -129,6 +129,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 			case DomPackage.TAG_FUNCTION: return createTagFunction();
 			case DomPackage.FOR_OF_STATEMENT: return createForOfStatement();
 			case DomPackage.LET_STATEMENT: return createLetStatement();
+			case DomPackage.BIG_INT_LITERAL: return createBigIntLiteral();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -970,6 +971,17 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	public LetStatement createLetStatement() {
 		LetStatementImpl letStatement = new LetStatementImpl();
 		return letStatement;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public BigIntLiteral createBigIntLiteral() {
+		BigIntLiteralImpl bigIntLiteral = new BigIntLiteralImpl();
+		return bigIntLiteral;
 	}
 
 } //DomFactoryImpl

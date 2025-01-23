@@ -248,8 +248,9 @@ public class ASTConverter extends ASTVisitor<Node> {
 	
 	@Override
 	public Node visitBigIntLiteral(BigIntLiteral node) {
-		// TODO Auto-generated method stub
-		return null;
+		org.eclipse.dltk.javascript.core.dom.BigIntLiteral res = DOM_FACTORY.createBigIntLiteral();
+		res.setText(node.getText());
+		return res;
 	}
 
 	@Override

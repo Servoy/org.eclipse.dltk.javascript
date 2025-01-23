@@ -639,4 +639,13 @@ public interface DomFactory extends EFactory {
 	 */
 	LetStatement createLetStatement();
 
+	/**
+	 * Returns a new object of class '<em>Big Int Literal</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Big Int Literal</em>'.
+	 * @generated
+	 */
+	BigIntLiteral createBigIntLiteral();
+
 } //DomFactory

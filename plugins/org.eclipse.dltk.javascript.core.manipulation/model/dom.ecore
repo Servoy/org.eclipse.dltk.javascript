@@ -437,4 +437,11 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="declarations" lowerBound="1"
         upperBound="-1" eType="#//VariableDeclaration" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BigIntLiteral" eSuperTypes="#//Expression #//IPropertyName">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="text" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations>
+        <details key="value" value="1"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
 </ecore:EPackage>

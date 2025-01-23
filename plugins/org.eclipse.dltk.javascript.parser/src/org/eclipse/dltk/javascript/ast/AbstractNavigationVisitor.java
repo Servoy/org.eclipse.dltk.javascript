@@ -106,6 +106,11 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 	public E visitDecimalLiteral(DecimalLiteral node) {
 		return null;
 	}
+	
+	@Override
+	public E visitBigIntLiteral(BigIntLiteral node) {
+		return null;
+	}
 
 	@Override
 	public E visitDefaultXmlNamespace(DefaultXmlNamespaceStatement node) {

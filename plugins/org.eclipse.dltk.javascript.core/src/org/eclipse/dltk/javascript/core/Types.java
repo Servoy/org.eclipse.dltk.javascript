@@ -40,6 +40,8 @@ public class Types {
 
 	public static final Type ERROR = initType(ITypeNames.ERROR);
 
+	public static final Type BIGINT = initType(ITypeNames.BIGINT);
+
 	protected static Type initType(String name) {
 		Type type = TypeInfoModelLoader.getInstance().getType(name);
 		if (type == null) {

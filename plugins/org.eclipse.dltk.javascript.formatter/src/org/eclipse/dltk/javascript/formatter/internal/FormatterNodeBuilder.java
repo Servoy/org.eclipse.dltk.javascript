@@ -34,6 +34,7 @@ import org.eclipse.dltk.javascript.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
+import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
@@ -1862,6 +1863,11 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 				checkedPop(formatterNode, node.sourceEnd());
 
 				return formatterNode;
+			}
+
+			@Override
+			public IFormatterNode visitBigIntLiteral(BigIntLiteral node) {
+				return addChild(new FormatterStringNode(document, node));
 			}
 		});
 

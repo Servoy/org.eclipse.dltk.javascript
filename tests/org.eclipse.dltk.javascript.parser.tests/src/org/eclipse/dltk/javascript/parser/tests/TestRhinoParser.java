@@ -2477,4 +2477,22 @@ public class TestRhinoParser {
 		VariableDeclaration variableDeclarationv4_1 = statementv4.getVariables().get(1);
 		assertTrue(equalsJSNode(variableDeclaration_1.getDocumentation(), variableDeclarationv4_1.getDocumentation(), new ArrayDeque<>()));
 	}
+	
+	@Test
+	public void testBigInt() {
+		String source = "var b = 1234567890n;";
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(scriptv4);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
+		VariableDeclaration variableDeclaration = statementv4.getVariables().get(0);
+		Expression initializer = variableDeclaration.getInitializer();
+		assertTrue(initializer instanceof BigIntLiteral);
+		BigIntLiteral literal = (BigIntLiteral) initializer;
+		assertEquals(8, literal.sourceStart());
+		assertEquals(19, literal.sourceEnd());
+		assertEquals(18, literal.getSuffix());
+		assertEquals("1234567890n", literal.getText());
+	}
 }

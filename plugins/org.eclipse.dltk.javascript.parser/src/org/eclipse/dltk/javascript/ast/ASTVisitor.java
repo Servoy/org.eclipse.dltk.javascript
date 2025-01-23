@@ -98,6 +98,7 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		HANDLERS.put(TemplateStringExpression.class, 51);
 		HANDLERS.put(ForOfStatement.class, 52);
 		HANDLERS.put(LetStatement.class, 53);
+		HANDLERS.put(BigIntLiteral.class, 54);
 		
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
@@ -215,9 +216,11 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		case 51:
 			return visitTemplateStringExpression((TemplateStringExpression)node);
 		case 52:
-		return visitForOfStatement((ForOfStatement)node);
+			return visitForOfStatement((ForOfStatement)node);
 		case 53:
 			return visitLetStatement((LetStatement)node);
+		case 54:
+			return visitBigIntLiteral((BigIntLiteral)node);
 		}
 		return visitUnknownNode(node);
 	}
@@ -272,6 +275,8 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 	public abstract E visitContinueStatement(ContinueStatement node);
 
 	public abstract E visitDecimalLiteral(DecimalLiteral node);
+	
+	public abstract E visitBigIntLiteral(BigIntLiteral node);
 
 	@Deprecated
 	public final E visitDefaultClause(DefaultClause node) {

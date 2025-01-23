@@ -377,6 +377,9 @@ public class RTypes {
 	public static final IRSimpleType NUMBER = simple(TypeSystems.GLOBAL,
 			Types.NUMBER);
 
+	public static final IRSimpleType BIGINT = simple(TypeSystems.GLOBAL,
+			Types.BIGINT);
+
 	public static final IRSimpleType BOOLEAN = simple(TypeSystems.GLOBAL,
 			Types.BOOLEAN);
 

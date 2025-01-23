@@ -7,6 +7,7 @@ import org.eclipse.dltk.javascript.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
+import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
@@ -243,6 +244,12 @@ public class ASTConverter extends ASTVisitor<Node> {
 		NumericLiteral res = DOM_FACTORY.createNumericLiteral();
 		res.setText(node.getText());
 		return res;
+	}
+	
+	@Override
+	public Node visitBigIntLiteral(BigIntLiteral node) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

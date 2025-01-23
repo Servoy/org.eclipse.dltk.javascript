@@ -26,6 +26,7 @@ import org.eclipse.dltk.javascript.ast.AbstractForStatement;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
+import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -63,6 +64,7 @@ import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
 import org.eclipse.dltk.javascript.ast.Label;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
+import org.eclipse.dltk.javascript.ast.Literal;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
 import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.MultiLineComment;
@@ -4418,19 +4420,20 @@ public class Parser implements IParser{
 				s = "0x" + s;
 			}
 		}
-		//BigInt is also decimal literal..
-		//        if (tt == Token.BIGINT) {
-		//            return new BigIntLiteral(ts.getTokenBeg(), s + "n", ts.getBigInt());
-		//        } 
-		//    else {
-		// return new NumberLiteral(ts.getTokenBeg(), s, ts.getNumber());
-		DecimalLiteral number = new DecimalLiteral(getParent());
-		number.setText(s);
-		number.setStart(ts.getTokenBeg());
-		number.setEnd(ts.getTokenBeg() + s.length());
-
-		return number;
-		//        }
+		if (tt == Token.BIGINT) {
+			BigIntLiteral number = new BigIntLiteral(getParent());
+			number.setText(s + "n");
+			number.setStart(ts.getTokenBeg());
+			number.setEnd(ts.getTokenBeg() + s.length() + 1);
+			return number;
+		}
+		else {
+			DecimalLiteral number = new DecimalLiteral(getParent());
+			number.setText(s);
+			number.setStart(ts.getTokenBeg());
+			number.setEnd(ts.getTokenBeg() + s.length());
+			return number;
+		}
 	}
 
 	protected void checkActivationName(String name, int token) {

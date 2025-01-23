@@ -22,6 +22,7 @@ import org.eclipse.dltk.internal.javascript.ti.JSDocSupport;
 import org.eclipse.dltk.internal.javascript.ti.JSMethod;
 import org.eclipse.dltk.internal.javascript.ti.JSVariable;
 import org.eclipse.dltk.javascript.ast.AbstractNavigationVisitor;
+import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -165,6 +166,8 @@ public class StructureReporter3 extends
 					((FunctionNode) peek).setReturnType("String");
 				} else if (node.getValue() instanceof DecimalLiteral) {
 					((FunctionNode) peek).setReturnType("Number");
+				} else if (node.getValue() instanceof BigIntLiteral) {
+					((FunctionNode) peek).setReturnType("BigInt");
 				} else if (node.getValue() instanceof BooleanLiteral) {
 					((FunctionNode) peek).setReturnType("Boolean");
 				} else {
@@ -233,6 +236,8 @@ public class StructureReporter3 extends
 					name = ((StringLiteral) pi.getName()).getValue();
 				} else if (pi.getName() instanceof DecimalLiteral) {
 					name = ((DecimalLiteral) pi.getName()).getText();
+				} else if (pi.getName() instanceof BigIntLiteral) {
+					name = ((BigIntLiteral) pi.getName()).getText();
 				} else {
 					name = "";
 					visit(pi.getName());

@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.compiler.env.IModuleSource;
+import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.ForEachInStatement;
 import org.eclipse.dltk.javascript.ast.GetMethod;
@@ -90,6 +91,9 @@ public class JavaScriptXmlHighlighter extends AbstractJavaScriptHighlighter
 			}
 			else if (node instanceof ArrowFunctionStatement) {
 				handleArrowFunction((ArrowFunctionStatement) node);
+			}
+			else if (node instanceof BigIntLiteral) {
+				handleBigIntLiteral((BigIntLiteral) node);
 			}
 			return true;
 		}
@@ -197,6 +201,11 @@ public class JavaScriptXmlHighlighter extends AbstractJavaScriptHighlighter
 				int start, Token token, String highlightingKey) {
 			requestor.addPosition(start + token.start, start + token.start
 					+ token.textLength, highlightingKey);
+		}
+
+		private void handleBigIntLiteral(BigIntLiteral node) {
+			requestor.addPosition(node.getSuffix(), node.getSuffix() + 1,
+					HL_REGEXP);
 		}
 	}
 

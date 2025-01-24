@@ -596,6 +596,10 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 			if (element instanceof IRMember) {
 				reportMember((IRMember) element,
 						((IRMember) element).getName(), true);
+			} else if (element instanceof IRMember[]) {
+				for (IRMember member : (IRMember[]) element) {
+					reportMember(member, member.getName(), true);
+				}
 			} else {
 				int proposalKind = CompletionProposal.FIELD_REF;
 				final ReferenceKind kind = reference.getKind();

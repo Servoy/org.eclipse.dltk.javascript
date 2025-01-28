@@ -88,7 +88,6 @@ import org.eclipse.dltk.javascript.parser.ISuppressWarningsState;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
 import org.eclipse.dltk.javascript.parser.PropertyExpressionUtils;
 import org.eclipse.dltk.javascript.parser.Reporter;
-import org.eclipse.dltk.javascript.parser.v4.JSParser;
 import org.eclipse.dltk.javascript.typeinference.IAssignProtection;
 import org.eclipse.dltk.javascript.typeinference.IAssignProtection2;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
@@ -1776,8 +1775,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 		@Override
 		public IValueReference visitUnaryOperation(UnaryOperation node) {
 			IValueReference reference = super.visitUnaryOperation(node);
-			if (node.getOperation() == JSParser.PlusPlus
-					|| node.getOperation() == JSParser.MinusMinus) {
+			if (node.isIncDec()) {
 				checkAssign(reference, null, node);
 			}
 			return reference;

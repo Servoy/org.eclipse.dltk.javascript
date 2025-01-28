@@ -57,6 +57,12 @@ public class BinaryOperation extends org.eclipse.dltk.javascript.ast.BinaryOpera
 	public boolean isAddition() {
 		return operation == JSParser.Plus;
 	}
+	
+	@Override
+	public boolean isArithmeticOperation() {
+		return operation == JSParser.Plus || operation == JSParser.Minus 
+				|| operation == JSParser.Multiply || operation == JSParser.Divide;
+	}
 
 	@Override
 	public boolean isLogicalOr() {

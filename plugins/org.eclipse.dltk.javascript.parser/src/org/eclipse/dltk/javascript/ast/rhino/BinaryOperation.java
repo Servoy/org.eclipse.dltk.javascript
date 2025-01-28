@@ -44,6 +44,13 @@ public class BinaryOperation extends org.eclipse.dltk.javascript.ast.BinaryOpera
 	public boolean isAddition() {
 		return operation == Token.ADD;
 	}
+	
+	@Override
+	public boolean isArithmeticOperation() {
+		return operation == Token.ADD || operation == Token.SUB ||
+				operation == Token.MUL || operation == Token.DIV;
+	}
+	
 
 	@Override
 	public boolean isLogicalOr() {

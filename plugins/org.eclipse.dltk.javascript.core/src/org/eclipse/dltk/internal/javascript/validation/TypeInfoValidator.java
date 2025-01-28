@@ -1755,9 +1755,22 @@ public class TypeInfoValidator implements IBuildParticipant,
 		protected IValueReference visitAssign(IValueReference left,
 				IValueReference right, BinaryOperation node) {
 			if (left != null) {
-				checkAssign(left, node);
+				checkAssign(left, right, node);
 			}
 			return super.visitAssign(left, right, node);
+		}
+
+		protected IValueReference checkBigInt(IValueReference left,
+				IValueReference right, BinaryOperation node) {
+			IValueReference ref = super.checkBigInt(left, right, node);
+			if (ref == null) {
+				// one of the operands is not BigInt
+				reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
+						ValidationMessages.Mix_BigInt,
+						node.sourceStart(),
+						node.sourceEnd());
+			}
+			return ref;
 		}
 
 		@Override
@@ -1765,7 +1778,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 			IValueReference reference = super.visitUnaryOperation(node);
 			if (node.getOperation() == JSParser.PlusPlus
 					|| node.getOperation() == JSParser.MinusMinus) {
-				checkAssign(reference, node);
+				checkAssign(reference, null, node);
 			}
 			return reference;
 		}
@@ -1923,7 +1936,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 					&& variable.getVisibility() == Visibility.PRIVATE;
 		}
 
-		private void checkAssign(IValueReference reference, ASTNode node) {
+		private void checkAssign(IValueReference reference,
+				IValueReference right, ASTNode node) {
 			final Object value = reference
 					.getAttribute(IAssignProtection.ATTRIBUTE);
 			if (value != null) {
@@ -1940,6 +1954,13 @@ public class TypeInfoValidator implements IBuildParticipant,
 				}
 				reporter.reportProblem(assign.problemId(),
 						assign.problemMessage(), node.sourceStart(),
+						node.sourceEnd());
+			} else if (right != null && (isBigInt(right) || isBigInt(reference))
+					&& super.checkBigInt(reference, right,
+					(BinaryOperation) node) == null) {
+				// both operands must be bigint
+				reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
+						ValidationMessages.Mix_BigInt, node.sourceStart(),
 						node.sourceEnd());
 			} else if (reference.getKind() == ReferenceKind.FUNCTION) {
 				// test if it is not a function override of a super local type class.
@@ -1972,7 +1993,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 				VariableDeclaration declaration) {
 			if (declaration.getInitializer() != null
 					&& declaration.getParent() instanceof VariableStatement) {
-				checkAssign(reference, declaration);
+				checkAssign(reference, null, declaration);
 			}
 			super.initializeVariable(reference, declaration);
 		}

@@ -54,4 +54,10 @@ public class BinaryOperation extends  org.eclipse.dltk.javascript.ast.BinaryOper
 	public boolean isInstanceof() {
 		return operation == JSParser.INSTANCEOF;
 	}
+	
+	@Override
+	public boolean isArithmeticOperation() {
+		return operation == JSParser.ADD || operation == JSParser.SUB 
+				|| operation == JSParser.MUL || operation == JSParser.DIV;
+	}
 }

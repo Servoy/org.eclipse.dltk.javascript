@@ -20,6 +20,7 @@ import org.eclipse.dltk.javascript.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
+import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
@@ -833,6 +834,14 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 	public Boolean visitLetStatement(LetStatement node) {
 		testKeyword(node.getLetKeyword());
 		visitVariableDeclarations(node.getVariables());
+
+		return true;
+	}
+
+	@Override
+	public Boolean visitBigIntLiteral(BigIntLiteral node) {
+		
+		testString(node.getText(), node.sourceStart(), node.sourceEnd());
 
 		return true;
 	}

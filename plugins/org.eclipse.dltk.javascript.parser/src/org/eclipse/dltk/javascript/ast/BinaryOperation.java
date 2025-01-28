@@ -126,4 +126,6 @@ public abstract class BinaryOperation extends Expression {
 	public abstract boolean isLogicalOr();
 	
 	public abstract boolean isInstanceof();
+	
+	public abstract boolean isArithmeticOperation();
 }

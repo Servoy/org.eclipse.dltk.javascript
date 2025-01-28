@@ -188,7 +188,9 @@ public enum JavaScriptProblems implements IProblemIdentifier,
 	/**
 	 * @since 5.0
 	 */
-	FUNCTION_HIDES_PREDEFINED;
+	FUNCTION_HIDES_PREDEFINED,
+
+	BIGINT_TYPE_ERROR;
 
 	private JavaScriptProblems() {
 		this(null);

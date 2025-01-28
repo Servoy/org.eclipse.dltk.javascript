@@ -79,6 +79,8 @@ public class ValidationMessages extends NLS {
 	public static String IncorrectNumberOfTypeArguments;
 	public static String ParameterizedBoundMismatch;
 
+	public static String Mix_BigInt;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, ValidationMessages.class);

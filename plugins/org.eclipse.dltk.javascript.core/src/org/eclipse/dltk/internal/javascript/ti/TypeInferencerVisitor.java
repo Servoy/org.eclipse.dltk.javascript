@@ -253,6 +253,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				types.add(RTypes.NUMBER);
 			} else if (astNode instanceof BooleanLiteral) {
 				types.add(RTypes.BOOLEAN);
+			} else if (astNode instanceof BigIntLiteral) {
+				types.add(RTypes.BIGINT);
 			} else if (astNode instanceof NullExpression
 					|| astNode instanceof EmptyExpression) {
 				// ignore
@@ -335,6 +337,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				return visitAssign(left, visit(node.getRightExpression()), node);
 			}
 		}
+
 		final IValueReference right = visit(node.getRightExpression());
 		if (left == null && right instanceof ConstantValue) {
 			return right;
@@ -344,6 +347,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			return ConstantValue.of(RTypes.BOOLEAN);
 		} else if (isNumber(left) && isNumber(right)) {
 			return ConstantValue.of(RTypes.NUMBER);
+		} else if ((isBigInt(left) || isBigInt(right))
+				&& node.isArithmeticOperation()) {
+			return checkBigInt(left, right, node);
 		} else if (node.isAddition()) {
 			if (isString(left) || isString(right)) {
 				return ConstantValue.of(RTypes.STRING);
@@ -366,6 +372,14 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		}
 	}
 
+	protected IValueReference checkBigInt(IValueReference left,
+			IValueReference right, BinaryOperation node) {
+		if (isBigInt(left) && isBigInt(right)) {
+			return ConstantValue.of(RTypes.BIGINT);
+		}
+		return null;
+	}
+
 	private static IValueReference coalesce(IValueReference v1,
 			IValueReference v2) {
 		return v1 != null ? v1 : v2;
@@ -376,6 +390,16 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			if (ref.getTypes().contains(RTypes.NUMBER))
 				return true;
 			if (RTypes.NUMBER.equals(ref.getDeclaredType()))
+				return true;
+		}
+		return false;
+	}
+
+	protected boolean isBigInt(IValueReference ref) {
+		if (ref != null) {
+			if (ref.getTypes().contains(RTypes.BIGINT))
+				return true;
+			if (RTypes.BIGINT.equals(ref.getDeclaredType()))
 				return true;
 		}
 		return false;

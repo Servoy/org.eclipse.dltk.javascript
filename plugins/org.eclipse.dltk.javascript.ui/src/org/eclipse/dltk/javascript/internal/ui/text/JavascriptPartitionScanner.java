@@ -102,7 +102,31 @@ public class JavascriptPartitionScanner extends RuleBasedPartitionScanner {
 		IToken doc = new Token(IJavaScriptPartitions.JS_DOC);
 
 		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
-		rules.add(new EndOfLineRule("//", singleLineComment)); //$NON-NLS-1$
+		rules.add(new EndOfLineRule("//", singleLineComment) {
+			@Override
+			protected boolean sequenceDetected(ICharacterScanner scanner,
+					char[] sequence, boolean eofAllowed) {
+
+				boolean retValue = super.sequenceDetected(scanner, sequence,
+						eofAllowed);
+				if (retValue) {
+					// check if we are inside a regular expression
+					scanner.unread();
+					scanner.unread();
+					scanner.unread();
+					int prevChar = scanner.read();
+					scanner.read();
+					scanner.read();
+					int nextChar = scanner.read();
+					scanner.unread();
+					if (prevChar == '\\' && (nextChar == 'g' || nextChar == 'i'
+							|| nextChar == 'm')) {
+						return false;
+					}
+				}
+				return retValue;
+			}
+		}); // $NON-NLS-1$
 		// Add special case word rule.
 		rules.add(new EmptyCommentRule(multiLineComment));
 		rules.add(new MultiLineRule(JSDOC_PREFIX, "*/", doc)); //$NON-NLS-1$ 

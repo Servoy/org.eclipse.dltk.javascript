@@ -190,7 +190,9 @@ public enum JavaScriptProblems implements IProblemIdentifier,
 	 */
 	FUNCTION_HIDES_PREDEFINED,
 
-	BIGINT_TYPE_ERROR;
+	BIGINT_TYPE_ERROR,
+
+	BIGINT_NOT_CONSTRUCTOR;
 
 	private JavaScriptProblems() {
 		this(null);

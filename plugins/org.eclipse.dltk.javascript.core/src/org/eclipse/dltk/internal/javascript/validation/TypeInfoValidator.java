@@ -711,6 +711,12 @@ public class TypeInfoValidator implements IBuildParticipant,
 						result.getTypeValue(), result.getArguments(),
 						peekContext()));
 			}
+			if (isBigInt(result.getValue())) {
+				reporter.reportProblem(
+						JavaScriptProblems.BIGINT_NOT_CONSTRUCTOR,
+						ValidationMessages.BigIntNotConstructor, node.sourceStart(),
+						node.sourceEnd());
+			}
 			return result.getValue();
 		}
 
@@ -1765,7 +1771,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 			if (ref == null) {
 				// one of the operands is not BigInt
 				reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
-						ValidationMessages.Mix_BigInt,
+						ValidationMessages.MixBigInt,
 						node.sourceStart(),
 						node.sourceEnd());
 			}
@@ -1958,7 +1964,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 					(BinaryOperation) node) == null) {
 				// both operands must be bigint
 				reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
-						ValidationMessages.Mix_BigInt, node.sourceStart(),
+						ValidationMessages.MixBigInt, node.sourceStart(),
 						node.sourceEnd());
 			} else if (reference.getKind() == ReferenceKind.FUNCTION) {
 				// test if it is not a function override of a super local type class.

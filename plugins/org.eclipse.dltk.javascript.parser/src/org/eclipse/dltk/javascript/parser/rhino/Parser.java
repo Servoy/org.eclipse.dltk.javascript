@@ -452,6 +452,15 @@ public class Parser implements IParser{
 		currentJsDocComment = null;
 		return saved;
 	}
+	
+	private Comment getAndResetJsDoc(int start) {
+		if (currentJsDocComment != null && scannedComments.get(scannedComments.size() - 1).start() < start) {
+			Comment saved = currentJsDocComment;
+			currentJsDocComment = null;
+			return saved;
+		}
+		return null;
+	}
 
 	// Returns the next token without consuming it.
 	// If previous token was consumed, calls scanner to get new token.
@@ -977,7 +986,7 @@ public class Parser implements IParser{
 		int functionSourceStart = ts.getTokenBeg(); // start of "function" kwd
 		Identifier name = null;
 		Expression memberExprNode = null;
-		Comment doc = getAndResetJsDoc();
+		Comment doc = getAndResetJsDoc(functionSourceStart);
 		FunctionStatement fnNode = new FunctionStatement(getParent(), type == FunctionNode.FUNCTION_STATEMENT);
 		SymbolTable fnScope = new SymbolTable(fnNode);
 		if (scope) scopes.push(fnScope);
@@ -1106,7 +1115,7 @@ public class Parser implements IParser{
 		parents.push(fnNode);
 		fnNode.setStart(functionSourceStart);
 		fnNode.setArrow(ts.getTokenBeg());
-		Comment doc = getAndResetJsDoc();
+		Comment doc = getAndResetJsDoc(functionSourceStart);
 		fnNode.setDocumentation(doc);
 
 		// Would prefer not to call createDestructuringAssignment until codegen,
@@ -1306,7 +1315,8 @@ public class Parser implements IParser{
 
 				if (ntt == Token.COMMENT){
 					if (ts.getCommentType() == Token.CommentType.JSDOC &&  pn instanceof Documentable) {
-						((Documentable)pn).setDocumentation(scannedComments.get(scannedComments.size() - 1));
+						Comment doc = getAndResetJsDoc(pn.start());
+						if (doc != null) ((Documentable)pn).setDocumentation(doc);
 					}
 					consumeToken();
 				}

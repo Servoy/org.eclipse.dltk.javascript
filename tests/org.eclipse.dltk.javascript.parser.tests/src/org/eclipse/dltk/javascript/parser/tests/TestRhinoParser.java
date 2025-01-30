@@ -2495,4 +2495,48 @@ public class TestRhinoParser {
 		assertEquals(18, literal.getSuffix());
 		assertEquals("1234567890n", literal.getText());
 	}
+	
+	@Test
+	public void testFunctionDoc() {
+		String source = "function ws_update() {\r\n"
+				+ "	try {\r\n"
+				+ "		function func1() {\r\n"
+				+ "			return 1;\r\n"
+				+ "		}\r\n"
+				+ "\r\n"
+				+ "		/**\r\n"
+				+ "		 * @return {Array}\r\n"
+				+ "		 */\r\n"
+				+ "		function arrayDiff() {\r\n"
+				+ "			return [];\r\n"
+				+ "		}\r\n"
+				+ "	} \r\n"
+				+ "	catch (e) {\r\n"
+				+ "	}\r\n"
+				+ "}";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		FunctionStatement func = (FunctionStatement)script.getDeclarations().get(0);
+		FunctionStatement funcv4 = (FunctionStatement)scriptv4.getDeclarations().get(0);
+		
+		TryStatement statement = (TryStatement)(func.getBody()).getStatements().get(0);
+		TryStatement statementv4 = (TryStatement)(funcv4.getBody()).getStatements().get(0);
+
+		StatementBlock body = (StatementBlock)statement.getBody();
+		StatementBlock bodyv4 = (StatementBlock)statementv4.getBody();
+		
+		FunctionStatement innerFunc1 = (FunctionStatement)((VoidExpression) body.getStatements().get(0)).getExpression();
+		FunctionStatement innerFunc1_v4 = (FunctionStatement)((VoidExpression) bodyv4.getStatements().get(0)).getExpression();
+		assertNull(innerFunc1.getDocumentation());
+		assertNull(innerFunc1_v4.getDocumentation());
+		
+		FunctionStatement innerFunc2 = (FunctionStatement)((VoidExpression) body.getStatements().get(1)).getExpression();
+		FunctionStatement innerFunc2_v4 = (FunctionStatement)((VoidExpression) bodyv4.getStatements().get(1)).getExpression();
+		assertNotNull(innerFunc2.getDocumentation());
+		assertNotNull(innerFunc2_v4.getDocumentation());
+	}
 }

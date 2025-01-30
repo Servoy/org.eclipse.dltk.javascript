@@ -348,7 +348,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		} else if (isNumber(left) && isNumber(right)) {
 			return ConstantValue.of(RTypes.NUMBER);
 		} else if ((isBigInt(left) || isBigInt(right))
-				&& node.isArithmeticOperation()) {
+				&& (node.isArithmeticOperation()
+						|| ">>>".equals(node.getOperationText()))) {
 			return checkBigInt(left, right, node);
 		} else if (node.isAddition()) {
 			if (isString(left) || isString(right)) {

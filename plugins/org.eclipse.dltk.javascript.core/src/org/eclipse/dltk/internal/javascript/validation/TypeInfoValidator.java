@@ -1771,9 +1771,13 @@ public class TypeInfoValidator implements IBuildParticipant,
 			if (ref == null) {
 				// one of the operands is not BigInt
 				reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
-						ValidationMessages.MixBigInt,
-						node.sourceStart(),
+						ValidationMessages.MixBigInt, node.sourceStart(),
 						node.sourceEnd());
+			} else if (">>>".equals(node.getOperationText())) {
+					reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
+							ValidationMessages.UnsupportedBigIntOperation,
+							node.sourceStart(),
+							node.sourceEnd());
 			}
 			return ref;
 		}

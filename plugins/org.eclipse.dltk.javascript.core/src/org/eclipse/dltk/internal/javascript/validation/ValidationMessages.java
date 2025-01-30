@@ -81,6 +81,7 @@ public class ValidationMessages extends NLS {
 
 	public static String MixBigInt;
 	public static String BigIntNotConstructor;
+	public static String UnsupportedBigIntOperation;
 
 	static {
 		// initialize resource bundle

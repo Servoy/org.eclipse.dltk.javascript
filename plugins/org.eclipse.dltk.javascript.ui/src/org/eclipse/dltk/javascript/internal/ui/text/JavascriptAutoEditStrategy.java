@@ -433,20 +433,22 @@ public class JavascriptAutoEditStrategy extends
 				int aPlus1 = a + 1;
 				if (aPlus1 < end) {
 					// test if single line comment
-					if (sm.charAt(aPlus1) == '/') {
+					char nextChar = sm.charAt(aPlus1);
+					if (nextChar == '/') {
 						// skip it all.
 						a = sm.indexOf('\n', aPlus1);
 						if (a == -1)
 							a = sm.length();
-					} else if (sm.charAt(aPlus1) == '*') {
+					}
+					else if (nextChar == '*') {
 						// start of doc search for the end..
-						a = sm.indexOf(C_END, aPlus1);
+						a = sm.indexOf("*/", aPlus1);
 						if (a == -1)
 							a = sm.length();
 						else
 							a = a + 1;
-					} else // regexp?
-					{
+					}
+					else if (isPossibleRegex(sm, a)) {
 						aPlus1++;
 						while (aPlus1 < end) {
 							char c = sm.charAt(aPlus1);
@@ -534,6 +536,14 @@ public class JavascriptAutoEditStrategy extends
 			}
 		}
 		return level;
+	}
+
+	private boolean isPossibleRegex(String sm, int slashIndex) {
+		if (slashIndex == 0)
+			return true;
+		char prevChar = sm.charAt(slashIndex - 1);
+		return (prevChar == '(' || prevChar == '{' || prevChar == '='
+				|| prevChar == ':' || prevChar == ',');
 	}
 
 	/**

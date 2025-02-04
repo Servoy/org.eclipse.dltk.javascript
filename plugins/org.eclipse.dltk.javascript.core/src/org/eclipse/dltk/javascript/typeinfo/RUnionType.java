@@ -23,7 +23,8 @@ public class RUnionType extends RType implements IRUnionType {
 
 	public RUnionType(Collection<IRType> targets) {
 		assert !targets.contains(null);
-		this.targets.addAll(targets);
+		this.targets
+				.addAll(targets != null ? targets : Collections.emptyList());
 	}
 
 	public String getName() {

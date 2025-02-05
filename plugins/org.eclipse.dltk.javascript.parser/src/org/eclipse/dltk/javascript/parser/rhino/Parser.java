@@ -3481,7 +3481,7 @@ public class Parser implements IParser{
 
 		Expression ref = null; // right side of . or .. operator
 
-		int token = nextToken();
+		int token = peekToken();
 		if (token == Token.COMMENT) {
 			//the original parser does not do this
 			token = peekUntilNonComment(token);
@@ -3490,17 +3490,20 @@ public class Parser implements IParser{
 		switch (token) {
 		case Token.THROW:
 			// needed for generator.throw();
+			consumeToken();
 			saveNameTokenData(ts.getTokenBeg(), "throw", ts.getLineno());
 			ref = propertyName(-1, memberTypeFlags);
 			break;
 
 		case Token.NAME:
 			// handles: name, ns::name, ns::*, ns::[expr]
+			consumeToken();
 			ref = propertyName(-1, memberTypeFlags);
 			break;
 
 		case Token.MUL:
 			// handles: *, *::name, *::*, *::[expr]
+			consumeToken();
 			saveNameTokenData(ts.getTokenBeg(), "*", ts.getLineno());
 			ref = propertyName(-1, memberTypeFlags);
 			break;
@@ -3508,11 +3511,13 @@ public class Parser implements IParser{
 		case Token.XMLATTR:
 			// handles: '@attr', '@ns::attr', '@ns::*', '@ns::*',
 			//          '@::attr', '@::*', '@*', '@*::attr', '@*::*'
+			consumeToken();
 			ref = attributeAccess();
 			break;
 
 		case Token.RESERVED:
 		{
+			consumeToken();
 			String name = ts.getString();
 			saveNameTokenData(ts.getTokenBeg(), name, ts.getLineno());
 			ref = propertyName(-1, memberTypeFlags);

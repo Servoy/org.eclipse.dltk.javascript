@@ -1476,8 +1476,8 @@ public class TestRhinoParser {
 			}
 		};
 		Script scriptv4 = rhinoParser.parse(source, reporter);	
-		assertEquals(2, problems.size()); //TODO check the old parser has 1..
-		assertTrue(problems.get(1).getMessage().startsWith("missing }"));
+		assertEquals(1, problems.size());
+		assertTrue(problems.get(0).getMessage().startsWith("missing name after . operator"));
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
@@ -2538,5 +2538,22 @@ public class TestRhinoParser {
 		FunctionStatement innerFunc2_v4 = (FunctionStatement)((VoidExpression) bodyv4.getStatements().get(1)).getExpression();
 		assertNotNull(innerFunc2.getDocumentation());
 		assertNotNull(innerFunc2_v4.getDocumentation());
+	}
+	
+	@Test
+	public void testTypeDoc() {
+		String source = "function MyConstructor() {\r\n"
+				+ "	this.test = function () {\r\n"
+				+ "		return retValue.\r\n"
+				+ "	}\r\n"
+				+ "	\r\n"
+				+ "	this.aaaa = 10;\r\n"
+				+ "}";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 }

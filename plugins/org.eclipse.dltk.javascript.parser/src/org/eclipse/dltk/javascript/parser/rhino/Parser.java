@@ -3529,6 +3529,7 @@ public class Parser implements IParser{
 				// allow keywords as property names, e.g. ({if: 1})
 				String name = Token.keywordToName(token);
 				if (name != null) {
+					consumeToken();
 					saveNameTokenData(ts.getTokenBeg(), name, ts.getLineno());
 					ref = propertyName(-1, memberTypeFlags);
 					break;
@@ -3536,6 +3537,9 @@ public class Parser implements IParser{
 			}
 			addError("msg.no.name.after.dot", dotPos, 1);
 			ref = makeErrorNode();
+			//TODO check if we need to change makeErrorNode to get a specific position and not tokenBeg
+			ref.setStart(dotPos + 1);
+			ref.setEnd(dotPos + 1);
 		}
 
 		if (memberTypeFlags == Node.DESCENDANTS_FLAG) {

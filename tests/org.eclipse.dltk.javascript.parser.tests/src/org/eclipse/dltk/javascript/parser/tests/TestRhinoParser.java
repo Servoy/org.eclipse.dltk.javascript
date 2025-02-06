@@ -2541,7 +2541,7 @@ public class TestRhinoParser {
 	}
 	
 	@Test
-	public void testTypeDoc() {
+	public void testMissingName() {
 		String source = "function MyConstructor() {\r\n"
 				+ "	this.test = function () {\r\n"
 				+ "		return retValue.\r\n"
@@ -2553,6 +2553,31 @@ public class TestRhinoParser {
 		assertNotNull(script);
 		
 		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testReservedWords() {
+		String source = "_qry.case.when(a);\r\n"
+				+ "var localDate = new Packages.java.time.LocalDateTime.now();\r\n"
+				+ "var y = localDate.with(localDate.dayOfWeek(), 1).with(localDate.dayOfWeek(), 1);\r\n"
+				+"_qry.in.when(a);\r\n"
+				+"_qry.default.when(a);\r\n";
+		Script script = getScript(source);	
+		assertNotNull(script);
+		
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		
+		assertEquals(0, problems.size());
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}

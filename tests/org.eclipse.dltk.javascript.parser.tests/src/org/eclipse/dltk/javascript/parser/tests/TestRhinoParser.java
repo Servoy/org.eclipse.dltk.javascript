@@ -731,6 +731,133 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testSwitchErrorReporting2() {
+		String source = "switch (color) {\r\n"
+				+ "case 'blue':\r\n"
+				+ "	print(msg1);\r\n"
+				+ "	break;\r\n"
+				+ "default\r\n"
+				+ "}\r\n"
+				+ "var x;";
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertEquals(1, problems.size());
+		assertEquals("missing : after case expression", problems.get(0).getMessage());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+	
+	@Test
+	public void testSwitchErrorReporting3() {
+		String source = "switch (color) {\r\n"
+				+ "cas 'blue':\r\n"
+				+ "	print(msg1);\r\n"
+				+ "	break;\r\n"
+				+ "default\r\n"
+				+ "}\r\n"
+				+ "var x;";
+		//the old parser does not recover nicely
+//		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(2, problems.size());
+		assertEquals("invalid switch statement", problems.get(0).getMessage());
+		assertEquals("missing : after case expression", problems.get(1).getMessage());
+		
+		assertEquals(2, scriptv4.getStatements().size());
+		SwitchStatement statementv4 = (SwitchStatement) scriptv4.getStatements().get(0);
+		assertEquals(7, statementv4.getLP());
+		assertEquals(13, statementv4.getRP());
+		assertEquals(15, statementv4.getLC());
+		assertEquals(64, statementv4.getRC());
+		assertEquals(2, statementv4.getCaseClauses().size());
+	}
+	
+	@Test
+	public void testSwitchErrorReporting4() {
+		String source = "switch (color) {\r\n"
+				+ "'blue':\r\n"
+				+ "	print(msg1);\r\n"
+				+ "	break;\r\n"
+				+ "default\r\n"
+				+ "}\r\n"
+				+ "var x;";
+		//the old parser does not recover nicely
+//		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(4, problems.size());
+		assertEquals("invalid switch statement", problems.get(0).getMessage());
+		assertEquals("syntax error", problems.get(1).getMessage());
+		assertEquals("missing : after case expression", problems.get(2).getMessage());
+		
+		assertEquals(2, scriptv4.getStatements().size());
+		SwitchStatement statementv4 = (SwitchStatement) scriptv4.getStatements().get(0);
+		assertEquals(7, statementv4.getLP());
+		assertEquals(13, statementv4.getRP());
+		assertEquals(15, statementv4.getLC());
+		assertEquals(60, statementv4.getRC());
+		assertEquals(2, statementv4.getCaseClauses().size());
+	}
+	
+	@Test
+	public void testSwitchErrorReporting5() {
+		//no }
+		String source = "switch (color) {\r\n"
+				+ "case 'blue':\r\n"
+				+ "	print(msg1);\r\n"
+				+ "	break;\r\n"
+				+ "default\r\n";
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(2, problems.size());
+		assertEquals("missing : after case expression", problems.get(0).getMessage());
+		assertEquals("invalid switch statement", problems.get(1).getMessage());
+		
+		assertEquals(1, scriptv4.getStatements().size());
+		SwitchStatement statementv4 = (SwitchStatement) scriptv4.getStatements().get(0);
+		assertEquals(7, statementv4.getLP());
+		assertEquals(13, statementv4.getRP());
+		assertEquals(15, statementv4.getLC());
+		assertEquals(-1, statementv4.getRC());
+		assertEquals(2, statementv4.getCaseClauses().size());
+	}
+
+	@Test
 	public void testEmptyStatement() {
 		String source = ";";
 		Script script = getScript(source);
@@ -2030,6 +2157,42 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testXMLAttributeIdentifierError() {
+		String source = "var a = person.@ \r\n"
+				+ "var b;";
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		//cannot compare the script objects because the old parser ignores the '@' symbol in this case
+		//assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement statement = (VariableStatement) expression.getExpression();
+		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
+		assertTrue(((PropertyExpression)statement.getVariables().get(0).getInitializer()).getProperty() instanceof ErrorExpression);
+		assertTrue(((PropertyExpression)statementv4.getVariables().get(0).getInitializer()).getProperty() instanceof XmlAttributeIdentifier);
+		
+		VoidExpression expression2 = (VoidExpression) script.getStatements().get(1);
+		VoidExpression expressionv4_2 = (VoidExpression) scriptv4.getStatements().get(1);
+		VariableStatement statement_2 = (VariableStatement) expression2.getExpression();
+		VariableStatement statementv4_2 = (VariableStatement) expressionv4_2.getExpression();
+		assertTrue(equalsJSNode(statement_2, statementv4_2, new ArrayDeque<>()));
+		
+		assertEquals(1, problems.size());
+		assertEquals("missing name after .@", problems.get(0).getMessage());
+	}
+	
+	@Test
 	public void testXMLGetLocalName() {
 		String source = "ns::firstName;";
 		Script script = getScript(source);
@@ -2044,6 +2207,42 @@ public class TestRhinoParser {
 		assertEquals(id.getLocalName().toString(), idv4.getLocalName().toString());
 		assertEquals(id.getColonColonPosition(), idv4.getColonColonPosition());
 		assertTrue(equalsJSNode(script, scriptv4, stack));
+	}
+	
+	@Test
+	public void testXMLGetLocalNameError() {
+		String source = "var a = ns:: \r\n"
+				+ "var b;";
+		Script script = getScript(source);
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		//cannot compare the script objects because the old parser ignores the '::' symbol in this case
+		//assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement statement = (VariableStatement) expression.getExpression();
+		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
+		assertTrue(statement.getVariables().get(0).getInitializer() instanceof Identifier);
+		assertTrue(statementv4.getVariables().get(0).getInitializer() instanceof GetLocalNameExpression);
+		
+		VoidExpression expression2 = (VoidExpression) script.getStatements().get(1);
+		VoidExpression expressionv4_2 = (VoidExpression) scriptv4.getStatements().get(1);
+		VariableStatement statement_2 = (VariableStatement) expression2.getExpression();
+		VariableStatement statementv4_2 = (VariableStatement) expressionv4_2.getExpression();
+		assertTrue(equalsJSNode(statement_2, statementv4_2, new ArrayDeque<>()));
+		
+		assertEquals(1, problems.size());
+		assertEquals("missing name after :: operator", problems.get(0).getMessage());
 	}
 	
 	@Test

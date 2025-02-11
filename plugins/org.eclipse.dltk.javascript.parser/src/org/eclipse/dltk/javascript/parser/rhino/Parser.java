@@ -1363,7 +1363,7 @@ public class Parser implements IParser{
 
 		JSNode pn = null;
 		int tt = peekToken();
-
+		
 		switch (tt) {
 		case Token.IF:
 			return ifStatement();
@@ -1619,9 +1619,13 @@ public class Parser implements IParser{
 							hasDefault = true;
 							comp = new DefaultClause(pn);
 							parents.push(comp);
-							((DefaultClause) comp).setDefaultKeyword(createKeyword(Token.DEFAULT, ts.getTokenBeg()));
+							Keyword keyword = createKeyword(Token.DEFAULT, ts.getTokenBeg());
+							((DefaultClause) comp).setDefaultKeyword(keyword);
 							comp.setStart(ts.getTokenBeg());
-							mustMatchToken(Token.COLON, "msg.no.colon.case", true);
+							if (!mustMatchToken(Token.COLON, "msg.no.colon.case", true))
+							{
+								comp.setEnd(keyword.end());
+							}
 							comp.setColonPosition(ts.getTokenBeg());
 							pn.addCase(comp);
 							break;
@@ -1633,7 +1637,28 @@ public class Parser implements IParser{
 							continue switchLoop;
 						default:
 							reportError("msg.bad.switch");
-							break switchLoop;
+							
+							if (tt != Token.EOF) {
+						        tt = Token.CASE; // pretend it's a case statement and continue parsing
+						        adjustEnd(comp, nextStmt);
+						        comp = new CaseClause(pn);
+						        parents.push(comp);
+						        ((CaseClause) comp).setCaseKeyword(createKeyword(Token.CASE, ts.getTokenBeg()));
+						        comp.setStart(ts.getTokenBeg());
+						        
+						        Expression cexpr = expr(false);
+						        ((CaseClause) comp).setCondition(cexpr);
+						        mustMatchToken(Token.COLON, "msg.no.colon.case", true);
+						        comp.setColonPosition(ts.getTokenBeg());
+						        
+						        pn.addCase(comp);
+						        comp.setEnd(ts.getTokenEnd());
+						        
+						        break;
+						    }
+							else {
+								break switchLoop;
+							}
 					}
 
 					while ((tt = peekToken()) != Token.RC
@@ -3596,7 +3621,7 @@ public class Parser implements IParser{
 	 * <p>Called if we peeked an '@' token.
 	 */
 	private Expression attributeAccess() throws IOException {
-		int tt = nextToken(), atPos = ts.getTokenBeg();
+		int tt = peekToken(), atPos = ts.getTokenBeg();
 
 		XmlAttributeIdentifier res = new XmlAttributeIdentifier(getParent());
 		parents.push(res);
@@ -3604,17 +3629,20 @@ public class Parser implements IParser{
 		switch (tt) {
 		// handles: @name, @ns::name, @ns::*, @ns::[expr]
 		case Token.NAME:
+			consumeToken();
 			expr = propertyName(atPos, 0);
 			break;
 
 			// handles: @*, @*::name, @*::*, @*::[expr]
 		case Token.MUL:
+			consumeToken();
 			saveNameTokenData(ts.getTokenBeg(), "*", ts.getLineno());
 			expr = propertyName(atPos, 0);
 			break;
 
 			// handles @[expr]
 		case Token.LB:
+			consumeToken();
 			expr = xmlElemRef(atPos, null, -1);
 			break;
 
@@ -3654,9 +3682,10 @@ public class Parser implements IParser{
 			colonPos = ts.getTokenBeg();
 			res.setColonColonPosition(ts.getTokenBeg());
 
-			switch (nextToken()) {
+			switch (peekToken()) {
 			// handles name::name
 			case Token.NAME:
+				consumeToken();
 				name = createNameNode();
 				res.setLocalName(name);
 				res.setEnd(name.sourceEnd());
@@ -3664,6 +3693,7 @@ public class Parser implements IParser{
 
 				// handles name::*
 			case Token.MUL:
+				consumeToken();
 				saveNameTokenData(ts.getTokenBeg(), "*", ts.getLineno());
 				AsteriskExpression expr = new AsteriskExpression(res);
 				expr.setStart(ts.getTokenBeg());
@@ -3674,6 +3704,7 @@ public class Parser implements IParser{
 
 				// handles name::[expr] or *::[expr]
 			case Token.LB:
+				consumeToken();
 				Expression ref = xmlElemRef(atPos, ns, colonPos);
 				res.setLocalName(ref);
 				res.setEnd(ref.sourceEnd());

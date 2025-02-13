@@ -247,6 +247,8 @@ public class JSDocSupport implements IModelBuilder {
 			}
 		} else if (parent instanceof PropertyExpression) {
 			return getComment((PropertyExpression) parent);
+		} else if (parent instanceof CallExpression) {
+			return getComment((CallExpression) parent);
 		}
 		return null;
 	}

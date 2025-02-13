@@ -3,7 +3,7 @@ package org.eclipse.dltk.internal.javascript.ti;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class ValueWithElementValue extends Value {
+public class ValueWithElementValue extends ImmutableValue {
 
 	private final ElementValue elementValue;
 

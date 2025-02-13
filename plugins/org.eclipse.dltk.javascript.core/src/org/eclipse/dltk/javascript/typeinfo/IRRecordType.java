@@ -16,7 +16,7 @@ import java.util.Collection;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
 import org.eclipse.emf.common.util.EList;
 
-public interface IRRecordType extends IRType {
+public interface IRRecordType extends IRType, ImmutableType<IRRecordType> {
 
 	IRRecordMember getMember(String name);
 

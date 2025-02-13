@@ -13,11 +13,15 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IValidationStatus;
+import org.eclipse.dltk.internal.javascript.ti.AnonymousValue;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.IValue;
+import org.eclipse.dltk.internal.javascript.ti.ImmutableValue;
+import org.eclipse.dltk.internal.javascript.ti.Value;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
@@ -30,12 +34,25 @@ import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
  */
 class RLocalType extends RType implements IRLocalType {
 
-	private final IValueReference functionValue;
+	private final IValue functionValue;
 	private final String name;
 
-	RLocalType(String name, IValueReference functionValue) {
+	RLocalType(String name, IValue functionValue) {
 		this.name = name;
 		this.functionValue = functionValue;
+	}
+
+	public RLocalType makeImmutable(Map<Object, Object> visited) {
+		IValue value = functionValue;
+		ImmutableValue immutableValue = (ImmutableValue) visited.get(value);
+		if (immutableValue == null) {
+			if (value instanceof Value v) {
+				value = v.getImmutableValue(visited);
+			}
+		} else {
+			value = immutableValue;
+		}
+		return new RLocalType(name, value);
 	}
 
 	public IValueReference getValue() {
@@ -89,7 +106,8 @@ class RLocalType extends RType implements IRLocalType {
 			IValueReference fromChild = getChildFromDeclaredTypes(name,
 					declaredValue.getDeclaredTypes(), set);
 			if (fromChild == null && !PROTOTYPE_PROPERTY.equals(name)) {
-				IValueReference prototype = irType.functionValue
+				IValueReference prototype = new AnonymousValue(
+						irType.functionValue)
 						.getChild(PROTOTYPE_PROPERTY);
 				fromChild = prototype.getChild(name);
 				if (!fromChild.exists())
@@ -116,7 +134,8 @@ class RLocalType extends RType implements IRLocalType {
 			IValueReference value = rLocalType.getValue();
 			children.addAll(value.getDirectChildren(
 					IValue.NO_LOCAL_TYPES));
-			IValueReference prototype = rLocalType.functionValue
+			IValueReference prototype = new AnonymousValue(
+					rLocalType.functionValue)
 					.getChild(PROTOTYPE_PROPERTY);
 			children.addAll(prototype.getDirectChildren());
 			fillDeclaredLocalTypesChildren(children, prototype.getTypes(), set);

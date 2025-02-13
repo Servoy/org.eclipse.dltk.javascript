@@ -12,6 +12,7 @@
 package org.eclipse.dltk.internal.javascript.validation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IProblemCategory;
@@ -44,6 +45,11 @@ public class RMethodFunctionWrapper implements IRMethod {
 			source = method;
 		else
 			source = reference.getAttribute(IReferenceAttributes.ELEMENT, true);
+	}
+
+	private RMethodFunctionWrapper(IRFunctionType functionType, Object source) {
+		this.functionType = null;
+		this.source = new Object();
 	}
 
 	public boolean isDeprecated() {
@@ -141,6 +147,12 @@ public class RMethodFunctionWrapper implements IRMethod {
 		if (source instanceof IRMethod)
 			return ((IRMethod) source).isGeneric();
 		return false;
+	}
+
+	@Override
+	public IRMethod makeImmutable(Map<Object, Object> visited) {
+
+		return new RMethodFunctionWrapper(functionType, source);
 	}
 
 }

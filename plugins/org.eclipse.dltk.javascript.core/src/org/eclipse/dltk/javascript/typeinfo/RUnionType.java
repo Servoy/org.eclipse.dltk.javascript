@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class RUnionType extends RType implements IRUnionType {
@@ -81,6 +82,19 @@ public class RUnionType extends RType implements IRUnionType {
 			return targets.equals(other.targets);
 		}
 		return false;
+	}
+
+	@Override
+	public IRUnionType makeImmutable(Map<Object, Object> visited) {
+		Set<IRType> copy = new LinkedHashSet<>();
+		for (IRType type : targets) {
+			if (type instanceof ImmutableType<?> t) {
+				copy.add((IRType) t.makeImmutable(visited));
+			} else {
+				copy.add(type);
+			}
+		}
+		return new RUnionType(copy);
 	}
 
 }

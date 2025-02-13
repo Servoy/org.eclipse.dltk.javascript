@@ -20,7 +20,8 @@ import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 /**
  * @author jcompagner
  */
-public interface IRLocalType extends IRType, IRTypeExtension {
+public interface IRLocalType
+		extends IRType, IRTypeExtension, ImmutableType<IRLocalType> {
 	public static final String PROTOTYPE_PROPERTY = "prototype";
 
 	public IValueReference getValue();

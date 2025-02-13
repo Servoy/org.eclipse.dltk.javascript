@@ -16,12 +16,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.dltk.annotations.Nullable;
+import org.eclipse.dltk.internal.javascript.ti.IValueProvider;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.core.Types;
@@ -235,6 +237,11 @@ public class RTypes {
 
 		public void init(ITypeSystem context, EList<Member> members) {
 		}
+
+		@Override
+		public IRRecordType makeImmutable(Map<Object, Object> visited) {
+			return this;
+		}
 	}
 
 	public static IRRecordType recordType(ITypeSystem typeSystem,
@@ -344,7 +351,7 @@ public class RTypes {
 	}
 
 	public static IRLocalType localType(String name, IValueReference value) {
-		return new RLocalType(name, value);
+		return new RLocalType(name, ((IValueProvider) value).getValue());
 	}
 
 	/**

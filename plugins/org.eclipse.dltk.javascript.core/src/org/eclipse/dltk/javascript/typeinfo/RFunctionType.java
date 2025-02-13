@@ -11,8 +11,10 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.dltk.javascript.core.Types;
@@ -169,6 +171,21 @@ class RFunctionType extends RType implements IRFunctionType {
 		} else if (!returnType.equals(other.returnType))
 			return false;
 		return true;
+	}
+
+	public RFunctionType makeImmutable(Map<Object, Object> visited) {
+		IRType type = returnType;
+		if (type instanceof ImmutableType<?> local) {
+			type = (IRType) local.makeImmutable(visited);
+		}
+		List<IRParameter> params = parameters;
+		if (parameters != null) {
+			params = new ArrayList<>();
+			for (IRParameter param : parameters) {
+				params.add(param.makeImmutable(visited));
+			}
+		}
+		return new RFunctionType(typeSystem, params, type);
 	}
 
 }

@@ -13,7 +13,7 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.List;
 
-public interface IRMethod extends IRMember {
+public interface IRMethod extends IRMember, ImmutableType<IRMethod> {
 
 	int getParameterCount();
 
@@ -27,5 +27,4 @@ public interface IRMethod extends IRMember {
 	boolean isAbstract();
 
 	boolean isGeneric();
-
 }

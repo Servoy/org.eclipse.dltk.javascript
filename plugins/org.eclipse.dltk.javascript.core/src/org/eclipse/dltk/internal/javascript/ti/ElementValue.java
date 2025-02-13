@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,6 +49,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
 import org.eclipse.dltk.javascript.typeinfo.IRUnionType;
 import org.eclipse.dltk.javascript.typeinfo.ITypeInfoContext;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
+import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
 import org.eclipse.dltk.javascript.typeinfo.MemberPredicate;
 import org.eclipse.dltk.javascript.typeinfo.MemberPredicates;
@@ -353,18 +355,24 @@ public abstract class ElementValue implements IValue {
 				type)));
 	}
 
-	static class TypeValue extends ElementValue implements IValue {
+	static class TypeValue extends ElementValue
+			implements IValue, ImmutableType<TypeValue> {
 
-		private final Map<String, IValue> children = new ConcurrentHashMap<String, IValue>(
-				4, 0.9f);
-
+		private final Map<String, IValue> children;
 		private final JSTypeSet types;
 
 		public TypeValue(IRType type) {
+			this.children = new ConcurrentHashMap<String, IValue>(4, 0.9f);
 			this.types = JSTypeSet.singleton(type);
 		}
 
 		public TypeValue(JSTypeSet types) {
+			this.children = new ConcurrentHashMap<String, IValue>(4, 0.9f);
+			this.types = types;
+		}
+
+		private TypeValue(JSTypeSet types, Map<String, IValue> children) {
+			this.children = children;
 			this.types = types;
 		}
 
@@ -427,9 +435,35 @@ public abstract class ElementValue implements IValue {
 		public String toString() {
 			return getClass().getSimpleName() + types;
 		}
+
+		@Override
+		public TypeValue makeImmutable(Map<Object, Object> visited) {
+			JSTypeSet copy = JSTypeSet.create();
+			for (IRType type : types) {
+				if (type instanceof ImmutableType<?> im) {
+					copy.add((IRType) im.makeImmutable(visited));
+				} else {
+					copy.add(type);
+				}
+			}
+
+			Map<String, IValue> children = new HashMap<>();
+			for (Entry<String, IValue> entry : this.children.entrySet()) {
+				IValue value = entry.getValue();
+				if (value instanceof ImmutableType<?> im) {
+					children.put(entry.getKey(),
+							(IValue) im.makeImmutable(visited));
+				} else {
+					children.put(entry.getKey(), value);
+				}
+			}
+
+			return new TypeValue(copy, children);
+		}
 	}
 
-	private static class ClassValue extends ElementValue implements IValue {
+	private static class ClassValue extends ElementValue
+			implements IValue, ImmutableType<ClassValue> {
 
 		private final JSTypeSet types;
 
@@ -495,9 +529,28 @@ public abstract class ElementValue implements IValue {
 		public String toString() {
 			return getClass().getSimpleName() + types;
 		}
+
+		@Override
+		public ClassValue makeImmutable(Map<Object, Object> visited) {
+			boolean changed = false;
+			JSTypeSet copy = JSTypeSet.create();
+			for (IRType type : types) {
+				if (type instanceof ImmutableType<?> im) {
+					IRType immutable = (IRType) im.makeImmutable(visited);
+					copy.add(immutable);
+					changed = changed || immutable != type;
+				} else {
+					copy.add(type);
+				}
+			}
+			if (changed)
+				return new ClassValue(copy);
+			return this;
+		}
 	}
 
-	private static class MethodValue extends ElementValue implements IValue {
+	private static class MethodValue extends ElementValue
+			implements IValue, ImmutableType<MethodValue> {
 
 		private TypeValue functionOperator;
 		private final IRMethod method;
@@ -564,6 +617,15 @@ public abstract class ElementValue implements IValue {
 		public String toString() {
 			return getClass().getSimpleName() + '<' + method + '>';
 		}
+
+		@Override
+		public MethodValue makeImmutable(Map<Object, Object> visited) {
+			IRMethod immutable = method.makeImmutable(visited);
+			if (immutable != method) {
+				return new MethodValue(immutable);
+			}
+			return this;
+		}
 	}
 
 	public static final IAssignProtection READONLY_PROPERTY = new IAssignProtection() {
@@ -596,14 +658,21 @@ public abstract class ElementValue implements IValue {
 		}
 	};
 
-	private static class PropertyValue extends ElementValue implements IValue {
+	private static class PropertyValue extends ElementValue
+			implements IValue, ImmutableType<PropertyValue> {
 
 		private final IRProperty property;
-		private final Map<String, IValue> children = new HashMap<String, IValue>(
-				4, 0.9f);
+		private final Map<String, IValue> children;
 
 		public PropertyValue(IRProperty property) {
 			this.property = property;
+			this.children = new HashMap<String, IValue>(4, 0.9f);
+		}
+
+		private PropertyValue(IRProperty property,
+				Map<String, IValue> children) {
+			this.property = property;
+			this.children = children;
 		}
 
 		@Override
@@ -661,8 +730,10 @@ public abstract class ElementValue implements IValue {
 				}
 				if (child != null)
 					children.put(name, child);
+				else
+					children.put(name, PhantomValue.VALUE);
 			}
-			return child;
+			return child == PhantomValue.VALUE ? null : child;
 		}
 
 		public IRType getDeclaredType() {
@@ -700,6 +771,24 @@ public abstract class ElementValue implements IValue {
 		@Override
 		public String toString() {
 			return getClass().getSimpleName() + '<' + property + '>';
+		}
+
+		@Override
+		public PropertyValue makeImmutable(Map<Object, Object> visited) {
+			IRProperty immutable = (IRProperty) property.makeImmutable(visited);
+
+			Map<String, IValue> children = new HashMap<>();
+			for (Entry<String, IValue> entry : this.children.entrySet()) {
+				IValue value = entry.getValue();
+				if (value instanceof ImmutableType<?> im) {
+					children.put(entry.getKey(),
+							(IValue) im.makeImmutable(visited));
+				} else {
+					children.put(entry.getKey(), value);
+				}
+			}
+
+			return new PropertyValue(immutable, children);
 		}
 	}
 

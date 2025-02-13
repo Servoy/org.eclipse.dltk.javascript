@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
+import java.util.Map;
+
 class RMapType extends RType implements IRMapType {
 
 	private final IRType valueType;
@@ -82,6 +84,24 @@ class RMapType extends RType implements IRMapType {
 
 	public IRType getValueType() {
 		return valueType;
+	}
+
+	@Override
+	public IRMapType makeImmutable(Map<Object, Object> visited) {
+		if (keyType instanceof ImmutableType<?> || valueType instanceof ImmutableType<?>) {
+			IRType copyKey = keyType;
+			if (keyType instanceof ImmutableType<?> im) {
+				copyKey = (IRType) im.makeImmutable(visited);
+			}
+			IRType copyValue = valueType;
+			if (valueType instanceof ImmutableType<?> im) {
+				copyValue = (IRType) im.makeImmutable(visited);
+			}
+			
+			if (copyKey != keyType || copyValue != valueType)
+				return new RMapType(copyKey, copyValue);
+		}
+		return this;
 	}
 
 }

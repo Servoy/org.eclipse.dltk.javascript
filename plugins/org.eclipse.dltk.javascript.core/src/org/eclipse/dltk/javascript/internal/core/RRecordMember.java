@@ -12,6 +12,7 @@
 package org.eclipse.dltk.javascript.internal.core;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IProblemCategory;
@@ -20,6 +21,7 @@ import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMember;
 import org.eclipse.dltk.javascript.typeinfo.IRRecordMember;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
+import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
 import org.eclipse.dltk.javascript.typeinfo.model.RecordMember;
 import org.eclipse.dltk.javascript.typeinfo.model.Visibility;
@@ -101,5 +103,14 @@ public class RRecordMember implements IRRecordMember {
 
 	public Object getSource() {
 		return source;
+	}
+
+	@Override
+	public IRRecordMember makeImmutable(Map<Object, Object> visited) {
+		if (type instanceof ImmutableType<?> t) {
+			return new RRecordMember(name, (IRType) t.makeImmutable(visited),
+					source);
+		}
+		return this;
 	}
 }

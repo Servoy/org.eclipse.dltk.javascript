@@ -11,7 +11,9 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.core;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.dltk.internal.javascript.ti.TypeSystemImpl;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
@@ -19,6 +21,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
+import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.model.GenericMethod;
 import org.eclipse.dltk.javascript.typeinfo.model.Method;
@@ -26,7 +29,7 @@ import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
 
 public class RMethod extends RMember<Method> implements IRMethod {
 
-	private List<IRParameter> parameters;
+	protected List<IRParameter> parameters;
 
 	public RMethod(Method method, IRType type, List<IRParameter> parameters,
 			IRTypeDeclaration typeDeclaration) {
@@ -92,5 +95,25 @@ public class RMethod extends RMember<Method> implements IRMethod {
 
 	public boolean isGeneric() {
 		return member instanceof GenericMethod;
+	}
+
+	@Override
+	public IRMethod makeImmutable(Map<Object, Object> visited) {
+		IRType type = getType();
+		if (type instanceof ImmutableType<?> local) {
+			type = (IRType) local.makeImmutable(visited);
+		}
+		List<IRParameter> params = parameters;
+		if (parameters != null ) {
+			params = new ArrayList<>();
+			for (IRParameter param : parameters) {
+                params.add(param.makeImmutable(visited));
+			}
+		}
+		IRTypeDeclaration declaringType = getDeclaringType();
+		if (declaringType instanceof ImmutableType<?> im) {
+			declaringType = (IRTypeDeclaration) im.makeImmutable(visited);
+		}
+		return new RMethod(member, type, params, declaringType);
 	}
 }

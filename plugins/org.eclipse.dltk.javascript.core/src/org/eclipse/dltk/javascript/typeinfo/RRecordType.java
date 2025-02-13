@@ -13,6 +13,7 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import static org.eclipse.dltk.javascript.typeinfo.RTypes.any;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -165,6 +166,21 @@ class RRecordType extends RType implements IRRecordType, IRTypeExtension {
 			return members.equals(other.members);
 		}
 		return false;
+	}
+
+	@Override
+	public IRRecordType makeImmutable(Map<Object, Object> visited) {
+		boolean changed = false;
+		ArrayList<IRRecordMember> copy = new ArrayList<>(members.size());
+		for (IRRecordMember member : members.values()) {
+			IRRecordMember immutable = member.makeImmutable(visited);
+			changed = changed || immutable != member;
+			copy.add(immutable);
+		}
+		if (changed) {
+			return new RRecordType(copy);
+		}
+		return this;
 	}
 
 }

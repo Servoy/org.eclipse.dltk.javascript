@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
-public interface IRMapType extends IRType {
+public interface IRMapType extends IRType, ImmutableType<IRMapType> {
 
 	IRType getKeyType();
 

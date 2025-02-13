@@ -13,7 +13,7 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
 
-public interface IRParameter {
+public interface IRParameter extends ImmutableType<IRParameter> {
 
 	String getName();
 
@@ -24,5 +24,4 @@ public interface IRParameter {
 	boolean isOptional();
 
 	boolean isVarargs();
-
 }

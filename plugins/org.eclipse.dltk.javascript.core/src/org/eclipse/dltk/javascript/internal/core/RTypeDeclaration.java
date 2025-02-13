@@ -37,11 +37,11 @@ public class RTypeDeclaration implements IRTypeDeclaration {
 	protected final ITypeSystem typeSystem;
 	@NonNull
 	protected final Type type;
-	private RTypeDeclaration superType;
-	private List<RTypeDeclaration> traits;
-	private List<IRMember> members;
-	private List<IRConstructor> constructors;
-	private IRConstructor staticConstructor;
+	protected RTypeDeclaration superType;
+	protected List<RTypeDeclaration> traits;
+	protected List<IRMember> members;
+	protected List<IRConstructor> constructors;
+	protected IRConstructor staticConstructor;
 
 	public RTypeDeclaration(ITypeSystem typeSystem, Type type) {
 		this.typeSystem = typeSystem;

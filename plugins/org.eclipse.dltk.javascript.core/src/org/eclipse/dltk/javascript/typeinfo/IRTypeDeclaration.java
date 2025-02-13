@@ -25,7 +25,8 @@ import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
  * @see Type
  * @see ITypeSystem
  */
-public interface IRTypeDeclaration extends IRElement {
+public interface IRTypeDeclaration
+		extends IRElement {
 
 	/**
 	 * Returns the type system this instance was created by.

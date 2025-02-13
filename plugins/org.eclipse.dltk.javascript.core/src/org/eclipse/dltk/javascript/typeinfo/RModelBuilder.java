@@ -14,6 +14,7 @@ package org.eclipse.dltk.javascript.typeinfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IProblemCategory;
@@ -159,6 +160,22 @@ public class RModelBuilder {
 			return false;
 		}
 
+		public IRMethod makeImmutable(Map<Object, Object> visited) {
+			IRType type = getType();
+			if (type instanceof ImmutableType<?> local) {
+				type = (IRType) local.makeImmutable(visited);
+			}
+			List<IRParameter> params = parameters;
+			if (parameters != null) {
+				params = new ArrayList<>();
+				for (IRParameter param : parameters) {
+					params.add(param.makeImmutable(visited));
+				}
+			}
+			return new RMethod(getName(), type, getSuppressedWarnings(),
+					getVisibility(), params, getSource());
+		}
+
 		@Override
 		public String toString() {
 			final StringBuilder sb = new StringBuilder();
@@ -188,6 +205,22 @@ public class RModelBuilder {
 					source);
 		}
 
+		public RConstructor makeImmutable(Map<Object, Object> visited) {
+			IRType type = getType();
+			if (type instanceof ImmutableType<?> local) {
+				type = (IRType) local.makeImmutable(visited);
+			}
+			List<IRParameter> params = parameters;
+			if (parameters != null) {
+				params = new ArrayList<>();
+				for (IRParameter param : parameters) {
+					params.add(param.makeImmutable(visited));
+				}
+			}
+			return new RConstructor(getName(), type, getSuppressedWarnings(),
+					getVisibility(), params, getSource());
+		}
+
 	}
 
 	private static class RVariable extends RMember implements IRVariable {
@@ -196,6 +229,17 @@ public class RModelBuilder {
 				Set<IProblemCategory> suppressedWarnings,
 				Visibility visibility, Object source) {
 			super(name, type, suppressedWarnings, visibility, source, null);
+		}
+
+		@Override
+		public IRVariable makeImmutable(Map<Object, Object> visited) {
+			IRType type = getType();
+			if (type instanceof ImmutableType<?> local) {
+				return new RVariable(getName(),
+						(IRType) local.makeImmutable(visited),
+						getSuppressedWarnings(), visibility, getSource());
+			}
+			return this;
 		}
 
 	}

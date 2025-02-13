@@ -11,9 +11,13 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.core;
 
+import java.util.Map;
+
 import org.eclipse.dltk.javascript.typeinfo.IRProperty;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
+import org.eclipse.dltk.javascript.typeinfo.IRVariable;
+import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
 import org.eclipse.dltk.javascript.typeinfo.model.Property;
 
 public class RProperty extends RMember<Property> implements IRProperty {
@@ -34,6 +38,24 @@ public class RProperty extends RMember<Property> implements IRProperty {
 	@Override
 	public Property getSource() {
 		return member;
+	}
+
+	@Override
+	public IRVariable makeImmutable(Map<Object, Object> visited) {
+		IRType type = getType();
+		IRTypeDeclaration declaringType = getDeclaringType();
+		if (declaringType instanceof ImmutableType<?>
+				|| type instanceof ImmutableType<?>) {
+			if (type instanceof ImmutableType<?> local) {
+				type = (IRType) local.makeImmutable(visited);
+			}
+			if (declaringType instanceof ImmutableType<?> local) {
+				declaringType = (IRTypeDeclaration) local
+						.makeImmutable(visited);
+			}
+			return new RProperty(member, type, declaringType);
+		}
+		return this;
 	}
 
 }

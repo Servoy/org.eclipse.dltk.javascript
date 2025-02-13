@@ -11,8 +11,7 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
-public interface IRArrayType extends IRSimpleType {
+public interface IRArrayType extends IRSimpleType, ImmutableType<IRArrayType> {
 
 	IRType getItemType();
-
 }

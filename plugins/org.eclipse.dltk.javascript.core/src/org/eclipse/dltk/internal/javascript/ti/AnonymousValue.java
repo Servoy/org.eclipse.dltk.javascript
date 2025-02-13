@@ -17,7 +17,7 @@ public class AnonymousValue extends AbstractReference {
 
 	private final IValue value;
 
-	protected AnonymousValue(IValue value) {
+	public AnonymousValue(IValue value) {
 		this.value = value;
 	}
 

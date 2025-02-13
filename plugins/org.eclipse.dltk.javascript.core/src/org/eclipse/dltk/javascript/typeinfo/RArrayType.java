@@ -12,11 +12,13 @@
 package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 
-class RArrayType extends RType implements IRArrayType {
+class RArrayType extends RType
+		implements IRArrayType {
 
 	private final IRType itemType;
 	private final IRTypeDeclaration declaration;
@@ -25,6 +27,11 @@ class RArrayType extends RType implements IRArrayType {
 		this.itemType = itemType;
 		this.declaration = typeSystem.parameterize(Types.ARRAY,
 				Collections.singletonList(itemType));
+	}
+
+	private RArrayType(IRType itemType, IRTypeDeclaration declaration) {
+		this.itemType = itemType;
+		this.declaration = declaration;
 	}
 
 	public Type getTarget() {
@@ -94,4 +101,22 @@ class RArrayType extends RType implements IRArrayType {
 		}
 	}
 
+	@Override
+	public IRArrayType makeImmutable(Map<Object, Object> visited) {
+		if (itemType instanceof ImmutableType<?>
+				|| declaration instanceof ImmutableType<?>) {
+			IRType type = itemType;
+			if (type instanceof ImmutableType<?> local) {
+				type = (IRType) local.makeImmutable(visited);
+			}
+	
+			IRTypeDeclaration decl = this.declaration;
+			if (decl instanceof ImmutableType<?> local) {
+				decl = (IRTypeDeclaration) local.makeImmutable(visited);
+			}
+	
+			return new RArrayType(type, decl);
+		}
+        return this;
+	}
 }

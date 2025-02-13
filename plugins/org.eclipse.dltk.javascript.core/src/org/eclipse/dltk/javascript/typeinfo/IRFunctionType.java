@@ -13,7 +13,7 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.List;
 
-public interface IRFunctionType extends IRType {
+public interface IRFunctionType extends IRType, ImmutableType<IRFunctionType> {
 
 	/**
 	 * Returns the type system this instance was created by.

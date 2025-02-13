@@ -11,6 +11,5 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
-public interface IRVariable extends IRMember {
-
+public interface IRVariable extends IRMember, ImmutableType<IRVariable> {
 }

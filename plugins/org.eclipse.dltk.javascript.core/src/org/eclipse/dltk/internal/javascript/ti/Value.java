@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,6 +29,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRProperty;
 import org.eclipse.dltk.javascript.typeinfo.IRSimpleType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
+import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
 import org.eclipse.dltk.javascript.typeinfo.ReferenceSource;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
@@ -406,12 +408,9 @@ public class Value extends ImmutableValue {
 			((ILazyValue) this).resolve();
 		}
 
-		JSTypeSet typeSet = JSTypeSet.create();
-		typeSet.addAll(types);
 		Set<String> deletedChilds = null;
 		if (deletedChildren != null) {
-			deletedChilds = new HashSet<String>(deletedChildren.size(), 0.9f);
-			deletedChilds.addAll(deletedChildren);
+			deletedChilds = Set.copyOf(deletedChildren);
 		}
 
 		Map<String, ImmutableValue> childs = new HashMap<String, ImmutableValue>(
@@ -422,49 +421,109 @@ public class Value extends ImmutableValue {
 		Map<String, Object> atts = null;
 		if (attributes != null) {
 			atts = new HashMap<String, Object>(attributes.size(), 0.9f);
-			for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-				if (entry.getValue() instanceof Value) {
-					atts.put(entry.getKey(), ((Value) entry.getValue())
-							.getImmutableValue(visited));
-				} else if (entry.getValue() instanceof IValueCollection) {
-					atts.put(entry.getKey(), ImmutableValueCollection
-							.getImmutableValueCollection(
-									(IValueCollection) entry.getValue(),
-									visited));
+		}
 
+		JSTypeSet typeSet = JSTypeSet.create();
+		immutableValue = new ImmutableValue(declaredType, typeSet,
+				deletedChilds, kind, location, childs, inherits, refers, atts);
+		// store this in the visited map to make sure this value is used when it
+		// is referenced again
+		visited.put(this, immutableValue);
+
+		// now go over all the values to make them lazy.
+		Map<String, IValue> elementValuesCopy = null;
+		if (elementValues != null && !elementValues.isEmpty()) {
+				elementValuesCopy = new HashMap<String, IValue>(
+						elementValues.size(), 0.9f);
+				for (Entry<String, IValue> entry : elementValues.entrySet()) {
+					IValue value = entry.getValue();
+					if (value instanceof Value v) {
+						elementValuesCopy.put(entry.getKey(),
+								v.getImmutableValue(visited));
+					} else if (value instanceof ImmutableType<?> v) {
+						elementValuesCopy.put(entry.getKey(),
+								(IValue) v.makeImmutable(visited));
+					} else {
+						elementValuesCopy.put(entry.getKey(), value);
+					}
+				}
+		}
+		immutableValue.elementValues = elementValuesCopy;
+
+		// fill the types, making sure local types are made immutable
+		for (IRType irType : typeSet) {
+			if (irType instanceof ImmutableType<?> local) {
+				irType = (IRType) local.makeImmutable(visited);
+			}
+			typeSet.add(irType);
+		}
+		// if the declared type is of IRLocalTyp make sure that is made
+		// immutable to and overwrite the declared type
+		if (declaredType instanceof ImmutableType<?> local) {
+			IRType decl = (IRType) local.makeImmutable(visited);
+			immutableValue.declaredType = decl;
+		}
+
+		if (attributes != null) {
+			for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+				if (entry.getValue() instanceof Value v) {
+					atts.put(entry.getKey(), v.getImmutableValue(visited));
+				} else if (entry.getValue() instanceof IValueCollection vc) {
+					atts.put(entry.getKey(), ImmutableValueCollection
+							.getImmutableValueCollection(vc, visited));
+
+				} else if (entry.getValue() instanceof AbstractReference) {
+					atts.put(entry.getKey(), entry.getValue());
+				} else if (entry
+						.getValue() instanceof ImmutableType<?> method) {
+					atts.put(entry.getKey(), method.makeImmutable(visited));
 				} else {
 					atts.put(entry.getKey(), entry.getValue());
 				}
 			}
 		}
-		immutableValue = new ImmutableValue(declaredType, typeSet,
-				deletedChilds, kind, location, childs, inherits, refers, atts);
-		visited.put(this, immutableValue);
 
 		for (IValue value : references) {
-			if (value instanceof Value) {
-				refers.add(((Value) value).getImmutableValue(visited));
+			if (value instanceof Value v) {
+				refers.add(v.getImmutableValue(visited));
+			} else if (value instanceof ImmutableType<?> v) {
+				refers.add((IValue) v.makeImmutable(visited));
 			} else {
 				refers.add(value);
 			}
 		}
 
 		for (Map.Entry<String, ImmutableValue> entry : children.entrySet()) {
-			if (entry.getValue() instanceof Value) {
+			ImmutableValue value = entry.getValue();
+			if (value instanceof Value v) {
 				childs.put(entry.getKey(),
-						((Value) entry.getValue()).getImmutableValue(visited));
+						v.getImmutableValue(visited));
+			} else if (value instanceof ImmutableType<?> v) {
+				childs.put(entry.getKey(),
+						(ImmutableValue) v.makeImmutable(visited));
 			} else {
-				childs.put(entry.getKey(), entry.getValue());
+				childs.put(entry.getKey(), value);
 			}
 		}
 
 		for (Map.Entry<String, IValue> entry : inherited.entrySet()) {
-			if (entry.getValue() instanceof Value)
+			IValue value = entry.getValue();
+			if (value instanceof Value v)
 				inherits.put(entry.getKey(),
-						((Value) entry.getValue()).getImmutableValue(visited));
+						v.getImmutableValue(visited));
+			else if (value instanceof ImmutableType<?> v)
+				inherits.put(entry.getKey(),
+						(ImmutableValue) v.makeImmutable(visited));
 			else
-				inherits.put(entry.getKey(), entry.getValue());
+				inherits.put(entry.getKey(), value);
 		}
+
+		// now make all those maps small (and immutable by itself)
+		immutableValue.children = Map.copyOf(immutableValue.children);
+		immutableValue.inherited = Map.copyOf(immutableValue.inherited);
+		immutableValue.references = Set.copyOf(immutableValue.references);
+		if (immutableValue.attributes != null)
+			immutableValue.attributes = Map.copyOf(immutableValue.attributes);
 		return immutableValue;
 	}
 

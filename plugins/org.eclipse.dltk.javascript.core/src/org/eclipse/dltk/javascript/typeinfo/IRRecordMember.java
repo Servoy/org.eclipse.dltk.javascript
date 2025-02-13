@@ -11,7 +11,8 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.typeinfo;
 
-public interface IRRecordMember extends IRMember {
+public interface IRRecordMember
+		extends IRMember, ImmutableType<IRRecordMember> {
 	String getName();
 
 	IRType getType();

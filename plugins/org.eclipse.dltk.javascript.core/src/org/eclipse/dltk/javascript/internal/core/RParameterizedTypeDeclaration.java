@@ -11,13 +11,17 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.core;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.dltk.internal.javascript.ti.IValue;
+import org.eclipse.dltk.javascript.typeinfo.IRConstructor;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
+import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
 import org.eclipse.dltk.javascript.typeinfo.TypeCompatibility;
 import org.eclipse.dltk.javascript.typeinfo.model.GenericType;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
@@ -25,7 +29,7 @@ import org.eclipse.dltk.javascript.typeinfo.model.TypeVariable;
 import org.eclipse.emf.common.util.EList;
 
 public class RParameterizedTypeDeclaration extends RTypeDeclaration implements
-		ITypeSystem {
+		ITypeSystem, ImmutableType<RParameterizedTypeDeclaration> {
 
 	private final List<IRType> typeArguments;
 
@@ -171,6 +175,78 @@ public class RParameterizedTypeDeclaration extends RTypeDeclaration implements
 
 	public ITypeSystem getPrimary() {
 		return typeSystem;
+	}
+
+	@Override
+	public RParameterizedTypeDeclaration makeImmutable(
+			Map<Object, Object> visited) {
+		RParameterizedTypeDeclaration copy = (RParameterizedTypeDeclaration) visited
+				.get(this);
+		if (copy != null)
+			return copy;
+
+		List<IRType> args = null;
+		if (typeArguments != null) {
+			boolean changed = false;
+			args = new ArrayList<>(typeArguments.size());
+			for (IRType member : typeArguments) {
+				if (member instanceof ImmutableType<?> im) {
+					IRType typeCopy = (IRType) im.makeImmutable(visited);
+					changed = changed || typeCopy != member;
+					args.add(typeCopy);
+				} else {
+					args.add(member);
+				}
+			}
+			if (changed) {
+				copy = new RParameterizedTypeDeclaration(typeSystem,
+						(GenericType) type, args);
+				visited.put(this, copy);
+				if (superType instanceof ImmutableType<?> im)
+					copy.superType = (RTypeDeclaration) im
+							.makeImmutable(visited);
+				else
+					copy.superType = superType;
+				if (traits != null) {
+					copy.traits = new ArrayList<>(traits.size());
+					for (RTypeDeclaration trait : traits) {
+						if (trait instanceof ImmutableType<?> im) {
+							copy.traits.add((RTypeDeclaration) im
+									.makeImmutable(visited));
+						} else
+							copy.traits.add(trait);
+					}
+				}
+				if (members != null) {
+					copy.members = new ArrayList<>(members.size());
+					for (IRMember member : members) {
+						if (member instanceof ImmutableType<?> im) {
+							copy.members
+									.add((IRMember) im.makeImmutable(visited));
+						} else {
+							copy.members.add(member);
+						}
+					}
+				}
+				if (constructors != null) {
+					copy.constructors = new ArrayList<>(constructors.size());
+					for (IRConstructor member : constructors) {
+						if (member instanceof ImmutableType<?> im) {
+							copy.constructors.add(
+									(IRConstructor) im.makeImmutable(visited));
+						} else {
+							copy.constructors.add(member);
+						}
+					}
+				}
+				if (staticConstructor != null)
+					copy.staticConstructor = (IRConstructor) staticConstructor
+							.makeImmutable(visited);
+				return copy;
+
+			}
+		}
+		return this;
 	}
 
 }

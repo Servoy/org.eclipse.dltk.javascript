@@ -1,6 +1,7 @@
 package org.eclipse.dltk.internal.javascript.ti;
 
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,7 +22,6 @@ import org.eclipse.dltk.javascript.typeinfo.RTypes;
 
 public class ImmutableValue implements IValue, IValue2 {
 
-	private Map<String, IValue> elementValues;
 
 	protected IRType declaredType;
 	protected final JSTypeSet types;
@@ -29,10 +29,11 @@ public class ImmutableValue implements IValue, IValue2 {
 	protected ReferenceKind kind = ReferenceKind.UNKNOWN;
 	protected ReferenceLocation location = ReferenceLocation.UNKNOWN;
 
-	protected final Map<String, ImmutableValue> children;
-	protected final Map<String, IValue> inherited;
-	protected final Set<IValue> references;
+	protected Map<String, ImmutableValue> children;
+	protected Map<String, IValue> inherited;
+	protected Set<IValue> references;
 	protected Map<String, Object> attributes;
+	protected Map<String, IValue> elementValues;
 
 	protected static interface Handler<R> {
 		void process(ImmutableValue value, R result);
@@ -92,12 +93,20 @@ public class ImmutableValue implements IValue, IValue2 {
 			if (value instanceof ILazyValue)
 				((ILazyValue) value).resolve();
 			handler.process(value, result);
-			for (IValue child : value.references) {
-				if (child instanceof ImmutableValue)
-					execute((ImmutableValue) child, handler, result, visited);
-				else if (handler instanceof Handler2) {
-					((Handler2<R>) handler).processOther(child, result);
+			try {
+				for (IValue child : value.references) {
+					if (child instanceof ImmutableValue)
+						execute((ImmutableValue) child, handler, result, visited);
+					else if (handler instanceof Handler2) {
+						((Handler2<R>) handler).processOther(child, result);
+					}
 				}
+			} catch (ConcurrentModificationException e) {
+				// TODO Auto-generated catch block
+				System.err.println(Thread.currentThread().getName()
+						+ System.identityHashCode(value));
+				e.printStackTrace();
+
 			}
 		}
 	}
@@ -314,6 +323,12 @@ public class ImmutableValue implements IValue, IValue2 {
 					if (elementValues == null)
 						elementValues = new ConcurrentHashMap<String, IValue>(
 								4, 0.9f);
+						// only make the values immutable if this is a
+						// ImmutableValue class itself.
+						if (value instanceof Value v
+								&& getClass() == ImmutableValue.class) {
+							value = v.getImmutableValue(new HashMap<>());
+						}
 					elementValues.put(name, value);
 					return value;
 
@@ -327,6 +342,14 @@ public class ImmutableValue implements IValue, IValue2 {
 								4, 0.9f);
 					if (resolve && value instanceof ElementValue) {
 						value = ((ElementValue) value).resolveValue();
+					}
+					// only make the values immutable if this is a
+					// ImmutableValue class itself.
+					if (value instanceof Value v
+							&& getClass() == ImmutableValue.class) {
+						System.err.println(
+								"creating immutable for elementValues 2");
+						value = v.getImmutableValue(new HashMap<>());
 					}
 					elementValues.put(name, value);
 					return value;

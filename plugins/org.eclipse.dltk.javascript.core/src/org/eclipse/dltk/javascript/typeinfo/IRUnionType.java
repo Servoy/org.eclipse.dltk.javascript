@@ -13,7 +13,7 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.Set;
 
-public interface IRUnionType extends IRType {
+public interface IRUnionType extends IRType, ImmutableType<IRUnionType> {
 
 	Set<IRType> getTargets();
 

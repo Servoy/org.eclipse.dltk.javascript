@@ -11,9 +11,12 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.core;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
+import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
 
 public class RParameter implements IRParameter {
@@ -76,6 +79,15 @@ public class RParameter implements IRParameter {
 
 	public boolean isVarargs() {
 		return kind == ParameterKind.VARARGS;
+	}
+
+	@Override
+	public IRParameter makeImmutable(Map<Object, Object> visited) {
+		if (type instanceof ImmutableType<?> local) {
+			return new RParameter(name, (IRType) local.makeImmutable(visited),
+					kind);
+		}
+		return this;
 	}
 
 }

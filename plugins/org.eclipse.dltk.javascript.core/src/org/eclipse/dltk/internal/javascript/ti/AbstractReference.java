@@ -213,6 +213,7 @@ public abstract class AbstractReference implements IValueReference,
 		private boolean resolved = false;
 		private boolean finalResolve;
 		private boolean typeResolved;
+		private byte counter = 5;
 
 		public LazyReferenceValue(IValueReference value) {
 			this.reference = value;
@@ -267,6 +268,9 @@ public abstract class AbstractReference implements IValueReference,
 					resolved = finalResolve || resolvedToType;
 				} else {
 					resolved = false;
+				}
+				if (!resolved && counter-- < 1) {
+					resolved = true;
 				}
 			}
 		}

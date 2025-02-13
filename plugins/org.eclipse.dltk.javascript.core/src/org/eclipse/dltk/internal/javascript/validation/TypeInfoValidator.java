@@ -1382,11 +1382,14 @@ public class TypeInfoValidator implements IBuildParticipant,
 					if (type == null || type == RTypes.any()) {
 						return true;
 					}
-				} else if (kind == ReferenceKind.THIS
-						&& reference.getDeclaredType() == null
-						&& reference.getDirectChildren().isEmpty()) {
-					return true;
 				}
+				// we shouldn't allow untyped on this, this can be types through
+				// doc
+				// else if (kind == ReferenceKind.THIS
+				// && reference.getDeclaredType() == null
+				// && reference.getDirectChildren().isEmpty()) {
+				// return true;
+				// }
 				reference = reference.getParent();
 			}
 			return false;

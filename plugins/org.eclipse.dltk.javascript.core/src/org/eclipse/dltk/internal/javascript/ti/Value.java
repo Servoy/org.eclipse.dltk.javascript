@@ -305,7 +305,9 @@ public class Value extends ImmutableValue {
 			if (depth > 8) {
 				throw new DeepValueRecursionException();
 			}
-			if (src.declaredType != null) {
+			if (declaredType == null) {
+				declaredType = src.declaredType;
+			} else if (src.declaredType != null) {
 				types.add(src.declaredType);
 			}
 			types.addAll(src.types);

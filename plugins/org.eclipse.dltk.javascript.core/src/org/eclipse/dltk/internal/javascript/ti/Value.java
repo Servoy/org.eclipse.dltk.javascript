@@ -142,6 +142,15 @@ public class Value extends ImmutableValue {
 		return child;
 	}
 
+	protected void childCreated(String name) {
+		if (elementValues != null) {
+			elementValues.remove(name);
+		}
+		if (deletedChildren != null) {
+			deletedChildren.remove(name);
+		}
+	}
+
 	@Override
 	public void clear() {
 		references.clear();

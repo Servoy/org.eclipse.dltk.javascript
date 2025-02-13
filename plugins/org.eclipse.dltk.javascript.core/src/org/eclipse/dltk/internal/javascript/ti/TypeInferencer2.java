@@ -88,6 +88,10 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		this.visitor = visitor;
 	}
 
+	public TypeInferencerVisitor getVisitor() {
+		return visitor;
+	}
+
 	public void setModelElement(IModelElement modelElement) {
 		setSource(ReferenceSource.create(modelElement));
 	}
@@ -790,12 +794,17 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		}
 	}
 
-	private Map<String, Object> recordTypes = new HashMap<String, Object>();
+	private final Map<String, Object> recordTypes = new HashMap<String, Object>();
 
 	public void registerRecordType(RecordType type) {
 		recordTypes.put(type.getName(), type);
 	}
 
+	@Override
+	public void reset() {
+		super.reset();
+		recordTypes.clear();
+	}
 	public IRRecordType resolveRecordType(String name) {
 		Object recordType = recordTypes.get(name);
 		if (recordType instanceof IRRecordType)

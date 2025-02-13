@@ -1992,6 +1992,23 @@ public class TypeInfoValidator implements IBuildParticipant,
 					}
 				if (directChildren == null
 						|| directChildren.contains(reference.getName())) {
+					if (right != null) {
+						JSMethod method1 = (JSMethod) reference
+								.getAttribute(IReferenceAttributes.METHOD);
+						JSMethod method2 = (JSMethod) right
+								.getAttribute(IReferenceAttributes.METHOD);
+						if (method1 != null && method2 != null) {
+							if (method1.getLocation()
+									.equals(method2.getLocation())) {
+								// if it the same method assigned to the same
+								// variable, then it is fine
+								// it is a reassignment of the "this" variable
+								// that is handles first in the
+								// handleDeclarations()
+								return;
+							}
+						}
+					}
 				reporter.reportProblem(JavaScriptProblems.UNASSIGNABLE_ELEMENT,
 						ValidationMessages.UnassignableFunction,
 						node.sourceStart(), node.sourceEnd());

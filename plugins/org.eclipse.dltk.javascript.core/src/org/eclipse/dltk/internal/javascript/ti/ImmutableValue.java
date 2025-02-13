@@ -389,12 +389,6 @@ public class ImmutableValue implements IValue, IValue2 {
 	}
 
 	protected void childCreated(String name) {
-		if (elementValues != null) {
-			elementValues.remove(name);
-		}
-		if (deletedChildren != null) {
-			deletedChildren.remove(name);
-		}
 	}
 
 	public void setDeclaredType(IRType declaredType) {

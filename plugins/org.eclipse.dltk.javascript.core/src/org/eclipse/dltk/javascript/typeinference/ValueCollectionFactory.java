@@ -120,8 +120,10 @@ public class ValueCollectionFactory {
 				inferencer.setDoResolve(resolve);
 				inferencer.setVisitFunctionBody(visitFunctionBody);
 				inferencer.doInferencing(script);
-				IValueCollection collection = inferencer.getCollection();
+				IValueCollection collection = ValueCollectionFactory
+						.makeImmutable(inferencer.getCollection());
 				inferencer.setVisitor(null);
+				inferencer.reset();
 				return collection;
 			}
 		}

@@ -186,10 +186,13 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	private static class ForwardDeclaration {
 		final JSMethod method;
 		final IValueReference reference;
+		final FunctionStatement funcNode;
 
-		public ForwardDeclaration(JSMethod method, IValueReference reference) {
+		public ForwardDeclaration(JSMethod method, IValueReference reference,
+				FunctionStatement funcNode) {
 			this.method = method;
 			this.reference = reference;
+			this.funcNode = funcNode;
 		}
 	}
 
@@ -448,32 +451,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							}
 						} 
 						else {
-							left.setKind(ReferenceKind.FIELD);
-							final Comment comment = JSDocSupport
-									.getComment(node);
-							final JSDocTags tags = parseTags(comment);
-							final JSDocTag typeTag = tags.get(JSDocTag.TYPE);
-							if (typeTag != null) {
-								final JSType type = getDocSupport().parseType(
-										typeTag, false, getProblemReporter());
-								if (type != null) {
-									setIRType(left, type.toRType(context), true);
-								}
-							}
-							if (comment != null) {
-								IValueReference namedChild = extractNamedChild(
-										left, property.getProperty());
-								String name = namedChild.getName();
-								final JSVariable variable = new JSVariable(name);
-								getDocSupport().parseAccessModifiers(variable,
-										tags, reporter);
-								if (variable.getVisibility() != null) {
-									left.setAttribute(
-											IReferenceAttributes.R_VARIABLE,
-											RModelBuilder.create(context,
-													variable));
-								}
-							}
+							createField(left, node, property);
 						}
 						left.setLocation(ReferenceLocation.create(getSource(),
 								property.sourceStart(), property.sourceEnd(),
@@ -540,6 +518,37 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 		}
 		return right;
+	}
+
+	/**
+	 * @param left
+	 * @param node
+	 * @param property
+	 */
+	private void createField(IValueReference left, BinaryOperation node,
+			final PropertyExpression property) {
+		left.setKind(ReferenceKind.FIELD);
+		final Comment comment = JSDocSupport.getComment(node);
+		final JSDocTags tags = parseTags(comment);
+		final JSDocTag typeTag = tags.get(JSDocTag.TYPE);
+		if (typeTag != null) {
+			final JSType type = getDocSupport().parseType(typeTag, false,
+					getProblemReporter());
+			if (type != null) {
+				setIRType(left, type.toRType(context), true);
+			}
+		}
+		if (comment != null) {
+			IValueReference namedChild = extractNamedChild(left,
+					property.getProperty());
+			String name = namedChild.getName();
+			final JSVariable variable = new JSVariable(name);
+			getDocSupport().parseAccessModifiers(variable, tags, reporter);
+			if (variable.getVisibility() != null) {
+				left.setAttribute(IReferenceAttributes.R_VARIABLE,
+						RModelBuilder.create(context, variable));
+			}
+		}
 	}
 
 	private boolean hasUnknowParentFunctionCall(IValueReference reference) {
@@ -1024,59 +1033,32 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		function.setDeclaredType(RTypes.FUNCTION);
 		function.setAttribute(IReferenceAttributes.METHOD, method);
 		function.setAttribute(IReferenceAttributes.RESOLVING, Boolean.TRUE);
+		function.setAttribute(IReferenceAttributes.R_METHOD,
+				RModelBuilder.create(getContext(), method));
+		if (method.getType() != null) {
+			function.createChild(IValueReference.FUNCTION_OP).setDeclaredType(
+					this.context.contextualize(method.getType()));
+		}
+
 	}
 
 	@Override
 	public IValueReference visitFunctionStatement(FunctionStatement node) {
 		final JSMethod method;
 		final IValueReference result;
+		final IValueCollection function;
 		final ForwardDeclaration forward = forwardDeclarations.remove(node);
 		if (forward != null) {
 			method = forward.method;
 			result = forward.reference;
+			function = (IValueCollection) forward.reference
+					.getAttribute(IReferenceAttributes.FUNCTION_SCOPE);
 		} else {
 			assert !node.isDeclaration();
 			method = createMethod(node);
 			result = new AnonymousValue();
 			initializeFunction(method, result);
-			result.setAttribute(IReferenceAttributes.R_METHOD,
-					RModelBuilder.create(getContext(), method));
-		}
-		final ThisValue thisValue = new ThisValue();
-		if (method.getThisType() != null) {
-			thisValue.setDeclaredType(this.context.contextualize(method
-					.getThisType()));
-		} else if (method.getExtendsType() != null) {
-			IRType thisType = this.context.contextualize(method
-					.getExtendsType());
-			thisValue.setDeclaredType(thisType);
-			if (thisType instanceof IRLocalType) {
-				IValueReference prototype = result
-						.createChild(IRLocalType.PROTOTYPE_PROPERTY);
-				prototype.setDeclaredType(context.getType(ITypeNames.OBJECT)
-						.toRType(context));
-				Set<String> directChildren = ((IRLocalType) thisType)
-						.getDirectChildren();
-				for (String child : directChildren) {
-					IValueReference protoChild = prototype.createChild(child);
-					IValueReference localChild = ((IRLocalType) thisType)
-							.getDirectChild(child);
-					protoChild.setKind(localChild.getKind());
-					protoChild.setLocation(localChild.getLocation());
-					if (localChild.getDeclaredType() != null) {
-						protoChild
-								.setDeclaredType(localChild.getDeclaredType());
-					} else if (localChild.getKind() == ReferenceKind.FUNCTION) {
-						protoChild.setDeclaredType(context
-								.getType(ITypeNames.FUNCTION).toRType(context));
-					}
-					JSTypeSet types = localChild.getTypes();
-					protoChild.getTypes().addAll(types);
-
-				}
-			}
-
-		} else {
+			final ThisValue thisValue = new ThisValue();
 			// if this is a "this.property" assignment then take over the this
 			// of the parent.
 			if (node.getParent() instanceof BinaryOperation) {
@@ -1093,25 +1075,32 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					}
 				}
 			}
-		}
-		final IValueCollection function = new FunctionValueCollection(
-				peekContext(), method.getName(), thisValue,
-				node.isInlineBlock());
 
-		for (IParameter parameter : method.getParameters()) {
-			final IValueReference refArg = function.createChild(parameter
-					.getName());
-			refArg.setKind(ReferenceKind.ARGUMENT);
-			setTypeImpl(refArg, parameter.getType());
-			refArg.setLocation(parameter.getLocation());
+			if (method.getThisType() != null) {
+				thisValue.setDeclaredType(
+						this.context.contextualize(method.getThisType()));
+			}
+
+			function = new FunctionValueCollection(peekContext(),
+					method.getName(), thisValue, node.isInlineBlock());
+
+			for (IParameter parameter : method.getParameters()) {
+				final IValueReference refArg = function
+						.createChild(parameter.getName());
+				refArg.setKind(ReferenceKind.ARGUMENT);
+				setTypeImpl(refArg, parameter.getType());
+				refArg.setLocation(parameter.getLocation());
+			}
+			result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE, function);
 		}
-		result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE, function);
+
 		enterContext(function);
 		Set<IProblemIdentifier> suppressed = null;
 		try {
 			if (reporter != null && !method.getSuppressedWarnings().isEmpty()) {
 				suppressed = new HashSet<IProblemIdentifier>();
-				for (IProblemCategory category : method.getSuppressedWarnings()) {
+				for (IProblemCategory category : method
+						.getSuppressedWarnings()) {
 					suppressed.addAll(category.contents());
 				}
 				reporter.pushSuppressWarnings(suppressed);
@@ -1668,21 +1657,22 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	private void handleDeclarations(JSScope scope) {
 		ArrayList<IValueReference> variables = new ArrayList<IValueReference>();
 		ArrayList<ForwardDeclaration> forwardDecls = new ArrayList<ForwardDeclaration>();
-		final IValueCollection context = peekContext();
+		final IValueCollection collection = peekContext();
 		for (JSDeclaration declaration : scope.getDeclarations()) {
 			if (declaration instanceof FunctionStatement) {
 				final FunctionStatement funcNode = (FunctionStatement) declaration;
 				assert funcNode.isDeclaration();
 				final JSMethod method = createMethod(funcNode);
-				final IValueReference function = context.createChild(method
+				final IValueReference function = collection.createChild(method
 						.getName());
 				initializeFunction(method, function);
-				ForwardDeclaration fd = new ForwardDeclaration(method, function);
+				ForwardDeclaration fd = new ForwardDeclaration(method, function,
+						funcNode);
 				forwardDecls.add(fd);
 				forwardDeclarations.put(funcNode, fd);
 			} else if (declaration instanceof VariableDeclaration) {
 				final VariableDeclaration varDeclaration = (VariableDeclaration) declaration;
-				final IValueReference var = createVariable(context,
+				final IValueReference var = createVariable(collection,
 						varDeclaration);
 				if (varDeclaration.getParent() instanceof ConstStatement) {
 					var.setAttribute(IAssignProtection.ATTRIBUTE, PROTECT_CONST);
@@ -1691,8 +1681,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 		}
 		for (ForwardDeclaration decl : forwardDecls) {
-			decl.reference.setAttribute(IReferenceAttributes.R_METHOD,
-					RModelBuilder.create(getContext(), decl.method));
 			if (decl.method.isConstructor()) {
 				String name = decl.method.getName();
 
@@ -1727,6 +1715,126 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				// this will create a local type
 				this.context.getType(name);
 			}
+		}
+
+		// all types are created now, so we can resolve the forward declarations
+		for (ForwardDeclaration decl : forwardDecls) {
+
+			final ThisValue thisValue = new ThisValue();
+			if (decl.method.getThisType() != null) {
+				thisValue.setDeclaredType(
+						this.context.contextualize(decl.method.getThisType()));
+			} else if (decl.method.getExtendsType() != null) {
+				IRType thisType = this.context
+						.contextualize(decl.method.getExtendsType());
+				thisValue.setDeclaredType(thisType);
+				if (thisType instanceof IRLocalType) {
+					IValueReference prototype = decl.reference
+							.createChild(IRLocalType.PROTOTYPE_PROPERTY);
+					prototype.setDeclaredType(context.getType(ITypeNames.OBJECT)
+							.toRType(context));
+					Set<String> directChildren = ((IRLocalType) thisType)
+							.getDirectChildren();
+					for (String child : directChildren) {
+						IValueReference protoChild = prototype
+								.createChild(child);
+						IValueReference localChild = ((IRLocalType) thisType)
+								.getDirectChild(child);
+						protoChild.setKind(localChild.getKind());
+						protoChild.setLocation(localChild.getLocation());
+						if (localChild.getDeclaredType() != null) {
+							protoChild.setDeclaredType(
+									localChild.getDeclaredType());
+						} else if (localChild
+								.getKind() == ReferenceKind.FUNCTION) {
+							protoChild.setDeclaredType(
+									context.getType(ITypeNames.FUNCTION)
+											.toRType(context));
+						}
+						JSTypeSet types = localChild.getTypes();
+						protoChild.getTypes().addAll(types);
+
+					}
+				}
+
+			}
+
+			if (decl.method.isConstructor()) {
+				// fill in the this value
+				List<ASTNode> childs = decl.funcNode.getBody().getChilds();
+				childs.forEach(child -> {
+					if (child instanceof VoidExpression ve
+							&& ve.getExpression() instanceof BinaryOperation bo
+							&& bo.getLeftExpression() instanceof PropertyExpression pe
+							&& pe.getObject() instanceof ThisExpression) {
+						if (bo.getRightExpression() instanceof FunctionStatement fs) {
+							final JSMethod method = createMethod(fs);
+							IValueReference methodRef = thisValue
+									.createChild(method.getName());
+							initializeFunction(method, methodRef);
+						} else if (pe.getProperty() instanceof Identifier) {
+							// this is afield
+
+							Identifier name = (Identifier) pe.getProperty();
+							IValueReference fieldRef = thisValue
+									.createChild(name.getName());
+							createField(fieldRef, bo, pe);
+
+							fieldRef.setLocation(
+									ReferenceLocation.create(getSource(),
+											pe.sourceStart(), pe.sourceEnd(),
+											pe.getProperty().sourceStart(),
+											pe.getProperty().sourceEnd()));
+							if (fieldRef.getDeclaredType() == null) {
+								if (bo.getRightExpression() instanceof DecimalLiteral) {
+									setIRType(fieldRef,
+											context.getType(ITypeNames.NUMBER)
+													.toRType(context),
+											true);
+								} else if (bo
+										.getRightExpression() instanceof StringLiteral) {
+									setIRType(fieldRef,
+											context.getType(ITypeNames.STRING)
+													.toRType(context),
+											true);
+								} else if (bo
+										.getRightExpression() instanceof BooleanLiteral) {
+									setIRType(fieldRef,
+											context.getType(ITypeNames.BOOLEAN)
+													.toRType(context),
+											true);
+								} else if (bo
+										.getRightExpression() instanceof BigIntLiteral) {
+									setIRType(fieldRef,
+											context.getType(ITypeNames.BIGINT)
+													.toRType(context),
+											true);
+								} else if (bo
+										.getRightExpression() instanceof ArrayInitializer) {
+									setIRType(fieldRef,
+											context.getType(ITypeNames.ARRAY)
+													.toRType(context),
+											true);
+								}
+							}
+
+						}
+					}
+				});
+			}
+			final IValueCollection function = new FunctionValueCollection(
+					peekContext(), decl.method.getName(), thisValue,
+					decl.funcNode.isInlineBlock());
+
+			for (IParameter parameter : decl.method.getParameters()) {
+				final IValueReference refArg = function
+						.createChild(parameter.getName());
+				refArg.setKind(ReferenceKind.ARGUMENT);
+				setTypeImpl(refArg, parameter.getType());
+				refArg.setLocation(parameter.getLocation());
+			}
+			decl.reference.setAttribute(IReferenceAttributes.FUNCTION_SCOPE,
+					function);
 		}
 
 		for (IValueReference reference : variables) {
@@ -2038,8 +2146,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			method = createMethod(node);
 			result = new AnonymousValue();
 			initializeFunction(method, result);
-			result.setAttribute(IReferenceAttributes.R_METHOD,
-					RModelBuilder.create(getContext(), method));
 		}
 		final ThisValue thisValue = new ThisValue();
 		if (method.getThisType() != null) {

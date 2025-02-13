@@ -110,7 +110,7 @@ public class ImmutableValueCollection implements IValueCollection,
 	}
 
 	public IValueReference createChild(String name) {
-		return null;
+		return getChild(name);
 	}
 
 	public IValueReference getReturnValue() {

@@ -13,7 +13,7 @@ import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
 import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 
-public class LazyEvaluatorValue extends ImmutableValue implements ILazyValue {
+public class LazyEvaluatorValue extends Value implements ILazyValue {
 
 	private final ITypeInferenceContext context;
 	private final Type type;

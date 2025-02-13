@@ -1192,8 +1192,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	 */
 	private void setIRType(IValueReference value, final IRType rt,
 			boolean lazyEnabled) {
-		if (rt instanceof IRSimpleType) {
-			final Type t = ((IRSimpleType) rt).getTarget();
+		if (rt instanceof IRSimpleType simple
+				&& simple.getTarget().getKind() != TypeKind.PREDEFINED) {
+			final Type t = simple.getTarget();
 			if (t.getKind() != TypeKind.UNKNOWN) {
 				if (value instanceof IValueProvider
 						&& ((IValueProvider) value).getValue() != null) {

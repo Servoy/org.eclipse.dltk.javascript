@@ -112,8 +112,8 @@ public class ValueCollectionFactory {
 						visitFunctionBody) {
 					protected void initializeCollection(
 							TopValueCollection topCollection) {
-						preStart.aboutToStart(file, topCollection);
-						super.initializeCollection(topCollection);
+						if (preStart.aboutToStart(file, topCollection))
+							super.initializeCollection(topCollection);
 					}
 				});
 				inferencer.setModelElement(sourceModule);

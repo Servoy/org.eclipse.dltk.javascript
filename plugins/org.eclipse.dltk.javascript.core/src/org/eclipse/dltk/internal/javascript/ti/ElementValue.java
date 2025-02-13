@@ -331,10 +331,8 @@ public abstract class ElementValue implements IValue {
 			String name, MemberPredicate predicate) {
 		final List<IRMember> selection = new ArrayList<IRMember>(4);
 		for (IRMember member : new RTypeMemberQuery(type, predicate)
-				.ignoreDuplicates()) {
-			if (name.equals(member.getName())) {
+				.ignoreDuplicates(member -> name.equals(member.getName()))) {
 				selection.add(member);
-			}
 		}
 		return selection;
 	}

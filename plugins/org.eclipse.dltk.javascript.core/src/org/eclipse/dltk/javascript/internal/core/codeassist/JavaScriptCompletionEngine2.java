@@ -415,11 +415,11 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 					reportMember(member, member.getName(), true);
 				}
 			}
-			for (IRMember member : typeQuery.ignoreDuplicates(processed)) {
-				if (member.isVisible() && matches(member.getName())) {
-					reportMember(member, member.getName(),
-							typeQuery.contains(member.getDeclaringType()));
-				}
+			for (IRMember member : typeQuery.ignoreDuplicates(processed,
+					member -> member.isVisible()
+							&& matches(member.getName()))) {
+				reportMember(member, member.getName(),
+						typeQuery.contains(member.getDeclaringType()));
 			}
 		}
 

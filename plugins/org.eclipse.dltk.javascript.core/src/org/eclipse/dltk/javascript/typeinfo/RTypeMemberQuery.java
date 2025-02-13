@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
@@ -251,17 +252,21 @@ public class RTypeMemberQuery implements Iterable<IRMember> {
 
 		private final Set<Object> processed = new HashSet<Object>();
 		private final Collection<String> ignored;
-		private List<Object> abstractMethods = new ArrayList<Object>();
+		private final List<Object> abstractMethods = new ArrayList<Object>();
+		private final Predicate<IRMember> filter;
 
-		public IgnoreDuplicateMemberIterator(Collection<String> ignoreMembers) {
+		public IgnoreDuplicateMemberIterator(Collection<String> ignoreMembers,
+				Predicate<IRMember> filter) {
 			super(ALL);
+			this.filter = filter != null ? filter : member -> true;
 			this.ignored = ignoreMembers != null ? ignoreMembers : Collections
 					.<String> emptySet();
 		}
 
 		@Override
 		protected boolean isValid(IRMember member) {
-			if (super.isValid(member) && !ignored.contains(member.getName())) {
+			if (filter.test(member) && super.isValid(member)
+					&& !ignored.contains(member.getName())) {
 				final Object key = MethodKey.createKey(member);
 				if (member instanceof IRMethod
 						&& ((IRMethod) member).isAbstract()) {
@@ -375,8 +380,8 @@ public class RTypeMemberQuery implements Iterable<IRMember> {
 	/**
 	 * Iterates over type members skipping overloaded methods
 	 */
-	public Iterable<IRMember> ignoreDuplicates() {
-		return ignoreDuplicates(null);
+	public Iterable<IRMember> ignoreDuplicates(Predicate<IRMember> filter) {
+		return ignoreDuplicates(null, filter);
 	}
 
 	/**
@@ -387,10 +392,11 @@ public class RTypeMemberQuery implements Iterable<IRMember> {
 	 *            member names to skip or <code>null</code> if nothing to skip
 	 */
 	public Iterable<IRMember> ignoreDuplicates(
-			final Collection<String> ignoreMembers) {
+			final Collection<String> ignoreMembers,
+			Predicate<IRMember> filter) {
 		return new Iterable<IRMember>() {
 			public Iterator<IRMember> iterator() {
-				return new IgnoreDuplicateMemberIterator(ignoreMembers);
+				return new IgnoreDuplicateMemberIterator(ignoreMembers, filter);
 			}
 		};
 	}

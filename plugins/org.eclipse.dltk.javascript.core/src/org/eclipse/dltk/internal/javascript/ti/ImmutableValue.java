@@ -272,14 +272,13 @@ public class ImmutableValue implements IValue, IValue2 {
 				result.addAll(((IRLocalType) getDeclaredType())
 						.getDirectChildren());
 			} else {
-				RTypeMemberQuery typeQuery = new RTypeMemberQuery();
 				if (type instanceof IRSimpleType) {
 					final IRTypeDeclaration t = ((IRSimpleType) type)
 							.getDeclaration();
+					RTypeMemberQuery typeQuery = new RTypeMemberQuery();
 					typeQuery.add(t, t.getSource().memberPredicateFor(type,
 							MemberPredicates.NON_STATIC));
-					typeQuery.ignoreDuplicates()
-							.forEach(member -> result.add(member.getName()));
+					typeQuery.forEach(member -> result.add(member.getName()));
 				}
 			}
 		}

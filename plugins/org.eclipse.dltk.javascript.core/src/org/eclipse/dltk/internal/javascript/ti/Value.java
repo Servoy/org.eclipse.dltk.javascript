@@ -451,7 +451,7 @@ public class Value extends ImmutableValue {
 		immutableValue.elementValues = elementValuesCopy;
 
 		// fill the types, making sure local types are made immutable
-		for (IRType irType : typeSet) {
+		for (IRType irType : this.types) {
 			if (irType instanceof ImmutableType<?> local) {
 				irType = (IRType) local.makeImmutable(visited);
 			}

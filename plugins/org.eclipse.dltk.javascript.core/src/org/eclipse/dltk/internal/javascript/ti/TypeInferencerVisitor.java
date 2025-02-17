@@ -14,10 +14,12 @@ package org.eclipse.dltk.internal.javascript.ti;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -1033,13 +1035,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		function.setDeclaredType(RTypes.FUNCTION);
 		function.setAttribute(IReferenceAttributes.METHOD, method);
 		function.setAttribute(IReferenceAttributes.RESOLVING, Boolean.TRUE);
-		function.setAttribute(IReferenceAttributes.R_METHOD,
-				RModelBuilder.create(getContext(), method));
-		if (method.getType() != null) {
-			function.createChild(IValueReference.FUNCTION_OP).setDeclaredType(
-					this.context.contextualize(method.getType()));
-		}
-
 	}
 
 	@Override
@@ -1058,6 +1053,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			method = createMethod(node);
 			result = new AnonymousValue();
 			initializeFunction(method, result);
+			result.setAttribute(IReferenceAttributes.R_METHOD,
+					RModelBuilder.create(getContext(), method));
+			if (method.getType() != null) {
+				result.createChild(IValueReference.FUNCTION_OP).setDeclaredType(
+						this.context.contextualize(method.getType()));
+			}
 			final ThisValue thisValue = new ThisValue();
 			// if this is a "this.property" assignment then take over the this
 			// of the parent.
@@ -1718,6 +1719,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 		}
 
+		Map<JSMethod, IValueReference> methodsToInitialize = new HashMap<>();
+
 		// all types are created now, so we can resolve the forward declarations
 		for (ForwardDeclaration decl : forwardDecls) {
 
@@ -1761,6 +1764,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 
 			if (decl.method.isConstructor()) {
+				System.err
+						.println("processing method " + decl.method.getName());
 				// fill in the this value
 				List<ASTNode> childs = decl.funcNode.getBody().getChilds();
 				childs.forEach(child -> {
@@ -1773,6 +1778,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							IValueReference methodRef = thisValue
 									.createChild(method.getName());
 							initializeFunction(method, methodRef);
+							methodsToInitialize.put(method, methodRef);
 						} else if (pe.getProperty() instanceof Identifier) {
 							// this is afield
 
@@ -1836,8 +1842,24 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 			decl.reference.setAttribute(IReferenceAttributes.FUNCTION_SCOPE,
 					function);
+
+			methodsToInitialize.put(decl.method, decl.reference);
+
 		}
 
+		// initialize the methods
+		for (Entry<JSMethod, IValueReference> entry : methodsToInitialize
+				.entrySet()) {
+			JSMethod method = entry.getKey();
+			IValueReference methodRef = entry.getValue();
+			methodRef.setAttribute(IReferenceAttributes.R_METHOD,
+					RModelBuilder.create(getContext(), method));
+			if (method.getType() != null) {
+				methodRef.createChild(IValueReference.FUNCTION_OP)
+						.setDeclaredType(this.context
+								.contextualize(method.getType()));
+			}
+		}
 		for (IValueReference reference : variables) {
 			final IVariable var = (IVariable) reference
 					.getAttribute(IReferenceAttributes.VARIABLE);
@@ -2147,6 +2169,13 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			method = createMethod(node);
 			result = new AnonymousValue();
 			initializeFunction(method, result);
+			result.setAttribute(IReferenceAttributes.R_METHOD,
+					RModelBuilder.create(getContext(), method));
+			if (method.getType() != null) {
+				result.createChild(IValueReference.FUNCTION_OP).setDeclaredType(
+						this.context.contextualize(method.getType()));
+			}
+
 		}
 		final ThisValue thisValue = new ThisValue();
 		if (method.getThisType() != null) {

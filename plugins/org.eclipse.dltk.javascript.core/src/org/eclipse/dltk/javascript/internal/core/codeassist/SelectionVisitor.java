@@ -112,8 +112,13 @@ public class SelectionVisitor extends TypeInferencerVisitor {
 	@Override
 	protected IValueReference createVariable(
 			IValueCollection context, VariableDeclaration declaration) {
+		IValueReference variable = super.createVariable(context, declaration);
+		if (declaration.getInitializer() != null) {
+			IValueReference visit = visit(declaration.getInitializer());
+			assign(variable, visit);
+		}
 		return check(declaration.getIdentifier(),
-				super.createVariable(context, declaration));
+				variable);
 	}
 
 	@Override

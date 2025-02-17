@@ -37,7 +37,10 @@ import org.eclipse.dltk.core.ScriptModelUtil;
 import org.eclipse.dltk.core.SourceRange;
 import org.eclipse.dltk.core.model.LocalVariable;
 import org.eclipse.dltk.core.model.UnresolvedElement;
+import org.eclipse.dltk.internal.javascript.ti.AnonymousValue;
+import org.eclipse.dltk.internal.javascript.ti.ElementValue;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
+import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.ti.JSDocSupport;
 import org.eclipse.dltk.internal.javascript.ti.JSDocSupport.ParameterNode;
 import org.eclipse.dltk.internal.javascript.ti.JSDocSupport.TypeNode;
@@ -59,6 +62,7 @@ import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinference.ValueReferenceUtil;
+import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
@@ -209,7 +213,7 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 									}
 								}
 							} else if (paramNode.isInType(valueOffset)) {
-								findTypeInTypeExpression(module, tag,
+								findTypeInTypeExpression(module, script, tag,
 										paramNode, valueOffset);
 							}
 						}
@@ -219,13 +223,15 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 								.parseOptionalType(tag);
 						if (typedNode != null
 								&& typedNode.isInType(valueOffset)) {
-							findTypeInTypeExpression(module, tag, typedNode,
+							findTypeInTypeExpression(module, script, tag,
+									typedNode,
 									valueOffset);
 						}
 					} else if (JSDocTag.TYPE.equals(tag.name())) {
 						final TypeNode typeNode = JSDocSupport.parseType(tag);
 						if (typeNode != null && typeNode.isInType(valueOffset)) {
-							findTypeInTypeExpression(module, tag, typeNode,
+							findTypeInTypeExpression(module, script, tag,
+									typeNode,
 									valueOffset);
 						}
 					}
@@ -237,7 +243,8 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 		return null;
 	}
 
-	private void findTypeInTypeExpression(IModuleSource module, JSDocTag tag,
+	private void findTypeInTypeExpression(IModuleSource module, Script script,
+			JSDocTag tag,
 			TypedElementNode node, int valueOffset) {
 		final ISourceModule m = (ISourceModule) module.getModelElement();
 		final TypeInferencer2 inferencer2 = new TypeInferencer2();
@@ -246,7 +253,42 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 				inferencer2, node.getTypeExpression(),
 				valueOffset - node.getTypeExpressionStart());
 		if (typeRegion != null) {
-			final Type type = inferencer2.getKnownType(typeRegion.name());
+			Type type = inferencer2.getKnownType(typeRegion.name());
+			if (type == null) {
+				inferencer2.setVisitFunctionBody(false);
+				inferencer2.doInferencing(script);
+				type = inferencer2.getKnownType(typeRegion.name());
+				if (type == null) {
+					IValueReference child = inferencer2.getCollection()
+							.getChild(typeRegion.name());
+					if (child.exists()) {
+						toModelElements(inferencer2, null, module, child);
+					} else {
+						String[] split = typeRegion.name().split("\\.");
+						if (split.length > 1) {
+							IRMember member = inferencer2.resolve(split[0]);
+							if (member != null) {
+								ElementValue for1 = ElementValue
+										.createFor(member);
+								IValue child2 = for1.getChild(split[1], true);
+								if (child2 != null) {
+									for (int i = 2; i < split.length; i++) {
+										child2 = child2.getChild(split[i],
+												true);
+										if (child2 == null) {
+											break;
+										}
+									}
+								}
+								if (child2 != null) {
+									toModelElements(inferencer2, null, module,
+											new AnonymousValue(child2));
+								}
+							}
+						}
+					}
+				}
+			}
 			if (type != null) {
 				final int typeOffsetInFile = tag.fromValueOffset(typeRegion
 						.start() + node.getTypeExpressionStart());
@@ -328,7 +370,9 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 			final List<IRMethod> methods = ValueReferenceUtil.extractElements(
 					value, IRMethod.class);
 			if (methods != null) {
-				IValueReference[] arguments = visitor.getArguments();
+				IValueReference[] arguments = visitor != null
+						? visitor.getArguments()
+						: null;
 				if (arguments == null) {
 					arguments = new IValueReference[0];
 				}

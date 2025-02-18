@@ -1478,6 +1478,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	public IValueReference visitObjectInitializer(ObjectInitializer node) {
 		final List<IRRecordMember> members = new ArrayList<IRRecordMember>(node
 				.getInitializers().size());
+		final List<IValueCollection> functionsToSetTheThisOn = new ArrayList<>();
 		for (ObjectInitializerPart part : node.getInitializers()) {
 			if (part instanceof PropertyInitializer) {
 				final PropertyInitializer pi = (PropertyInitializer) part;
@@ -1492,6 +1493,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 				final IValueReference value = visit(pi.getValue());
 				if (value != null) {
+					IValueCollection collection = (IValueCollection) value
+							.getAttribute(IReferenceAttributes.FUNCTION_SCOPE);
+					if (collection != null) {
+						functionsToSetTheThisOn.add(collection);
+					}
 					final IRMethod method = (IRMethod) value
 							.getAttribute(IReferenceAttributes.R_METHOD);
 					if (method != null
@@ -1553,7 +1559,14 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				// TODO handle get/set methods
 			}
 		}
-		return ConstantValue.of(RTypes.recordType(members));
+		IValueReference intializerValue = ConstantValue.of(RTypes.recordType(members));
+		functionsToSetTheThisOn.forEach(collection -> {
+			final IValueReference thisValue = collection.getThis();
+			if (thisValue != null) {
+				thisValue.setValue(intializerValue);
+			}
+		});
+		return intializerValue;
 	}
 
 	private JSDocTags parseTags(final Comment documentation) {
@@ -1764,8 +1777,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 
 			if (decl.method.isConstructor()) {
-				System.err
-						.println("processing method " + decl.method.getName());
 				// fill in the this value
 				List<ASTNode> childs = decl.funcNode.getBody().getChilds();
 				childs.forEach(child -> {

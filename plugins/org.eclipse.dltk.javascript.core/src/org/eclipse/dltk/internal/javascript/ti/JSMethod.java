@@ -148,6 +148,30 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 	}
 
 	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof JSMethod) {
+			JSMethod m = (JSMethod) o;
+			if (m.getName().equals(this.getName())) {
+				if (m.getParameterCount() == this.getParameterCount()) {
+					for (int i = 0; i < this.getParameterCount(); i++) {
+						if (!m.getParameters().get(i).getName().equals(
+								this.getParameters().get(i).getName())) {
+							return false;
+						}
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);

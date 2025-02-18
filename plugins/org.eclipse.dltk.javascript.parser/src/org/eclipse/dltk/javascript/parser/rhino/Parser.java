@@ -1113,6 +1113,8 @@ public class Parser implements IParser{
 
 		ArrowFunctionStatement fnNode = new ArrowFunctionStatement(getParent());
 		parents.push(fnNode);
+		SymbolTable fnScope = new SymbolTable(fnNode);
+		scopes.push(fnScope);
 		fnNode.setStart(functionSourceStart);
 		fnNode.setArrow(ts.getTokenBeg());
 		Comment doc = getAndResetJsDoc(functionSourceStart);
@@ -1163,6 +1165,7 @@ public class Parser implements IParser{
 		//        }
 
 		parents.pop();
+		scopes.pop();
 		return fnNode;
 	}
 

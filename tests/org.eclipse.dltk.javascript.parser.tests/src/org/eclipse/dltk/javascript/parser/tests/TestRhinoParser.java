@@ -1371,6 +1371,26 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testArrowFunction6() {
+		String source ="function test2() {\r\n"
+				+ "		var array = [];\r\n"
+				+ "		array.map(value => value);\r\n"
+				+ "		array.map(value => value);\r\n"
+				+ "	}";
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);	
+		assertNotNull(scriptv4);
+		assertEquals(0, problems.size());
+	}
+	
+	@Test
 	public void testFunc() {
 		String source ="/**\r\n"
 				+ "	 * @properties={typeid:24,uuid:\"46504F39-D010-4933-B11E-639EA779E496\"}\r\n"

@@ -4425,13 +4425,14 @@ public class Parser implements IParser{
 		while (tt == Token.TEMPLATE_LITERAL_SUBST) {
 			text.append(ts.getRawString());
 			TemplateStringExpression expr = new TemplateStringExpression(getParent());
-			expr.setStart(posChars);
-			expr.setTemplateStringStart(posChars);
+			int start = posChars + text.length() - 1;
+			expr.setStart(start);
+			expr.setTemplateStringStart(start);
 			expr.setExpression(expr(false));
 			mustMatchToken(Token.RC, "msg.syntax", true);
-			expr.setTemplateCloseBrace(ts.getTokenEnd());
+			expr.setTemplateCloseBrace(ts.getTokenEnd() - 1);
 			expr.setEnd(ts.getTokenEnd());
-			text.append(ts.getSourceString().substring(posChars, ts.getTokenEnd()));
+			text.append(ts.getSourceString().substring(start, ts.getTokenEnd()));
 
 			pn.addTemplateStringExpression(expr);
 			tt = ts.readTemplateLiteral(isTaggedLiteral);

@@ -158,13 +158,13 @@ public class JavaScriptXmlHighlighter extends AbstractJavaScriptHighlighter
 					}
 					requestor.addPosition(expr.getTemplateStringStart(),
 							expr.getTemplateStringStart() + 2,
-							HL_KEYWORD);
+							HL_KEYWORD); // ${
 					if (expr.getTemplateCloseBrace() > 1) {
-						requestor.addPosition(expr.getTemplateCloseBrace() - 1,
-							expr.getTemplateCloseBrace(),
+						requestor.addPosition(expr.getTemplateCloseBrace(),
+								expr.end(),
 							HL_KEYWORD);
 					}
-					start = expr.getTemplateCloseBrace();
+					start = expr.end();
 				}
 				requestor.addPosition(start, node.sourceEnd(),
 						HL_REGEXP);

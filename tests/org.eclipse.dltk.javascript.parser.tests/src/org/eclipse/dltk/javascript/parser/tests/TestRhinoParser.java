@@ -1472,6 +1472,38 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testTemplateString3() {
+		String source ="`s1 ${e1} s2 ${e2} s3 ${e3}`";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		assertTrue(statement instanceof VoidExpression);
+		TemplateStringLiteral expr = (TemplateStringLiteral) ((VoidExpression) statement).getExpression();
+		assertEquals(source, expr.toString().trim());
+		assertEquals(3, expr.getTemplateExpressions().size());
+		
+		TemplateStringExpression expr1 = expr.getTemplateExpressions().get(0);
+		assertEquals("${e1}", expr1.toString());
+		assertEquals(4, expr1.getTemplateStringStart());
+		assertEquals(8, expr1.getTemplateCloseBrace());
+		assertEquals(9, expr1.end());
+		
+		TemplateStringExpression expr2 = expr.getTemplateExpressions().get(1);
+		assertEquals("${e2}", expr2.toString());
+		assertEquals(13, expr2.getTemplateStringStart());
+		assertEquals(17, expr2.getTemplateCloseBrace());
+		assertEquals(18, expr2.end());
+		
+		TemplateStringExpression expr3 = expr.getTemplateExpressions().get(2);
+		assertEquals("${e3}", expr3.toString());
+		assertEquals(22, expr3.getTemplateStringStart());
+		assertEquals(26, expr3.getTemplateCloseBrace());
+		assertEquals(27, expr3.end());
+	}
+	
+	@Test
 	public void testTagFunction() {
 		String source ="myfunc`test ${abc} some other text ${c}`";
 		Script scriptv4 = getScriptv4(source);

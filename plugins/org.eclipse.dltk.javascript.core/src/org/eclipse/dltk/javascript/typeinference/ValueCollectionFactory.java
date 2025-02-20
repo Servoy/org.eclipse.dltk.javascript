@@ -1,6 +1,9 @@
 package org.eclipse.dltk.javascript.typeinference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.dltk.core.DLTKCore;
@@ -88,6 +91,12 @@ public class ValueCollectionFactory {
 		};
 	}
 
+	private static final ThreadLocal<ValueCollectionReferenceStack> stack = new ThreadLocal<>() {
+		protected ValueCollectionReferenceStack initialValue() {
+			return new ValueCollectionReferenceStack();
+        }
+	};
+
 	/**
 	 * Parses the give file into a {@link Script}, if that can be resolved then
 	 * the {@link Script} will be parsed by an inferencer Will return the result
@@ -100,19 +109,30 @@ public class ValueCollectionFactory {
 	 *            want to avoid circular references.
 	 * @return The {@link IValueCollection} of the parsed/inference'd file
 	 */
-	public static IValueCollection createValueCollection(final IFile file,
+	public static IValueCollectionReference createValueCollection(
+			final IFile file,
 			boolean resolve, boolean visitFunctionBody,
 			final IPreStart preStart) {
 		if (file.exists()) {
+			ValueCollectionReferenceStack refStack = stack.get();
+			final IValueCollectionReference currentFileCollection = refStack.executingFiles
+					.get(file);
+			// file already in progres for this stack return that one.
+			if (currentFileCollection != null)
+				return currentFileCollection;
 			ISourceModule sourceModule = DLTKCore.createSourceModuleFrom(file);
 			Script script = JavaScriptParserUtil.parse(sourceModule);
 			if (script != null) {
+				final ValueCollectionReference valueCollectionReference = new ValueCollectionReference();
+				refStack.executingFiles.put(file, valueCollectionReference);
 				TypeInferencer2 inferencer = new TypeInferencer2();
 				inferencer.setVisitor(new TypeInferencerVisitor(inferencer,
 						visitFunctionBody) {
 					protected void initializeCollection(
 							TopValueCollection topCollection) {
-						if (preStart.aboutToStart(file, topCollection))
+						valueCollectionReference.collection = topCollection;
+						if (preStart.aboutToStart(file,
+								valueCollectionReference))
 							super.initializeCollection(topCollection);
 					}
 				});
@@ -120,11 +140,9 @@ public class ValueCollectionFactory {
 				inferencer.setDoResolve(resolve);
 				inferencer.setVisitFunctionBody(visitFunctionBody);
 				inferencer.doInferencing(script);
-				IValueCollection collection = ValueCollectionFactory
-						.makeImmutable(inferencer.getCollection());
-				inferencer.setVisitor(null);
-				inferencer.reset();
-				return collection;
+
+				refStack.fileDone(file, inferencer);
+				return valueCollectionReference;
 			}
 		}
 		return null;
@@ -166,5 +184,38 @@ public class ValueCollectionFactory {
 				return true;
 			}
 		};
+	}
+
+	private final static class ValueCollectionReferenceStack {
+		private final Map<IFile, ValueCollectionReference> executingFiles = new HashMap<>();
+		private final List<ValueCollectionReference> done = new ArrayList<>();
+
+		private void fileDone(IFile file, TypeInferencer2 inferencer) {
+			ValueCollectionReference reference = executingFiles.remove(file);
+			reference.inferencer = inferencer;
+			done.add(reference);
+			if (executingFiles.isEmpty()) {
+				List<ValueCollectionReference> copy = List.copyOf(done);
+				done.clear();
+				for (ValueCollectionReference ref : copy) {
+					ref.collection = ValueCollectionFactory
+							.makeImmutable(ref.inferencer.getCollection());
+					ref.inferencer.setVisitor(null);
+					ref.inferencer.reset();
+				}
+			}
+		}
+	}
+
+	private final static class ValueCollectionReference
+			implements IValueCollectionReference {
+		private volatile IValueCollection collection;
+
+		private TypeInferencer2 inferencer;
+
+		@Override
+		public IValueCollection getValueCollection() {
+			return collection;
+		}
 	}
 }

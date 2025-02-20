@@ -1,0 +1,1 @@
+mvn clean install '-Dmaven.repo.local=%userprofile%/.m2/repository_dltk'

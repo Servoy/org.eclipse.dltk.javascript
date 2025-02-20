@@ -513,6 +513,8 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 		 */
 		private void reportMember(IRMember member, String memberName,
 				boolean important) {
+			if (!member.isVisible())
+				return;
 			if (visibilityCheck && extensions != null
 					&& member.getSource() instanceof Member) {
 				final Member source = (Member) member.getSource();

@@ -2286,6 +2286,13 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return result;
 	}
 
+
+	@Override
+	public IValueReference visitTemplateStringExpression(
+			TemplateStringExpression node) {
+		return visit(node.getExpression());
+	}
+
 	@Override
 	public IValueReference visitTemplateStringLiteral(
 			TemplateStringLiteral node) {
@@ -2293,12 +2300,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			visit(expression);
 		}
 		return ConstantValue.of(RTypes.STRING);
-	}
-
-	@Override
-	public IValueReference visitTemplateStringExpression(
-			TemplateStringExpression node) {
-		return visit(node.getExpression());
 	}
 
 	@Override

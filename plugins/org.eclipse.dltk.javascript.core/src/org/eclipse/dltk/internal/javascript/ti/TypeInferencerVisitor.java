@@ -1099,18 +1099,40 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			final ThisValue thisValue = new ThisValue();
 			// if this is a "this.property" assignment then take over the this
 			// of the parent.
-			if (node.getParent() instanceof BinaryOperation) {
-				BinaryOperation bo = (BinaryOperation) node.getParent();
-				if (bo.getLeftExpression() instanceof PropertyExpression
-						&& ((PropertyExpression) bo.getLeftExpression())
-								.getObject() instanceof ThisExpression) {
+			if (node.getParent() instanceof BinaryOperation bo) {
+				if (bo.getLeftExpression() instanceof PropertyExpression pe) {
 					IValueCollection context = peekContext();
 					if (context instanceof IFunctionValueCollection) {
-						String name = ((IFunctionValueCollection) context)
-								.getFunctionName();
-						thisValue.setDeclaredType(RTypes.localType(name,
-								context.getParent().getChild(name)));
+						if (pe.getObject() instanceof ThisExpression) {
+
+							String name = ((IFunctionValueCollection) context)
+									.getFunctionName();
+							thisValue.setDeclaredType(RTypes.localType(name,
+									context.getParent().getChild(name)));
+						} else if (pe
+								.getObject() instanceof PropertyExpression pe2
+								&& pe2.getObject() instanceof Identifier name
+								&& pe2.getProperty() instanceof Identifier identifier
+								&& identifier.getName().equals("prototype")) {
+							// this is a prototype assignment, get the this of
+							// the parent
+							thisValue.setDeclaredType(RTypes.localType(
+									name.getName(), context.getParent()
+											.getChild(name.getName())));
+						}
 					}
+				}
+			} else if (node.getParent() instanceof PropertyInitializer pi
+					&& pi.getParent() instanceof ObjectInitializer oi
+					&& oi.getParent() instanceof BinaryOperation bo
+					&& bo.getLeftExpression() instanceof PropertyExpression pe
+					&& pe.getProperty() instanceof Identifier identifier
+					&& identifier.getName().equals("prototype")
+					&& pe.getObject() instanceof Identifier name) {
+				IValueCollection context = peekContext();
+				if (context instanceof IFunctionValueCollection) {
+					thisValue.setDeclaredType(RTypes.localType(name.getName(),
+							context.getParent().getChild(name.getName())));
 				}
 			}
 
@@ -1707,8 +1729,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	}
 
 	private void handleDeclarations(JSScope scope) {
-		ArrayList<IValueReference> variables = new ArrayList<IValueReference>();
-		ArrayList<ForwardDeclaration> forwardDecls = new ArrayList<ForwardDeclaration>();
+		ArrayList<IValueReference> variables = new ArrayList<>();
+		ArrayList<ForwardDeclaration> forwardDecls = new ArrayList<>();
+		ArrayList<FunctionStatement> prototypeInitializer = new ArrayList<>();
 		final IValueCollection collection = peekContext();
 		for (JSDeclaration declaration : scope.getDeclarations()) {
 			if (declaration instanceof FunctionStatement) {
@@ -1722,6 +1745,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						funcNode);
 				forwardDecls.add(fd);
 				forwardDeclarations.put(funcNode, fd);
+
+				if (funcNode.getDocumentation() != null && funcNode
+						.getDocumentation().getText().contains("@parse")) {
+					// this is very likely a prototype initializer
+					prototypeInitializer.add(funcNode);
+				}
 			} else if (declaration instanceof VariableDeclaration) {
 				final VariableDeclaration varDeclaration = (VariableDeclaration) declaration;
 				final IValueReference var = createVariable(collection,
@@ -1730,6 +1759,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					var.setAttribute(IAssignProtection.ATTRIBUTE, PROTECT_CONST);
 				}
 				variables.add(var);
+
+				Expression initializer = varDeclaration.getInitializer();
+				if (initializer instanceof ParenthesizedExpression pe) {
+					initializer = pe.getExpression();
+				}
+				if (initializer instanceof CallExpression ce
+						&& ce.getExpression() instanceof FunctionStatement fs
+						&& fs.getDocumentation() != null
+						&& fs.getDocumentation().getText().contains("@parse")) {
+					prototypeInitializer.add(fs);
+				}
 			}
 		}
 		for (ForwardDeclaration decl : forwardDecls) {
@@ -1862,6 +1902,61 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 			methodsToInitialize.put(decl.method, decl.reference);
 
+		}
+
+		for (FunctionStatement fs : prototypeInitializer) {
+			List<ASTNode> childs = fs.getBody().getChilds();
+			childs.forEach(child -> {
+				if (child instanceof VoidExpression ve
+						&& ve.getExpression() instanceof BinaryOperation bo
+						&& bo.getRightExpression() instanceof FunctionStatement protoFs
+						&& bo.getLeftExpression() instanceof PropertyExpression pe
+						&& pe.getObject() instanceof PropertyExpression pe2
+						&& pe2.getObject() instanceof Identifier name
+						&& pe2.getProperty() instanceof Identifier prototype
+						&& prototype.getName().equals("prototype")) {
+					IValueCollection functionCollection = (IValueCollection) collection
+							.getChild(name.getName())
+							.getAttribute(IReferenceAttributes.FUNCTION_SCOPE);
+					if (functionCollection != null) {
+						IValueReference thisValue = functionCollection
+								.getThis();
+
+						final JSMethod method = createMethod(protoFs);
+						IValueReference methodRef = thisValue
+								.createChild(method.getName());
+						initializeFunction(method, methodRef);
+						methodsToInitialize.put(method, methodRef);
+					}
+
+				} else if (child instanceof VoidExpression ve
+						&& ve.getExpression() instanceof BinaryOperation bo
+						&& bo.getLeftExpression() instanceof PropertyExpression pe
+						&& bo.getRightExpression() instanceof ObjectInitializer oi
+						&& pe.getObject() instanceof Identifier name
+						&& pe.getProperty() instanceof Identifier prototype
+						&& prototype.getName().equals("prototype")) {
+					oi.getInitializers().forEach(initializer -> {
+						if (initializer instanceof PropertyInitializer po && po
+								.getValue() instanceof FunctionStatement protoFs) {
+							IValueCollection functionCollection = (IValueCollection) collection
+									.getChild(name.getName()).getAttribute(
+											IReferenceAttributes.FUNCTION_SCOPE);
+							if (functionCollection != null) {
+								IValueReference thisValue = functionCollection
+										.getThis();
+
+								final JSMethod method = createMethod(protoFs);
+								IValueReference methodRef = thisValue
+										.createChild(method.getName());
+								initializeFunction(method, methodRef);
+								methodsToInitialize.put(method, methodRef);
+							}
+
+						}
+					});
+				}
+			});
 		}
 
 		// initialize the methods

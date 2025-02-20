@@ -307,12 +307,6 @@ public class Value extends ImmutableValue {
 			if (depth > 8) {
 				throw new DeepValueRecursionException();
 			}
-			if (declaredType == null) {
-				declaredType = src.declaredType;
-			} else if (src.declaredType != null) {
-				types.add(src.declaredType);
-			}
-			types.addAll(src.types);
 
 			// (references will be copied later)
 			if (src.attributes != null) {
@@ -329,6 +323,16 @@ public class Value extends ImmutableValue {
 							processing, depth + 1);
 				}
 			}
+
+			// this has to be done after the children are copied, because else
+			// createChild will get it from de declared type
+			if (declaredType == null) {
+				declaredType = src.declaredType;
+			} else if (src.declaredType != null) {
+				types.add(src.declaredType);
+			}
+			types.addAll(src.types);
+
 			if (src.kind != ReferenceKind.UNKNOWN
 					&& kind == ReferenceKind.UNKNOWN) {
 				kind = src.kind;

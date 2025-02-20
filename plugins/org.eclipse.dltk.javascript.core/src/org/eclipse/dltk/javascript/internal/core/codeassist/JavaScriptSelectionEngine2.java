@@ -227,7 +227,9 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 									typedNode,
 									valueOffset);
 						}
-					} else if (JSDocTag.TYPE.equals(tag.name())) {
+					} else if (JSDocTag.TYPE.equals(tag.name())
+							|| JSDocTag.EXTENDS.equals(tag.name())
+							|| JSDocTag.THIS.equals(tag.name())) {
 						final TypeNode typeNode = JSDocSupport.parseType(tag);
 						if (typeNode != null && typeNode.isInType(valueOffset)) {
 							findTypeInTypeExpression(module, script, tag,

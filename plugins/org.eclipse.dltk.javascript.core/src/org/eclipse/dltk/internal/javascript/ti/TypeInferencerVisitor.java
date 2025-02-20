@@ -2289,13 +2289,16 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitTemplateStringLiteral(
 			TemplateStringLiteral node) {
+		for (Expression expression : node.getTemplateExpressions()) {
+			visit(expression);
+		}
 		return ConstantValue.of(RTypes.STRING);
 	}
 
 	@Override
 	public IValueReference visitTemplateStringExpression(
 			TemplateStringExpression node) {
-		return ConstantValue.of(RTypes.STRING);
+		return visit(node.getExpression());
 	}
 
 	@Override

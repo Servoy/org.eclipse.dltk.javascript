@@ -904,6 +904,43 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						&& reference.getAttribute(IReferenceAttributes.METHOD) != null)
 					reference.setKind(ReferenceKind.FUNCTION);
 			}
+
+			setDeclaredTypeOnVariableInit(reference,
+					declaration.getInitializer());
+
+		}
+	}
+
+	/**
+	 * @param reference
+	 * @param declaration
+	 */
+	public void setDeclaredTypeOnVariableInit(final IValueReference reference,
+			Expression expression) {
+		if (reference.getDeclaredType() == null) {
+			JSTypeSet types = reference.getTypes();
+			if (types.size() == 1) {
+				setIRType(reference, types.toRType(), false);
+			} else if (expression instanceof DecimalLiteral) {
+				setIRType(reference,
+						context.getType(ITypeNames.NUMBER).toRType(context),
+						true);
+			} else if (expression instanceof StringLiteral) {
+				setIRType(reference,
+						context.getType(ITypeNames.STRING).toRType(context),
+						true);
+			} else if (expression instanceof BooleanLiteral) {
+				setIRType(reference, context.getType(ITypeNames.BOOLEAN)
+						.toRType(context), true);
+			} else if (expression instanceof BigIntLiteral) {
+				setIRType(reference,
+						context.getType(ITypeNames.BIGINT).toRType(context),
+						true);
+			} else if (expression instanceof ArrayInitializer) {
+				setIRType(reference,
+						RTypes.arrayOf(context, RTypes.any()),
+						true);
+			}
 		}
 	}
 
@@ -1803,39 +1840,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 											pe.sourceStart(), pe.sourceEnd(),
 											pe.getProperty().sourceStart(),
 											pe.getProperty().sourceEnd()));
-							if (fieldRef.getDeclaredType() == null) {
-								if (bo.getRightExpression() instanceof DecimalLiteral) {
-									setIRType(fieldRef,
-											context.getType(ITypeNames.NUMBER)
-													.toRType(context),
-											true);
-								} else if (bo
-										.getRightExpression() instanceof StringLiteral) {
-									setIRType(fieldRef,
-											context.getType(ITypeNames.STRING)
-													.toRType(context),
-											true);
-								} else if (bo
-										.getRightExpression() instanceof BooleanLiteral) {
-									setIRType(fieldRef,
-											context.getType(ITypeNames.BOOLEAN)
-													.toRType(context),
-											true);
-								} else if (bo
-										.getRightExpression() instanceof BigIntLiteral) {
-									setIRType(fieldRef,
-											context.getType(ITypeNames.BIGINT)
-													.toRType(context),
-											true);
-								} else if (bo
-										.getRightExpression() instanceof ArrayInitializer) {
-									setIRType(fieldRef,
-											context.getType(ITypeNames.ARRAY)
-													.toRType(context),
-											true);
-								}
-							}
-
+							setDeclaredTypeOnVariableInit(fieldRef,
+									bo.getRightExpression());
 						}
 					}
 				});

@@ -141,6 +141,10 @@ public class SimpleTypeImpl extends MinimalEObjectImpl implements SimpleType {
 		}
 		if (t.isProxy() && typeSystem != null) {
 			t = typeSystem.resolveType(t);
+			if (t == null) {
+				System.err.println("not resolving type " + getTarget());
+				return RTypes.any();
+			}
 		}
 		if (typeSystem instanceof ITypeInfoContext
 				&& t.getKind() == TypeKind.UNKNOWN) {

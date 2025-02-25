@@ -26,4 +26,5 @@ public interface ITypeNames {
 	public static final String ERROR = "Error"; //$NON-NLS-1$
 	public static final String UNDEFINED = "undefined";
 	public static final String BIGINT = "BigInt"; //$NON-NLS-1$
+	public static final String PROMISE = "Promise"; //$NON-NLS-1$
 }

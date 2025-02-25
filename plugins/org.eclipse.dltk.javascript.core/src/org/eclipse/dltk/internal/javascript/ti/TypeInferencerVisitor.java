@@ -32,6 +32,7 @@ import org.eclipse.dltk.compiler.problem.IProblemCategory;
 import org.eclipse.dltk.compiler.problem.IProblemIdentifier;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.internal.javascript.validation.ValidationMessages;
+import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
 import org.eclipse.dltk.javascript.ast.BigIntLiteral;
@@ -1211,6 +1212,19 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	private JSMethod createMethod(ArrowFunctionStatement node) {
 		final JSMethod method = new JSMethod(node, getSource());
+		for (Argument argument : node.getArguments()) {
+			if (argument.getIdentifier().getDocumentation() != null) {
+				JSDocTags tags = JSDocSupport
+						.parse(argument.getIdentifier().getDocumentation());
+				final JSDocTag typeTag = tags.get(JSDocTag.TYPE);
+				if (typeTag != null) {
+					IParameter parameter = method
+							.getParameter(argument.getIdentifier().getName());
+					parameter.setType(getDocSupport().parseType(typeTag, false,
+							getProblemReporter()));
+				}
+			}
+		}
 		return method;
 	}
 

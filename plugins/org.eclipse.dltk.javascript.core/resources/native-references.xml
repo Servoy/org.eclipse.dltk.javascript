@@ -356,6 +356,66 @@
     	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </parameters>
     </members>
+    <members xsi:type="ref:Method" name="findLast" description="Iterates the array in reverse order and returns the value of the first element that satisfies the provided testing function. If no elements satisfy the testing function, undefined is returned.">
+        <parameters name="callback" directType="Function"/>
+        <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+    </members>
+    <members xsi:type="ref:Method" name="findLastIndex" description="Iterates the array in reverse order and returns the index of the first element that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.">
+        <parameters name="callback" directType="Function"/>
+        <type directType="Number"/>
+    </members>
+    <members xsi:type="ref:Method" name="toReversed" description="Returns a new array with the elements in reversed order.">
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="toSorted" description="Returns a new array with the elements sorted in ascending order.">
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="toSorted" description="Returns a new array with the elements sorted in ascending order using a comparator function.">
+        <parameters name="comparator" directType="Function"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="toSpliced" description="Returns a new array with some elements removed and/or replaced at a given index.">
+        <parameters name="start" directType="Object"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="toSpliced" description="Returns a new array with some elements removed and/or replaced at a given index.">
+        <parameters name="start" directType="Object"/>
+        <parameters name="deleteCount" directType="Object"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="toSpliced" description="Returns a new array with some elements removed and/or replaced at a given index.">
+        <parameters name="start" directType="Object"/>
+        <parameters name="deleteCount" directType="Object"/>
+        <parameters name="item1" directType="Object"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="toSpliced" description="Returns a new array with some elements removed and/or replaced at a given index.">
+        <parameters name="start" directType="Object"/>
+        <parameters name="deleteCount" directType="Object"/>
+        <parameters name="items" directType="Object" kind="VARARGS"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
+    <members xsi:type="ref:Method" name="with" description="Returns a new array with the element at the given index replaced with the given value.">
+        <parameters name="index" directType="Object"/>
+        <parameters name="value" directType="Object"/>
+        <type xsi:type="ref:ArrayType">
+            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+        </type>
+    </members>
   </ref:GenericType>
   <ref:Type name="Boolean" kind="PREDEFINED" superType="Object">
     <staticConstructor name="Boolean" directType="Boolean">
@@ -594,6 +654,12 @@
     <members xsi:type="ref:Method" name="match" description="Searches for a specified value in a string.">
       <parameters name="searchvalue"/>
       <type xsi:type="ref:ArrayType">
+			<itemType xsi:type="ref:SimpleType" target="String"/>
+	  </type>
+    </members>
+    <members xsi:type="ref:Method" name="matchAll" description="Returns an iterator of all results matching this string against a regular expression, including capturing groups.">
+        <parameters name="regexp" directType="RegExp"/>
+        <type xsi:type="ref:ArrayType">
 			<itemType xsi:type="ref:SimpleType" target="String"/>
 	  </type>
     </members>

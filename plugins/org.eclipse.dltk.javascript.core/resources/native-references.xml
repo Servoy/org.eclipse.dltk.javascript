@@ -362,7 +362,6 @@
     </members>
     <members xsi:type="ref:Method" name="findLastIndex" description="Iterates the array in reverse order and returns the index of the first element that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.">
         <parameters name="callback" directType="Function"/>
-        <type directType="Number"/>
     </members>
     <members xsi:type="ref:Method" name="toReversed" description="Returns a new array with the elements in reversed order.">
         <type xsi:type="ref:ArrayType">

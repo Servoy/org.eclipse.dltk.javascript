@@ -2409,7 +2409,7 @@ public class TestRhinoParser {
 		Script scriptv4 = rhinoParser.parse(source, reporter);
 		assertNotNull(scriptv4);
 		assertEquals(1, problems.size());
-		assertEquals("TypeError: redeclaration of variable a.", problems.get(0).getMessage());
+		assertEquals("redeclaration of variable a.", problems.get(0).getMessage());
 		assertEquals(3, problems.get(0).getSourceLineNumber());
 	}
 	

@@ -13,7 +13,7 @@ package org.eclipse.dltk.javascript.ui.tests.autoedit;
 
 import org.eclipse.dltk.core.tests.util.StringList;
 import org.eclipse.dltk.javascript.internal.ui.text.Symbols;
-import org.eclipse.dltk.javascript.scriptdoc.JavaHeuristicScanner;
+import org.eclipse.dltk.javascript.ui.scriptdoc.JavaHeuristicScanner;
 import org.eclipse.jface.text.BadLocationException;
 import org.junit.Test;
 

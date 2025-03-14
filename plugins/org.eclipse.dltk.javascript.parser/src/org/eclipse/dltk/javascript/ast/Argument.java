@@ -18,6 +18,8 @@ public class Argument extends JSNode implements ISourceable {
 	private Identifier identifier;
 	private int commaPosition = -1;
 	private int ellipsisPosition = -1;
+	private Expression defaultValue;
+	private int assignPosition = -1;
 
 	public Argument(JSNode parent) {
 		super(parent);
@@ -64,10 +66,15 @@ public class Argument extends JSNode implements ISourceable {
 
 	@Override
 	public String toSourceString(String indentationString) {
+		String sourceString = identifier.toSourceString(indentationString);
 		if (ellipsisPosition != -1) {
-			return "..." + identifier.toSourceString(indentationString);
+			return "..." + sourceString;
 		}
-		return identifier.toSourceString(indentationString);
+		if (defaultValue != null) {
+			return sourceString += " = "
+					+ defaultValue.toSourceString(indentationString);
+		}
+		return sourceString;
 	}
 
 	@Override
@@ -75,5 +82,24 @@ public class Argument extends JSNode implements ISourceable {
 		if (identifier != null) {
 			identifier.traverse(visitor);
 		}
+		if (defaultValue != null) {
+			defaultValue.traverse(visitor);
+		}
+	}
+
+	public void setDefaultParamValue(Expression assignExpr) {
+		defaultValue = assignExpr;
+	}
+	
+	public Expression getDefaultParamValue() {
+		return defaultValue;
+	}
+	
+	public void setAssignPosition(int assignPosition) {
+		this.assignPosition = assignPosition;
+	}
+	
+	public int getAssignPosition() {
+		return assignPosition;
 	}
 }

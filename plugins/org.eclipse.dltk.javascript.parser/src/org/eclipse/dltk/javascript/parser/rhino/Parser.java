@@ -952,6 +952,14 @@ public class Parser implements IParser{
 					}
 					paramNames.add(paramName);
 				}
+				if (matchToken(Token.ASSIGN, true)) {
+                    if (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+                    	argument.setAssignPosition(ts.getTokenBeg());
+                        argument.setDefaultParamValue(assignExpr());
+                    } else {
+                        reportError("msg.default.args");
+                    }
+                }
 			} else {
 				//                    fnNode.addParam(makeErrorNode());
 			}

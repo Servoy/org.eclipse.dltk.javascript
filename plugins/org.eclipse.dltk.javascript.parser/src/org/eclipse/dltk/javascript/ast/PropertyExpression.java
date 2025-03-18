@@ -17,12 +17,13 @@ import java.util.List;
 
 import org.eclipse.dltk.ast.ASTVisitor;
 
-public class PropertyExpression extends Expression implements Documentable {
+public class PropertyExpression extends Expression implements Documentable, IsOptionalChain {
 
 	private Expression object;
 	private Expression property;
 	private int dot = -1;
 	private Comment documentation;
+	private int optionalChain;
 
 	public PropertyExpression(JSNode parent) {
 		super(parent);
@@ -77,7 +78,7 @@ public class PropertyExpression extends Expression implements Documentable {
 
 	@Override
 	public String toSourceString(String indentationString) {
-		return toSourceString(object, indentationString) + '.'
+		return toSourceString(object, indentationString) + (optionalChain > 0 ? "?." : '.')
 				+ toSourceString(property, indentationString);
 	}
 
@@ -98,4 +99,13 @@ public class PropertyExpression extends Expression implements Documentable {
 		}
 	}
 
+	@Override
+	public void setOptionalChain(int optionalChain) {
+		this.optionalChain = optionalChain;
+	}
+	
+	@Override
+	public int getOptionalChain() {
+		return optionalChain;
+	}
 }

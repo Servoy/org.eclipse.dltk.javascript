@@ -59,12 +59,12 @@ import org.eclipse.dltk.javascript.ast.ISemicolonStatement;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.IfStatement;
+import org.eclipse.dltk.javascript.ast.IsOptionalChain;
 import org.eclipse.dltk.javascript.ast.JSDeclaration;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
 import org.eclipse.dltk.javascript.ast.Label;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
-import org.eclipse.dltk.javascript.ast.Literal;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
 import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.MultiLineComment;
@@ -124,6 +124,7 @@ import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Token;
 import org.mozilla.javascript.Token.CommentType;
 import org.mozilla.javascript.TokenStream;
+import org.mozilla.javascript.ast.ElementGet;
 import org.mozilla.javascript.ast.FunctionNode;
 import org.mozilla.javascript.ast.IdeErrorReporter;
 
@@ -2924,7 +2925,7 @@ public class Parser implements IParser{
 	}
 
 	private Expression condExpr() throws IOException {
-		Expression pn = orExpr();
+		Expression pn = nullishCoalescingExpr();
 		if (matchToken(Token.HOOK, true)) {
 			int qmarkPos = ts.getTokenBeg(), colonPos = -1;
 			/*
@@ -2962,6 +2963,23 @@ public class Parser implements IParser{
 		}
 		return pn;
 	}
+	
+    private Expression nullishCoalescingExpr() throws IOException {
+        Expression pn = orExpr();
+        if (matchToken(Token.NULLISH_COALESCING, true)) {
+            int opPos = ts.getTokenBeg();
+            Expression rn = nullishCoalescingExpr();
+
+            // Cannot immediately contain, or be contained within, an && or || operation.
+            if (pn instanceof BinaryOperation bn && (bn.isLogicalOr() || bn.isLogicalAnd())
+            	|| rn instanceof BinaryOperation brn && (brn.isLogicalOr() || brn.isLogicalAnd())) {
+                reportError("msg.nullish.bad.token");
+            }
+
+            pn = createBinaryOperation(Token.NULLISH_COALESCING, opPos, pn, rn, getParent());
+        }
+        return pn;
+    }
 
 	private Expression orExpr() throws IOException {
 		Expression pn = andExpr();
@@ -3374,17 +3392,20 @@ public class Parser implements IParser{
 		// we no longer return null for errors, so this won't be null
 		if (pn == null) codeBug();
 		int pos = pn.sourceStart();
+		int isOptionalChain = -1;
 		tailLoop:
 			for (; ; ) {
 				int tt = peekToken();
+				isOptionalChain = (tt == Token.QUESTION_DOT ? ts.getTokenBeg() : isOptionalChain);
 				switch (tt) {
 				case Token.EOL:
 					pn.setEnd(ts.getTokenEnd());
 					consumeToken();
 					break;
 				case Token.DOT:
-				case Token.DOTDOT:
-					pn = propertyAccess(tt, pn);
+                case Token.QUESTION_DOT:
+                case Token.DOTDOT:
+                    pn = propertyAccess(tt, pn, isOptionalChain);
 					break;
 
 				case Token.DOTQUERY:
@@ -3411,23 +3432,7 @@ public class Parser implements IParser{
 
 				case Token.LB:
 					consumeToken();
-					int lb = ts.getTokenBeg(), rb = -1;
-					Expression expr = expr(false);
-					int end = expr.end();
-					if (mustMatchToken(Token.RB, "msg.no.bracket.index", true)) {
-						rb = ts.getTokenBeg();
-						end = ts.getTokenEnd();
-					}
-					GetArrayItemExpression g = new GetArrayItemExpression(getParent());
-					g.setArray(pn);
-					pn.setParent(g);
-					g.setIndex(expr);
-					expr.setParent(g);
-					g.setStart(pn.start());
-					g.setEnd(end);
-					g.setLB(lb);
-					g.setRB(rb);
-					pn = g;
+					pn = makeElemGet(pn);
 					break;
 
 				case Token.LP:
@@ -3435,19 +3440,7 @@ public class Parser implements IParser{
 						break tailLoop;
 					}
 					consumeToken();
-					CallExpression f = new CallExpression(getParent());
-					f.setStart(pos);
-					f.setExpression(pn);
-					pn.setParent(f);
-					// Assign the line number for the function call to where
-					// the paren appeared, not where the name expression started.
-					f.setLP(ts.getTokenBeg());
-					argumentList(f);
-					if (f.getArguments() != null && f.getArguments().size() > ARGC_LIMIT)
-						reportError("msg.too.many.function.args");
-					f.setRP(ts.getTokenBeg());
-					f.setEnd(ts.getTokenEnd());
-					pn = f;
+					pn = makeFunctionCall(pn, pos, isOptionalChain);
 					break;
 				case Token.COMMENT:
 					// Ignoring all the comments, because previous statement may not be terminated
@@ -3470,6 +3463,44 @@ public class Parser implements IParser{
 		return pn;
 	}
 
+	private Expression makeFunctionCall(Expression pn, int pos, int isOptionalChain)
+			throws IOException {
+		CallExpression f = new CallExpression(getParent());
+		f.setStart(pos);
+		f.setExpression(pn);
+		pn.setParent(f);
+		f.setLP(ts.getTokenBeg());
+		argumentList(f);
+		if (f.getArguments() != null && f.getArguments().size() > ARGC_LIMIT)
+			reportError("msg.too.many.function.args");
+		f.setRP(ts.getTokenBeg());
+		f.setEnd(ts.getTokenEnd());
+		f.setOptionalChain(isOptionalChain);
+		pn = f;
+		return pn;
+	}
+
+	private Expression makeElemGet(Expression pn) throws IOException {
+		int lb = ts.getTokenBeg(), rb = -1;
+		Expression expr = expr(false);
+		int end = expr.end();
+		if (mustMatchToken(Token.RB, "msg.no.bracket.index", true)) {
+			rb = ts.getTokenBeg();
+			end = ts.getTokenEnd();
+		}
+		GetArrayItemExpression g = new GetArrayItemExpression(getParent());
+		g.setArray(pn);
+		pn.setParent(g);
+		g.setIndex(expr);
+		expr.setParent(g);
+		g.setStart(pn.start());
+		g.setEnd(end);
+		g.setLB(lb);
+		g.setRB(rb);
+		pn = g;
+		return pn;
+	}
+
 	private TagFunctionExpression taggedTemplateLiteral(Expression pn) throws IOException {
 		Expression templateLiteral = templateLiteral(true);
 		TagFunctionExpression tagged = new TagFunctionExpression(getParent());
@@ -3488,10 +3519,15 @@ public class Parser implements IParser{
 	 * Handles any construct following a "." or ".." operator.
 	 *
 	 * @param pn the left-hand side (target) of the operator. Never null.
+	 * @param optionalChainPos 
 	 * @return a PropertyGet, XmlMemberGet, or ErrorNode
 	 */
-	private Expression propertyAccess(int tt, Expression pn) throws IOException {
+	private Expression propertyAccess(int tt, Expression pn, int optionalChainPos) throws IOException {
 		if (pn == null) codeBug();
+		else if (optionalChainPos != -1 && "super".equals(pn.toString())) {
+            reportError("msg.optional.super");
+            return makeErrorNode();
+        }
 		int memberTypeFlags = 0, dotPos = ts.getTokenBeg();
 		consumeToken();
 
@@ -3559,6 +3595,29 @@ public class Parser implements IParser{
 			ref = propertyName(-1, memberTypeFlags);
 			break;
 		}
+		
+		case Token.LB:
+            if (tt == Token.QUESTION_DOT) {
+                // a ?.[ expr ]
+                consumeToken();
+                Expression g = makeElemGet(pn);
+				if (g instanceof IsOptionalChain oc) {
+					oc.setOptionalChain(optionalChainPos);
+				}
+                return g;
+            } else {
+                reportError("msg.no.name.after.dot");
+                return makeErrorNode();
+            }
+
+        case Token.LP:
+            if (tt == Token.QUESTION_DOT) {
+                // a function call such as f?.()
+                return makeFunctionCall(pn, ts.getTokenBeg(), optionalChainPos);
+            } else {
+                reportError("msg.no.name.after.dot");
+                return makeErrorNode();
+            }
 
 		default:
 			if (compilerEnv.isReservedKeywordAsIdentifier()) {
@@ -3591,7 +3650,12 @@ public class Parser implements IParser{
 		}
 		else
 		{
-			return createPropertyExpression(pn, dotPos, ref);
+			Expression pe = createPropertyExpression(pn, dotPos, ref);
+			if (optionalChainPos > 0 && pe instanceof PropertyExpression propertyExpression) {
+				propertyExpression.setOptionalChain(optionalChainPos);
+				propertyExpression.setDotPosition(-1);
+			}
+			return pe;
 		}
 	}
 

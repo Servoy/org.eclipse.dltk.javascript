@@ -15,12 +15,13 @@ package org.eclipse.dltk.javascript.ast;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTVisitor;
 
-public class GetArrayItemExpression extends Expression {
+public class GetArrayItemExpression extends Expression implements IsOptionalChain {
 
 	private Expression array;
 	private Expression index;
 	private int LB = -1;
 	private int RB = -1;
+	private int optionalChainPos;
 
 	public GetArrayItemExpression(JSNode parent) {
 		super(parent);
@@ -83,6 +84,9 @@ public class GetArrayItemExpression extends Expression {
 		StringBuffer buffer = new StringBuffer();
 
 		buffer.append(getArray().toSourceString(indentationString));
+		if (optionalChainPos > 0) {
+			buffer.append("?.");
+		}
 		buffer.append("[");
 		buffer.append(getIndex().toSourceString(indentationString));
 		buffer.append("]");
@@ -90,4 +94,13 @@ public class GetArrayItemExpression extends Expression {
 		return buffer.toString();
 	}
 
+	@Override
+	public void setOptionalChain(int optionalChainPos) {
+		this.optionalChainPos = optionalChainPos;		
+	}
+
+	@Override
+	public int getOptionalChain() {
+		return optionalChainPos;
+	}
 }

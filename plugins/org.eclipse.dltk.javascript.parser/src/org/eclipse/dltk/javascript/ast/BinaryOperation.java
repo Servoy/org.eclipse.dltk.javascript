@@ -128,4 +128,8 @@ public abstract class BinaryOperation extends Expression {
 	public abstract boolean isInstanceof();
 	
 	public abstract boolean isArithmeticOperation();
+
+	public boolean isNullishCoalescing() {
+		return false;
+	}
 }

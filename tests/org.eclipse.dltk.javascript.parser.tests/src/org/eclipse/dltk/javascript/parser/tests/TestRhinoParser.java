@@ -2832,4 +2832,72 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
+	
+	@Test
+	public void testDefaultFunctionParameters() {
+		String source = "function x(a = 1, b = 2) { return a === 3 && b === 2; }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		FunctionStatement statementv4 = (FunctionStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		List<Argument> arguments = statementv4.getArguments();
+		assertEquals(2, arguments.size());
+		Argument firstArg = arguments.get(0);
+		assertEquals("a", firstArg.getArgumentName());
+		assertEquals("1", firstArg.getDefaultParamValue().toString());
+		assertEquals(13, firstArg.getAssignPosition());
+		assertEquals("a = 1", firstArg.toString());
+		Argument secondArg = arguments.get(1);
+		assertEquals("b", secondArg.getArgumentName());
+		assertEquals("2", secondArg.getDefaultParamValue().toString());
+		assertEquals(20, secondArg.getAssignPosition());
+		assertEquals("b = 2", secondArg.toString());
+	}
+	
+	@Test
+	public void testOptionalChain() {
+		String source = "user.profile?.name";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		PropertyExpression expressionv4 = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(12, expressionv4.getOptionalChain());
+		assertEquals(-1, expressionv4.getDotPosition()); //TODO check if it is optional chain, should the dot position be -1 ?
+		assertEquals(source, expressionv4.toString());
+	}
+	
+	@Test
+	public void testOptionalChainFunctionCall() {
+		String source = "user.nonExistentMethod?.()";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		CallExpression expressionv4 = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(22, expressionv4.getOptionalChain());
+		assertEquals(source, expressionv4.toString());	
+	}
+
+	@Test
+	public void testOptionalChainArrayAccess() {
+		String source = "a ?.[ expr ]";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		GetArrayItemExpression expressionv4 = (GetArrayItemExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(2, expressionv4.getOptionalChain());
+		assertEquals("a?.[expr]", expressionv4.toString());
+	}
+	
+	@Test
+	public void testNullishCoalescing() {
+		String source = "const foo = null ?? \"default string\"";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		ConstStatement statementv4 = (ConstStatement) expressionv4.getExpression();
+		VariableDeclaration variableDeclarationv4 = statementv4.getVariables().get(0);
+		assertTrue(variableDeclarationv4.getInitializer() instanceof BinaryOperation);
+		BinaryOperation initializer = (BinaryOperation) variableDeclarationv4.getInitializer();
+	
+	    assertEquals("??", initializer.getOperationText());
+	    assertTrue(initializer.isNullishCoalescing());
+	    assertEquals("null", initializer.getLeftExpression().toString());
+	    assertEquals("\"default string\"", initializer.getRightExpression().toString());
+	  }
 }

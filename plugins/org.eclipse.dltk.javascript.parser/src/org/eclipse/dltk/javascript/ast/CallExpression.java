@@ -20,13 +20,14 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.utils.IntList;
 
-public class CallExpression extends Expression {
+public class CallExpression extends Expression implements IsOptionalChain{
 
 	private Expression expression;
 	private final List<ASTNode> arguments = new ArrayList<ASTNode>();
 	private IntList commas;
 	private int LP = -1;
 	private int RP = -1;
+	private int optionalChain;
 
 	public CallExpression(JSNode parent) {
 		super(parent);
@@ -105,6 +106,9 @@ public class CallExpression extends Expression {
 		buffer.append(((ISourceable) expression)
 				.toSourceString(indentationString));
 
+		if (optionalChain > 0) {
+			buffer.append("?.");
+		}
 		buffer.append('(');
 
 		for (int i = 0; i < arguments.size(); i++) {
@@ -120,4 +124,13 @@ public class CallExpression extends Expression {
 		return buffer.toString();
 	}
 
+	@Override
+	public void setOptionalChain(int optionalChainPos) {
+		this.optionalChain = optionalChainPos;		
+	}
+
+	@Override
+	public int getOptionalChain() {
+		return optionalChain;
+	}
 }

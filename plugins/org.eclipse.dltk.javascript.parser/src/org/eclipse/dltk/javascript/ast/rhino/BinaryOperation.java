@@ -61,4 +61,9 @@ public class BinaryOperation extends org.eclipse.dltk.javascript.ast.BinaryOpera
 	public boolean isInstanceof() {
 		return operation == Token.INSTANCEOF;
 	}
+	
+	@Override
+	public boolean isNullishCoalescing() {
+		return operation == Token.NULLISH_COALESCING;
+	}
 }

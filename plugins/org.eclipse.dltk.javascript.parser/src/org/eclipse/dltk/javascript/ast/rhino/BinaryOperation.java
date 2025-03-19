@@ -16,7 +16,8 @@ public class BinaryOperation extends org.eclipse.dltk.javascript.ast.BinaryOpera
 				|| operation == Token.ASSIGN_DIV || operation == Token.ASSIGN_MOD
 				|| operation == Token.ASSIGN_BITAND || operation == Token.ASSIGN_BITOR
 				|| operation ==Token.ASSIGN_BITXOR || operation == Token.ASSIGN_RSH
-				|| operation == Token.ASSIGN_LSH || operation == Token.ASSIGN_URSH;
+				|| operation == Token.ASSIGN_LSH || operation == Token.ASSIGN_URSH 
+				|| operation == Token.ASSIGN_NULLISH;
 	}
 
 	public boolean isAssignOperator() {

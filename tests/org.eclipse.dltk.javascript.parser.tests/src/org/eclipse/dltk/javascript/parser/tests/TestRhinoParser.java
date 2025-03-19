@@ -1,6 +1,7 @@
 package org.eclipse.dltk.javascript.parser.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -2855,13 +2856,19 @@ public class TestRhinoParser {
 	
 	@Test
 	public void testOptionalChain() {
-		String source = "user.profile?.name";
+		String source = "user.profile?.name;"
+				+ "users[1]?.name;";
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
 		PropertyExpression expressionv4 = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
 		assertEquals(12, expressionv4.getOptionalChain());
-		assertEquals(-1, expressionv4.getDotPosition()); //TODO check if it is optional chain, should the dot position be -1 ?
-		assertEquals(source, expressionv4.toString());
+		assertEquals(-1, expressionv4.getDotPosition());
+		assertEquals("user.profile?.name", expressionv4.toString());
+		
+		PropertyExpression expressionv4_2 = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(1)).getExpression();
+		assertEquals(27, expressionv4_2.getOptionalChain());
+		assertEquals(-1, expressionv4_2.getDotPosition());
+		assertEquals("users[1]?.name", expressionv4_2.toString());
 	}
 	
 	@Test
@@ -2899,5 +2906,46 @@ public class TestRhinoParser {
 	    assertTrue(initializer.isNullishCoalescing());
 	    assertEquals("null", initializer.getLeftExpression().toString());
 	    assertEquals("\"default string\"", initializer.getRightExpression().toString());
+	  }
+	
+	@Test
+	public void testNullishCoalescing_error() {
+		String source = "const foo = null ?? \"default string\" || c";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);	
+		assertEquals(1, problems.size());
+		assertEquals("Syntax Error: Unexpected token.", problems.get(0).getMessage());
+		
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		ConstStatement statementv4 = (ConstStatement) expressionv4.getExpression();
+		VariableDeclaration variableDeclarationv4 = statementv4.getVariables().get(0);
+		assertTrue(variableDeclarationv4.getInitializer() instanceof BinaryOperation);
+		BinaryOperation initializer = (BinaryOperation) variableDeclarationv4.getInitializer();
+	
+	    assertEquals("??", initializer.getOperationText());
+	    assertTrue(initializer.isNullishCoalescing());
+	    assertEquals("null", initializer.getLeftExpression().toString());
+	    assertEquals("\"default string\" || c", initializer.getRightExpression().toString());
+	  }
+	
+	@Test
+	public void testNullishCoalescingAssignment() {
+		String source = "obj.foo ??= \"default string\"";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		BinaryOperation op = (BinaryOperation) expressionv4.getExpression();
+	
+	    assertEquals("??=", op.getOperationText());
+	    assertTrue(op.isAssignment());
+	    assertFalse(op.isNullishCoalescing());
+	    assertEquals(source, op.toString());
 	  }
 }

@@ -2948,4 +2948,24 @@ public class TestRhinoParser {
 	    assertFalse(op.isNullishCoalescing());
 	    assertEquals(source, op.toString());
 	  }
+	
+	@Test
+	public void testLogicalAssignmentOperators() {
+		String source = "username ||= 'Guest';"
+				+ "isLoggedIn &&= false";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		BinaryOperation op = (BinaryOperation) expressionv4.getExpression();
+	    assertEquals("||=", op.getOperationText());
+	    assertTrue(op.isAssignment());
+	    assertEquals("username ||= 'Guest'", op.toString());
+	    
+	    VoidExpression expressionv4_2 = (VoidExpression) scriptv4.getStatements().get(1);
+		BinaryOperation op2 = (BinaryOperation) expressionv4_2.getExpression();
+	    assertEquals("&&=", op2.getOperationText());
+	    assertTrue(op.isAssignment());
+	    assertEquals("isLoggedIn &&= false", op2.toString());
+	  }
 }

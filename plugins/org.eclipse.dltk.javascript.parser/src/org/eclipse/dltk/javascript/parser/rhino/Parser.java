@@ -120,11 +120,11 @@ import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.IParser;
 import org.mozilla.javascript.Kit;
 import org.mozilla.javascript.Node;
+import org.mozilla.javascript.Parser.CurrentPositionReporter;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Token;
 import org.mozilla.javascript.Token.CommentType;
 import org.mozilla.javascript.TokenStream;
-import org.mozilla.javascript.ast.ElementGet;
 import org.mozilla.javascript.ast.FunctionNode;
 import org.mozilla.javascript.ast.IdeErrorReporter;
 
@@ -158,7 +158,7 @@ public class Parser implements IParser{
 			TI_CHECK_LABEL = 1 << 17; // indicates to check for label
 
 	CompilerEnvirons compilerEnv;
-	private JSProblemReporter reporter;
+	private JSProblemReporter errorReporter;
 	private IdeErrorReporter errorCollector;
 	private String sourceURI;
 	private char[] sourceChars;
@@ -167,6 +167,7 @@ public class Parser implements IParser{
 	private boolean parseFinished; // set when finished to prevent reuse
 
 	private TokenStream ts;
+	CurrentPositionReporter currentPos;
 	private int currentFlaggedToken = Token.EOF;
 	private int currentToken;
 	private int syntaxErrorCount;
@@ -195,6 +196,8 @@ public class Parser implements IParser{
 	// iff it wasn't the last matched token.
 	private int prevNameTokenStart;
 	private String prevNameTokenString = "";
+    private int lastTokenLineno = -1;
+    
 	//svy
 	private Stack<JSNode> parents = new Stack<JSNode>();
 
@@ -208,7 +211,6 @@ public class Parser implements IParser{
 	private int lastCommentLineno;
 
 	private NodeTransformer[] transformers;
-
 	// Exception to unwind
 	private static class ParserException extends RuntimeException {
 		private static final long serialVersionUID = 5882582646773765630L;
@@ -216,7 +218,7 @@ public class Parser implements IParser{
 
 	public Parser(CompilerEnvirons compilerEnv, JSProblemReporter errorReporter) {
 		this.compilerEnv = compilerEnv;
-		this.reporter = errorReporter;
+		this.errorReporter = errorReporter;
 		if (errorReporter instanceof IdeErrorReporter) {
 			errorCollector = (IdeErrorReporter) errorReporter;
 		}
@@ -258,25 +260,16 @@ public class Parser implements IParser{
 
 	// Add a strict warning on the last matched token.
 	void addStrictWarning(String messageId, String messageArg) {
-		int beg = -1, end = -1;
-		if (ts != null) {
-			beg = ts.getTokenBeg();
-			end = ts.getTokenEnd() - ts.getTokenBeg();
-		}
-		addStrictWarning(messageId, messageArg, beg, end);
+        addStrictWarning(messageId, messageArg, currentPos.getPosition(), currentPos.getLength());
 	}
 
 	void addStrictWarning(String messageId, String messageArg, int position, int length) {
 		if (compilerEnv.isStrictMode()) addWarning(messageId, messageArg, position, length);
 	}
 
+	@Override
 	public void addWarning(String messageId, String messageArg) {
-		int beg = -1, end = -1;
-		if (ts != null) {
-			beg = ts.getTokenBeg();
-			end = ts.getTokenEnd() - ts.getTokenBeg();
-		}
-		addWarning(messageId, messageArg, beg, end);
+        addWarning(messageId, messageArg, currentPos.getPosition(), currentPos.getLength());
 	}
 
 	void addWarning(String messageId, int position, int length) {
@@ -289,19 +282,19 @@ public class Parser implements IParser{
 			addError(messageId, messageArg, position, length);
 		} else if (errorCollector != null) {
 			errorCollector.warning(message, sourceURI, position, length);
-		} else if (ts != null) {
-			reporter.warning(message, sourceURI, ts.getLineno(), ts.getLine(), ts.getOffset());
 		} else {
-			reporter.warning(message, sourceURI, 1, "", 1);
+			errorReporter.warning(
+                    message,
+                    sourceURI,
+                    currentPos.getLineno(),
+                    currentPos.getLine(),
+                    currentPos.getOffset());
 		}
 	}
 
+	@Override
 	public void addError(String messageId) {
-		if (ts == null) {
-			addError(messageId, 0, 0);
-		} else {
-			addError(messageId, ts.getTokenBeg(), ts.getTokenEnd() - ts.getTokenBeg());
-		}
+        addError(messageId, currentPos.getPosition(), currentPos.getLength());
 	}
 
 	void addError(String messageId, int position, int length) {
@@ -309,13 +302,10 @@ public class Parser implements IParser{
 	}
 
 	void addError(String messageId, String messageArg) {
-		if (ts == null) {
-			addError(messageId, messageArg, 0, 0);
-		} else {
-			addError(messageId, messageArg, ts.getTokenBeg(), ts.getTokenEnd() - ts.getTokenBeg());
-		}
+        addError(messageId, messageArg, currentPos.getPosition(), currentPos.getLength());
 	}
 
+	@Override
 	public void addError(String messageId, int c) {
 		String messageArg = Character.toString((char) c);
 		addError(messageId, messageArg);
@@ -326,18 +316,13 @@ public class Parser implements IParser{
 		String message = lookupMessage(messageId, messageArg);
 		if (errorCollector != null) {
 			errorCollector.error(message, sourceURI, position, length);
-		} else {
-			int beg = 1, end = 1;
-			if (ts != null) { // happens in some regression tests
-				beg = ts.getTokenBeg();
-				end = ts.getTokenEnd();
-			}
-			reporter.setMessage(
-					JavaScriptParserProblems.SYNTAX_ERROR,
-					message);
-			reporter.setSeverity(ProblemSeverity.ERROR);
-			reporter.setRange(beg, end);
-			reporter.report();
+		} else {			
+			errorReporter.error(
+                    message,
+                    sourceURI,
+                    currentPos.getLineno(),
+                    currentPos.getLine(),
+                    currentPos.getOffset());
 		}
 	}
 
@@ -368,7 +353,7 @@ public class Parser implements IParser{
 		} else if (errorCollector != null) {
 			errorCollector.warning(message, sourceURI, position, length);
 		} else {
-			reporter.warning(message, sourceURI, line, lineSource, lineOffset);
+			errorReporter.warning(message, sourceURI, line, lineSource, lineOffset);
 		}
 	}
 
@@ -385,7 +370,7 @@ public class Parser implements IParser{
 		if (errorCollector != null) {
 			errorCollector.error(message, sourceURI, position, length);
 		} else {
-			reporter.error(message, sourceURI, line, lineSource, lineOffset);
+			errorReporter.error(message, sourceURI, line, lineSource, lineOffset);
 		}
 	}
 
@@ -399,16 +384,14 @@ public class Parser implements IParser{
 						: ScriptRuntime.getMessageById(messageId, messageArg);
 	}
 
+	@Override
 	public void reportError(String messageId) {
 		reportError(messageId, null);
 	}
 
+	@Override
 	public void reportError(String messageId, String messageArg) {
-		if (ts == null) { // happens in some regression tests
-			reportError(messageId, messageArg, 1, 1);
-		} else {
-			reportError(messageId, messageArg, ts.getTokenBeg(), ts.getTokenEnd() - ts.getTokenBeg());
-		}
+        reportError(messageId, messageArg, currentPos.getPosition(), currentPos.getLength());
 	}
 
 	void reportError(String messageId, int position, int length) {
@@ -485,7 +468,6 @@ public class Parser implements IParser{
 			return currentToken;
 		}
 
-		int lineno = ts.getLineno();
 		prevTokenStart = ts.getTokenBeg();
 		prevTokenEnd = ts.getTokenEnd();
 		int tt = ts.getToken();
@@ -495,13 +477,12 @@ public class Parser implements IParser{
 		while (tt == Token.EOL || tt == Token.COMMENT) {
 			prevTokenEnd = ts.getTokenEnd();
 			if (tt == Token.EOL) {
-				lineno++;
 				sawEOL = true;
 				tt = ts.getToken();
 			} else {
 				if (compilerEnv.isRecordingComments()) {
 					String comment = ts.getAndResetCurrentComment();
-					recordComment(lineno, comment);
+					recordComment(ts.getTokenStartLineno(), comment);
 					break;
 				}
 				tt = ts.getToken();
@@ -512,7 +493,11 @@ public class Parser implements IParser{
 		currentFlaggedToken = tt | (sawEOL ? TI_AFTER_EOL : 0);
 		return currentToken; // return unflagged token
 	}
-
+	
+    private int lineNumber() {
+        return lastTokenLineno;
+    }
+    
 	private int peekFlaggedToken() throws IOException {
 		peekToken();
 		return currentFlaggedToken;
@@ -520,6 +505,7 @@ public class Parser implements IParser{
 
 	private void consumeToken() {
 		currentFlaggedToken = Token.EOF;
+		lastTokenLineno = ts.getTokenStartLineno();
 	}
 
 	private int nextToken() throws IOException {
@@ -633,7 +619,7 @@ public class Parser implements IParser{
 		if (compilerEnv.isIdeMode()) {
 			this.sourceChars = sourceString.toCharArray();
 		}
-		this.ts = new TokenStream(this, null, sourceString, lineno);
+		currentPos = this.ts = new TokenStream(this, null, sourceString, lineno);
 		try {
 			Script script = parse();
 			for (NodeTransformer transformer : transformers) {
@@ -703,7 +689,6 @@ public class Parser implements IParser{
 		scope = new SymbolTable(script);
 		parents.push(script);
 
-		int baseLineno = ts.getLineno(); // line number where source starts
 		int end = pos; // in case source is empty
 
 		try {
@@ -752,14 +737,14 @@ public class Parser implements IParser{
 		} catch (StackOverflowError ex) {
 			String msg = lookupMessage("msg.too.deep.parser.recursion");
 			if (!compilerEnv.isIdeMode())
-				throw Context.reportRuntimeError(msg, sourceURI, ts.getLineno(), null, 0);
+				throw Context.reportRuntimeError(msg, sourceURI, lineNumber(), null, 0);
 		}
 
 		if (this.syntaxErrorCount != 0) {
 			String msg = String.valueOf(this.syntaxErrorCount);
 			msg = lookupMessage("msg.got.syntax.errors", msg);
 			if (!compilerEnv.isIdeMode())
-				throw reporter.runtimeError(msg, sourceURI, baseLineno, null, 0);
+				throw errorReporter.runtimeError(msg, sourceURI, lineNumber(), null, 0);
 		}
 
 		// add comments to root in lexical order
@@ -945,11 +930,11 @@ public class Parser implements IParser{
 						reportError("msg.bad.id.strict", paramName);
 					}
 					if (paramNames.contains(paramName)) {
-						reporter.setFormattedMessage(
+						errorReporter.setFormattedMessage(
 								JavaScriptParserProblems.DUPLICATE_PARAMETER,
 								argument.getArgumentName());
-						reporter.setRange(argument.sourceStart(), argument.sourceEnd());
-						reporter.report();
+						errorReporter.setRange(argument.sourceStart(), argument.sourceEnd());
+						errorReporter.report();
 					}
 					paramNames.add(paramName);
 				}
@@ -1024,12 +1009,12 @@ public class Parser implements IParser{
 			//        	fnNode = new FunctionStatement(getParent(), false);
 			if (type == FunctionNode.FUNCTION_STATEMENT) {
 				++syntaxErrorCount;
-				reporter.setMessage(
+				errorReporter.setMessage(
 						JavaScriptParserProblems.SYNTAX_ERROR,
 						"Unexpected (");
-				reporter.setSeverity(ProblemSeverity.ERROR);
-				reporter.setRange(functionSourceStart, ts.getTokenEnd());
-				reporter.report();
+				errorReporter.setSeverity(ProblemSeverity.ERROR);
+				errorReporter.setRange(functionSourceStart, ts.getTokenEnd());
+				errorReporter.report();
 				fnNode.setIsDeclaration(false);
 			}
 
@@ -1210,11 +1195,11 @@ public class Parser implements IParser{
 				}
 				if (paramNames.contains(paramName)) {
 					//addError("msg.dup.param.strict", paramName);
-					reporter.setFormattedMessage(
+					errorReporter.setFormattedMessage(
 							JavaScriptParserProblems.DUPLICATE_PARAMETER,
 							arg.getArgumentName());
-					reporter.setRange(arg.sourceStart(), arg.sourceEnd());
-					reporter.report();
+					errorReporter.setRange(arg.sourceStart(), arg.sourceEnd());
+					errorReporter.report();
 				}
 				paramNames.add(paramName);
 			}
@@ -1623,10 +1608,10 @@ public class Parser implements IParser{
 							adjustEnd(comp, nextStmt);
 							if (hasDefault) {
 								//reportError("msg.double.switch.default");
-								reporter.setMessage(JavaScriptParserProblems.DOUBLE_SWITCH_DEFAULT);
-								reporter.setSeverity(ProblemSeverity.ERROR);
-								reporter.setRange(ts.getTokenBeg(), ts.getTokenEnd());
-								reporter.report();
+								errorReporter.setMessage(JavaScriptParserProblems.DOUBLE_SWITCH_DEFAULT);
+								errorReporter.setSeverity(ProblemSeverity.ERROR);
+								errorReporter.setRange(ts.getTokenBeg(), ts.getTokenEnd());
+								errorReporter.report();
 							}
 							hasDefault = true;
 							comp = new DefaultClause(pn);
@@ -2497,10 +2482,10 @@ public class Parser implements IParser{
 					l = ls.getLabel();					
 				}
 //				reportError("msg.dup.label", label.sourceStart(), label.sourceEnd() - label.sourceStart());
-				reporter.setMessage(JavaScriptParserProblems.DUPLICATE_LABEL);
-				reporter.setSeverity(ProblemSeverity.ERROR);
-				reporter.setRange(l.sourceStart(), l.sourceEnd());
-				reporter.report();
+				errorReporter.setMessage(JavaScriptParserProblems.DUPLICATE_LABEL);
+				errorReporter.setSeverity(ProblemSeverity.ERROR);
+				errorReporter.setRange(l.sourceStart(), l.sourceEnd());
+				errorReporter.report();
 			}
 		}
 		bundle.setLabel(label);
@@ -2762,35 +2747,35 @@ public class Parser implements IParser{
 		case Token.CONST:
 			SymbolKind k = getSymbolKind(declType);
 			final SymbolKind replaced = getScope().add(name.getName(), k, declaration);
-			if (replaced != null && reporter != null) {
+			if (replaced != null && errorReporter != null) {
 				final Identifier identifier = declaration.getIdentifier();
-				reporter.setRange(identifier.sourceStart(),
+				errorReporter.setRange(identifier.sourceStart(),
 						identifier.sourceEnd());
 				if (replaced == k) {
-					reporter.setFormattedMessage(k.duplicateProblem,
+					errorReporter.setFormattedMessage(k.duplicateProblem,
 							name.getName());
 				} else {
-					reporter.setFormattedMessage(k.hideProblem,
+					errorReporter.setFormattedMessage(k.hideProblem,
 							name.getName(),
 							replaced.verboseName());
 				}
-				reporter.report();
+				errorReporter.report();
 			}
 			return;
 		case Token.FUNCTION:
 			final SymbolKind replaced1 = getScope().add(name.getName(), getSymbolKind(declType), declaration);
-			if (replaced1 != null && reporter != null) {
+			if (replaced1 != null && errorReporter != null) {
 				if (replaced1 == SymbolKind.FUNCTION) {
-					reporter.setFormattedMessage(
+					errorReporter.setFormattedMessage(
 							JavaScriptParserProblems.DUPLICATE_FUNCTION,
 							name.getName());
 				} else {
-					reporter.setFormattedMessage(
+					errorReporter.setFormattedMessage(
 							JavaScriptParserProblems.FUNCTION_DUPLICATES_OTHER,
 							name.getName(), replaced1.verboseName());
 				}
-				reporter.setRange(name.sourceStart(), name.sourceEnd());
-				reporter.report();
+				errorReporter.setRange(name.sourceStart(), name.sourceEnd());
+				errorReporter.report();
 			}
 			return;
 
@@ -2799,11 +2784,11 @@ public class Parser implements IParser{
 			if (definingScope.canAdd(name.getName()) != null) {
 				// must be duplicate parameter. Second parameter hides the
 				// first, so go ahead and add the second parameter
-				reporter.setFormattedMessage(
+				errorReporter.setFormattedMessage(
 						JavaScriptParserProblems.DUPLICATE_PARAMETER,
 						name.getName());
-				reporter.setRange(name.sourceStart(), name.sourceEnd());
-				reporter.report();
+				errorReporter.setRange(name.sourceStart(), name.sourceEnd());
+				errorReporter.report();
 			}
 			getScope().add(name.getName(), getSymbolKind(declType), declaration);
 			return;
@@ -4680,11 +4665,11 @@ public class Parser implements IParser{
 			pos = Math.max(pos, lineBeginningFor(commaPos));
 			//addWarning("msg.extra.trailing.comma", pos, commaPos - pos);
 			
-			reporter.setMessage(JavaScriptParserProblems.TRAILING_COMMA_OBJECT_INITIALIZER, 
+			errorReporter.setMessage(JavaScriptParserProblems.TRAILING_COMMA_OBJECT_INITIALIZER, 
 					lookupMessage("msg.extra.trailing.comma", null));
-			reporter.setSeverity(ProblemSeverity.WARNING);
-			reporter.setRange(ts.getTokenBeg(), ts.getTokenEnd());
-			reporter.report();
+			errorReporter.setSeverity(ProblemSeverity.WARNING);
+			errorReporter.setRange(ts.getTokenBeg(), ts.getTokenEnd());
+			errorReporter.report();
 		}
 	}
 
@@ -5020,12 +5005,12 @@ public class Parser implements IParser{
 
 	// throw a failed-assertion with some helpful debugging info
 	private RuntimeException codeBug() throws RuntimeException {
-		reporter.setFormattedMessage(
+		errorReporter.setFormattedMessage(
 				JavaScriptParserProblems.INTERNAL_ERROR,
 				"Parse error at '" + ts.getSourceString().substring(ts.getTokenBeg(), ts.getTokenEnd())+"'");
-		reporter.setSeverity(ProblemSeverity.ERROR);
-		reporter.setRange(ts.getTokenBeg(), ts.getTokenEnd());
-		reporter.report();
+		errorReporter.setSeverity(ProblemSeverity.ERROR);
+		errorReporter.setRange(ts.getTokenBeg(), ts.getTokenEnd());
+		errorReporter.report();
 
 		return Kit.codeBug(
 				"ts.cursor="
@@ -5049,4 +5034,17 @@ public class Parser implements IParser{
 	public CompilerEnvirons getCompilerEnv() {
 		return compilerEnv;
 	}
+
+    public void reportErrorsIfExists(int baseLineno) {
+        if (this.syntaxErrorCount != 0) {
+            String msg = String.valueOf(this.syntaxErrorCount);
+            msg = lookupMessage("msg.got.syntax.errors", msg);
+            if (!compilerEnv.isIdeMode())
+                throw errorReporter.runtimeError(msg, sourceURI, baseLineno, null, 0);
+        }
+    }
+
+    public void setSourceURI(String sourceURI) {
+        this.sourceURI = sourceURI;
+    }
 }

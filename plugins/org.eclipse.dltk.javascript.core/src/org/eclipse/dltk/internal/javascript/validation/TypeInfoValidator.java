@@ -1790,8 +1790,9 @@ public class TypeInfoValidator implements IBuildParticipant,
 			if (node.isIncDec()) {
 				checkAssign(reference, null, node);
 			}
-			if ("~".equals(node.getOperationText())) {
-				return ConstantValue.of(RTypes.NUMBER);
+			if (node.isNotOperator() && "~".equals(node.getOperationText())) {
+				return isBigInt(reference) ? ConstantValue.of(RTypes.BIGINT)
+						: ConstantValue.of(RTypes.NUMBER);
 			}
 			return reference;
 		}

@@ -2087,7 +2087,10 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitUnaryOperation(UnaryOperation node) {
 		if (node.isNotOperator()) {
-			visit(node.getExpression());
+			final IValueReference res = visit(node.getExpression());
+			if (res != null && "~".equals(node.getOperationText())) {
+				return res;
+			}
 			return ConstantValue.of(RTypes.BOOLEAN);
 		} else if (node.isDelete()) {
 			final IValueReference value = visit(node.getExpression());

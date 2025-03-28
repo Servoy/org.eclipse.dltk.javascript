@@ -2306,7 +2306,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 
 		}
-		final ThisValue thisValue = new ThisValue();
+		ThisValue thisValue = new ThisValue();
 		if (method.getThisType() != null) {
 			thisValue.setDeclaredType(
 					this.context.contextualize(method.getThisType()));
@@ -2341,20 +2341,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 
 		} else {
-			// if this is a "this.property" assignment then take over the this
-			// of the parent.
-			if (node.getParent() instanceof BinaryOperation) {
-				BinaryOperation bo = (BinaryOperation) node.getParent();
-				if (bo.getLeftExpression() instanceof PropertyExpression
-						&& ((PropertyExpression) bo.getLeftExpression())
-								.getObject() instanceof ThisExpression) {
-					IValueCollection context = peekContext();
-					if (context instanceof IFunctionValueCollection) {
-						String name = ((IFunctionValueCollection) context)
-								.getFunctionName();
-						thisValue.setDeclaredType(RTypes.localType(name,
-								context.getParent().getChild(name)));
-					}
+			// arrow functions always inherited this from the parent
+			IValueCollection context = peekContext();
+			if (context instanceof IFunctionValueCollection fvc) {
+				IValueReference parentThis = fvc.getThis();
+				if (parentThis instanceof ThisValue v) {
+					thisValue = v;
 				}
 			}
 		}

@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.text
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
-Import-Package: com.ibm.icu.text
+Import-Package: com.ibm.icu.text,
+ org.mozilla.javascript
 Export-Package: org.eclipse.dltk.internal.javascript.corext.refactoring,
  org.eclipse.dltk.internal.javascript.corext.refactoring.code,
  org.eclipse.dltk.internal.javascript.corext.refactoring.structure,

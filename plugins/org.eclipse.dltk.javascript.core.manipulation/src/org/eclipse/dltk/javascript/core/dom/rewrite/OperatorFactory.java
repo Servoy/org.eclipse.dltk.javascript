@@ -9,12 +9,12 @@ import org.eclipse.dltk.javascript.parser.JavascriptParserPreferences;
 public class OperatorFactory {
 
 	public static BinaryOperator getBinaryOperator(BinaryOperation node) {
-		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
-		return antlr4Parser ? new OperatorFactoryV4().createBinaryOperator(node) : new OperatorFactoryV3().createBinaryOperator(node);
+		boolean es6Parser = new JavascriptParserPreferences().useES6Parser();
+		return es6Parser ? new OperatorFactoryRhino().createBinaryOperator(node) : new OperatorFactoryV3().createBinaryOperator(node);
 	}
 
 	public static UnaryOperator getUnaryOperator(UnaryOperation node) {
-		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
-		return antlr4Parser ? new OperatorFactoryV4().createUnaryOperator(node) : new OperatorFactoryV3().createUnaryOperator(node);
+		boolean es6Parser = new JavascriptParserPreferences().useES6Parser();
+		return es6Parser ? new OperatorFactoryRhino().createUnaryOperator(node) : new OperatorFactoryV3().createUnaryOperator(node);
 	}
 }

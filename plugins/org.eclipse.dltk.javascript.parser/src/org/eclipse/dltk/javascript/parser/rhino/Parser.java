@@ -1051,7 +1051,14 @@ public class Parser implements IParser{
 		//        PerFunctionVariables savedVars = new PerFunctionVariables(fnNode);
 		try {
 			parseFunctionParams(fnNode);
-			fnNode.setBody((StatementBlock) parseFunctionBody(type, fnNode));
+			Statement functionBody = parseFunctionBody(type, fnNode);
+			if (functionBody instanceof StatementBlock) {
+				fnNode.setBody((StatementBlock) functionBody);
+			}
+			else {
+				reportError("msg.syntax", functionBody != null ? functionBody.sourceStart() : ts.getTokenBeg(), 
+						functionBody != null ? functionBody.sourceEnd() : ts.getTokenEnd() - ts.getTokenBeg());
+			}
 			fnNode.setStart(functionSourceStart);
 			fnNode.setEnd(ts.getTokenEnd());
 
@@ -1761,6 +1768,10 @@ public class Parser implements IParser{
 				((Documentable) body).setDocumentation(commentNode);
 			}
 		}
+		if (body instanceof Statement == false) {
+			reportError("msg.syntax", body != null ? body.sourceStart() : ts.getTokenBeg(), 
+					body != null ? body.sourceEnd() : ts.getTokenEnd() - ts.getTokenBeg());
+		}
 		return (Statement) body;
 	}
 
@@ -1968,7 +1979,11 @@ public class Parser implements IParser{
 		if (lctt != Token.LC) {
 			reportError("msg.no.brace.try");
 		}
-		StatementBlock tryBlock = (StatementBlock) getNextStatementAfterInlineComments(pn);
+		Statement stmt = getNextStatementAfterInlineComments(pn);
+		if (stmt instanceof StatementBlock == false ) {
+            reportError("msg.syntax", stmt != null ? stmt.sourceStart() : ts.getTokenBeg(), stmt != null ? stmt.sourceEnd() : ts.getTokenEnd() - ts.getTokenBeg());
+        }
+		StatementBlock tryBlock = (StatementBlock) stmt;
 		int tryEnd = tryBlock.end();
 
 		List<CatchClause> clauses = new ArrayList<>();
@@ -2837,7 +2852,12 @@ public class Parser implements IParser{
 		if (tt == Token.YIELD) {
 			//YieldOperator extends Expression, but 
 			//returnOrYield returns VoidExpression when is not in expression context as below
-			return (Expression)returnOrYield(tt, true);
+			JSNode returnOrYield = returnOrYield(tt, true);
+			if (returnOrYield instanceof Expression == false) {
+				reportError("msg.syntax", returnOrYield != null ? returnOrYield.sourceStart() : ts.getTokenBeg(),
+						returnOrYield != null ? returnOrYield.sourceEnd() : ts.getTokenEnd() - ts.getTokenBeg());
+			}
+			return (Expression)returnOrYield;
 		}
 		Expression pn = condExpr();
 		boolean hasEOL = false;

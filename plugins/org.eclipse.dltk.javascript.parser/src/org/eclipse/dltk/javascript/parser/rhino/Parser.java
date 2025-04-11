@@ -1754,7 +1754,7 @@ public class Parser implements IParser{
 
 	private Statement getNextStatementAfterInlineComments(JSNode pn) throws IOException {
 		ASTNode body = statement();
-		if (body instanceof Comment) {
+		while (body instanceof Comment) {
 			Comment commentNode = (Comment)body;
 			body = statement();
 			if (body instanceof Documentable) {

@@ -2968,4 +2968,17 @@ public class TestRhinoParser {
 	    assertTrue(op.isAssignment());
 	    assertEquals("isLoggedIn &&= false", op2.toString());
 	  }
+	
+	@Test
+	public void testIf_MultipleComments() {
+		String source = "if (!($noDialog)) //display error\r\n"
+				+ "   //TODO: DELETE AFTER USE!!!\r\n"
+				+ "   application.output('error');";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
 }

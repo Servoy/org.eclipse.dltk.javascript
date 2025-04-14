@@ -712,6 +712,7 @@ public class Parser implements IParser{
 							for (NodeTransformer transformer : transformers) {
 								final ASTNode transformed = transformer.transform(n, parent);
 								if (transformed != null && transformed != n) {
+									checkIfStatement(n);
 									script.addStatement((Statement) n);
 									end = n.end();
 									continue;
@@ -730,6 +731,7 @@ public class Parser implements IParser{
 				} 
 				else {
 					n = statement();
+					checkIfStatement(n);
 					script.addStatement((Statement) n);
 					end = n.end();
 				}
@@ -815,8 +817,8 @@ public class Parser implements IParser{
 							n = statement();
 							break;
 						}
-						if (n instanceof Statement) {
-							block.getStatements().add((Statement) n);
+						if (n instanceof Statement st) {
+							block.getStatements().add(st);
 							end = n.end();
 						}
 						else if (n instanceof Comment == false) {
@@ -1250,9 +1252,9 @@ public class Parser implements IParser{
 			if (statement instanceof Expression) {
 				statement = toVoidExpression((Expression) statement);
 			}
-			if (statement instanceof Statement) {
-				block.getStatements().add((Statement) statement);
-				((Statement) statement).setParent(block);
+			if (statement instanceof Statement st) {
+				block.getStatements().add(st);
+				st.setParent(block);
 			}
 			//TODO comment
 		}
@@ -1536,7 +1538,9 @@ public class Parser implements IParser{
 				//pn.setElseKeyWordInlineComment(scannedComments.get(scannedComments.size() - 1));
 				consumeToken();
 			}
-			ifFalse = (Statement) statement();
+			ASTNode node = statement();
+			checkIfStatement(node);
+			ifFalse = (Statement) node;
 		}
 		Statement endNode = ifFalse != null ? ifFalse : ifTrue;
 		pn.setStart(pos);
@@ -1551,6 +1555,13 @@ public class Parser implements IParser{
 		}
 		parents.pop();
 		return pn;
+	}
+
+	private void checkIfStatement(ASTNode node) {
+		if (node instanceof Statement == false) {
+			reportError("msg.syntax", node != null ? node.sourceStart() : ts.getTokenBeg(), 
+					node != null ? node.sourceEnd() : ts.getTokenEnd() - ts.getTokenBeg());
+		}
 	}
 
 	private int getSourceEnd(Statement endNode) throws IOException {
@@ -1675,6 +1686,7 @@ public class Parser implements IParser{
 							continue;
 						}
 						nextStmt = statement();
+						checkIfStatement(nextStmt);
 						comp.getStatements().add((Statement) nextStmt);
 						comp.setEnd(nextStmt.end() > 0 ? nextStmt.end() : ts.getTokenEnd());
 					}
@@ -1768,10 +1780,7 @@ public class Parser implements IParser{
 				((Documentable) body).setDocumentation(commentNode);
 			}
 		}
-		if (body instanceof Statement == false) {
-			reportError("msg.syntax", body != null ? body.sourceStart() : ts.getTokenBeg(), 
-					body != null ? body.sourceEnd() : ts.getTokenEnd() - ts.getTokenBeg());
-		}
+		checkIfStatement(body);
 		return (Statement) body;
 	}
 
@@ -2059,7 +2068,9 @@ public class Parser implements IParser{
 
 				try {
 					if (catchBlock == null) {
-						catchBlock = (Statement) statement();
+						ASTNode node = statement();
+						checkIfStatement(node);
+						catchBlock = (Statement) node;
 					}
 				} finally {
 					parents.pop();
@@ -2089,7 +2100,9 @@ public class Parser implements IParser{
 			finallyclause.setFinallyKeyword(createKeyword(Token.FINALLY, ts.getTokenBeg()));
 			finallyclause.setStart(ts.getTokenBeg());
 			parents.push(finallyclause);
-			Statement finallyBlock = (Statement)statement();
+			ASTNode node = statement();
+			checkIfStatement(node);
+			Statement finallyBlock = (Statement)node;
 			finallyclause.setStatement(finallyBlock);
 			finallyclause.setEnd(finallyBlock.end());
 			tryEnd = finallyBlock.end();
@@ -2563,8 +2576,8 @@ public class Parser implements IParser{
 
 		// If stmt has parent assigned its position already is relative
 		// (See bug #710225)
-		if (stmt instanceof Statement) {
-			bundle.setStatement((Statement) stmt);
+		if (stmt instanceof Statement st) {
+			bundle.setStatement(st);
 			((JSNode) stmt).setParent(bundle);
 			end = stmt.end();
 		}

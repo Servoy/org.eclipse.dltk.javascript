@@ -707,20 +707,24 @@ public class Parser implements IParser{
 										calledByCompileFunction
 										? FunctionNode.FUNCTION_EXPRESSION
 												: FunctionNode.FUNCTION_STATEMENT);
+						boolean wasTransformed = false;
 						if (transformers.length != 0) {
 							final JSNode parent = getParent();
 							for (NodeTransformer transformer : transformers) {
 								final ASTNode transformed = transformer.transform(n, parent);
 								if (transformed != null && transformed != n) {
-									checkIfStatement(n);
-									script.addStatement((Statement) n);
-									end = n.end();
+									checkIfStatement(transformed);
+									script.addStatement((Statement) transformed);
+									end = transformed.end();
+									wasTransformed = true;
 									continue;
 								}
 							}
 						}
-						script.addStatement(toVoidExpression((JSNode) n));
-						end = n.end();
+						if (!wasTransformed) {
+							script.addStatement(toVoidExpression((JSNode) n));
+							end = n.end();
+						}
 					} catch (ParserException e) {
 						break;
 					}

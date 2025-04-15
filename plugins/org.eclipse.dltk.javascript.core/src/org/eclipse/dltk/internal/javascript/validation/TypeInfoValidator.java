@@ -1937,8 +1937,9 @@ public class TypeInfoValidator implements IBuildParticipant,
 
 		private void checkAssign(IValueReference reference,
 				IValueReference right, ASTNode node) {
-			final Object value = reference
-					.getAttribute(IAssignProtection.ATTRIBUTE);
+			final Object value = reference != null
+					? reference.getAttribute(IAssignProtection.ATTRIBUTE)
+					: null;
 			if (value != null) {
 				final IAssignProtection assign;
 				if (value instanceof IAssignProtection2) {
@@ -1961,7 +1962,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 				reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
 						ValidationMessages.MixBigInt, node.sourceStart(),
 						node.sourceEnd());
-			} else if (reference.getKind() == ReferenceKind.FUNCTION) {
+			} else if (reference != null
+					&& reference.getKind() == ReferenceKind.FUNCTION) {
 				// test if it is not a function override of a super local type class.
 				Set<String> directChildren = null;
 				if (reference.getParent() != null)

@@ -265,6 +265,9 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 			if (argument.getEllipsisPosition() > 0) {
 				parameter.setKind(ParameterKind.VARARGS);
 			}
+			if (argument.getDefaultParamValue() != null) {
+				parameter.setKind(ParameterKind.OPTIONAL);
+			}
 			getParameters().add(parameter);
 		}
 		final Comment documentation = JSDocSupport.getComment(node);
@@ -315,6 +318,9 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 					argument.sourceStart(), argument.sourceEnd()));
 			if (argument.getEllipsisPosition() > 0) {
 				parameter.setKind(ParameterKind.VARARGS);
+			}
+			if (argument.getDefaultParamValue() != null) {
+				parameter.setKind(ParameterKind.OPTIONAL);
 			}
 			getParameters().add(parameter);
 		}

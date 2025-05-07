@@ -1207,6 +1207,13 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				listener.methodParsed(method);
 			}
 		}
+		for (Argument argument : node.getArguments()) {
+			IParameter parameter = method
+					.getParameter(argument.getIdentifier().getName());
+			if (parameter.getType() == null) {
+				setParameterTypeFromDefaultValue(argument, parameter);
+			}
+		}
 		return method;
 	}
 
@@ -1224,8 +1231,27 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							getProblemReporter()));
 				}
 			}
+			if (argument.getDefaultParamValue() != null) {
+				IParameter parameter = method
+						.getParameter(argument.getIdentifier().getName());
+				if (parameter.getType() == null)
+					setParameterTypeFromDefaultValue(argument, parameter);
+			}
 		}
 		return method;
+	}
+
+	private void setParameterTypeFromDefaultValue(Argument argument,
+			IParameter parameter) {
+		if (argument.getDefaultParamValue() != null) {
+			IValueReference defaultValue = visit(
+					argument.getDefaultParamValue());
+			if (defaultValue != null) {
+				parameter.setType(getDocSupport().translateTypeName(
+						JavaScriptValidations.typeOf(defaultValue).getName(),
+						null, null));
+			}
+		}
 	}
 
 	public void visitFunctionBody(FunctionStatement node) {

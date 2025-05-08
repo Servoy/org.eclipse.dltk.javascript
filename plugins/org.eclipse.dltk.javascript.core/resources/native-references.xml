@@ -415,6 +415,35 @@
             <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
         </type>
     </members>
+    <members xsi:type="ref:Method" name="values" directType="Iterator" description="The values() method of Array instances returns a new array iterator object that iterates the value of each item in the array." static="false">
+    </members>
+    <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method of Array instances returns a new array iterator object that contains the keys for each index in the array." static="false">
+    </members>
+     <members xsi:type="ref:Method" name="entries" directType="Iterator" description="The entries() method of Array instances returns a new array iterator object that contains the key/value pairs for each index in the array." static="false">
+    </members>
+    <members xsi:type="ref:Method" name="flat" description="Creates a new array with all sub-array elements concatenated into it recursively up to the specified depth.">
+     <parameters name="depth" kind="OPTIONAL" directType="Number"/>
+     <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
+    </members>
+    <members xsi:type="ref:Method" name="at" directType="Object" description="Takes an integer value and returns the item at that index, allowing for positive and negative integers. Negative integers count back from the last item in the array.">
+     <parameters name="index" directType="Number"/>
+    </members>
+    <members xsi:type="ref:Method" name="reduceRight" description="Applies a function against an accumulator and each value of the array (from right-to-left) to reduce it to a single value..">
+      <parameters name="function(total, currentValue, index, arr)" directType="Function"/>
+      <parameters name="initialValue" kind="OPTIONAL" directType="Object"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
+    </members>
+    <members xsi:type="ref:Method" name="flatMap" description="returns a new array formed by applying a given callback function to each element of the array, and then flattening the result by one level.">
+      <parameters name="callback" directType="Function"/>
+       <parameters name="thisArg" kind="OPTIONAL"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
+    </members>
   </ref:GenericType>
   <ref:Type name="Boolean" kind="PREDEFINED" superType="Object">
     <staticConstructor name="Boolean" directType="Boolean">

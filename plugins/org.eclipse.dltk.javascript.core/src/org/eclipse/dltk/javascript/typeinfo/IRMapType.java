@@ -17,4 +17,5 @@ public interface IRMapType extends IRType, ImmutableType<IRMapType> {
 
 	IRType getValueType();
 
+	IRTypeDeclaration getDeclaration();
 }

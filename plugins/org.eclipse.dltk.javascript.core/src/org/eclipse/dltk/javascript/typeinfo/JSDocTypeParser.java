@@ -299,6 +299,23 @@ public class JSDocTypeParser {
 						JavaScriptProblems.PARAMETERIZED_TYPE_INCORRECT_ARGUMENTS);
 			}
 			return createArray(typeParams.get(0));
+		} else if (ITypeNames.MAP.equals(baseType)) {
+			if (typeParams.size() != 2) {
+				throw new JSDocParseException(NLS.bind(
+						ValidationMessages.IncorrectNumberOfTypeArguments,
+						ITypeNames.MAP),
+						JavaScriptProblems.PARAMETERIZED_TYPE_INCORRECT_ARGUMENTS);
+			}
+			return TypeUtil.mapOf(typeParams.get(0), typeParams.get(1));
+		} else if (ITypeNames.SET.equals(baseType)) {
+			if (typeParams.size() != 1) {
+				throw new JSDocParseException(NLS.bind(
+						ValidationMessages.IncorrectNumberOfTypeArguments,
+						ITypeNames.SET),
+						JavaScriptProblems.PARAMETERIZED_TYPE_INCORRECT_ARGUMENTS);
+			}
+			// where is the set type? just use map for now
+			return TypeUtil.mapOf(null, typeParams.get(0));
 		} else if (CLASS.equals(baseType)) {
 			if (typeParams.size() != 1) {
 				throw new JSDocParseException(

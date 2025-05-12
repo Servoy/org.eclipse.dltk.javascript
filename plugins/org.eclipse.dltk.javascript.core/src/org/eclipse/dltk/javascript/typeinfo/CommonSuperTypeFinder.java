@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.dltk.annotations.Nullable;
+import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
+import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelLoader;
 
 /**
  * Finds the least common supertype among the specified type expressions or
@@ -157,7 +159,8 @@ public class CommonSuperTypeFinder {
 					itemTypes.add(type.getValueType());
 				}
 				return RTypes.mapOf(RTypes.STRING,
-						evaluate(typeSystem, itemTypes));
+						evaluate(typeSystem, itemTypes),
+						typeSystem.convert(Types.MAP));
 			} else if (!localTypes.isEmpty()) {
 				if (localTypes.size() == 1) {
 					return getSingleItem(localTypes);

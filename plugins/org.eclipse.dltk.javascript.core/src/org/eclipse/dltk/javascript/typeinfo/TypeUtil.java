@@ -94,7 +94,8 @@ public class TypeUtil {
 
 	public static MapType mapOf(JSType keyType, JSType valueType) {
 		final MapType mapType = eINSTANCE.createMapType();
-		mapType.setKeyType(keyType != null ? keyType : ref(Types.STRING));
+		if (keyType != null)
+			mapType.setKeyType(keyType);
 		mapType.setValueType(valueType != null ? valueType : ref(Types.OBJECT));
 		return mapType;
 	}

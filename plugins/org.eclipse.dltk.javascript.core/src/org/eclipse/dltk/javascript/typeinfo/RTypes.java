@@ -208,8 +208,9 @@ public class RTypes {
 		}
 	}
 
-	public static IRMapType mapOf(final IRType keyType, final IRType valueType) {
-		return new RMapType(keyType, valueType);
+	public static IRMapType mapOf(final IRType keyType, final IRType valueType,
+			IRTypeDeclaration declaration) {
+		return new RMapType(keyType, valueType, declaration);
 	}
 
 	/**

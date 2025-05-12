@@ -17,10 +17,13 @@ class RMapType extends RType implements IRMapType {
 
 	private final IRType valueType;
 	private final IRType keyType;
+	private final IRTypeDeclaration declaration;
 
-	public RMapType(IRType keyType, IRType valueType) {
+	public RMapType(IRType keyType, IRType valueType,
+			IRTypeDeclaration declaration) {
 		this.keyType = keyType;
 		this.valueType = valueType;
+		this.declaration = declaration;
 	}
 
 	public String getName() {
@@ -99,9 +102,13 @@ class RMapType extends RType implements IRMapType {
 			}
 			
 			if (copyKey != keyType || copyValue != valueType)
-				return new RMapType(copyKey, copyValue);
+				return new RMapType(copyKey, copyValue, declaration);
 		}
 		return this;
 	}
 
+	@Override
+	public IRTypeDeclaration getDeclaration() {
+		return declaration;
+	}
 }

@@ -42,6 +42,10 @@ public class Types {
 
 	public static final Type BIGINT = initType(ITypeNames.BIGINT);
 
+	public static final Type MAP = initType(ITypeNames.MAP);
+
+	public static final Type SET = initType(ITypeNames.SET);
+
 	protected static Type initType(String name) {
 		Type type = TypeInfoModelLoader.getInstance().getType(name);
 		if (type == null) {

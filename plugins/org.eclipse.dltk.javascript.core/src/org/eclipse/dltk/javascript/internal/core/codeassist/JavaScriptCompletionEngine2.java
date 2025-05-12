@@ -56,6 +56,7 @@ import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinfo.IRClassType;
 import org.eclipse.dltk.javascript.typeinfo.IRElement;
 import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
+import org.eclipse.dltk.javascript.typeinfo.IRMapType;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRParameter;
@@ -488,6 +489,11 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 													.getSource());
 								}
 							});
+				} else if (type instanceof IRMapType) {
+					final IRTypeDeclaration t = ((IRMapType) type)
+							.getDeclaration();
+					typeQuery.add(t, t.getSource().memberPredicateFor(type,
+							MemberPredicates.NON_STATIC));
 				} else if (type.isJavaScriptObject()) {
 					typeQuery.add(RTypes.OBJECT.getDeclaration(),
 							MemberPredicates.NON_STATIC);

@@ -2981,4 +2981,48 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
+	
+	@Test
+	public void testMethodShorthand() {
+		String source ="obj = {foo() {return 'bar'; } }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ObjectInitializer initv4 = (ObjectInitializer) assignmentv4.getRightExpression();
+		assertEquals(1, initv4.getInitializers().size());
+		assertTrue(initv4.getInitializers().get(0) instanceof MethodShorthand);
+		MethodShorthand property1 = (MethodShorthand) initv4.getInitializers().get(0);
+		assertEquals("foo", property1.getName().toString());
+		assertEquals(7, property1.getName().sourceStart());
+		assertEquals(10, property1.getName().sourceEnd());
+		assertNotNull(property1.getBody());
+		assertEquals(13, property1.getBody().sourceStart());
+		assertEquals(29, property1.getBody().sourceEnd());
+	}
+
+	@Test
+	public void testMethodShorthand2() {
+		String source ="obj = {\n"
+				+ "			  sayHi(name1, name2) {\n"
+				+ "			    return `Hi, ${name1} and ${name2}`;\n"
+				+ "			  }\n"
+				+ "			}";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ObjectInitializer initv4 = (ObjectInitializer) assignmentv4.getRightExpression();
+		assertEquals(1, initv4.getInitializers().size());
+		assertTrue(initv4.getInitializers().get(0) instanceof MethodShorthand);
+		MethodShorthand property1 = (MethodShorthand) initv4.getInitializers().get(0);
+		assertEquals("sayHi", property1.getName().toString());
+		assertNotNull(property1.getBody());
+		assertNotNull(property1.getArguments());
+		assertEquals(2, property1.getArguments().size());
+	}
 }

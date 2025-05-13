@@ -33,6 +33,7 @@ import org.eclipse.dltk.javascript.ast.GetMethod;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.JSDeclaration;
 import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.ObjectInitializer;
 import org.eclipse.dltk.javascript.ast.ObjectInitializerPart;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
@@ -227,6 +228,8 @@ public class StructureReporter3 extends
 			} else if (part instanceof SetMethod) {
 				visitMethod((SetMethod) part);
 				// TODO (alex) handle SetMethod
+			} else if (part instanceof MethodShorthand ms) {
+				visitMethod(ms);
 			} else if (part instanceof PropertyInitializer) {
 				final PropertyInitializer pi = (PropertyInitializer) part;
 				final String name;

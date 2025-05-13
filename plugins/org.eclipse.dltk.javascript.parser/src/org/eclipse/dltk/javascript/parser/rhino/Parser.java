@@ -67,6 +67,7 @@ import org.eclipse.dltk.javascript.ast.Label;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
 import org.eclipse.dltk.javascript.ast.Method;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.MultiLineComment;
 import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.NullExpression;
@@ -4406,9 +4407,13 @@ public class Parser implements IParser{
 			((SetMethod)pn).setSetKeyword(setKeyword);
 			break;
 		case METHOD_ENTRY:
-			//TODO check not supported in dltk
-			//                pn.setIsNormalMethod();
-			//                fn.setFunctionIsNormalMethod();
+			MethodShorthand ms = new MethodShorthand(getParent());
+			if (fn.getArguments() != null)
+			{
+				ms.setArguments(fn.getArguments());
+				fn.getArguments().stream().forEach(arg -> arg.setParent(ms));
+			}
+			pn = ms;
 			break;
 		}
 		if (pn != null) {

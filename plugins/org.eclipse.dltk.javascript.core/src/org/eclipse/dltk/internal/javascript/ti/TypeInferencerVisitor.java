@@ -66,6 +66,7 @@ import org.eclipse.dltk.javascript.ast.JSDeclaration;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.JSScope;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.NullExpression;
 import org.eclipse.dltk.javascript.ast.ObjectInitializer;
@@ -1217,6 +1218,36 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return method;
 	}
 
+	protected JSMethod createMethod(MethodShorthand node) {
+		final JSMethod method = new JSMethod(node, getSource());
+		for (IModelBuilder extension : context.getModelBuilders()) {
+			// TODO fix, MethodShorthand cannot extend FunctionStatement
+			// extension.processMethod(node, method, reporter,
+			// getTypeChecker());
+		}
+		if (method.getParameterCount() > 0) {
+			final IParameter last = method.getParameters()
+					.get(method.getParameterCount() - 1);
+			if (last.getType() == null && last.getKind() == ParameterKind.NORMAL
+					&& ITypeNames.UNDEFINED.equals(last.getName())) {
+				last.setKind(ParameterKind.OPTIONAL);
+			}
+		}
+		if (listeners != null) {
+			for (ITypeInferenceListener listener : listeners) {
+				listener.methodParsed(method);
+			}
+		}
+		for (Argument argument : node.getArguments()) {
+			IParameter parameter = method
+					.getParameter(argument.getIdentifier().getName());
+			if (parameter.getType() == null) {
+				setParameterTypeFromDefaultValue(argument, parameter);
+			}
+		}
+		return method;
+	}
+
 	private JSMethod createMethod(ArrowFunctionStatement node) {
 		final JSMethod method = new JSMethod(node, getSource());
 		for (Argument argument : node.getArguments()) {
@@ -1654,6 +1685,43 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						: RTypes.any(), source));
 			} else if (part instanceof PropertyShorthand) {
 				visit(((PropertyShorthand) part).getExpression());
+			} else if (part instanceof MethodShorthand ms) {
+				
+				final String childName = PropertyExpressionUtils.nameOf(ms
+						.getName());
+				if (childName == null) { // just in case
+					continue;
+				}
+				final JSDocTags tags = parseTags(ms.getName()
+						.getDocumentation());
+
+				final JSMethod source;
+				if (ms.getBody() != null) {
+					source = createMethod(ms);
+					source.setName(childName);
+					source.setLocation(ReferenceLocation.create(getSource(),
+							ms.getName().sourceStart(),
+							ms.getBody().sourceEnd()));
+					if (!tags.isEmpty()) {
+						final JSDocSupport jsdocSupport = getDocSupport();
+						if (jsdocSupport != null) {
+							jsdocSupport.parseType(source, tags,
+									JSDocSupport.TYPE_TAGS, reporter,
+									getTypeChecker());
+							jsdocSupport.parseDeprecation(source, tags,
+									reporter);
+							jsdocSupport.parseAccessModifiers(source, tags,
+									reporter);
+						}
+					}
+				} else {
+					source = null;
+				}
+
+				final IRType type = null; // TODO check type
+				members.add(new RRecordMember(childName,
+						type != null ? type : RTypes.any(), source));
+				
 			} else {
 				// TODO handle get/set methods
 			}

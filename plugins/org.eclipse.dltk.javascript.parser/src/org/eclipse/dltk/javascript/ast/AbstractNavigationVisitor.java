@@ -222,11 +222,18 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 	@Override
 	public E visitObjectInitializer(ObjectInitializer node) {
 		for (ObjectInitializerPart part : node.getInitializers()) {
-			if (part instanceof GetMethod) {
-				visitMethod((GetMethod) part);
-			} else if (part instanceof SetMethod) {
-				visitMethod((SetMethod) part);
-			} else if (part instanceof PropertyInitializer) {
+			if (part instanceof GetMethod || part instanceof SetMethod) {
+				visitMethod((Method) part);
+			} if (part instanceof MethodShorthand ms) {
+				visit(ms.getName());
+				if (ms.getArguments() != null) {
+					for (Argument arg : ms.getArguments()) {
+						visit(arg);
+					}
+				}
+				visit(ms.getBody());
+			} 
+			else if (part instanceof PropertyInitializer) {
 				final PropertyInitializer pi = (PropertyInitializer) part;
 				visit(pi.getName());
 				visit(pi.getValue());

@@ -26,6 +26,7 @@ import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.Keyword;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
@@ -228,6 +229,38 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 	public JSMethod(ArrowFunctionStatement node, ReferenceSource source) {
 		super(node.getArguments().size());
 		initialize(node, source);
+	}
+
+	public JSMethod(MethodShorthand node, ReferenceSource source) {
+		super(node.getArguments().size());
+		initialize(node, source);
+	}
+
+	private void initialize(MethodShorthand node, ReferenceSource source) {
+		setLocation(ReferenceLocation.create(source, node.sourceStart(),
+				node.sourceEnd()));
+		if (node.getName() != null) {
+			setName(node.getName().getName());
+		} else {
+			setName("<anonymous>");
+		}
+		for (Argument argument : node.getArguments()) {
+			final IParameter parameter = createParameter();
+			parameter.setName(argument.getIdentifier().getName());
+			parameter.setLocation(ReferenceLocation.create(source,
+					argument.sourceStart(), argument.sourceEnd()));
+			if (argument.getEllipsisPosition() > 0) {
+				parameter.setKind(ParameterKind.VARARGS);
+			}
+			if (argument.getDefaultParamValue() != null) {
+				parameter.setKind(ParameterKind.OPTIONAL);
+			}
+			getParameters().add(parameter);
+		}
+		final Comment documentation = JSDocSupport.getComment(node);
+		if (documentation != null) {
+			setDocRange(documentation.getRange());
+		}
 	}
 
 	private void initialize(ArrowFunctionStatement node,

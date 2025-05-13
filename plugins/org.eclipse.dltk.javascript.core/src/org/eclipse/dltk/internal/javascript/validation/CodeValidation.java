@@ -32,6 +32,7 @@ import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Label;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.LoopStatement;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.ObjectInitializer;
 import org.eclipse.dltk.javascript.ast.ObjectInitializerPart;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
@@ -207,8 +208,7 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 	public Object visitObjectInitializer(ObjectInitializer node) {
 		final Set<String> processed = new HashSet<String>();
 		for (ObjectInitializerPart part : node.getInitializers()) {
-			if (part instanceof PropertyInitializer) {
-				final PropertyInitializer property = (PropertyInitializer) part;
+			if (part instanceof PropertyInitializer property) {
 				final String propertyName = property.getNameAsString();
 				if (propertyName != null && !processed.add(propertyName)) {
 					reporter.reportProblem(
@@ -220,8 +220,7 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 									.sourceEnd());
 				}
 			}
-			if (part instanceof PropertyShorthand) {
-				final PropertyShorthand property = (PropertyShorthand) part;
+			if (part instanceof PropertyShorthand property) {
 				final String propertyName = property.getNameAsString();
 				if (propertyName != null && !processed.add(propertyName)) {
 					reporter.reportProblem(
@@ -230,6 +229,17 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 									propertyName),
 							property.getExpression().sourceStart(),
 							property.getExpression().sourceEnd());
+				}
+			}
+			if (part instanceof MethodShorthand method) {
+				final String propertyName = method.getName().getName();
+				if (propertyName != null && !processed.add(propertyName)) {
+					reporter.reportProblem(
+							JavaScriptProblems.DUPLICATE_PROPERTY_IN_LITERAL,
+							NLS.bind("Duplicate method {0} in object literal",
+									propertyName),
+							method.getName().sourceStart(),
+							method.getName().sourceEnd());
 				}
 			}
 		}

@@ -556,7 +556,9 @@ public class ASTConverter extends ASTVisitor<Node> {
 		for (CatchClause cc : node.getCatches()) {
 			org.eclipse.dltk.javascript.core.dom.CatchClause ccr = DOM_FACTORY
 					.createCatchClause();
-			ccr.setException(createIdentifier(cc.getException()));
+			if (cc.getException() != null) {
+				ccr.setException(createIdentifier(cc.getException()));
+			}
 			ccr.setFilter((Expression) visit(cc.getFilterExpression()));
 			ccr.setBody((BlockStatement) visit(cc.getStatement()));
 			ccr.setBegin(cc.sourceStart());

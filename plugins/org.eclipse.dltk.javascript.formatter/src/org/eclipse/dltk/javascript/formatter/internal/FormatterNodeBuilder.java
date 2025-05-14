@@ -1458,16 +1458,19 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 				push(formatterNode);
 
 				List<ASTNode> exceptionNodes = new ArrayList<ASTNode>();
-				exceptionNodes.add(catchClause.getException());
-				if (catchClause.getIfKeyword() != null) {
-					exceptionNodes.add(catchClause.getIfKeyword());
-				}
-				if (catchClause.getFilterExpression() != null) {
-					exceptionNodes.add(catchClause.getFilterExpression());
-				}
+				if (catchClause.getException() != null) {
+					exceptionNodes.add(catchClause.getException());
+					if (catchClause.getIfKeyword() != null) {
+						exceptionNodes.add(catchClause.getIfKeyword());
+					}
+					if (catchClause.getFilterExpression() != null) {
+						exceptionNodes.add(catchClause.getFilterExpression());
+					}
 
-				processParens(catchClause.getLP(), catchClause.getRP(),
-						exceptionNodes, new CatchParensConfiguration(document));
+					processParens(catchClause.getLP(), catchClause.getRP(),
+							exceptionNodes,
+							new CatchParensConfiguration(document));
+				}
 
 				processBraces(catchClause.getStatement(),
 						new CatchBracesConfiguration(document));

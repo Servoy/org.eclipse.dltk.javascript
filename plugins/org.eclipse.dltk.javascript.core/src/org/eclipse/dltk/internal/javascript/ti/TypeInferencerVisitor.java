@@ -2155,13 +2155,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			final NestedValueCollection collection = new NestedValueCollection(
 					peekContext());
 			final Identifier id = catchClause.getException();
-			final IValueReference var = collection.createChild(id.getName());
-			final JSDocTags tags = parseTags(id.getDocumentation());
-			final JSElement variable = new JSElement(id.getName());
-			getDocSupport().parseType(variable, tags, JSDocSupport.TYPE_TAGS,
-					reporter, getTypeChecker());
-			var.setDeclaredType(variable.getType() != null ? context
-					.contextualize(variable.getType()) : RTypes.ERROR);
+			if (id != null) {
+				final IValueReference var = collection
+						.createChild(id.getName());
+				final JSDocTags tags = parseTags(id.getDocumentation());
+				final JSElement variable = new JSElement(id.getName());
+				getDocSupport().parseType(variable, tags,
+						JSDocSupport.TYPE_TAGS, reporter, getTypeChecker());
+				var.setDeclaredType(variable.getType() != null
+						? context.contextualize(variable.getType())
+						: RTypes.ERROR);
+			}
 
 			enterContext(collection);
 			if (catchClause.getFilterExpression() != null) {

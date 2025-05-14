@@ -111,22 +111,22 @@ public class CatchClause extends JSNode implements ISourceable {
 
         Assert.isTrue(sourceStart() > 0);
         Assert.isTrue(sourceEnd() > 0);
-        Assert.isTrue(LP > 0);
-        Assert.isTrue(RP > 0);
 
         StringBuffer buffer = new StringBuffer();
 
         buffer.append(indentationString);
         buffer.append(Keywords.CATCH);
-        buffer.append(" (");
-        buffer.append(this.exception.toSourceString(indentationString));
+       if (LP > 0) buffer.append(" (");
+        if (this.exception != null) {
+        	buffer.append(this.exception.toSourceString(indentationString));
+        }
         if (ifKeyword != null && filterExpression != null) {
             buffer.append(' ');
             buffer.append(Keywords.IF);
             buffer.append(' ');
             buffer.append(filterExpression.toSourceString(indentationString));
         }
-        buffer.append(")\n");
+       if (RP > 0) buffer.append(")\n");
 
         buffer.append(statement.toSourceString(indentationString));
 

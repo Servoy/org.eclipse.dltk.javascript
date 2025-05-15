@@ -1971,7 +1971,8 @@ public class Parser implements IParser{
 	}
 
 	private TryStatement tryStatement() throws IOException {
-		if (currentToken != Token.TRY) codeBug();
+		if (currentToken != Token.TRY)
+			codeBug();
 		consumeToken();
 
 		// Pull out JSDoc info and reset it before recursing.
@@ -1986,7 +1987,7 @@ public class Parser implements IParser{
 		// Hnadled comment here because there should not be try without LC
 		int lctt = peekToken();
 		while (lctt == Token.COMMENT) {
-			//the Trystatment is not documentable, skip comment
+			// the Trystatment is not documentable, skip comment
 			consumeToken();
 			lctt = peekToken();
 		}
@@ -1994,9 +1995,12 @@ public class Parser implements IParser{
 			reportError("msg.no.brace.try");
 		}
 		Statement stmt = getNextStatementAfterInlineComments(pn);
-		if (stmt instanceof StatementBlock == false ) {
-            reportError("msg.syntax", stmt != null ? stmt.sourceStart() : ts.getTokenBeg(), stmt != null ? stmt.sourceEnd() : ts.getTokenEnd() - ts.getTokenBeg());
-        }
+		if (stmt instanceof StatementBlock == false) {
+			reportError("msg.syntax",
+					stmt != null ? stmt.sourceStart() : ts.getTokenBeg(),
+					stmt != null ? stmt.sourceEnd()
+							: ts.getTokenEnd() - ts.getTokenBeg());
+		}
 		StatementBlock tryBlock = (StatementBlock) stmt;
 		int tryEnd = tryBlock.end();
 
@@ -2005,17 +2009,19 @@ public class Parser implements IParser{
 		boolean sawDefaultCatch = false;
 		int peek = peekToken();
 		while (peek == Token.COMMENT) {
-			//            Comment commentNode = scannedComments.get(scannedComments.size() - 1);
-			//            pn.setInlineComment(commentNode);
+			// Comment commentNode = scannedComments.get(scannedComments.size()
+			// - 1);
+			// pn.setInlineComment(commentNode);
 			consumeToken();
 			peek = peekToken();
 		}
 		if (peek == Token.CATCH) {
-			while (matchToken(Token.CATCH, true)) {                
+			while (matchToken(Token.CATCH, true)) {
 				if (sawDefaultCatch) {
 					reportError("msg.catch.unreachable");
 				}
-				int catchPos = ts.getTokenBeg(), lp = -1, rp = -1, guardPos = -1;
+				int catchPos = ts.getTokenBeg(), lp = -1, rp = -1,
+						guardPos = -1;
 				CatchClause catchNode = new CatchClause(getParent());
 				catchNode.setStart(catchPos);
 				catchNode.setCatchKeyword(createKeyword(Token.CATCH, catchPos));
@@ -2026,8 +2032,7 @@ public class Parser implements IParser{
 				Statement catchBlock = null;
 
 				switch (peekToken()) {
-				case Token.LP:
-				{
+				case Token.LP: {
 					matchToken(Token.LP, true);
 					lp = ts.getTokenBeg();
 					mustMatchToken(Token.NAME, "msg.bad.catchcond", true);
@@ -2056,11 +2061,11 @@ public class Parser implements IParser{
 						rp = ts.getTokenBeg();
 					}
 					mustMatchToken(Token.LC, "msg.no.brace.catchblock", true);
-					catchBlock = statements(catchNode);
 				}
-				break;
+					break;
 				case Token.LC:
-					if (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+					if (compilerEnv
+							.getLanguageVersion() >= Context.VERSION_ES6) {
 						matchToken(Token.LC, true);
 					} else {
 						reportError("msg.no.paren.catch");
@@ -2072,11 +2077,9 @@ public class Parser implements IParser{
 				}
 
 				try {
-					if (catchBlock == null) {
-						ASTNode node = statement();
-						checkIfStatement(node);
-						catchBlock = (Statement) node;
-					}
+					ASTNode node = statements(catchNode);
+					checkIfStatement(node);
+					catchBlock = (Statement) node;
 				} finally {
 					parents.pop();
 				}
@@ -2091,7 +2094,8 @@ public class Parser implements IParser{
 				catchNode.setLP(lp);
 				catchNode.setRP(rp);
 
-				if (mustMatchToken(Token.RC, "msg.no.brace.after.body", true)) tryEnd = ts.getTokenEnd();
+				if (mustMatchToken(Token.RC, "msg.no.brace.after.body", true))
+					tryEnd = ts.getTokenEnd();
 				catchNode.setEnd(tryEnd);
 				clauses.add(catchNode);
 			}
@@ -2102,12 +2106,13 @@ public class Parser implements IParser{
 		FinallyClause finallyclause = null;
 		if (matchToken(Token.FINALLY, true)) {
 			finallyclause = new FinallyClause(getParent());
-			finallyclause.setFinallyKeyword(createKeyword(Token.FINALLY, ts.getTokenBeg()));
+			finallyclause.setFinallyKeyword(
+					createKeyword(Token.FINALLY, ts.getTokenBeg()));
 			finallyclause.setStart(ts.getTokenBeg());
 			parents.push(finallyclause);
 			ASTNode node = statement();
 			checkIfStatement(node);
-			Statement finallyBlock = (Statement)node;
+			Statement finallyBlock = (Statement) node;
 			finallyclause.setStatement(finallyBlock);
 			finallyclause.setEnd(finallyBlock.end());
 			tryEnd = finallyBlock.end();

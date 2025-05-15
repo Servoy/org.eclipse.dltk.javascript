@@ -660,7 +660,17 @@ public class TestRhinoParser {
 	public void testTry() {
 		String source = "{ try { init(a); } catch (e) { throw 'error!'; } finally { a = 0;} }";
 		Script script = getScript(source);
-		Script scriptv4 = getScriptv4(source);
+		
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser jsParserv4 =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problemsv4 = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problemsv4.add(problem);
+			}
+		};
+		Script scriptv4 = jsParserv4.parse(source, reporter);
+		System.err.println(scriptv4);
 		
 		assertNotNull(script);
 		assertNotNull(scriptv4);
@@ -675,6 +685,44 @@ public class TestRhinoParser {
 		assertEquals(catchClause.getLP(), catchClausev4.getLP());
 		assertEquals(catchClause.getRP(), catchClausev4.getRP());
 		assertTrue(equalsJSNode(statement.getFinally(), statementv4.getFinally(), new ArrayDeque<>()));
+		assertEquals(0, problemsv4.size());
+	}
+	
+	@Test
+	public void testTry_CatchNoException() {
+		String source = "{ try { init(a); } catch { throw 'error!'; } }";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.JavaScriptParser jsParser =  new org.eclipse.dltk.javascript.parser.JavaScriptParser();
+		Script script = jsParser.parse(source, new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		});
+		System.err.println(script);
+		
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser jsParserv4 =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problemsv4 = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problemsv4.add(problem);
+			}
+		};
+		Script scriptv4 = jsParserv4.parse(source, reporter);
+		System.err.println(scriptv4);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		
+		assertEquals("the old parser does not support this syntax", 1, problems.size());
+		assertEquals("Mismatched input {, ( expected", problems.get(0).getMessage());
+		assertEquals("the new parser should not have syntax errors", 0, problemsv4.size());
+		
+		TryStatement statementv4 = (TryStatement)((StatementBlock)( scriptv4.getStatements().get(0))).getStatements().get(0);
+		assertEquals(1, statementv4.getCatches().size()); //only 1 catch allowed in v4
+		CatchClause catchClausev4 = statementv4.getCatches().get(0);
+		assertNull(catchClausev4.getException());
 	}
 	
 	@Test

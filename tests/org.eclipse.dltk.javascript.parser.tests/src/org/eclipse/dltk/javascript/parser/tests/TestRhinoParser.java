@@ -3073,4 +3073,28 @@ public class TestRhinoParser {
 		assertNotNull(property1.getArguments());
 		assertEquals(2, property1.getArguments().size());
 	}
+	
+	@Test
+	public void testExpExpression() {
+		String source = "c = 1.01**2;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		
+		//the old parser does not set the exponentiation operator
+//		Pb#SYNTAX_ERROR 0[9..10]:Unexpected '*'
+//		c = 1.01 * 2;
+//		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		
+		BinaryOperation assignment = (BinaryOperation) ((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation exp = (BinaryOperation) assignment.getRightExpression();
+		BinaryOperation expv4 = (BinaryOperation) assignmentv4.getRightExpression();
+		assertEquals(8, expv4.getOperationPosition());
+		assertEquals("**", expv4.getOperationText());
+		assertEquals(exp.getLeftExpression().toString(), expv4.getLeftExpression().toString());
+		assertEquals(exp.getRightExpression().toString(), expv4.getRightExpression().toString());
+	}
 }

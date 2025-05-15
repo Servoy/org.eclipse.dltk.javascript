@@ -3154,14 +3154,8 @@ public class Parser implements IParser{
 			int tt = peekToken(), opPos = ts.getTokenBeg();
 			switch (tt) {
 			case Token.EXP:
-				//                    if (pn instanceof UnaryExpression) {
-				//                        reportError(
-				//                                "msg.no.unary.expr.on.left.exp",
-				//                                AstNode.operatorToString(pn.getType()));
-				//                        return makeErrorNode();
-				//                    }
-				//                    consumeToken();
-				//                    pn = new InfixExpression(tt, pn, expExpr(), opPos);
+				consumeToken();
+				pn = createBinaryOperation(tt, opPos, pn, unaryExpr(), getParent());
 				continue;
 			}
 			break;

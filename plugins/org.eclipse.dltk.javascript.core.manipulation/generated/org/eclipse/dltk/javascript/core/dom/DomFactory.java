@@ -648,4 +648,13 @@ public interface DomFactory extends EFactory {
 	 */
 	BigIntLiteral createBigIntLiteral();
 
+	/**
+	 * Returns a new object of class '<em>Method Shorthand Assignment</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Method Shorthand Assignment</em>'.
+	 * @generated
+	 */
+	MethodShorthandAssignment createMethodShorthandAssignment();
+
 } //DomFactory

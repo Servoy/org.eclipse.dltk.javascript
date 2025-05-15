@@ -4259,6 +4259,70 @@ public interface DomPackage extends EPackage {
 	int BIG_INT_LITERAL_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.MethodShorthandAssignmentImpl <em>Method Shorthand Assignment</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.MethodShorthandAssignmentImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getMethodShorthandAssignment()
+	 * @generated
+	 */
+	int METHOD_SHORTHAND_ASSIGNMENT = 85;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int METHOD_SHORTHAND_ASSIGNMENT__BEGIN = ACCESSOR_ASSIGNMENT__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int METHOD_SHORTHAND_ASSIGNMENT__END = ACCESSOR_ASSIGNMENT__END;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int METHOD_SHORTHAND_ASSIGNMENT__NAME = ACCESSOR_ASSIGNMENT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Body</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int METHOD_SHORTHAND_ASSIGNMENT__BODY = ACCESSOR_ASSIGNMENT__BODY;
+
+	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int METHOD_SHORTHAND_ASSIGNMENT__PARAMETERS = ACCESSOR_ASSIGNMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Method Shorthand Assignment</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int METHOD_SHORTHAND_ASSIGNMENT_FEATURE_COUNT = ACCESSOR_ASSIGNMENT_FEATURE_COUNT + 1;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4266,7 +4330,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 85;
+	int UNARY_OPERATOR = 86;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -4276,7 +4340,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 86;
+	int BINARY_OPERATOR = 87;
 
 
 	/**
@@ -6274,6 +6338,27 @@ public interface DomPackage extends EPackage {
 	EAttribute getBigIntLiteral_Text();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.MethodShorthandAssignment <em>Method Shorthand Assignment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Method Shorthand Assignment</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.MethodShorthandAssignment
+	 * @generated
+	 */
+	EClass getMethodShorthandAssignment();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.dltk.javascript.core.dom.MethodShorthandAssignment#getParameters <em>Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Parameters</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.MethodShorthandAssignment#getParameters()
+	 * @see #getMethodShorthandAssignment()
+	 * @generated
+	 */
+	EReference getMethodShorthandAssignment_Parameters();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7996,6 +8081,24 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute BIG_INT_LITERAL__TEXT = eINSTANCE.getBigIntLiteral_Text();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.MethodShorthandAssignmentImpl <em>Method Shorthand Assignment</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.MethodShorthandAssignmentImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getMethodShorthandAssignment()
+		 * @generated
+		 */
+		EClass METHOD_SHORTHAND_ASSIGNMENT = eINSTANCE.getMethodShorthandAssignment();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference METHOD_SHORTHAND_ASSIGNMENT__PARAMETERS = eINSTANCE.getMethodShorthandAssignment_Parameters();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.

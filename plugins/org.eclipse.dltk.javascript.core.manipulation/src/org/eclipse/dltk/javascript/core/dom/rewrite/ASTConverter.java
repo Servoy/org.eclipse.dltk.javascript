@@ -37,6 +37,7 @@ import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.IfStatement;
 import org.eclipse.dltk.javascript.ast.Label;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.NullExpression;
 import org.eclipse.dltk.javascript.ast.ObjectInitializer;
@@ -97,6 +98,7 @@ import org.eclipse.dltk.javascript.core.dom.IPropertySelector;
 import org.eclipse.dltk.javascript.core.dom.ISelector;
 import org.eclipse.dltk.javascript.core.dom.IUnqualifiedSelector;
 import org.eclipse.dltk.javascript.core.dom.LabeledStatement;
+import org.eclipse.dltk.javascript.core.dom.MethodShorthandAssignment;
 import org.eclipse.dltk.javascript.core.dom.Node;
 import org.eclipse.dltk.javascript.core.dom.NumericLiteral;
 import org.eclipse.dltk.javascript.core.dom.ObjectLiteral;
@@ -423,6 +425,19 @@ public class ASTConverter extends ASTVisitor<Node> {
 				elem.setName(createPropertyName(sm.getName()));
 				elem.setParameter(createIdentifier(sm.getArgument()));
 				elem.setBody((BlockStatement) visit(sm.getBody()));
+				cur = elem;
+				res.getProperties().add(elem);
+			} else if (part instanceof MethodShorthand ms) {
+				MethodShorthandAssignment elem = DOM_FACTORY.createMethodShorthandAssignment();
+				elem.setName(createPropertyName(ms.getName()));
+				for (Argument arg : ms.getArguments()) {
+					Parameter prm = DOM_FACTORY.createParameter();
+					prm.setName(createIdentifier(arg.getIdentifier()));
+					prm.setBegin(arg.sourceStart());
+					prm.setEnd(arg.sourceEnd());
+					elem.getParameters().add(prm);
+				}
+				elem.setBody((BlockStatement) visit(ms.getBody()));
 				cur = elem;
 				res.getProperties().add(elem);
 			} else

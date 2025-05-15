@@ -843,6 +843,15 @@ public class DomSwitch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case DomPackage.METHOD_SHORTHAND_ASSIGNMENT: {
+				MethodShorthandAssignment methodShorthandAssignment = (MethodShorthandAssignment)theEObject;
+				T result = caseMethodShorthandAssignment(methodShorthandAssignment);
+				if (result == null) result = caseAccessorAssignment(methodShorthandAssignment);
+				if (result == null) result = casePropertyAssignment(methodShorthandAssignment);
+				if (result == null) result = caseNode(methodShorthandAssignment);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -2119,6 +2128,21 @@ public class DomSwitch<T> {
 	 * @generated
 	 */
 	public T caseBigIntLiteral(BigIntLiteral object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Method Shorthand Assignment</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Method Shorthand Assignment</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseMethodShorthandAssignment(MethodShorthandAssignment object) {
 		return null;
 	}
 

@@ -69,6 +69,7 @@ import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
 import org.eclipse.dltk.javascript.ast.Method;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.NullExpression;
 import org.eclipse.dltk.javascript.ast.ObjectInitializer;
@@ -314,7 +315,12 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 					final IFormatterNode result = formatSetMethod((SetMethod) node);
 					nodes.pop();
 					return result;
-				} else {
+				} else if (node instanceof MethodShorthand ms) {
+					nodes.push(node);
+					final IFormatterNode result = formatMethodShorthand(ms);
+					nodes.pop();
+					return result;
+				}else {
 					nodes.push(node);
 					final IFormatterNode result = super.visit(node);
 					nodes.pop();
@@ -1323,6 +1329,61 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 
 				processParens(node.getLP(), node.getRP(), node.getArgument(),
 						new FunctionArgumentsParensConfiguration(document));
+
+				boolean emptyBody = node.getBody() == null
+						|| isEmptyBody(node.getBody());
+
+				processBraces(
+						node.getBody(),
+						new FunctionBodyBracesConfiguration(document, emptyBody));
+
+				checkedPop(formatterNode, node.sourceEnd());
+
+				return formatterNode;
+			}
+			
+			private IFormatterNode formatMethodShorthand(MethodShorthand node) {
+
+				FormatterBlockNode formatterNode = new FormatterBlockNode(
+						document);
+				
+				formatterNode.addChild(createEmptyTextNode(document,
+						node.sourceStart()));
+
+				push(formatterNode);
+
+				visit(node.getName());
+
+				final IParensConfiguration parensConf;
+				if (node.getArguments().isEmpty()) {
+					parensConf = new FunctionNoArgumentsParensConfiguration(
+							document);
+				} else {
+					parensConf = new FunctionArgumentsParensConfiguration(
+							document);
+				}
+				final ParensNode parens = new ParensNode(
+						document,
+						parensConf,
+						false);
+				parens.setBegin(createCharNode(document, node.getLP()));
+				push(parens);
+				if (!node.getArguments().isEmpty()) {
+					final Argument arg0 = node.getArguments().get(0);
+					skipSpaces(parens, arg0.sourceStart());
+				}
+				for (Argument argument : node.getArguments()) {
+					visit(argument.getIdentifier());
+					if (argument.getCommaPosition() != -1) {
+						int position = argument.getCommaPosition();
+						skipSpacesOnly(parens, position);
+						processPunctuation(position, 1,
+								new FunctionArgumentsPunctuationConfiguration());
+					}
+				}
+				checkedPop(parens, node.getRP());
+				parens.setEnd(createCharNode(document, node.getRP()));
+
 
 				boolean emptyBody = node.getBody() == null
 						|| isEmptyBody(node.getBody());

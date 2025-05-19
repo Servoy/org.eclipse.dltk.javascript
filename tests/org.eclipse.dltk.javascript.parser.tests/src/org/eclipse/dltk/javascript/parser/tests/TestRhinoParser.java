@@ -3032,7 +3032,7 @@ public class TestRhinoParser {
 	
 	@Test
 	public void testMethodShorthand() {
-		String source ="obj = {foo() {return 'bar'; } }";
+		String source ="obj = {/** @return {String} */ foo() {return 'bar'; } }";
 		Script scriptv4 = getScriptv4(source);
 		assertNotNull(scriptv4);
 		
@@ -3044,11 +3044,13 @@ public class TestRhinoParser {
 		assertTrue(initv4.getInitializers().get(0) instanceof MethodShorthand);
 		MethodShorthand property1 = (MethodShorthand) initv4.getInitializers().get(0);
 		assertEquals("foo", property1.getName().toString());
-		assertEquals(7, property1.getName().sourceStart());
-		assertEquals(10, property1.getName().sourceEnd());
+		assertEquals(31, property1.getName().sourceStart());
+		assertEquals(34, property1.getName().sourceEnd());
 		assertNotNull(property1.getBody());
-		assertEquals(13, property1.getBody().sourceStart());
-		assertEquals(29, property1.getBody().sourceEnd());
+		assertEquals(37, property1.getBody().sourceStart());
+		assertEquals(53, property1.getBody().sourceEnd());
+		assertNotNull(property1.getName().getDocumentation());
+		assertEquals("/** @return {String} */", property1.getName().getDocumentation().getText());
 	}
 
 	@Test

@@ -4230,7 +4230,7 @@ public class Parser implements IParser{
 					if (peeked == Token.COMMA) commas.add(ts.getTokenBeg());
 					if (peeked != Token.COMMA && peeked != Token.COLON && peeked != Token.RC) {
 						if (peeked == Token.LP) {
-							entryKind = METHOD_ENTRY; //TODO not supported in dltk
+							entryKind = METHOD_ENTRY;
 						} else if (pname instanceof Identifier) {
 							if ("get".equals(propertyName)) {
 								entryKind = GET_ENTRY;

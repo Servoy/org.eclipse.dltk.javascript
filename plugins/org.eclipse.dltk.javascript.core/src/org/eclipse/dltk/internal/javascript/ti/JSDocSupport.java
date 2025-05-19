@@ -34,6 +34,7 @@ import org.eclipse.dltk.javascript.ast.Comment;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.Statement;
@@ -119,6 +120,17 @@ public class JSDocSupport implements IModelBuilder {
 				statement.isDeclaration() ? JSDocFunctionContext.DECLARATION
 						: JSDocFunctionContext.EXPRESSION, tags, reporter,
 				typeChecker);
+	}
+
+	@Override
+	public void processMethod(Method statement, IMethod method,
+			JSProblemReporter reporter, ITypeChecker typeChecker) {
+		Comment comment = getComment(statement.getName());
+		if (comment == null) {
+			return;
+		}
+		final JSDocTags tags = parse(comment);
+		processMethod(method, tags, reporter, typeChecker);
 	}
 
 	public final void processMethod(IMethod method, final JSDocTags tags,

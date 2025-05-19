@@ -18,6 +18,7 @@ import org.eclipse.dltk.annotations.ConfigurationElement;
 import org.eclipse.dltk.compiler.problem.IProblemCategory;
 import org.eclipse.dltk.core.ISourceRange;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
+import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
 import org.eclipse.dltk.javascript.typeinference.ILocationProvider;
@@ -192,6 +193,9 @@ public interface IModelBuilder {
 	int priorityFor(ITypeInfoContext context);
 
 	void processMethod(FunctionStatement statement, IMethod method,
+			JSProblemReporter reporter, ITypeChecker typeChecker);
+
+	void processMethod(Method statement, IMethod method,
 			JSProblemReporter reporter, ITypeChecker typeChecker);
 
 	void processVariable(VariableDeclaration declaration, IVariable variabe,

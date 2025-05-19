@@ -25,6 +25,7 @@ import org.eclipse.dltk.javascript.ast.Comment;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
+import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
 import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
@@ -239,12 +240,21 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 	private void initialize(MethodShorthand node, ReferenceSource source) {
 		setLocation(ReferenceLocation.create(source, node.sourceStart(),
 				node.sourceEnd()));
-		if (node.getName() != null) {
-			setName(node.getName().getName());
-		} else {
-			setName("<anonymous>");
+		setName(node.getName());
+		addArguments(node.getArguments(), source);
+		setDoc(node);
+	}
+
+	private void setDoc(JSNode node) {
+		final Comment documentation = JSDocSupport.getComment(node);
+		if (documentation != null) {
+			setDocRange(documentation.getRange());
 		}
-		for (Argument argument : node.getArguments()) {
+	}
+
+	private void addArguments(List<Argument> arguments,
+			ReferenceSource source) {
+		for (Argument argument : arguments) {
 			final IParameter parameter = createParameter();
 			parameter.setName(argument.getIdentifier().getName());
 			parameter.setLocation(ReferenceLocation.create(source,
@@ -256,10 +266,6 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 				parameter.setKind(ParameterKind.OPTIONAL);
 			}
 			getParameters().add(parameter);
-		}
-		final Comment documentation = JSDocSupport.getComment(node);
-		if (documentation != null) {
-			setDocRange(documentation.getRange());
 		}
 	}
 
@@ -285,28 +291,9 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 				expression = ((VariableDeclaration) node.getParent())
 						.getIdentifier();
 			}
-			if (expression instanceof Identifier) {
-				setName(((Identifier) expression).getName());
-			} else {
-				setName("<anonymous>");
-			}
-		for (Argument argument : node.getArguments()) {
-			final IParameter parameter = createParameter();
-			parameter.setName(argument.getIdentifier().getName());
-			parameter.setLocation(ReferenceLocation.create(source,
-					argument.sourceStart(), argument.sourceEnd()));
-			if (argument.getEllipsisPosition() > 0) {
-				parameter.setKind(ParameterKind.VARARGS);
-			}
-			if (argument.getDefaultParamValue() != null) {
-				parameter.setKind(ParameterKind.OPTIONAL);
-			}
-			getParameters().add(parameter);
-		}
-		final Comment documentation = JSDocSupport.getComment(node);
-		if (documentation != null) {
-			setDocRange(documentation.getRange());
-		}
+			setName(expression);
+			addArguments(node.getArguments(), source);
+			setDoc(node);
 	}
 
 	protected void initialize(FunctionStatement node, ReferenceSource source,
@@ -338,28 +325,17 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 				expression = ((VariableDeclaration) node.getParent())
 						.getIdentifier();
 			}
-			if (expression instanceof Identifier) {
-				setName(((Identifier) expression).getName());
-			} else {
-				setName("<anonymous>");
-			}
+			setName(expression);
 		}
-		for (Argument argument : node.getArguments()) {
-			final IParameter parameter = createParameter();
-			parameter.setName(argument.getIdentifier().getName());
-			parameter.setLocation(ReferenceLocation.create(source,
-					argument.sourceStart(), argument.sourceEnd()));
-			if (argument.getEllipsisPosition() > 0) {
-				parameter.setKind(ParameterKind.VARARGS);
-			}
-			if (argument.getDefaultParamValue() != null) {
-				parameter.setKind(ParameterKind.OPTIONAL);
-			}
-			getParameters().add(parameter);
-		}
-		final Comment documentation = JSDocSupport.getComment(node);
-		if (documentation != null) {
-			setDocRange(documentation.getRange());
+		addArguments(node.getArguments(), source);
+		setDoc(node);
+	}
+
+	private void setName(Expression expression) {
+		if (expression instanceof Identifier) {
+			setName(((Identifier) expression).getName());
+		} else {
+			setName("<anonymous>");
 		}
 	}
 

@@ -66,6 +66,7 @@ import org.eclipse.dltk.javascript.ast.JSDeclaration;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.JSScope;
 import org.eclipse.dltk.javascript.ast.LabelledStatement;
+import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.NullExpression;
@@ -1221,9 +1222,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	protected JSMethod createMethod(MethodShorthand node) {
 		final JSMethod method = new JSMethod(node, getSource());
 		for (IModelBuilder extension : context.getModelBuilders()) {
-			// TODO fix, MethodShorthand cannot extend FunctionStatement
-			// extension.processMethod(node, method, reporter,
-			// getTypeChecker());
+			extension.processMethod(node, method, reporter, getTypeChecker());
 		}
 		if (method.getParameterCount() > 0) {
 			final IParameter last = method.getParameters()
@@ -1296,6 +1295,21 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		if (visitBody) {
 			handleDeclarations(node);
 			visit(node.getBody());
+		}
+	}
+
+	public void visitFunctionBody(Method node) {
+		boolean visitBody = visitFunctionBody;
+		if (!visitBody && node.getName().getDocumentation() != null
+				&& node.getName().getDocumentation().getText() != null) {
+			visitBody = node.getName().getDocumentation().getText()
+					.contains("@constructor")
+					|| node.getName().getDocumentation().getText()
+							.contains("@parse");
+		}
+		if (visitBody) {
+			// handleDeclarations(node);
+			// TODO visit(node.getBody());
 		}
 	}
 
@@ -1692,35 +1706,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				if (childName == null) { // just in case
 					continue;
 				}
-				final JSDocTags tags = parseTags(ms.getName()
-						.getDocumentation());
-
-				final JSMethod source;
-				if (ms.getBody() != null) {
-					source = createMethod(ms);
-					source.setName(childName);
-					source.setLocation(ReferenceLocation.create(getSource(),
-							ms.getName().sourceStart(),
-							ms.getBody().sourceEnd()));
-					if (!tags.isEmpty()) {
-						final JSDocSupport jsdocSupport = getDocSupport();
-						if (jsdocSupport != null) {
-							jsdocSupport.parseType(source, tags,
-									JSDocSupport.TYPE_TAGS, reporter,
-									getTypeChecker());
-							jsdocSupport.parseDeprecation(source, tags,
-									reporter);
-							jsdocSupport.parseAccessModifiers(source, tags,
-									reporter);
-						}
-					}
-				} else {
-					source = null;
-				}
-
-				final IRType type = null; // TODO check type
-				members.add(new RRecordMember(childName,
-						type != null ? type : RTypes.any(), source));
+				handleMethodShorthand(node, members, ms, childName);
 				
 			} else {
 				// TODO handle get/set methods
@@ -1734,6 +1720,68 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 		});
 		return intializerValue;
+	}
+
+	private void handleMethodShorthand(ObjectInitializer node,
+			final List<IRRecordMember> members, MethodShorthand ms,
+			final String childName) {
+		final JSDocTags tags = parseTags(ms.getName()
+				.getDocumentation());
+
+		final JSMethod source;
+		final IValueReference result;
+		final ForwardDeclaration forward = forwardDeclarations
+				.remove(node);
+		if (forward != null) {
+			source = forward.method;
+			result = forward.reference;
+		} else {
+			if (ms.getBody() != null) {
+				visitFunctionBody(ms);
+				source = createMethod(ms);
+				source.setName(childName);
+				source.setLocation(ReferenceLocation.create(getSource(),
+						ms.getName().sourceStart(),
+						ms.getBody().sourceEnd()));
+				if (!tags.isEmpty()) {
+					final JSDocSupport jsdocSupport = getDocSupport();
+					if (jsdocSupport != null) {
+						jsdocSupport.parseType(source, tags,
+								JSDocSupport.TYPE_TAGS, reporter,
+								getTypeChecker());
+						jsdocSupport.parseDeprecation(source, tags,
+								reporter);
+						jsdocSupport.parseAccessModifiers(source, tags,
+								reporter);
+					}
+				}
+			} else {
+				source = null;
+			}
+
+			result = new AnonymousValue();
+			initializeFunction(source, result);
+			result.setAttribute(IReferenceAttributes.R_METHOD,
+					RModelBuilder.create(getContext(), source));
+			if (source.getType() != null) {
+				result.createChild(IValueReference.FUNCTION_OP)
+						.setDeclaredType(this.context
+								.contextualize(source.getType()));
+			}
+			for (IParameter parameter : source.getParameters()) {
+				final IValueReference refArg = result
+						.createChild(parameter.getName());
+				refArg.setKind(ReferenceKind.ARGUMENT);
+				setTypeImpl(refArg, parameter.getType());
+				refArg.setLocation(parameter.getLocation());
+			}
+			result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE,
+					source);
+		}
+		members.add(new RRecordMember(childName,
+				result != null ? result.getDeclaredType()
+						: RTypes.any(),
+				source));
 	}
 
 	private JSDocTags parseTags(final Comment documentation) {

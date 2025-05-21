@@ -1308,7 +1308,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							.contains("@parse");
 		}
 		if (visitBody) {
-			// handleDeclarations(node);
+			if (node instanceof JSScope scope)
+				handleDeclarations(scope);
 			visit(node.getBody());
 		}
 	}
@@ -1737,7 +1738,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			result = forward.reference;
 		} else {
 			if (ms.getBody() != null) {
-				visitFunctionBody(ms);
 				source = createMethod(ms);
 				source.setName(childName);
 				source.setLocation(ReferenceLocation.create(getSource(),
@@ -1768,16 +1768,26 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						.setDeclaredType(this.context
 								.contextualize(source.getType()));
 			}
+			FunctionValueCollection functionScope = new FunctionValueCollection(
+					peekContext(), childName, getParentThisValue(), false);
 			for (IParameter parameter : source.getParameters()) {
-				final IValueReference refArg = result
+				final IValueReference refArg = functionScope
 						.createChild(parameter.getName());
 				refArg.setKind(ReferenceKind.ARGUMENT);
 				setTypeImpl(refArg, parameter.getType());
 				refArg.setLocation(parameter.getLocation());
 			}
 			result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE,
-					source);
+					functionScope);
+
+			enterContext(functionScope);
+			try {
+				visitFunctionBody(ms);
+			} finally {
+				leaveContext();
+			}
 		}
+
 		members.add(new RRecordMember(childName,
 				result != null ? result.getDeclaredType()
 						: RTypes.any(),
@@ -2489,12 +2499,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 		} else {
 			// arrow functions always inherited this from the parent
-			IValueCollection context = peekContext();
-			if (context instanceof IFunctionValueCollection fvc) {
-				IValueReference parentThis = fvc.getThis();
-				if (parentThis instanceof ThisValue v) {
-					thisValue = v;
-				}
+			ThisValue parentThis = getParentThisValue();
+			if (parentThis != null) {
+				thisValue = parentThis;
 			}
 		}
 		final IValueCollection function = new FunctionValueCollection(
@@ -2535,6 +2542,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		returnValue.addValue(function.getReturnValue(), true);
 		setTypeImpl(returnValue, method.getType());
 		return result;
+	}
+
+	private ThisValue getParentThisValue() {
+		IValueCollection context = peekContext();
+		if (context instanceof IFunctionValueCollection fvc) {
+			IValueReference parentThis = fvc.getThis();
+			if (parentThis instanceof ThisValue v) {
+				return v;
+			}
+		}
+		return null;
 	}
 
 

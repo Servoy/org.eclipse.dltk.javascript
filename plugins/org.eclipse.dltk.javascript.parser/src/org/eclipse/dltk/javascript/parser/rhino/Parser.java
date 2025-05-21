@@ -4377,7 +4377,7 @@ public class Parser implements IParser{
 
 	private Method methodDefinition(int pos, Identifier propName, int entryKind)
 			throws IOException { 
-		FunctionStatement fn = function(FunctionNode.FUNCTION_EXPRESSION, false, false);
+		FunctionStatement fn = function(FunctionNode.FUNCTION_EXPRESSION, false, entryKind == METHOD_ENTRY);
 		// We've already parsed the function name, so fn should be anonymous.
 		Identifier name = fn.getName();
 		if (name != null && name.getName().length() != 0) {
@@ -4411,6 +4411,7 @@ public class Parser implements IParser{
 			{
 				ms.setArguments(fn.getArguments());
 				fn.getArguments().stream().forEach(arg -> arg.setParent(ms));
+				fn.getDeclarations().stream().forEach(decl -> ms.addDeclaration(decl));
 			}
 			pn = ms;
 			break;

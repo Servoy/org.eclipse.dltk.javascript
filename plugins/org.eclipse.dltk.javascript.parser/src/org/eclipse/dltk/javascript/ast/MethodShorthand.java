@@ -1,12 +1,15 @@
 package org.eclipse.dltk.javascript.ast;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.dltk.ast.ASTVisitor;
 
-public class MethodShorthand extends Method {
+public class MethodShorthand extends Method implements JSScope {
 
 	private List<Argument> arguments;
+	private List<JSDeclaration> declarations;
 
 	public MethodShorthand(JSNode parent) {
 		super(parent);
@@ -57,5 +60,18 @@ public class MethodShorthand extends Method {
 	@Override
 	public Comment getDocumentation() {
 		return getName() != null ? getName().getDocumentation() : null;
+	}
+
+	@Override
+	public void addDeclaration(JSDeclaration declaration) {
+		if (declarations == null) {
+			declarations = new ArrayList<JSDeclaration>();
+		}
+		declarations.add(declaration);
+	}
+
+	public List<JSDeclaration> getDeclarations() {
+		return declarations != null ? declarations : Collections
+				.<JSDeclaration> emptyList();
 	}
 }

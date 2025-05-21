@@ -3057,6 +3057,7 @@ public class TestRhinoParser {
 	public void testMethodShorthand2() {
 		String source ="obj = {\n"
 				+ "			  sayHi(name1, name2) {\n"
+				+ "			    let b = 1;\n"
 				+ "			    return `Hi, ${name1} and ${name2}`;\n"
 				+ "			  }\n"
 				+ "			}";
@@ -3074,6 +3075,8 @@ public class TestRhinoParser {
 		assertNotNull(property1.getBody());
 		assertNotNull(property1.getArguments());
 		assertEquals(2, property1.getArguments().size());
+		assertEquals(1, property1.getDeclarations().size());
+		assertEquals("b", property1.getDeclarations().get(0).getIdentifier().getName());
 	}
 	
 	@Test

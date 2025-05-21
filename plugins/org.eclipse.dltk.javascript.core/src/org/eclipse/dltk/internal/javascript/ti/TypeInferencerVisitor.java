@@ -1309,7 +1309,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		}
 		if (visitBody) {
 			// handleDeclarations(node);
-			// TODO visit(node.getBody());
+			visit(node.getBody());
 		}
 	}
 
@@ -1722,7 +1722,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return intializerValue;
 	}
 
-	private void handleMethodShorthand(ObjectInitializer node,
+	protected IValueReference handleMethodShorthand(ObjectInitializer node,
 			final List<IRRecordMember> members, MethodShorthand ms,
 			final String childName) {
 		final JSDocTags tags = parseTags(ms.getName()
@@ -1782,6 +1782,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				result != null ? result.getDeclaredType()
 						: RTypes.any(),
 				source));
+		return result;
 	}
 
 	private JSDocTags parseTags(final Comment documentation) {

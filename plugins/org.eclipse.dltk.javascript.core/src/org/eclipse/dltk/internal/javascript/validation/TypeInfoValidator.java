@@ -67,7 +67,9 @@ import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.IfStatement;
 import org.eclipse.dltk.javascript.ast.JSNode;
+import org.eclipse.dltk.javascript.ast.MethodShorthand;
 import org.eclipse.dltk.javascript.ast.NewExpression;
+import org.eclipse.dltk.javascript.ast.ObjectInitializer;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
@@ -797,6 +799,18 @@ public class TypeInfoValidator implements IBuildParticipant,
 		public IValueReference visitArrowFunction(ArrowFunctionStatement node) {
 			enterFunctionScope();
 			IValueReference reference = super.visitArrowFunction(node);
+			leaveFunctionScope(null, null);
+			return reference;
+		}
+
+
+		@Override
+		protected IValueReference handleMethodShorthand(ObjectInitializer node,
+				List<IRRecordMember> members, MethodShorthand ms,
+				String childName) {
+			enterFunctionScope();
+			IValueReference reference = super.handleMethodShorthand(node,
+					members, ms, childName);
 			leaveFunctionScope(null, null);
 			return reference;
 		}

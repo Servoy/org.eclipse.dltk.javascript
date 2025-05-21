@@ -53,4 +53,9 @@ public class MethodShorthand extends Method {
 	public List<Argument> getArguments() {
 		return this.arguments;
 	}
+
+	@Override
+	public Comment getDocumentation() {
+		return getName() != null ? getName().getDocumentation() : null;
+	}
 }

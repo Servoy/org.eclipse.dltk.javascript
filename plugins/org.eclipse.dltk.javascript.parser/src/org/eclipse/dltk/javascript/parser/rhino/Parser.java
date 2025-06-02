@@ -55,6 +55,7 @@ import org.eclipse.dltk.javascript.ast.GetAllChildrenExpression;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.GetLocalNameExpression;
 import org.eclipse.dltk.javascript.ast.GetMethod;
+import org.eclipse.dltk.javascript.ast.IDestructuringPattern;
 import org.eclipse.dltk.javascript.ast.ISemicolonStatement;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
@@ -1182,7 +1183,7 @@ public class Parser implements IParser{
 			ASTNode params,
 			Map<String, Node> destructuring,
 			Set<String> paramNames) {
-		if (params instanceof ArrayInitializer || params instanceof ObjectInitializer) {
+		if (params instanceof IDestructuringPattern) {
 			//            markDestructuring(params);
 			//            fnNode.addParam(params);
 			//            String pname = currentScriptOrFn.getNextTempName();
@@ -2626,12 +2627,11 @@ public class Parser implements IParser{
 
 			if (tt == Token.LB || tt == Token.LC) {
 				// Destructuring assignment, e.g., var [a,b] = ...
-				// TODO not supported in DLTK
-//				destructuring = destructuringPrimaryExpr();
-//				end = destructuring.end();
-//				if (!(destructuring instanceof DestructuringForm))
-//					reportError("msg.bad.assign.left", kidPos, end - kidPos);
-				//markDestructuring(destructuring);
+				destructuring = destructuringPrimaryExpr();
+				end = destructuring.end();
+				if (!(destructuring instanceof IDestructuringPattern))
+					reportError("msg.bad.assign.left", kidPos, end - kidPos);
+				markDestructuring(destructuring);
 			} else {
 				// Simple variable name
 				mustMatchToken(Token.NAME, "msg.bad.var", true);
@@ -2658,10 +2658,10 @@ public class Parser implements IParser{
 				end = init.sourceEnd();
 			}
 			if (destructuring != null) {
-				//                if (init == null && !inForInit) {
-				//                    reportError("msg.destruct.assign.no.init");
-				//                }
-				//                vi.setTarget(destructuring);
+				if (init == null && !inForInit) {
+					reportError("msg.destruct.assign.no.init");
+				}
+				variableDeclaration.setTarget(destructuring);
 				variableDeclaration.setStart(kidPos);
 			} else {
 				variableDeclaration.setIdentifier(name);   
@@ -2890,20 +2890,19 @@ public class Parser implements IParser{
 			tt = peekToken();
 		}
 		if (Token.FIRST_ASSIGN <= tt && tt <= Token.LAST_ASSIGN) {
-			//            if (inDestructuringAssignment) {
-			//                // default values inside destructuring assignments,
-			//                // like 'var [a = 10] = b' or 'var {a: b = 10} = c',
-			//                // are not supported
-			//                reportError("msg.destruct.default.vals");
-			//            }
+			if (inDestructuringAssignment) {
+				// default values inside destructuring assignments,
+				// like 'var [a = 10] = b' or 'var {a: b = 10} = c',
+				// are not supported
+				reportError("msg.destruct.default.vals");
+			}
 
 			consumeToken();
 
 			// Pull out JSDoc info and reset it before recursing.
 			Comment jsdocNode = getAndResetJsDoc();
 
-			//TODO add support in dltk
-			//            markDestructuring(pn);
+			markDestructuring(pn);
 			int opPos = ts.getTokenBeg();    
 			pn = createBinaryOperation(tt, opPos,
 					pn, assignExpr(), getParent());
@@ -5038,11 +5037,11 @@ public class Parser implements IParser{
 	}
 
 	void markDestructuring(Expression expr) {
-//		if (expr instanceof DestructuringForm) {
-//			((DestructuringForm) expr).setIsDestructuring(true);
-//		} else if (expr instanceof ParenthesizedExpression) {
-//			markDestructuring(((ParenthesizedExpression) expr).getExpression());
-//		}
+		if (expr instanceof IDestructuringPattern de) {
+			de.setIsDestructuring(true);
+		} else if (expr instanceof ParenthesizedExpression) {
+			markDestructuring(((ParenthesizedExpression) expr).getExpression());
+		}
 	}
 
 	// throw a failed-assertion with some helpful debugging info

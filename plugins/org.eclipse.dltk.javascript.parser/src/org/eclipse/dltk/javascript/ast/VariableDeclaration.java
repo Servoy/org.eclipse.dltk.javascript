@@ -18,6 +18,8 @@ public class VariableDeclaration extends JSNode implements ISourceable,
 		JSDeclaration {
 
 	private Identifier identifier;
+	private Expression target;
+	
 	// TODO (alex) remove unused field in DLTK 6.0
 	@Deprecated
 	private int colonPosition = -1;
@@ -35,8 +37,13 @@ public class VariableDeclaration extends JSNode implements ISourceable,
 	@Override
 	public String toSourceString(String indentationString) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(identifier != null ? identifier.getName()
-				: JSLiterals.ERROR_TOKEN);
+		if (target != null) {
+			sb.append(target.toSourceString(indentationString));
+		} else if (identifier != null) {
+			sb.append(identifier.getName());
+		} else {
+			sb.append(JSLiterals.ERROR_TOKEN);
+		}
 		if (initializer != null) {
 			sb.append(JSLiterals.ASSIGN);
 			sb.append(initializer.toSourceString(indentationString));
@@ -47,7 +54,9 @@ public class VariableDeclaration extends JSNode implements ISourceable,
 	@Override
 	public void traverse(ASTVisitor visitor) throws Exception {
 		if (visitor.visit(this)) {
-			if (identifier != null) {
+			if (target != null) {
+				target.traverse(visitor);
+			} else if (identifier != null) {
 				identifier.traverse(visitor);
 			}
 			if (initializer != null) {
@@ -104,6 +113,20 @@ public class VariableDeclaration extends JSNode implements ISourceable,
 
 	public void setIdentifier(Identifier name) {
 		this.identifier = name;
+		if (target == null) {
+			this.target = name;
+		}
+	}
+	
+	public Expression getTarget() {
+		return target;
+	}
+
+	public void setTarget(Expression target) {
+		this.target = target;
+		if (target instanceof Identifier && identifier == null) {
+			this.identifier = (Identifier) target;
+		}
 	}
 
 	public Expression getInitializer() {

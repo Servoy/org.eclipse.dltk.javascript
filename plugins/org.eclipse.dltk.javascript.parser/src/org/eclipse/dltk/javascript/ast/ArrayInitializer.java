@@ -19,12 +19,13 @@ import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.utils.IntList;
 
-public class ArrayInitializer extends Expression {
+public class ArrayInitializer extends Expression implements IDestructuringPattern {
 
 	private final List<Expression> items;
 	private final IntList commas;
 	private int LB = -1;
 	private int RB = -1;
+	private boolean isDestructuring = false;
 
 	public ArrayInitializer(JSNode parent, int itemCount) {
 		super(parent);
@@ -102,4 +103,13 @@ public class ArrayInitializer extends Expression {
 		return buffer.toString();
 	}
 
+	@Override
+	public void setIsDestructuring(boolean markDestructuring) {
+		this.isDestructuring  = markDestructuring;		
+	}
+	
+	@Override
+	public boolean isDestructuring() {
+        return this.isDestructuring;
+    }
 }

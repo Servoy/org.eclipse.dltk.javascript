@@ -3102,4 +3102,74 @@ public class TestRhinoParser {
 		assertEquals(exp.getLeftExpression().toString(), expv4.getLeftExpression().toString());
 		assertEquals(exp.getRightExpression().toString(), expv4.getRightExpression().toString());
 	}
+	
+	@Test
+	public void testArrayDestructuring() {
+        String source = "[a, b] = [10, 20];";
+ 
+        Script scriptv4 = getScriptv4(source);
+        assertNotNull(scriptv4);
+        
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertTrue(assignmentv4.isAssignment());
+		assertEquals(7, assignmentv4.getOperationPosition());      
+		ArrayInitializer left = (ArrayInitializer) assignmentv4.getLeftExpression();
+		assertTrue(left.isDestructuring());
+		ArrayInitializer right = (ArrayInitializer) assignmentv4.getRightExpression();
+		assertFalse(right.isDestructuring());
+	}
+	
+	@Test
+	public void testObjectDestructuring() {
+	    String source = "({x, y} = {x: 1, y: 2});";
+
+	    Script scriptv4 = getScriptv4(source);
+	    assertNotNull(scriptv4);
+
+	    VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+	    assertNotNull(expressionv4);
+	    ParenthesizedExpression parens = (ParenthesizedExpression) expressionv4.getExpression();
+	    assertNotNull(parens);
+	    BinaryOperation assignmentv4 = (BinaryOperation) parens.getExpression();
+	    assertTrue(assignmentv4.isAssignment());
+	    assertEquals(8, assignmentv4.getOperationPosition());
+	    ObjectInitializer left = (ObjectInitializer) assignmentv4.getLeftExpression();
+	    assertTrue(left.isDestructuring());
+	    ObjectInitializer right = (ObjectInitializer) assignmentv4.getRightExpression();
+	    assertFalse(right.isDestructuring());
+	}
+	
+	@Test
+	public void testArrayDestructuringDecl() {
+        String source = "var [a, b] = [10, 20];";
+ 
+        Script scriptv4 = getScriptv4(source);
+        assertNotNull(scriptv4);
+        VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
+		VariableDeclaration variableDeclarationv4 = statementv4.getVariables().get(0);
+		assertTrue(variableDeclarationv4.getTarget() instanceof ArrayInitializer);
+		ArrayInitializer target = (ArrayInitializer) variableDeclarationv4.getTarget();
+		assertTrue(target.isDestructuring());
+		assertTrue(variableDeclarationv4.getInitializer() instanceof ArrayInitializer);
+		ArrayInitializer initializer = (ArrayInitializer) variableDeclarationv4.getInitializer();
+		assertFalse(initializer.isDestructuring());
+	}
+	
+	@Test
+	public void testObjectDestructuringDecl() {
+	    String source = "let {x, y} = {x: 10, y: 20};";
+
+	    Script scriptv4 = getScriptv4(source);
+	    assertNotNull(scriptv4);
+	    VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+	    LetStatement statementv4 = (LetStatement) expressionv4.getExpression();
+	    VariableDeclaration variableDeclarationv4 = statementv4.getVariables().get(0);
+	    assertTrue(variableDeclarationv4.getTarget() instanceof ObjectInitializer);
+	    ObjectInitializer target = (ObjectInitializer) variableDeclarationv4.getTarget();
+	    assertTrue(target.isDestructuring());
+	    assertTrue(variableDeclarationv4.getInitializer() instanceof ObjectInitializer);
+	    ObjectInitializer initializer = (ObjectInitializer) variableDeclarationv4.getInitializer();
+	    assertFalse(initializer.isDestructuring());
+	}
 }

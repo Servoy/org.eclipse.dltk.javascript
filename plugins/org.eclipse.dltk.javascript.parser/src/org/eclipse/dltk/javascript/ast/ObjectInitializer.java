@@ -20,13 +20,14 @@ import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.utils.IntList;
 
-public class ObjectInitializer extends Expression {
+public class ObjectInitializer extends Expression implements IDestructuringPattern {
 
 	private final List<ObjectInitializerPart> initializers = new ArrayList<ObjectInitializerPart>();
 	private int LC = -1;
 	private int RC = -1;
 	private IntList commas;
 	private boolean multiline;
+	private boolean isDestructuring;
 
 	public ObjectInitializer(JSNode parent) {
 		super(parent);
@@ -150,5 +151,14 @@ public class ObjectInitializer extends Expression {
 
 		return buffer.toString();
 	}
-
+	
+	@Override
+	public void setIsDestructuring(boolean markDestructuring) {
+		this.isDestructuring  = markDestructuring;		
+	}
+	
+	@Override
+	public boolean isDestructuring() {
+        return this.isDestructuring;
+    }
 }

@@ -27,6 +27,7 @@ import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
+import org.eclipse.dltk.javascript.ast.IDestructuringPattern;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Label;
@@ -201,7 +202,9 @@ public class CodeValidation extends AbstractNavigationVisitor<Object> implements
 		// TODO what else? XML?
 		return expression instanceof Identifier
 				|| expression instanceof PropertyExpression
-				|| expression instanceof GetArrayItemExpression;
+				|| expression instanceof GetArrayItemExpression
+				|| expression instanceof IDestructuringPattern de
+						&& de.isDestructuring();
 	}
 
 	@Override

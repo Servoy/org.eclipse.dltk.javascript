@@ -16,5 +16,7 @@ public abstract class ObjectInitializerPart extends JSNode {
 	public ObjectInitializerPart(JSNode parent) {
 		super(parent);
 	}
+	
+	public abstract Expression getName();
 
 }

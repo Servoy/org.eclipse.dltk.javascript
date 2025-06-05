@@ -51,4 +51,13 @@ public class PropertyShorthand extends ObjectInitializerPart implements ISourcea
 			return null;
 		}
 	}
+
+	@Override
+	public Expression getName() {
+		final Expression name = getExpression();
+		if (name instanceof Identifier) {
+			return name;
+		}
+		return null;
+	}
 }

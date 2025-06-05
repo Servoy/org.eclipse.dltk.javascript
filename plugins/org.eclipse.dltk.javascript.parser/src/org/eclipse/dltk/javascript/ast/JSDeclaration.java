@@ -11,8 +11,13 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.ast;
 
+import java.util.List;
+
 public interface JSDeclaration {
 
 	Identifier getIdentifier();
-
+	
+	default List<Identifier> getIdentifiers() {
+		return List.of(getIdentifier());
+	}
 }

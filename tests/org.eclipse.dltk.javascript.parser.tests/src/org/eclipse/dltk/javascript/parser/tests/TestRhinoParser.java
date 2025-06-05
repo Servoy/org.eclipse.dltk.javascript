@@ -3147,7 +3147,7 @@ public class TestRhinoParser {
         assertNotNull(scriptv4);
         VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
 		VariableStatement statementv4 = (VariableStatement) expressionv4.getExpression();
-		VariableDeclaration variableDeclarationv4 = statementv4.getVariables().get(0);
+		DestructuringVariableDeclaration variableDeclarationv4 = (DestructuringVariableDeclaration) statementv4.getBindings().get(0);
 		assertTrue(variableDeclarationv4.getTarget() instanceof ArrayInitializer);
 		ArrayInitializer target = (ArrayInitializer) variableDeclarationv4.getTarget();
 		assertTrue(target.isDestructuring());
@@ -3164,7 +3164,7 @@ public class TestRhinoParser {
 	    assertNotNull(scriptv4);
 	    VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
 	    LetStatement statementv4 = (LetStatement) expressionv4.getExpression();
-	    VariableDeclaration variableDeclarationv4 = statementv4.getVariables().get(0);
+	    DestructuringVariableDeclaration variableDeclarationv4 = (DestructuringVariableDeclaration)statementv4.getBindings().get(0);
 	    assertTrue(variableDeclarationv4.getTarget() instanceof ObjectInitializer);
 	    ObjectInitializer target = (ObjectInitializer) variableDeclarationv4.getTarget();
 	    assertTrue(target.isDestructuring());

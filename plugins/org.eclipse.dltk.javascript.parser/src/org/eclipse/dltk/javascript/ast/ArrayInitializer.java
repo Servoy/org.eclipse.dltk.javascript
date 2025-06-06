@@ -112,4 +112,9 @@ public class ArrayInitializer extends Expression implements IDestructuringPatter
 	public boolean isDestructuring() {
         return this.isDestructuring;
     }
+
+	@Override
+	public List<Identifier> getIdentifiers() {
+		return items.stream().filter(e -> e instanceof Identifier).map(e -> (Identifier) e).toList();
+	}
 }

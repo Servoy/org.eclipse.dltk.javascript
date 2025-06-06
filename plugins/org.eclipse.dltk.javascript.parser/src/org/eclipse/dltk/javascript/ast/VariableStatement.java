@@ -28,7 +28,7 @@ public class VariableStatement extends Expression implements
 		IVariableStatement, Documentable {
 
 	private Keyword varKeyword;
-	private final List<VariableDeclaration> variables = new ArrayList<VariableDeclaration>();
+	private final List<VariableBinding> variables = new ArrayList<VariableBinding>();
 	private Comment documentation;
 
 	public VariableStatement(JSNode parent) {
@@ -51,11 +51,11 @@ public class VariableStatement extends Expression implements
 		}
 	}
 
-	public List<VariableDeclaration> getVariables() {
+	public List<VariableBinding> getBindings() {
 		return this.variables;
 	}
 
-	public void addVariable(VariableDeclaration declaration) {
+	public void addBinding(VariableBinding declaration) {
 		this.variables.add(declaration);
 	}
 

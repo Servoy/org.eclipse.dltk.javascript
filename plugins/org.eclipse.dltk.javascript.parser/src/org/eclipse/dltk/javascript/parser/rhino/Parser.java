@@ -40,6 +40,7 @@ import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DecimalLiteral;
 import org.eclipse.dltk.javascript.ast.DefaultClause;
 import org.eclipse.dltk.javascript.ast.DefaultXmlNamespaceStatement;
+import org.eclipse.dltk.javascript.ast.DestructuringVariableDeclaration;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.Documentable;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
@@ -90,6 +91,7 @@ import org.eclipse.dltk.javascript.ast.SwitchStatement;
 import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
@@ -2647,7 +2649,7 @@ public class Parser implements IParser{
 
 			Comment jsdocNode = getAndResetJsDoc();
 			if (name != null) name.setDocumentation(jsdocNode != null ? jsdocNode : varjsdocNode);
-			VariableDeclaration variableDeclaration = new VariableDeclaration(variableStatement); 
+			VariableBinding variableDeclaration = destructuring == null ? new VariableDeclaration(variableStatement) : new DestructuringVariableDeclaration(variableStatement);; 
 			parents.push(variableDeclaration);
 			Expression init = null;
 			tt = peekToken();
@@ -2661,10 +2663,10 @@ public class Parser implements IParser{
 				if (init == null && !inForInit) {
 					reportError("msg.destruct.assign.no.init");
 				}
-				variableDeclaration.setTarget(destructuring);
+				((DestructuringVariableDeclaration) variableDeclaration).setTarget((IDestructuringPattern) destructuring);
 				variableDeclaration.setStart(kidPos);
 			} else {
-				variableDeclaration.setIdentifier(name);   
+				((VariableDeclaration) variableDeclaration).setIdentifier(name);   
 				name.setParent(variableDeclaration);
 				variableDeclaration.setStart(name.start());
 				if (init == null) end = name.end();
@@ -2672,8 +2674,11 @@ public class Parser implements IParser{
 			variableDeclaration.setEnd(end);
 			variableDeclaration.setInitializer(init);
 			variableDeclaration.setAssignPosition(assignPos);
-			variableStatement.addVariable(variableDeclaration);
-			defineSymbol(declType, variableDeclaration.getIdentifier(), inForInit, variableDeclaration);
+			variableStatement.addBinding(variableDeclaration);
+			for (Identifier identifier : variableDeclaration.getIdentifiers()) {
+				if (identifier == null) continue; // for empty elem. [a, , b, ...rest]?
+				defineSymbol(declType, identifier, inForInit, variableDeclaration);
+			}
 
 			parents.pop();
 			if (!matchToken(Token.COMMA, true)) break;

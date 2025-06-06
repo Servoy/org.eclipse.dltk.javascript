@@ -12,6 +12,7 @@ import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.internal.parser.JSLiterals;
 
@@ -19,7 +20,7 @@ public class LetStatement extends Expression
 		implements IVariableStatement, Documentable {
 
 	private Keyword letKeyword;
-	private final List<VariableDeclaration> variables = new ArrayList<VariableDeclaration>();
+	private final List<VariableBinding> variables = new ArrayList<VariableBinding>();
 	private Comment documentation;
 
 	public LetStatement(JSNode parent) {
@@ -42,11 +43,11 @@ public class LetStatement extends Expression
 		}
 	}
 
-	public List<VariableDeclaration> getVariables() {
+	public List<VariableBinding> getBindings() {
 		return this.variables;
 	}
 
-	public void addVariable(VariableDeclaration declaration) {
+	public void addBinding(VariableBinding declaration) {
 		this.variables.add(declaration);
 	}
 

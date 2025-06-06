@@ -26,7 +26,7 @@ import org.eclipse.dltk.javascript.internal.parser.JSLiterals;
 public class ConstStatement extends Expression implements IVariableStatement, Documentable {
 
 	private Keyword constKeyword;
-	private final List<VariableDeclaration> consts = new ArrayList<VariableDeclaration>();
+	private final List<VariableBinding> consts = new ArrayList<VariableBinding>();
 	private Comment documentation;
 
 	public ConstStatement(JSNode parent) {
@@ -48,14 +48,6 @@ public class ConstStatement extends Expression implements IVariableStatement, Do
 
 			visitor.endvisit(this);
 		}
-	}
-
-	public List<VariableDeclaration> getVariables() {
-		return this.consts;
-	}
-
-	public void addVariable(VariableDeclaration declaration) {
-		consts.add(declaration);
 	}
 
 	public Keyword getConstKeyword() {
@@ -95,4 +87,13 @@ public class ConstStatement extends Expression implements IVariableStatement, Do
 		this.documentation = documentation;
 	}
 
+	@Override
+	public void addBinding(VariableBinding binding) {
+		consts.add(binding);
+	}
+
+	@Override
+	public List<VariableBinding> getBindings() {
+		return consts;
+	}
 }

@@ -12,15 +12,27 @@
 package org.eclipse.dltk.javascript.ast;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.dltk.ast.ASTNode;
 
 public interface IVariableStatement {
-	void addVariable(VariableDeclaration declaration);
+	
+	default void addVariable(VariableDeclaration declaration) {
+	    addBinding(declaration);
+	}
 
-	List<VariableDeclaration> getVariables();
+	default List<VariableDeclaration> getVariables() {
+	    return getBindings().stream()
+	        .filter(b -> b instanceof VariableDeclaration)
+	        .map(b -> (VariableDeclaration) b)
+	        .collect(Collectors.toList());
+	}
 
 	ASTNode getParent();
 
 	Comment getDocumentation();
+	
+	void addBinding(VariableBinding binding);
+    List<VariableBinding> getBindings();
 }

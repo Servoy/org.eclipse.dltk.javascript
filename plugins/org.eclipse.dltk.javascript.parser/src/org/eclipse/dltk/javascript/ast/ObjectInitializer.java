@@ -161,4 +161,11 @@ public class ObjectInitializer extends Expression implements IDestructuringPatte
 	public boolean isDestructuring() {
         return this.isDestructuring;
     }
+	
+	@Override
+	public List<Identifier> getIdentifiers() {
+		//TODO also return method identifiers?
+		return getInitializers().stream().filter(e -> e instanceof PropertyInitializer || e instanceof PropertyShorthand) //
+				.map(e -> (Identifier) e.getName()).toList();
+	}
 }

@@ -18,5 +18,8 @@ public abstract class ObjectInitializerPart extends JSNode {
 	}
 	
 	public abstract Expression getName();
-
+	
+	public Expression getDestructuredValue() {
+	    return null;
+	}
 }

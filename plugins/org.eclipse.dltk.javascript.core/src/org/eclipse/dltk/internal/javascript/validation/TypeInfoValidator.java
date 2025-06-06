@@ -76,6 +76,7 @@ import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
@@ -2022,8 +2023,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 
 		@Override
 		protected void initializeVariable(IValueReference reference,
-				VariableDeclaration declaration) {
-			if (declaration.getInitializer() != null
+				VariableBinding declaration) {
+			if (declaration.getInitializer(reference.getName()) != null
 					&& declaration.getParent() instanceof VariableStatement) {
 				checkAssign(reference, null, declaration);
 			}

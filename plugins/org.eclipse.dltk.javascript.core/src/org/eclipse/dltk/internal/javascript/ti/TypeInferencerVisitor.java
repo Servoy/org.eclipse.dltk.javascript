@@ -60,6 +60,7 @@ import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.GetAllChildrenExpression;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.GetLocalNameExpression;
+import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.IfStatement;
 import org.eclipse.dltk.javascript.ast.JSDeclaration;
@@ -87,6 +88,7 @@ import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
@@ -831,15 +833,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitConstDeclaration(ConstStatement node) {
-		final IValueCollection context = peekContext();
-		IValueReference reference = null;
-		for (VariableDeclaration declaration : node.getVariables()) {
-			reference = context.getChild(declaration
-					.getVariableName());
-			assert reference.exists();
-			initializeVariable(reference, declaration);
-		}
-		return reference;
+		return initializeVariables(node);
 	}
 
 	protected IValueReference createVariable(IValueCollection context,
@@ -881,13 +875,14 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	}
 
 	protected void initializeVariable(final IValueReference reference,
-			VariableDeclaration declaration) {
-		if (declaration.getInitializer() != null) {
+			VariableBinding declaration) {
+		if (declaration.getInitializer(reference.getName()) != null) {
 			final IValueReference assignment;
 			reference
 					.setAttribute(IReferenceAttributes.RESOLVING, Boolean.TRUE);
 			try {
-				assignment = visit(declaration.getInitializer());
+				assignment = visit(
+						declaration.getInitializer(reference.getName()));
 			} finally {
 				reference.setAttribute(IReferenceAttributes.RESOLVING, null);
 			}
@@ -909,7 +904,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 
 			setDeclaredTypeOnVariableInit(reference,
-					declaration.getInitializer());
+					declaration.getInitializer(reference.getName()));
 
 		}
 	}
@@ -2268,12 +2263,18 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitVariableStatement(VariableStatement node) {
+		return initializeVariables(node);
+	}
+
+	private IValueReference initializeVariables(IVariableStatement node) {
 		final IValueCollection collection = peekContext();
 		IValueReference result = null;
-		for (VariableDeclaration declaration : node.getVariables()) {
-			result = collection.getChild(declaration.getVariableName());
-			assert result.exists();
-			initializeVariable(result, declaration);
+		for (VariableBinding declaration : node.getBindings()) {
+			for (String varName : declaration.getVariableNames()) {
+				result = collection.getChild(varName);
+				assert result.exists();
+				initializeVariable(result, declaration);
+			}
 		}
 		return result;
 	}
@@ -2594,14 +2595,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitLetStatement(LetStatement node) {
-		final IValueCollection collection = peekContext();
-		IValueReference result = null;
-		for (VariableDeclaration declaration : node.getVariables()) {
-			result = collection.getChild(declaration.getVariableName());
-			assert result.exists();
-			initializeVariable(result, declaration);
-		}
-		return result;
+		return initializeVariables(node);
 	}
 
 	@Override

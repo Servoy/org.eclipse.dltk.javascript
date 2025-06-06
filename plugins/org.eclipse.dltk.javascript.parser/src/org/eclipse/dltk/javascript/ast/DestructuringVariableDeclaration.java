@@ -61,4 +61,9 @@ public class DestructuringVariableDeclaration extends VariableBinding implements
 	public Identifier getIdentifier() {
 		throw new UnsupportedOperationException("Destructuring declarations do not have a single identifier");		
 	}
+
+	@Override
+	public Expression getInitializer(String name) {
+		return target != null ? target.getInitializerFor(name, initializer) : null;
+	}
 }

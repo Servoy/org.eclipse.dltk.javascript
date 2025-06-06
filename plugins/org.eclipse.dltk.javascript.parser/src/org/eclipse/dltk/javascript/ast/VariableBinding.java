@@ -19,7 +19,7 @@ public abstract class VariableBinding extends JSNode implements JSDeclaration {
 	public Expression getInitializer() {
 		return initializer;
 	}
-
+	
 	public void setInitializer(Expression initializer) {
 		this.initializer = initializer;
 	}
@@ -54,4 +54,5 @@ public abstract class VariableBinding extends JSNode implements JSDeclaration {
 
 	public abstract List<Identifier> getIdentifiers();
 	public abstract List<String> getVariableNames();
+	public abstract Expression getInitializer(String name);
 }

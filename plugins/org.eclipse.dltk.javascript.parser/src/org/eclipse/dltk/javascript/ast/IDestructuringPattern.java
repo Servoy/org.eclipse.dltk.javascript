@@ -15,4 +15,6 @@ public interface IDestructuringPattern {
 	void traverse(ASTVisitor visitor) throws Exception;
 
 	List<Identifier> getIdentifiers();
+
+	Expression getInitializerFor(String name, Expression initializer);
 }

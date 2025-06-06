@@ -80,4 +80,8 @@ public class PropertyInitializer extends ObjectInitializerPart implements
 		}
 	}
 
+	@Override
+	public Expression getDestructuredValue() {
+	    return this.getValue();
+	}
 }

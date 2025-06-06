@@ -168,4 +168,23 @@ public class ObjectInitializer extends Expression implements IDestructuringPatte
 		return getInitializers().stream().filter(e -> e instanceof PropertyInitializer || e instanceof PropertyShorthand) //
 				.map(e -> (Identifier) e.getName()).toList();
 	}
+
+	@Override
+	public Expression getInitializerFor(String name, Expression value) {
+		if (!(value instanceof ObjectInitializer)) return null;
+		ObjectInitializer rhs = (ObjectInitializer) value;
+		for (int i = 0; i < initializers.size(); i++) {
+			ObjectInitializerPart lhsProp = initializers.get(i);
+			ObjectInitializerPart rhsProp = rhs.getInitializers().get(i);
+			if (!(lhsProp.getName() instanceof Identifier)) {
+				continue;
+			}
+
+			Identifier id = (Identifier) lhsProp.getName();
+			if (name.equals(id.getName())) {
+				return rhsProp.getDestructuredValue();
+			}
+		}
+		return null;
+	}
 }

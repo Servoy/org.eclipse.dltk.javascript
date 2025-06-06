@@ -60,4 +60,9 @@ public class PropertyShorthand extends ObjectInitializerPart implements ISourcea
 		}
 		return null;
 	}
+	
+	@Override
+	public Expression getDestructuredValue() {
+	    return this.getExpression();
+	}
 }

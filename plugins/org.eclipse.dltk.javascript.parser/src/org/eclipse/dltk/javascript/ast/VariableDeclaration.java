@@ -96,4 +96,9 @@ public class VariableDeclaration extends VariableBinding implements ISourceable 
 	public List<String> getVariableNames() {
 		return List.of(getVariableName() != null ? getVariableName() : JSLiterals.ERROR_TOKEN);
 	}
+
+	@Override
+	public Expression getInitializer(String name) {
+		return initializer;
+	}
 }

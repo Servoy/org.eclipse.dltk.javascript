@@ -117,4 +117,20 @@ public class ArrayInitializer extends Expression implements IDestructuringPatter
 	public List<Identifier> getIdentifiers() {
 		return items.stream().filter(e -> e instanceof Identifier).map(e -> (Identifier) e).toList();
 	}
+
+	@Override
+	public Expression getInitializerFor(String name, Expression value) {
+		if (!(value instanceof ArrayInitializer)) return null;
+		ArrayInitializer rhs = (ArrayInitializer) value;
+		for (int i = 0; i < items.size(); i++) {
+			Expression lhsItem = items.get(i);
+			if (lhsItem instanceof Identifier) {
+				Identifier id = (Identifier) lhsItem;
+				if (name.equals(id.getName()) && i < rhs.getItems().size()) {
+					return rhs.getItems().get(i);
+				}
+			}
+		}
+		return null;
+	}
 }

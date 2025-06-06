@@ -236,7 +236,7 @@ public abstract class ElementValue implements IValue {
 				}
 			}
 		} else if (type instanceof IRMapType) {
-			final List<IRMember> selection = findMembers(
+			List<IRMember> selection = findMembers(
 					RTypes.OBJECT.getDeclaration(), name, predicate);
 			if (!selection.isEmpty()) {
 				if (selection.size() == 1) {
@@ -247,6 +247,19 @@ public abstract class ElementValue implements IValue {
 			}
 			if (!IValueReference.ARRAY_OP.equals(name)
 					&& !IValueReference.FUNCTION_OP.equals(name)) {
+				final IRTypeDeclaration t = ((IRMapType) type)
+						.getDeclaration();
+				if (t != null) {
+					selection = findMembers(t, name, predicate);
+					if (!selection.isEmpty()) {
+						if (selection.size() == 1) {
+							return createElement(selection.get(0));
+						}
+						return new MemberValue(selection
+								.toArray(new IRMember[selection.size()]));
+					}
+					return null;
+				}
 				return new RTypeValue(((IRMapType) type).getValueType(), null);
 			}
 		} else if (type == RTypes.any()) {

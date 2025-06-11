@@ -175,6 +175,9 @@ public class ObjectInitializer extends Expression implements IDestructuringPatte
 		ObjectInitializer rhs = (ObjectInitializer) value;
 		for (int i = 0; i < initializers.size(); i++) {
 			ObjectInitializerPart lhsProp = initializers.get(i);
+			if (rhs.getInitializers().size() <= i) {
+			    return null;
+			}
 			ObjectInitializerPart rhsProp = rhs.getInitializers().get(i);
 			if (!(lhsProp.getName() instanceof Identifier)) {
 				continue;

@@ -57,7 +57,7 @@ import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
@@ -228,8 +228,11 @@ public class ASTConverter extends ASTVisitor<Node> {
 	public Node visitConstDeclaration(ConstStatement node) {
 		org.eclipse.dltk.javascript.core.dom.ConstStatement res = DOM_FACTORY
 				.createConstStatement();
-		for (VariableDeclaration decl : node.getVariables())
-			res.getDeclarations().add(createVariableDeclaration(decl));
+		for (VariableBinding decl : node.getBindings()) {
+			for (Identifier identifier : decl.getIdentifiers()) {
+				res.getDeclarations().add(createVariableDeclaration(decl, identifier));
+			}
+		}
 		return res;
 	}
 
@@ -605,19 +608,22 @@ public class ASTConverter extends ASTVisitor<Node> {
 	public Node visitVariableStatement(VariableStatement node) {
 		org.eclipse.dltk.javascript.core.dom.VariableStatement res = DOM_FACTORY
 				.createVariableStatement();
-		for (VariableDeclaration decl : node.getVariables())
-			res.getDeclarations().add(createVariableDeclaration(decl));
+		for (VariableBinding decl : node.getBindings()) {
+			for (Identifier identifier : decl.getIdentifiers()) {
+				res.getDeclarations().add(createVariableDeclaration(decl, identifier));
+			}
+		}
 		return res;
 	}
 
 	private org.eclipse.dltk.javascript.core.dom.VariableDeclaration createVariableDeclaration(
-			VariableDeclaration decl) {
+			VariableBinding binding, Identifier identifier) {
 		org.eclipse.dltk.javascript.core.dom.VariableDeclaration res = DOM_FACTORY
 				.createVariableDeclaration();
-		res.setIdentifier(createIdentifier(decl.getIdentifier()));
-		res.setInitializer((Expression) visit(decl.getInitializer()));
-		res.setBegin(decl.sourceStart());
-		res.setEnd(decl.sourceEnd());
+		res.setIdentifier(createIdentifier(identifier));
+		res.setInitializer((Expression) visit(binding.getInitializer(identifier.getName())));
+		res.setBegin(binding.sourceStart());
+		res.setEnd(binding.sourceEnd());
 		return res;
 	}
 
@@ -795,8 +801,11 @@ public class ASTConverter extends ASTVisitor<Node> {
 	public Node visitLetStatement(LetStatement node) {
 		org.eclipse.dltk.javascript.core.dom.LetStatement res = DOM_FACTORY
 				.createLetStatement();
-		for (VariableDeclaration decl : node.getVariables())
-			res.getDeclarations().add(createVariableDeclaration(decl));
+		for (VariableBinding decl : node.getBindings()) {
+			for (Identifier identifier : decl.getIdentifiers()) {
+				res.getDeclarations().add(createVariableDeclaration(decl, identifier));
+			}
+		}
 		return res;
 	}
 }

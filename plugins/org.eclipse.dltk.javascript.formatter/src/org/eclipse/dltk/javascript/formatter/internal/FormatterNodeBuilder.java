@@ -48,6 +48,7 @@ import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DecimalLiteral;
 import org.eclipse.dltk.javascript.ast.DefaultClause;
 import org.eclipse.dltk.javascript.ast.DefaultXmlNamespaceStatement;
+import org.eclipse.dltk.javascript.ast.DestructuringVariableDeclaration;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
 import org.eclipse.dltk.javascript.ast.EmptyStatement;
@@ -89,6 +90,7 @@ import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
@@ -1623,7 +1625,7 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 			}
 
 			private void processVariableDeclarations(IVariableStatement node) {
-				final List<VariableDeclaration> vars = node.getVariables();
+				final List<VariableBinding> vars = node.getBindings();
 				if (vars.isEmpty()) {
 					return;
 				}
@@ -1632,21 +1634,24 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 				formatterNode.addChild(createEmptyTextNode(document, vars
 						.get(0).sourceStart()));
 				push(formatterNode);
-				for (VariableDeclaration var : vars) {
-					visit(var.getIdentifier());
-					if (var.getInitializer() != null) {
-						int position = var.getAssignPosition();
-						skipSpaces(formatterNode, position);
-						processPunctuation(position, 1,
-								new BinaryOperationPinctuationConfiguration());
-						visit(var.getInitializer());
-					}
-					if (var.getCommaPosition() != -1) {
-						int position = var.getCommaPosition();
-						skipSpacesOnly(formatterNode, position);
-						processPunctuation(position, 1,
-								new CommaPunctuationConfiguration());
-					}
+				for (VariableBinding var : vars) {
+					if (var instanceof VariableDeclaration vd) {
+					    visit(vd.getIdentifier());
+					} else if (var instanceof DestructuringVariableDeclaration dvd) {
+					    visit((Expression)dvd.getTarget());
+					} 
+				    if (var.getInitializer() != null) {
+				        int position = var.getAssignPosition();
+				        skipSpaces(formatterNode, position);
+				        processPunctuation(position, 1, new BinaryOperationPinctuationConfiguration());
+				        visit(var.getInitializer());
+				    }
+
+				    if (var.getCommaPosition() != -1) {
+				        int position = var.getCommaPosition();
+				        skipSpacesOnly(formatterNode, position);
+				        processPunctuation(position, 1, new CommaPunctuationConfiguration());
+				    }
 				}
 				checkedPop(formatterNode, vars.get(vars.size() - 1).sourceEnd());
 			}

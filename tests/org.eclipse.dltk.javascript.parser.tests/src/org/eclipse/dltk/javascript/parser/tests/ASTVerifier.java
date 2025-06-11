@@ -70,6 +70,7 @@ import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
@@ -223,7 +224,7 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 	@Override
 	public Boolean visitConstDeclaration(ConstStatement node) {
 		testKeyword(node.getConstKeyword());
-		visitVariableDeclarations(node.getVariables());
+		visitVariableDeclarations(node.getBindings());
 
 		return true;
 	}
@@ -566,26 +567,29 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 	public Boolean visitVariableStatement(VariableStatement node) {
 
 		testKeyword(node.getVarKeyword());
-		visitVariableDeclarations(node.getVariables());
+		visitVariableDeclarations(node.getBindings());
 
 		return true;
 	}
 
 	private void visitVariableDeclarations(
-			List<VariableDeclaration> declarations) {
-		for (VariableDeclaration declaration : declarations) {
-			visit(declaration.getIdentifier());
-			if (declaration.getInitializer() != null) {
-				visit(declaration.getInitializer());
-			}
-			if (declaration.getColonPosition() != -1) {
-				testChar(':', declaration.getColonPosition());
-			}
-			if (declaration.getAssignPosition() != -1) {
-				testChar('=', declaration.getAssignPosition());
-			}
-			if (declaration.getCommaPosition() != -1) {
-				testChar(',', declaration.getCommaPosition());
+			List<VariableBinding> bindings) {
+		for (VariableBinding binding : bindings) {
+			for (Identifier identifier : binding.getIdentifiers()) {
+				visit(identifier);
+				if (identifier!= null && binding.getInitializer() != null) {
+					visit(binding.getInitializer(identifier.getName()));
+				}
+				if (binding instanceof VariableDeclaration declaration
+						&& declaration.getColonPosition() != -1) {
+					testChar(':', declaration.getColonPosition());
+				}
+				if (binding.getAssignPosition() != -1) {
+					testChar('=', binding.getAssignPosition());
+				}
+				if (binding.getCommaPosition() != -1) {
+					testChar(',', binding.getCommaPosition());
+				}
 			}
 		}
 	}
@@ -833,7 +837,7 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 	@Override
 	public Boolean visitLetStatement(LetStatement node) {
 		testKeyword(node.getLetKeyword());
-		visitVariableDeclarations(node.getVariables());
+		visitVariableDeclarations(node.getBindings());
 
 		return true;
 	}

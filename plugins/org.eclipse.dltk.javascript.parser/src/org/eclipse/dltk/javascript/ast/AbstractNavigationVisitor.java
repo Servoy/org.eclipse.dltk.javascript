@@ -81,19 +81,19 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 
 	@Override
 	public E visitConstDeclaration(ConstStatement node) {
-		processVariables(node.getVariables());
+		processVariables(node.getBindings());
 		return null;
 	}
 
-	private void processVariables(List<VariableDeclaration> variables) {
-		for (VariableDeclaration declaration : variables) {
+	private void processVariables(List<VariableBinding> list) {
+		for (VariableBinding declaration : list) {
 			processVariable(declaration);
 		}
 	}
 
-	protected void processVariable(VariableDeclaration declaration) {
-		if (declaration.getInitializer() != null) {
-			visit(declaration.getInitializer());
+	protected void processVariable(VariableBinding binding) {
+		for (Identifier identifier : binding.getIdentifiers()) {
+			visit(binding.getInitializer(identifier.getName()));
 		}
 	}
 
@@ -350,7 +350,7 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 
 	@Override
 	public E visitVariableStatement(VariableStatement node) {
-		processVariables(node.getVariables());
+		processVariables(node.getBindings());
 		return null;
 	}
 
@@ -424,7 +424,7 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 
 	@Override
 	public E visitLetStatement(LetStatement node) {
-		processVariables(node.getVariables());
+		processVariables(node.getBindings());
 		return null;
 	}
 }

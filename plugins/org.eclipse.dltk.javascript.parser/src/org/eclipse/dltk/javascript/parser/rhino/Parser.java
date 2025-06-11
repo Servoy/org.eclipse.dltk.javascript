@@ -4231,7 +4231,6 @@ public class Parser implements IParser{
 					// first case. (Because of keywords, the second case may be
 					// many tokens.)
 					int peeked = peekToken();
-					if (peeked == Token.COMMA) commas.add(ts.getTokenBeg());
 					if (peeked != Token.COMMA && peeked != Token.COLON && peeked != Token.RC) {
 						if (peeked == Token.LP) {
 							entryKind = METHOD_ENTRY;
@@ -4262,7 +4261,7 @@ public class Parser implements IParser{
 						if (pname instanceof Documentable) {
 							((Documentable) pname).setDocumentation(jsdocNode);
 						}
-						elems.add(plainProperty(pname, tt, commas));
+						elems.add(plainProperty(pname, tt));
 					}
 				}
 
@@ -4347,11 +4346,10 @@ public class Parser implements IParser{
 		return pname;
 	}
 
-	private ObjectInitializerPart plainProperty(Expression property, int ptt, IntList commas) throws IOException {
+	private ObjectInitializerPart plainProperty(Expression property, int ptt) throws IOException {
 		// Support, e.g., |var {x, y} = o| as destructuring shorthand
 		// for |var {x: x, y: y} = o|, as implemented in spidermonkey JS 1.8.
 		int tt = peekToken();
-		if (tt == Token.COMMA) commas.add(ts.getTokenBeg());
 		if ((tt == Token.COMMA || tt == Token.RC)
 				&& ptt == Token.NAME
 				&& compilerEnv.getLanguageVersion() >= Context.VERSION_1_8) {

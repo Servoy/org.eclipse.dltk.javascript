@@ -2108,6 +2108,33 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testPropertyShorthand2() {
+		String source ="obj = { x, y, z }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		
+		Statement statement = scriptv4.getStatements().get(0);
+		assertNotNull(statement);
+		BinaryOperation assignmentv4 = (BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ObjectInitializer initv4 = (ObjectInitializer) assignmentv4.getRightExpression();
+		assertEquals(3, initv4.getInitializers().size());
+		assertTrue(initv4.getInitializers().get(0) instanceof PropertyShorthand);
+		PropertyShorthand property1 = (PropertyShorthand) initv4.getInitializers().get(0);
+		assertEquals("x", property1.getExpression().toString());
+		assertTrue(initv4.getInitializers().get(1) instanceof PropertyShorthand);
+		PropertyShorthand property2 = (PropertyShorthand) initv4.getInitializers().get(1);
+		assertEquals("y", property2.getName().toString());
+		PropertyShorthand property3 = (PropertyShorthand) initv4.getInitializers().get(2);
+		assertEquals("z", property3.getExpression().toString());
+		assertEquals(2, initv4.getCommas().size());
+		assertEquals(9, initv4.getCommas().get(0));
+		assertEquals(12, initv4.getCommas().get(1));
+		assertEquals(6, initv4.getLC());
+		assertEquals(16, initv4.getRC());
+		assertEquals(17, initv4.sourceEnd());
+	}
+	
+	@Test
 	public void testNewPropertyExpression_and_Call() {
 		String source =  "new java.lang.String(string).getBytes()";
 		Script script = getScript(source);	

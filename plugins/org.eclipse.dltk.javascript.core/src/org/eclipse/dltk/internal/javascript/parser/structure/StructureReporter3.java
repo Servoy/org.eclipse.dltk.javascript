@@ -43,6 +43,7 @@ import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.SetMethod;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
 import org.eclipse.dltk.javascript.ast.ThisExpression;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
@@ -180,7 +181,7 @@ public class StructureReporter3 extends
 	}
 
 	@Override
-	protected void processVariable(VariableDeclaration declaration) {
+	protected void processVariable(VariableBinding declaration) {
 		for (IStructureHandler handler : handlers) {
 			final IStructureNode value = handler.handle(declaration);
 			if (value != IStructureHandler.CONTINUE) {
@@ -190,31 +191,42 @@ public class StructureReporter3 extends
 				return;
 			}
 		}
-		if (declaration.getInitializer() instanceof FunctionStatement) {
+
+		List<Identifier> identifiers = declaration.getIdentifiers();
+		if (identifiers.size() == 1 && declaration.getInitializer() instanceof FunctionStatement fn) {
 			peek().getScope().addChild(
-					buildFunctionDeclarationFromAssignment(declaration,
-							(FunctionStatement) declaration.getInitializer(),
-							Collections.<Expression> singletonList(declaration
-									.getIdentifier())));
+				buildFunctionDeclarationFromAssignment(
+					declaration,
+							fn,
+					Collections.<Expression> singletonList(identifiers.get(0))));
 			return;
 		}
-		final JSVariable variable = new JSVariable(
-				declaration.getVariableName());
-		variable.setLocation(declaration.getInitializer() != null ? ReferenceLocation
-				.create(referenceSource, declaration.start(),
-						declaration.end(), declaration.getIdentifier())
-				: ReferenceLocation.create(referenceSource,
-						declaration.start(), declaration.end()));
-		jsdocSupport.processVariable(declaration, variable, fReporter,
-				fTypeChecker);
-		final VariableNode variableNode = new VariableNode(peek(), declaration,
-				variable);
-		peek().getScope().addChild(variableNode);
-		final Expression initializer = declaration.getInitializer();
-		if (initializer != null) {
-			push(variableNode);
-			variableNode.setValue(visit(initializer));
-			pop();
+
+		for (Identifier id : identifiers) {
+			final JSVariable variable = new JSVariable(id.getName());
+			Expression initializer = declaration.getInitializer(id.getName());
+			variable.setLocation(
+					initializer != null
+					? ReferenceLocation.create(referenceSource,
+							declaration.start(), declaration.end(), id)
+					: ReferenceLocation.create(referenceSource,
+							declaration.start(), declaration.end()));
+
+			if (declaration instanceof VariableDeclaration vd) { // TODO fix for
+																	// VariableBinding
+				jsdocSupport.processVariable(vd, variable, fReporter,
+					fTypeChecker);
+			}
+
+			final VariableNode variableNode = new VariableNode(peek(),
+					declaration, variable);
+			peek().getScope().addChild(variableNode);
+
+			if (initializer != null) {
+				push(variableNode);
+				variableNode.setValue(visit(initializer));
+				pop();
+			}
 		}
 	}
 

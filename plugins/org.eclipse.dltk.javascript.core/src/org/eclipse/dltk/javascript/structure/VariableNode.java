@@ -17,8 +17,9 @@ import java.util.List;
 import org.eclipse.dltk.compiler.IElementRequestor.FieldInfo;
 import org.eclipse.dltk.internal.javascript.parser.JSModifiers;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
+import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.NewExpression;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
 import org.eclipse.dltk.javascript.typeinfo.model.JSType;
@@ -26,11 +27,11 @@ import org.eclipse.dltk.javascript.typeinfo.model.JSType;
 public class VariableNode extends ParentNode implements IDeclaration {
 
 	private final IVariable variable;
-	private final VariableDeclaration declaration;
+	private final VariableBinding declaration;
 
 	private IStructureNode value;
 
-	public VariableNode(IParentNode parent, VariableDeclaration declaration,
+	public VariableNode(IParentNode parent, VariableBinding declaration,
 			IVariable variable) {
 		super(parent);
 		this.declaration = declaration;
@@ -38,7 +39,7 @@ public class VariableNode extends ParentNode implements IDeclaration {
 	}
 
 	public String getName() {
-		return declaration.getVariableName();
+		return variable.getName();
 	}
 
 	public JSType getType() {
@@ -66,8 +67,10 @@ public class VariableNode extends ParentNode implements IDeclaration {
 		// if value is set and a result of "new function() {}
 		// then just return the children of that function object.
 		if (value != null
-				&& declaration.getInitializer() instanceof NewExpression
-				&& ((NewExpression) declaration.getInitializer())
+				&& declaration.getInitializer(
+						variable.getName()) instanceof NewExpression
+				&& ((NewExpression) declaration
+						.getInitializer(variable.getName()))
 						.getObjectClass() instanceof FunctionStatement) {
 			return value.getChildren();
 		}
@@ -91,12 +94,15 @@ public class VariableNode extends ParentNode implements IDeclaration {
 	public void reportStructure(IStructureRequestor requestor,
 			IStructureContext context) {
 		final boolean isField = context.allow(IStructureContext.FIELD);
-		if (isField) {
+		Identifier identifier = declaration.getIdentifiers().stream()
+				.filter(id -> variable.getName().equals(id.getName()))
+				.findFirst().orElse(null);
+		if (isField && identifier != null) {
 			final FieldInfo info = new FieldInfo();
 			info.declarationStart = declaration.start();
 			info.name = getName();
-			info.nameSourceStart = declaration.getIdentifier().start();
-			info.nameSourceEnd = declaration.getIdentifier().end() - 1;
+			info.nameSourceStart = identifier.start();
+			info.nameSourceEnd = identifier.end() - 1;
 			info.type = typeToModel(variable.getType());
 			if (variable.getVisibility() != null) {
 				info.modifiers |= variable.getVisibility().getFlags();
@@ -104,10 +110,10 @@ public class VariableNode extends ParentNode implements IDeclaration {
 			if (variable.isDeprecated()) {
 				info.modifiers |= JSModifiers.DEPRECATED;
 			}
-			requestor.enterField(info, declaration.getIdentifier(),
+			requestor.enterField(info, identifier,
 					variable.getType(), false);
 		} else {
-			requestor.enterLocal(declaration.getIdentifier(),
+			requestor.enterLocal(identifier,
 					variable.getType());
 		}
 		reportChildrenStructure(requestor, context);

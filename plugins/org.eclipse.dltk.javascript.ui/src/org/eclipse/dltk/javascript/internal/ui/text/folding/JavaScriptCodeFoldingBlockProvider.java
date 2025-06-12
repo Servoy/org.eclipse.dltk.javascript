@@ -35,6 +35,7 @@ import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.ObjectInitializer;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
@@ -60,7 +61,7 @@ public class JavaScriptCodeFoldingBlockProvider extends
 		}
 		boolean antlr4Parser = new JavascriptParserPreferences().useES6Parser();
 		return antlr4Parser
-				? new org.eclipse.dltk.javascript.parser.v4.JavaScriptParser()
+				? new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
 						.parse(content, null)
 				: new JavaScriptParser().parse(content, null);
 	}
@@ -193,8 +194,10 @@ public class JavaScriptCodeFoldingBlockProvider extends
 
 	@Override
 	public Object visitVariableStatement(VariableStatement node) {
-		for (VariableDeclaration declaration : node.getVariables()) {
-			registerName(declaration.getVariableName(), declaration);
+		for (VariableBinding declaration : node.getBindings()) {
+			for (String name : declaration.getVariableNames()) {
+				registerName(name, declaration);
+			}
 		}
 		return super.visitVariableStatement(node);
 	}

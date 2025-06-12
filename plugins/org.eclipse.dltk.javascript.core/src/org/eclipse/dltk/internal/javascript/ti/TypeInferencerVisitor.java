@@ -89,7 +89,6 @@ import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.WhileStatement;
@@ -837,12 +836,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	}
 
 	protected IValueReference createVariable(IValueCollection context,
-			VariableDeclaration declaration) {
-		final Identifier identifier = declaration.getIdentifier();
+			VariableBinding declaration, Identifier identifier) {
 		final String varName = identifier.getName();
 		final IValueReference reference = context.createChild(varName);
 		final JSVariable variable = new JSVariable(
-				declaration.getVariableName());
+				identifier.getName());
 		for (IModelBuilder extension : this.context.getModelBuilders()) {
 			extension.processVariable(declaration, variable, reporter,
 					getTypeChecker());
@@ -1913,16 +1911,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					// this is very likely a prototype initializer
 					prototypeInitializer.add(funcNode);
 				}
-			} else if (declaration instanceof VariableDeclaration) {
-				final VariableDeclaration varDeclaration = (VariableDeclaration) declaration;
+			} else if (declaration instanceof VariableBinding binding) {
+				for (Identifier identifier : binding.getIdentifiers()) {
 				final IValueReference var = createVariable(collection,
-						varDeclaration);
-				if (varDeclaration.getParent() instanceof ConstStatement) {
+						binding, identifier);
+				if (binding.getParent() instanceof ConstStatement) {
 					var.setAttribute(IAssignProtection.ATTRIBUTE, PROTECT_CONST);
 				}
 				variables.add(var);
 
-				Expression initializer = varDeclaration.getInitializer();
+				Expression initializer = binding
+						.getInitializer(identifier.getName());
 				if (initializer instanceof ParenthesizedExpression pe) {
 					initializer = pe.getExpression();
 				}
@@ -1933,6 +1932,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					prototypeInitializer.add(fs);
 				}
 			}
+		}
 		}
 		for (ForwardDeclaration decl : forwardDecls) {
 			if (decl.method.isConstructor()) {

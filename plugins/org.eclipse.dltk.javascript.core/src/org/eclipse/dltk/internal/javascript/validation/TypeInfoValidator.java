@@ -77,7 +77,6 @@ import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
@@ -1918,10 +1917,10 @@ public class TypeInfoValidator implements IBuildParticipant,
 
 		@Override
 		protected IValueReference createVariable(IValueCollection context,
-				VariableDeclaration declaration) {
-			validateHidesByVariable(context, declaration);
+				VariableBinding declaration, Identifier identifier) {
+			validateHidesByVariable(context, declaration, identifier);
 			final IValueReference variable = super.createVariable(context,
-					declaration);
+					declaration, identifier);
 			if (context.getParent() != null
 					|| canValidateUnusedVariable(context, variable)) {
 				variables.add(variable);
@@ -2032,11 +2031,10 @@ public class TypeInfoValidator implements IBuildParticipant,
 		}
 
 		private void validateHidesByVariable(IValueCollection context,
-				VariableDeclaration declaration) {
+				VariableBinding declaration, Identifier identifier) {
 			if (declaration.getParent() instanceof LetStatement)
 				return;
 			final IValueReference child;
-			final Identifier identifier = declaration.getIdentifier();
 			final IValueCollection parentScope = getParentScope(context);
 			if (parentScope == null) {
 				child = context.getChild(identifier.getName());
@@ -2052,13 +2050,15 @@ public class TypeInfoValidator implements IBuildParticipant,
 					reporter.reportProblem(
 							JavaScriptProblems.VAR_HIDES_PARAMETER, NLS.bind(
 									ValidationMessages.VariableHidesParameter,
-									declaration.getVariableName()), identifier
+									identifier.getName()),
+							identifier
 									.sourceStart(), identifier.sourceEnd());
 				} else if (kind == ReferenceKind.FUNCTION) {
 					reporter.reportProblem(
 							JavaScriptProblems.VAR_HIDES_FUNCTION, NLS.bind(
 									ValidationMessages.VariableHidesFunction,
-									declaration.getVariableName()), identifier
+									identifier.getName()),
+							identifier
 									.sourceStart(), identifier.sourceEnd());
 				} else if (kind == ReferenceKind.PROPERTY) {
 					final Property property = ValueReferenceUtil
@@ -2068,7 +2068,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 								JavaScriptProblems.VAR_HIDES_PROPERTY,
 								NLS.bind(
 										ValidationMessages.VariableHidesPropertyOfType,
-										declaration.getVariableName(), property
+										identifier.getName(),
+										property
 												.getDeclaringType().getName()),
 								identifier.sourceStart(), identifier
 										.sourceEnd());
@@ -2077,7 +2078,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 								JavaScriptProblems.VAR_HIDES_PROPERTY,
 								NLS.bind(
 										ValidationMessages.VariableHidesProperty,
-										declaration.getVariableName()),
+										identifier.getName()),
 								identifier.sourceStart(), identifier
 										.sourceEnd());
 
@@ -2090,7 +2091,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 								JavaScriptProblems.VAR_HIDES_METHOD,
 								NLS.bind(
 										ValidationMessages.VariableHidesMethodOfType,
-										declaration.getVariableName(), method
+										identifier.getName(), method
 												.getDeclaringType().getName()),
 								identifier.sourceStart(), identifier
 										.sourceEnd());
@@ -2098,7 +2099,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 						reporter.reportProblem(
 								JavaScriptProblems.VAR_HIDES_METHOD, NLS.bind(
 										ValidationMessages.VariableHidesMethod,
-										declaration.getVariableName()),
+										identifier.getName()),
 								identifier.sourceStart(), identifier
 										.sourceEnd());
 					}
@@ -2107,14 +2108,16 @@ public class TypeInfoValidator implements IBuildParticipant,
 					reporter.reportProblem(
 							JavaScriptProblems.DUPLICATE_VAR_DECLARATION,
 							NLS.bind(ValidationMessages.VariableHidesVariable,
-									declaration.getVariableName()), identifier
+									identifier.getName()),
+							identifier
 									.sourceStart(), identifier.sourceEnd());
 				} else {
 					reporter.reportProblem(
 							JavaScriptProblems.VAR_HIDES_PREDEFINED,
 							NLS.bind(
 									ValidationMessages.VariableHidesPredefinedIdentifier,
-									declaration.getVariableName()), identifier
+									identifier.getName()),
+							identifier
 									.sourceStart(), identifier.sourceEnd());
 				}
 			}

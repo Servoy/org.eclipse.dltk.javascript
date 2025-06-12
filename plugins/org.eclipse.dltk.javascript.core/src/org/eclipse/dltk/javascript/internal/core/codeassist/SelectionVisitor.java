@@ -22,7 +22,7 @@ import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
@@ -111,17 +111,20 @@ public class SelectionVisitor extends TypeInferencerVisitor {
 
 	@Override
 	protected IValueReference createVariable(
-			IValueCollection context, VariableDeclaration declaration) {
-		IValueReference variable = super.createVariable(context, declaration);
-		if (declaration.getInitializer() != null) {
+			IValueCollection context, VariableBinding declaration,
+			Identifier identifier) {
+		IValueReference variable = super.createVariable(context, declaration,
+				identifier);
+		if (declaration.getInitializer(identifier.getName()) != null) {
 			try {
-				IValueReference visit = visit(declaration.getInitializer());
+				IValueReference visit = visit(
+						declaration.getInitializer(identifier.getName()));
 				assign(variable, visit);
 			} catch (PositionReachedException e) {
 				// ignore this one else it exits to early
 			}
 		}
-		return check(declaration.getIdentifier(), variable);
+		return check(identifier, variable);
 	}
 
 	@Override

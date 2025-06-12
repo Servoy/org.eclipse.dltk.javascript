@@ -42,7 +42,7 @@ import org.eclipse.dltk.javascript.ast.ObjectInitializerPart;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.Script;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.core.JSBindings;
 import org.eclipse.dltk.javascript.internal.core.TemporaryBindings;
@@ -236,8 +236,10 @@ public class JavaScriptMatchLocatorVisitor extends
 
 	private void handleScopeDeclarations(JSScope scope) {
 		for (JSDeclaration declaration : scope.getDeclarations()) {
-			if (declaration instanceof VariableDeclaration) {
-				createVariable((VariableDeclaration) declaration);
+			if (declaration instanceof VariableBinding binding) {
+				for (Identifier identifier : binding.getIdentifiers()) {
+					createVariable(binding, identifier);
+				}
 			} else if (declaration instanceof FunctionStatement) {
 				// TODO Auto-generated method stub
 
@@ -245,12 +247,16 @@ public class JavaScriptMatchLocatorVisitor extends
 		}
 	}
 
-	private void createVariable(VariableDeclaration declaration) {
+	private void createVariable(VariableBinding declaration,
+			Identifier identifier) {
+		String name = identifier.getName();
 		final JSVariable variable = new JSVariable(
-				declaration.getVariableName());
-		variable.setLocation(declaration.getInitializer() != null ? ReferenceLocation
+				name);
+		variable.setLocation(
+				declaration.getInitializer(identifier.getName()) != null
+						? ReferenceLocation
 				.create(referenceSource, declaration.start(),
-						declaration.end(), declaration.getIdentifier())
+										declaration.end(), identifier)
 				: ReferenceLocation.create(referenceSource,
 						declaration.start(), declaration.end()));
 		jsdocSupport.processVariable(declaration, variable, fReporter,
@@ -260,10 +266,10 @@ public class JavaScriptMatchLocatorVisitor extends
 		peek().addChild(variableNode);
 		if (scopes.size() == 1) {
 			// TODO (alex) option to treat it as field or local
-			addFieldDeclaration(declaration.getIdentifier(), variable.getType());
+			addFieldDeclaration(identifier, variable.getType());
 		} else {
-			nodes.add(new LocalVariableDeclarationNode(declaration
-					.getIdentifier(), referenceSource.getSourceModule(),
+			nodes.add(new LocalVariableDeclarationNode(identifier,
+					referenceSource.getSourceModule(),
 					variable.getType()));
 		}
 	}

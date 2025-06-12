@@ -38,6 +38,7 @@ import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.Statement;
+import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.core.JavaScriptLanguageUtil;
@@ -343,13 +344,13 @@ public class JSDocSupport implements IModelBuilder {
 		}
 	}
 
-	public void processVariable(VariableDeclaration declaration,
+	public void processVariable(VariableBinding declaration,
 			IVariable variable, JSProblemReporter reporter,
 			ITypeChecker typeChecker) {
 		Comment comment = declaration.getDocumentation();
 		if (comment == null) {
 			final IVariableStatement statement = declaration.getStatement();
-			final List<VariableDeclaration> vars = statement.getVariables();
+			final List<VariableBinding> vars = statement.getBindings();
 			if (!vars.isEmpty() && vars.get(0) == declaration) {
 				comment = statement.getDocumentation();
 				if (comment == null) {

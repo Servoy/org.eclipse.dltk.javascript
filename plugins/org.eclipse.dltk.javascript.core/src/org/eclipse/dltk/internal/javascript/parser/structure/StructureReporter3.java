@@ -44,7 +44,6 @@ import org.eclipse.dltk.javascript.ast.SetMethod;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
 import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
-import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
 import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
@@ -212,11 +211,8 @@ public class StructureReporter3 extends
 					: ReferenceLocation.create(referenceSource,
 							declaration.start(), declaration.end()));
 
-			if (declaration instanceof VariableDeclaration vd) { // TODO fix for
-																	// VariableBinding
-				jsdocSupport.processVariable(vd, variable, fReporter,
+			jsdocSupport.processVariable(declaration, variable, fReporter,
 					fTypeChecker);
-			}
 
 			final VariableNode variableNode = new VariableNode(peek(),
 					declaration, variable);

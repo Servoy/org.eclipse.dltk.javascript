@@ -3181,7 +3181,45 @@ public class TestRhinoParser {
 		assertTrue(variableDeclarationv4.getInitializer() instanceof ArrayInitializer);
 		ArrayInitializer initializer = (ArrayInitializer) variableDeclarationv4.getInitializer();
 		assertFalse(initializer.isDestructuring());
+		String id1 = variableDeclarationv4.getIdentifiers().get(0).getName();
+		assertEquals("a", id1);
+		assertEquals("10", variableDeclarationv4.getInitializer(id1).toString());
+		String id2 = variableDeclarationv4.getIdentifiers().get(1).getName();
+		assertEquals("b", id2);
+		assertEquals("20", variableDeclarationv4.getInitializer(id2).toString());
 	}
+	
+	@Test
+	public void testArrayDestructuringWithIdentifier() {
+	    String source = "let [a, b] = arr;";
+
+	    Script script = getScriptv4(source);
+	    assertNotNull(script);
+
+	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+	    LetStatement letStatement = (LetStatement) expression.getExpression();
+	    DestructuringVariableDeclaration destructuringDecl = 
+	        (DestructuringVariableDeclaration) letStatement.getBindings().get(0);
+
+	    assertTrue(destructuringDecl.getTarget() instanceof ArrayInitializer);
+	    assertTrue(destructuringDecl.getInitializer() instanceof Identifier);
+
+	    ArrayInitializer target = (ArrayInitializer) destructuringDecl.getTarget();
+	    Identifier initializer = (Identifier) destructuringDecl.getInitializer();
+
+	    assertTrue(target.isDestructuring());
+	    assertEquals("arr", initializer.getName());
+
+	    List<Identifier> ids = destructuringDecl.getIdentifiers();
+	    assertEquals(2, ids.size());
+	    assertEquals("a", ids.get(0).getName());
+	    assertEquals("b", ids.get(1).getName());
+
+	    // Because the initializer is a single identifier (arr), we can't resolve specific destructured values
+	    assertNull(destructuringDecl.getInitializer("a"));
+	    assertNull(destructuringDecl.getInitializer("b"));
+	}
+
 	
 	@Test
 	public void testObjectDestructuringDecl() {
@@ -3191,12 +3229,55 @@ public class TestRhinoParser {
 	    assertNotNull(scriptv4);
 	    VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
 	    LetStatement statementv4 = (LetStatement) expressionv4.getExpression();
-	    DestructuringVariableDeclaration variableDeclarationv4 = (DestructuringVariableDeclaration)statementv4.getBindings().get(0);
-	    assertTrue(variableDeclarationv4.getTarget() instanceof ObjectInitializer);
-	    ObjectInitializer target = (ObjectInitializer) variableDeclarationv4.getTarget();
+	    DestructuringVariableDeclaration variableDeclaration = 
+	        (DestructuringVariableDeclaration) statementv4.getBindings().get(0);
+	    assertTrue(variableDeclaration.getTarget() instanceof ObjectInitializer);
+	    assertTrue(variableDeclaration.getInitializer() instanceof ObjectInitializer);
+	    ObjectInitializer target = (ObjectInitializer) variableDeclaration.getTarget();
+	    ObjectInitializer initializer = (ObjectInitializer) variableDeclaration.getInitializer();
 	    assertTrue(target.isDestructuring());
-	    assertTrue(variableDeclarationv4.getInitializer() instanceof ObjectInitializer);
-	    ObjectInitializer initializer = (ObjectInitializer) variableDeclarationv4.getInitializer();
 	    assertFalse(initializer.isDestructuring());
+	    String id1 = variableDeclaration.getIdentifiers().get(0).getName();
+	    String id2 = variableDeclaration.getIdentifiers().get(1).getName();
+	    assertEquals("x", id1);
+	    assertEquals("y", id2);
+	    Expression xInit = variableDeclaration.getInitializer(id1);
+	    Expression yInit = variableDeclaration.getInitializer(id2);
+	    assertNotNull(xInit);
+	    assertNotNull(yInit);
+	    assertEquals("10", xInit.toString());
+	    assertEquals("20", yInit.toString());
 	}
+	
+	@Test
+	public void testObjectDestructuringWithIdentifier() {
+	    String source = "let {x, y} = obj;";
+
+	    Script script = getScriptv4(source);
+	    assertNotNull(script);
+
+	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+	    LetStatement letStatement = (LetStatement) expression.getExpression();
+	    DestructuringVariableDeclaration destructuringDecl =
+	        (DestructuringVariableDeclaration) letStatement.getBindings().get(0);
+
+	    assertTrue(destructuringDecl.getTarget() instanceof ObjectInitializer);
+	    assertTrue(destructuringDecl.getInitializer() instanceof Identifier);
+
+	    ObjectInitializer target = (ObjectInitializer) destructuringDecl.getTarget();
+	    Identifier initializer = (Identifier) destructuringDecl.getInitializer();
+
+	    assertTrue(target.isDestructuring());
+	    assertEquals("obj", initializer.getName());
+
+	    List<Identifier> ids = destructuringDecl.getIdentifiers();
+	    assertEquals(2, ids.size());
+	    assertEquals("x", ids.get(0).getName());
+	    assertEquals("y", ids.get(1).getName());
+
+	    // Since 'obj' is not a literal object, we can't determine the values of x and y
+	    assertNull(destructuringDecl.getInitializer("x"));
+	    assertNull(destructuringDecl.getInitializer("y"));
+	}
+
 }

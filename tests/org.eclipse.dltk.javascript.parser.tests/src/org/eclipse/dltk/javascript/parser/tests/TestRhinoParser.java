@@ -3279,5 +3279,117 @@ public class TestRhinoParser {
 	    assertNull(destructuringDecl.getInitializer("x"));
 	    assertNull(destructuringDecl.getInitializer("y"));
 	}
+	
+	@Test
+	public void testArrayDestructuringWithSkippedElement() {
+	    String source = "const [a, , b] = [1, 2, 3];";
 
+	    Script script = getScriptv4(source);
+	    assertNotNull(script);
+
+	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+	    ConstStatement constStmt = (ConstStatement) expression.getExpression();
+	    DestructuringVariableDeclaration decl = (DestructuringVariableDeclaration) constStmt.getBindings().get(0);
+
+	    assertTrue(decl.getTarget() instanceof ArrayInitializer);
+	    ArrayInitializer target = (ArrayInitializer) decl.getTarget();
+	    ArrayInitializer initializer = (ArrayInitializer) decl.getInitializer();
+
+	    assertTrue(target.isDestructuring());
+	    assertFalse(initializer.isDestructuring());
+
+	    List<Identifier> ids = decl.getIdentifiers();
+	    assertEquals(2, ids.size());
+	    assertEquals("a", ids.get(0).getName());
+	    assertEquals("b", ids.get(1).getName());
+
+	    assertEquals("1", decl.getInitializer("a").toString());
+	    assertEquals("3", decl.getInitializer("b").toString());
+	}
+
+// TODO not supported yet in rhino 1.8.0
+//	@Test
+//	public void testObjectDestructuringWithRest() {
+//	    String source = "const { a, ...rest } = { a: 1, b: 2, c: 3, d: 4 };";
+//
+//	    Script script = getScriptv4(source);
+//	    assertNotNull(script);
+//
+//	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+//	    ConstStatement constStmt = (ConstStatement) expression.getExpression();
+//	    DestructuringVariableDeclaration decl = (DestructuringVariableDeclaration) constStmt.getBindings().get(0);
+//
+//	    assertTrue(decl.getTarget() instanceof ObjectInitializer);
+//	    ObjectInitializer target = (ObjectInitializer) decl.getTarget();
+//	    ObjectInitializer initializer = (ObjectInitializer) decl.getInitializer();
+//
+//	    assertTrue(target.isDestructuring());
+//	    assertFalse(initializer.isDestructuring());
+//
+//	    List<Identifier> ids = decl.getIdentifiers();
+//	    assertEquals(2, ids.size());
+//	    assertEquals("a", ids.get(0).getName());
+//	    assertEquals("rest", ids.get(1).getName());
+//
+//	    assertEquals("1", decl.getInitializer("a").toString());
+//
+//	    assertNull(decl.getInitializer("rest")); //TODO should it return null?
+//	}
+
+// TODO not supported yet in rhino 1.8.0
+//	@Test
+//	public void testArrayDestructuringWithRest() {
+//	    String source = "const [a, ...rest] = [1, 2, 3, 4];";
+//
+//	    Script script = getScriptv4(source);
+//	    assertNotNull(script);
+//
+//	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+//	    ConstStatement constStmt = (ConstStatement) expression.getExpression();
+//	    DestructuringVariableDeclaration decl = (DestructuringVariableDeclaration) constStmt.getBindings().get(0);
+//	    assertTrue(decl.getTarget() instanceof ArrayInitializer);
+//	    ArrayInitializer target = (ArrayInitializer) decl.getTarget();
+//	    ArrayInitializer initializer = (ArrayInitializer) decl.getInitializer();
+//	    assertTrue(target.isDestructuring());
+//	    assertFalse(initializer.isDestructuring());
+//	    List<Identifier> ids = decl.getIdentifiers();
+//	    assertEquals(2, ids.size());
+//	    assertEquals("a", ids.get(0).getName());
+//	    assertEquals("rest", ids.get(1).getName());
+//	    assertEquals("1", decl.getInitializer("a").toString());
+//	    // TODO returns null or must be handled separately?
+//	    assertNull(decl.getInitializer("rest"));
+//	}
+	
+	@Test
+	public void testArrayDestructuringWithDefaults() {
+	    String source = "var [d = 0, e = 5, f = 6] = [4,,undefined];";
+
+	    Script script = getScriptv4(source);
+	    assertNotNull(script);
+
+	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+	    VariableStatement varStmt = (VariableStatement) expression.getExpression();
+	    DestructuringVariableDeclaration decl = (DestructuringVariableDeclaration) varStmt.getBindings().get(0);
+	    ArrayInitializer target = (ArrayInitializer) decl.getTarget();
+	    ArrayInitializer initializer = (ArrayInitializer) decl.getInitializer();
+	    assertTrue(target.isDestructuring());
+	    assertFalse(initializer.isDestructuring());
+	}
+	
+	@Test
+	public void testObjectDestructuringWithDefaults() {
+	    String source = "var {a = 1, b = 0} = {b:2};";
+
+	    Script script = getScriptv4(source);
+	    assertNotNull(script);
+	    
+	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+	    VariableStatement varStmt = (VariableStatement) expression.getExpression();
+	    DestructuringVariableDeclaration decl = (DestructuringVariableDeclaration) varStmt.getBindings().get(0);
+	    ObjectInitializer target = (ObjectInitializer) decl.getTarget();
+	    ObjectInitializer initializer = (ObjectInitializer) decl.getInitializer();
+	    assertTrue(target.isDestructuring());
+	    assertFalse(initializer.isDestructuring());
+	}
 }

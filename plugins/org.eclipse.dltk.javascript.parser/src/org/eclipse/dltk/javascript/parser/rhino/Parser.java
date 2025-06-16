@@ -27,6 +27,7 @@ import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
 import org.eclipse.dltk.javascript.ast.BigIntLiteral;
+import org.eclipse.dltk.javascript.ast.BindingIdentifier;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -129,8 +130,11 @@ import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Token;
 import org.mozilla.javascript.Token.CommentType;
 import org.mozilla.javascript.TokenStream;
+import org.mozilla.javascript.ast.Assignment;
 import org.mozilla.javascript.ast.FunctionNode;
 import org.mozilla.javascript.ast.IdeErrorReporter;
+import org.mozilla.javascript.ast.ObjectProperty;
+import org.mozilla.javascript.ast.PropertyGet;
 
 
 /**
@@ -2895,26 +2899,34 @@ public class Parser implements IParser{
 			tt = peekToken();
 		}
 		if (Token.FIRST_ASSIGN <= tt && tt <= Token.LAST_ASSIGN) {
-			if (inDestructuringAssignment) {
-				// default values inside destructuring assignments,
-				// like 'var [a = 10] = b' or 'var {a: b = 10} = c',
-				// are not supported
-				reportError("msg.destruct.default.vals");
-			}
-
 			consumeToken();
 
 			// Pull out JSDoc info and reset it before recursing.
 			Comment jsdocNode = getAndResetJsDoc();
-
+			int opPos = ts.getTokenBeg(); 
+			
 			markDestructuring(pn);
-			int opPos = ts.getTokenBeg();    
-			pn = createBinaryOperation(tt, opPos,
-					pn, assignExpr(), getParent());
+			if (inDestructuringAssignment) {
+				if (isNotValidSimpleAssignmentTarget(pn))
+					reportError("msg.syntax.invalid.assignment.lhs");
 
+				BindingIdentifier id = new BindingIdentifier(getParent());
+				id.setIdentifier((Identifier) pn);
+				consumeToken(); // consume the `=`
+				id.setAssignPosition(opPos);
+				Expression defaultValue = assignExpr();
+				id.setDefaultValue(defaultValue);
+				id.setStart(pn.start());
+				id.setEnd(defaultValue != null ? defaultValue.end()
+						: ts.getTokenEnd());
+			} else {
+				pn = createBinaryOperation(tt, opPos, pn, assignExpr(),
+						getParent());
+			}
 			if (jsdocNode != null  && pn instanceof Documentable) {
 				((Documentable)pn).setDocumentation(jsdocNode);
 			}
+			
 		} else if (tt == Token.SEMI) {
 			// This may be dead code added intentionally, for JSDoc purposes.
 			// For example: /** @type Number */ C.prototype.x;
@@ -2929,6 +2941,13 @@ public class Parser implements IParser{
 			pn = arrowFunction(pn);
 		}
 		return pn;
+	}
+
+	private boolean isNotValidSimpleAssignmentTarget(Expression pn) {
+//		if (pn.getType() == Token.GETPROP)
+//            return isNotValidSimpleAssignmentTarget(((PropertyGet) pn).getLeft());
+//        return pn.getType() == Token.QUESTION_DOT;
+		return pn instanceof Identifier == false; //for now
 	}
 
 	private BinaryOperation createBinaryOperation(int tt, int opPos, Expression leftExpression, Expression rightExpression,
@@ -4232,7 +4251,19 @@ public class Parser implements IParser{
 					// many tokens.)
 					int peeked = peekToken();
 					if (peeked != Token.COMMA && peeked != Token.COLON && peeked != Token.RC) {
-						if (peeked == Token.LP) {
+	                    if (peeked == Token.ASSIGN) { // we have an object literal with
+	                        // destructuring assignment and a default value
+	                        if (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+	                            elems.add(plainProperty(pname, tt));
+	                            if (matchToken(Token.COMMA, true)) {
+	                                continue;
+	                            } else {
+	                                break commaLoop;
+	                            }
+	                        } else {
+	                            reportError("msg.default.args");
+	                        }
+	                    } else if (peeked == Token.LP) {
 							entryKind = METHOD_ENTRY;
 						} else if (pname instanceof Identifier) {
 							if ("get".equals(propertyName)) {
@@ -4361,6 +4392,28 @@ public class Parser implements IParser{
 			nn.setStart(property.start());
 			nn.setEnd(property.end());
 			nn.setExpression(property);
+			return nn;
+		} else if (tt == Token.ASSIGN) {
+			int assignPos = ts.getTokenBeg();
+			PropertyShorthand nn = new PropertyShorthand(getParent());
+			nn.setStart(property.start());
+			
+			/* we're in destructuring with defaults in a object literal; treat defaults as values */
+			BindingIdentifier id = new BindingIdentifier(getParent());
+			if (property instanceof Identifier identifier) {
+				id.setIdentifier(identifier);
+			}
+			else {
+				reportError("msg.bad.object.init"); //TODO not impl yet
+			}
+			consumeToken(); // consume the `=`
+			id.setAssignPosition(assignPos);
+			Expression defaultValue = assignExpr();
+			id.setDefaultValue(defaultValue);
+			id.setStart(property.start());
+			id.setEnd(defaultValue != null ? defaultValue.end() : ts.getTokenEnd());
+			nn.setExpression(id);
+			nn.setEnd(id.end());
 			return nn;
 		}
 		mustMatchToken(Token.COLON, "msg.no.colon.prop", true);

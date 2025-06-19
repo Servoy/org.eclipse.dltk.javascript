@@ -36,6 +36,7 @@ import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
 import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.BindingIdentifier;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -852,6 +853,24 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 			public IFormatterNode visitIdentifier(Identifier node) {
 				return addChild(new FormatterStringNode(document, node));
 			}
+			
+			
+			@Override
+			public IFormatterNode visitBindingIdentifier(BindingIdentifier node) {
+				final FormatterBlockNode formatterNode = new FormatterBlockNode(
+						document);
+				formatterNode.addChild(createEmptyTextNode(document, node.sourceStart()));
+				push(formatterNode);
+				visit(node.getIdentifier());
+				if (node.getDefaultValue() != null) {
+			        int position = node.getAssignPosition();
+			        skipSpaces(formatterNode, position);
+			        processPunctuation(position, 1, new BinaryOperationPinctuationConfiguration());
+			        visit(node.getDefaultValue());
+			    }
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
+			}			
 
 			private IFormatterNode processParens(int leftParen, int rightParen,
 					ASTNode expression, IParensConfiguration configuration) {
@@ -1964,5 +1983,7 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 			int offset) {
 		return new SemicolonNode(document, offset);
 	}
+	
+	
 
 }

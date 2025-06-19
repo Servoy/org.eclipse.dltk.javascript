@@ -130,11 +130,8 @@ import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Token;
 import org.mozilla.javascript.Token.CommentType;
 import org.mozilla.javascript.TokenStream;
-import org.mozilla.javascript.ast.Assignment;
 import org.mozilla.javascript.ast.FunctionNode;
 import org.mozilla.javascript.ast.IdeErrorReporter;
-import org.mozilla.javascript.ast.ObjectProperty;
-import org.mozilla.javascript.ast.PropertyGet;
 
 
 /**
@@ -2919,6 +2916,7 @@ public class Parser implements IParser{
 				id.setStart(pn.start());
 				id.setEnd(defaultValue != null ? defaultValue.end()
 						: ts.getTokenEnd());
+				pn = id;
 			} else {
 				pn = createBinaryOperation(tt, opPos, pn, assignExpr(),
 						getParent());

@@ -1,6 +1,7 @@
 package org.eclipse.dltk.javascript.ast.v4;
 
 import org.eclipse.dltk.ast.ASTVisitor;
+import org.eclipse.dltk.javascript.ast.BindingIdentifier;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.ISourceable;
 import org.eclipse.dltk.javascript.ast.Identifier;
@@ -43,10 +44,12 @@ public class PropertyShorthand extends ObjectInitializerPart implements ISourcea
 	
 	public String getNameAsString() {
 		final Expression name = getExpression();
-		if (name instanceof Identifier) {
-			return ((Identifier) name).getName();
-		} else if (name instanceof StringLiteral) {
-			return ((StringLiteral) name).getValue();
+		if (name instanceof Identifier id) {
+			return id.getName();
+		} else if (name instanceof StringLiteral sl) {
+			return sl.getValue();
+		} else if (name instanceof BindingIdentifier id) {
+			return id.getIdentifier().getName();
 		} else {
 			return null;
 		}
@@ -55,7 +58,7 @@ public class PropertyShorthand extends ObjectInitializerPart implements ISourcea
 	@Override
 	public Expression getName() {
 		final Expression name = getExpression();
-		if (name instanceof Identifier) {
+		if (name instanceof Identifier || name instanceof BindingIdentifier) {
 			return name;
 		}
 		return null;

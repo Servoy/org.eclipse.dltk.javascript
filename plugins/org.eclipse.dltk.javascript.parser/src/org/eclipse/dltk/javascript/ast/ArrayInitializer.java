@@ -13,6 +13,7 @@ package org.eclipse.dltk.javascript.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.ast.ASTNode;
@@ -115,7 +116,15 @@ public class ArrayInitializer extends Expression implements IDestructuringPatter
 
 	@Override
 	public List<Identifier> getIdentifiers() {
-		return items.stream().filter(e -> e instanceof Identifier).map(e -> (Identifier) e).toList();
+		return items.stream().map(item -> {
+			if (item instanceof Identifier id) {
+				return id;
+			} else if (item instanceof BindingIdentifier binding) {
+				return binding.getIdentifier();
+			} else {
+				return null;
+			}
+		}).filter(Objects::nonNull).toList();
 	}
 
 	@Override
@@ -128,6 +137,18 @@ public class ArrayInitializer extends Expression implements IDestructuringPatter
 				Identifier id = (Identifier) lhsItem;
 				if (name.equals(id.getName()) && i < rhs.getItems().size()) {
 					return rhs.getItems().get(i);
+				}
+			} else if (lhsItem instanceof BindingIdentifier binding) {
+				Identifier id = binding.getIdentifier();
+				if (id != null && name.equals(id.getName()) && i < rhs.getItems().size()) {
+					if (i < rhs.getItems().size()) {
+						Expression init = rhs.getItems().get(i);
+						if (init == null || init instanceof EmptyExpression || "undefined".equals(init.toString()) ) {
+							return binding.getDefaultValue(); // fallback to default
+						}
+						return init;
+					}
+					return binding.getDefaultValue();
 				}
 			}
 		}

@@ -92,8 +92,8 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 	}
 
 	protected void processVariable(VariableBinding binding) {
-		for (Identifier identifier : binding.getIdentifiers()) {
-			visit(binding.getInitializer(identifier.getName()));
+		if (binding.getInitializer() != null) {
+			visit(binding.getInitializer());
 		}
 	}
 
@@ -188,6 +188,15 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 
 	@Override
 	public E visitIdentifier(Identifier node) {
+		return null;
+	}
+	
+	@Override
+	public E visitBindingIdentifier(BindingIdentifier node) {
+		visit(node.getIdentifier());
+		if (node.getDefaultValue() != null) {
+			visit(node.getDefaultValue());
+		}
 		return null;
 	}
 

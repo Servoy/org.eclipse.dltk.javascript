@@ -99,6 +99,7 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		HANDLERS.put(ForOfStatement.class, 52);
 		HANDLERS.put(LetStatement.class, 53);
 		HANDLERS.put(BigIntLiteral.class, 54);
+		HANDLERS.put(BindingIdentifier.class, 55);
 		
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
@@ -221,6 +222,8 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 			return visitLetStatement((LetStatement)node);
 		case 54:
 			return visitBigIntLiteral((BigIntLiteral)node);
+		case 55:
+			return visitBindingIdentifier((BindingIdentifier)node);
 		}
 		return visitUnknownNode(node);
 	}
@@ -408,6 +411,10 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 	public abstract E visitForOfStatement(ForOfStatement node);
 	
 	public abstract E visitLetStatement(LetStatement node);
+
+	public E visitBindingIdentifier(BindingIdentifier node) {
+		return null;
+	}
 
 	/**
 	 * @since 2.0

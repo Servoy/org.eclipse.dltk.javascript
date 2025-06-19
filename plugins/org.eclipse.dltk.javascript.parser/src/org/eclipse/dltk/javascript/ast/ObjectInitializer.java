@@ -14,6 +14,7 @@ package org.eclipse.dltk.javascript.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
@@ -166,26 +167,48 @@ public class ObjectInitializer extends Expression implements IDestructuringPatte
 	public List<Identifier> getIdentifiers() {
 		//TODO also return method identifiers?
 		return getInitializers().stream().filter(e -> e instanceof PropertyInitializer || e instanceof PropertyShorthand) //
-				.map(e -> (Identifier) e.getName()).toList();
+				.map(part -> {
+		            Expression nameExpr = part.getName();
+		            if (nameExpr instanceof Identifier id) {
+		                return id;
+		            } else if (nameExpr instanceof BindingIdentifier binding) {
+		                return binding.getIdentifier();
+		            } else {
+		                return null;
+		            }
+		        }) //
+		        .filter(Objects::nonNull) //
+		        .toList();
 	}
 
 	@Override
 	public Expression getInitializerFor(String name, Expression value) {
-		if (!(value instanceof ObjectInitializer)) return null;
+		if (!(value instanceof ObjectInitializer))
+			return null;
 		ObjectInitializer rhs = (ObjectInitializer) value;
 		for (int i = 0; i < initializers.size(); i++) {
 			ObjectInitializerPart lhsProp = initializers.get(i);
-			if (rhs.getInitializers().size() <= i) {
-			    return null;
-			}
-			ObjectInitializerPart rhsProp = rhs.getInitializers().get(i);
-			if (!(lhsProp.getName() instanceof Identifier)) {
-				continue;
+			Identifier id = null;
+			Expression defaultValue = null;
+
+			if (lhsProp.getName() instanceof Identifier simpleId) {
+				id = simpleId;
+			} else if (lhsProp.getName() instanceof BindingIdentifier bindingId) {
+				id = bindingId.getIdentifier();
+				defaultValue = bindingId.getDefaultValue();
 			}
 
-			Identifier id = (Identifier) lhsProp.getName();
-			if (name.equals(id.getName())) {
-				return rhsProp.getDestructuredValue();
+			if (id != null && name.equals(id.getName())) {
+				for (ObjectInitializerPart rhsProp : rhs.getInitializers()) {
+					if (rhsProp.getName() instanceof Identifier rhsId && name.equals(rhsId.getName())) {
+						Expression rhsValue = rhsProp.getDestructuredValue();
+						if (rhsValue == null || (rhsValue instanceof StringLiteral lit && "undefined".equals(lit.getText()))) {
+							return defaultValue;
+						}
+						return rhsValue;
+					}
+				}
+				return defaultValue;
 			}
 		}
 		return null;

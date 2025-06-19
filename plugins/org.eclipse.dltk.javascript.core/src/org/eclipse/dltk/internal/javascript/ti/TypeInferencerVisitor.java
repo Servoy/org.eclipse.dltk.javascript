@@ -37,6 +37,7 @@ import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
 import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.BindingIdentifier;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -2601,5 +2602,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitBigIntLiteral(BigIntLiteral node) {
 		return ConstantValue.of(RTypes.BIGINT);
+	}
+
+	@Override
+	public IValueReference visitBindingIdentifier(BindingIdentifier node) {
+		IValueReference reference = visit(node.getIdentifier());
+		if (node.getDefaultValue() != null) {
+			IValueReference defaultValue = visit(node.getDefaultValue());
+			if (defaultValue != null) {
+				reference.addValue(defaultValue, true);
+			}
+		}
+		return reference;
 	}
 }

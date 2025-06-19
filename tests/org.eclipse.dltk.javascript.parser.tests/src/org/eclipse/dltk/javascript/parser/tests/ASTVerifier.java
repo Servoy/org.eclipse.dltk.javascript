@@ -22,6 +22,7 @@ import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
 import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.BindingIdentifier;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -315,6 +316,16 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 
 		testString(node.getName(), node.sourceStart(), node.sourceEnd());
 
+		return true;
+	}
+	
+	@Override
+	public Boolean visitBindingIdentifier(BindingIdentifier node) {
+		visit(node.getIdentifier());
+		if (node.getDefaultValue() != null) {
+			testChar(Keywords.ASSIGN, node.getAssignPosition());
+			visit(node.getDefaultValue());
+		}
 		return true;
 	}
 

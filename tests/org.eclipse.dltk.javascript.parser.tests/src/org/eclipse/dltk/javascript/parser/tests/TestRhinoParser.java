@@ -3375,6 +3375,12 @@ public class TestRhinoParser {
 	    ArrayInitializer initializer = (ArrayInitializer) decl.getInitializer();
 	    assertTrue(target.isDestructuring());
 	    assertFalse(initializer.isDestructuring());
+	    assertEquals("d", decl.getIdentifiers().get(0).getName());
+	    assertEquals("4", decl.getInitializer("d").toString());
+	    assertEquals("e", decl.getIdentifiers().get(1).getName());
+	    assertEquals("5", decl.getInitializer("e").toString()); // fallback to default
+	    assertEquals("f", decl.getIdentifiers().get(2).getName());
+	    assertEquals("6", decl.getInitializer("f").toString()); // fallback to default since `undefined`
 	}
 	
 	@Test
@@ -3391,5 +3397,11 @@ public class TestRhinoParser {
 	    ObjectInitializer initializer = (ObjectInitializer) decl.getInitializer();
 	    assertTrue(target.isDestructuring());
 	    assertFalse(initializer.isDestructuring());
+	    List<Identifier> ids = decl.getIdentifiers();
+	    assertEquals(2, ids.size());
+	    assertEquals("a", ids.get(0).getName());
+	    assertEquals("1", decl.getInitializer("a").toString());
+	    assertEquals("b", ids.get(1).getName());
+	    assertEquals("2", decl.getInitializer("b").toString());
 	}
 }

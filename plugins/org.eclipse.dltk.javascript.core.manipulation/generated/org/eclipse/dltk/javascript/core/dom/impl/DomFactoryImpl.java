@@ -131,6 +131,7 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 			case DomPackage.LET_STATEMENT: return createLetStatement();
 			case DomPackage.BIG_INT_LITERAL: return createBigIntLiteral();
 			case DomPackage.METHOD_SHORTHAND_ASSIGNMENT: return createMethodShorthandAssignment();
+			case DomPackage.BINDING_IDENTIFIER: return createBindingIdentifier();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -994,6 +995,17 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	public MethodShorthandAssignment createMethodShorthandAssignment() {
 		MethodShorthandAssignmentImpl methodShorthandAssignment = new MethodShorthandAssignmentImpl();
 		return methodShorthandAssignment;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public BindingIdentifier createBindingIdentifier() {
+		BindingIdentifierImpl bindingIdentifier = new BindingIdentifierImpl();
+		return bindingIdentifier;
 	}
 
 } //DomFactoryImpl

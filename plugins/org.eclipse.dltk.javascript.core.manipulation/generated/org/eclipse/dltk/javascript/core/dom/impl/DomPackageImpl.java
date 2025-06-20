@@ -14,6 +14,7 @@ import org.eclipse.dltk.javascript.core.dom.AttributeIdentifier;
 import org.eclipse.dltk.javascript.core.dom.BigIntLiteral;
 import org.eclipse.dltk.javascript.core.dom.BinaryExpression;
 import org.eclipse.dltk.javascript.core.dom.BinaryOperator;
+import org.eclipse.dltk.javascript.core.dom.BindingIdentifier;
 import org.eclipse.dltk.javascript.core.dom.BlockStatement;
 import org.eclipse.dltk.javascript.core.dom.BooleanLiteral;
 import org.eclipse.dltk.javascript.core.dom.BreakStatement;
@@ -711,6 +712,13 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	private EClass methodShorthandAssignmentEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass bindingIdentifierEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -2703,6 +2711,36 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getBindingIdentifier() {
+		return bindingIdentifierEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getBindingIdentifier_Identifier() {
+		return (EReference)bindingIdentifierEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getBindingIdentifier_DefaultValue() {
+		return (EReference)bindingIdentifierEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getUnaryOperator() {
 		return unaryOperatorEEnum;
 	}
@@ -3023,6 +3061,10 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		methodShorthandAssignmentEClass = createEClass(METHOD_SHORTHAND_ASSIGNMENT);
 		createEReference(methodShorthandAssignmentEClass, METHOD_SHORTHAND_ASSIGNMENT__PARAMETERS);
 
+		bindingIdentifierEClass = createEClass(BINDING_IDENTIFIER);
+		createEReference(bindingIdentifierEClass, BINDING_IDENTIFIER__IDENTIFIER);
+		createEReference(bindingIdentifierEClass, BINDING_IDENTIFIER__DEFAULT_VALUE);
+
 		// Create enums
 		unaryOperatorEEnum = createEEnum(UNARY_OPERATOR);
 		binaryOperatorEEnum = createEEnum(BINARY_OPERATOR);
@@ -3155,6 +3197,10 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		bigIntLiteralEClass.getESuperTypes().add(this.getExpression());
 		bigIntLiteralEClass.getESuperTypes().add(this.getIPropertyName());
 		methodShorthandAssignmentEClass.getESuperTypes().add(this.getAccessorAssignment());
+		bindingIdentifierEClass.getESuperTypes().add(this.getNode());
+		bindingIdentifierEClass.getESuperTypes().add(this.getIPropertyName());
+		bindingIdentifierEClass.getESuperTypes().add(this.getIPropertySelector());
+		bindingIdentifierEClass.getESuperTypes().add(this.getIProperty());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(nodeEClass, Node.class, "Node", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -3433,6 +3479,10 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 
 		initEClass(methodShorthandAssignmentEClass, MethodShorthandAssignment.class, "MethodShorthandAssignment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getMethodShorthandAssignment_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, MethodShorthandAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(bindingIdentifierEClass, BindingIdentifier.class, "BindingIdentifier", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getBindingIdentifier_Identifier(), this.getIdentifier(), null, "identifier", null, 1, 1, BindingIdentifier.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBindingIdentifier_DefaultValue(), this.getExpression(), null, "defaultValue", null, 0, 1, BindingIdentifier.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(unaryOperatorEEnum, UnaryOperator.class, "UnaryOperator");

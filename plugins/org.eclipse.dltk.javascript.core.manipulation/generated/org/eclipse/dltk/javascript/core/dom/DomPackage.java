@@ -4323,6 +4323,61 @@ public interface DomPackage extends EPackage {
 	int METHOD_SHORTHAND_ASSIGNMENT_FEATURE_COUNT = ACCESSOR_ASSIGNMENT_FEATURE_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.BindingIdentifierImpl <em>Binding Identifier</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.BindingIdentifierImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBindingIdentifier()
+	 * @generated
+	 */
+	int BINDING_IDENTIFIER = 86;
+
+	/**
+	 * The feature id for the '<em><b>Begin</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BINDING_IDENTIFIER__BEGIN = NODE__BEGIN;
+
+	/**
+	 * The feature id for the '<em><b>End</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BINDING_IDENTIFIER__END = NODE__END;
+
+	/**
+	 * The feature id for the '<em><b>Identifier</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BINDING_IDENTIFIER__IDENTIFIER = NODE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Default Value</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BINDING_IDENTIFIER__DEFAULT_VALUE = NODE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Binding Identifier</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BINDING_IDENTIFIER_FEATURE_COUNT = NODE_FEATURE_COUNT + 2;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4330,7 +4385,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 86;
+	int UNARY_OPERATOR = 87;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -4340,7 +4395,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 87;
+	int BINARY_OPERATOR = 88;
 
 
 	/**
@@ -6359,6 +6414,38 @@ public interface DomPackage extends EPackage {
 	EReference getMethodShorthandAssignment_Parameters();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.dltk.javascript.core.dom.BindingIdentifier <em>Binding Identifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Binding Identifier</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.BindingIdentifier
+	 * @generated
+	 */
+	EClass getBindingIdentifier();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.dltk.javascript.core.dom.BindingIdentifier#getIdentifier <em>Identifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Identifier</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.BindingIdentifier#getIdentifier()
+	 * @see #getBindingIdentifier()
+	 * @generated
+	 */
+	EReference getBindingIdentifier_Identifier();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.dltk.javascript.core.dom.BindingIdentifier#getDefaultValue <em>Default Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Default Value</em>'.
+	 * @see org.eclipse.dltk.javascript.core.dom.BindingIdentifier#getDefaultValue()
+	 * @see #getBindingIdentifier()
+	 * @generated
+	 */
+	EReference getBindingIdentifier_DefaultValue();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -8099,6 +8186,32 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EReference METHOD_SHORTHAND_ASSIGNMENT__PARAMETERS = eINSTANCE.getMethodShorthandAssignment_Parameters();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.impl.BindingIdentifierImpl <em>Binding Identifier</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.BindingIdentifierImpl
+		 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBindingIdentifier()
+		 * @generated
+		 */
+		EClass BINDING_IDENTIFIER = eINSTANCE.getBindingIdentifier();
+
+		/**
+		 * The meta object literal for the '<em><b>Identifier</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference BINDING_IDENTIFIER__IDENTIFIER = eINSTANCE.getBindingIdentifier_Identifier();
+
+		/**
+		 * The meta object literal for the '<em><b>Default Value</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference BINDING_IDENTIFIER__DEFAULT_VALUE = eINSTANCE.getBindingIdentifier_DefaultValue();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.

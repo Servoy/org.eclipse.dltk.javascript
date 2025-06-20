@@ -657,4 +657,13 @@ public interface DomFactory extends EFactory {
 	 */
 	MethodShorthandAssignment createMethodShorthandAssignment();
 
+	/**
+	 * Returns a new object of class '<em>Binding Identifier</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Binding Identifier</em>'.
+	 * @generated
+	 */
+	BindingIdentifier createBindingIdentifier();
+
 } //DomFactory

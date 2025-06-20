@@ -9,6 +9,7 @@ import org.eclipse.dltk.javascript.ast.ArrayInitializer;
 import org.eclipse.dltk.javascript.ast.AsteriskExpression;
 import org.eclipse.dltk.javascript.ast.BigIntLiteral;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
+import org.eclipse.dltk.javascript.ast.BindingIdentifier;
 import org.eclipse.dltk.javascript.ast.BooleanLiteral;
 import org.eclipse.dltk.javascript.ast.BreakStatement;
 import org.eclipse.dltk.javascript.ast.CallExpression;
@@ -363,6 +364,16 @@ public class ASTConverter extends ASTVisitor<Node> {
 	public Node visitIdentifier(Identifier node) {
 		VariableReference res = DOM_FACTORY.createVariableReference();
 		res.setVariable(createIdentifier(node));
+		return res;
+	}
+	
+	@Override
+	public Node visitBindingIdentifier(BindingIdentifier node) {
+		org.eclipse.dltk.javascript.core.dom.BindingIdentifier res = DOM_FACTORY.createBindingIdentifier();
+		res.setIdentifier(createIdentifier(node.getIdentifier()));
+		if (node.getDefaultValue() != null) {
+			res.setDefaultValue((Expression) visit(node.getDefaultValue()));
+		}
 		return res;
 	}
 

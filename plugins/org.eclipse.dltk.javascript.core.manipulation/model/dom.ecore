@@ -448,4 +448,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
         eType="#//Parameter" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BindingIdentifier" eSuperTypes="#//Node #//IPropertyName #//IPropertySelector #//IProperty">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifier" lowerBound="1"
+        eType="#//Identifier" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="defaultValue" eType="#//Expression"
+        containment="true"/>
+  </eClassifiers>
 </ecore:EPackage>

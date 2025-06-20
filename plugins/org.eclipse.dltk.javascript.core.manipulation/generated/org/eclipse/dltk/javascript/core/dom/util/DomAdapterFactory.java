@@ -416,6 +416,10 @@ public class DomAdapterFactory extends AdapterFactoryImpl {
 				return createMethodShorthandAssignmentAdapter();
 			}
 			@Override
+			public Adapter caseBindingIdentifier(BindingIdentifier object) {
+				return createBindingIdentifierAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -1636,6 +1640,20 @@ public class DomAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createMethodShorthandAssignmentAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.dltk.javascript.core.dom.BindingIdentifier <em>Binding Identifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.dltk.javascript.core.dom.BindingIdentifier
+	 * @generated
+	 */
+	public Adapter createBindingIdentifierAdapter() {
 		return null;
 	}
 

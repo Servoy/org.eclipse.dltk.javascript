@@ -321,5 +321,9 @@
     <genClasses ecoreClass="dom.ecore#//MethodShorthandAssignment">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//MethodShorthandAssignment/parameters"/>
     </genClasses>
+    <genClasses ecoreClass="dom.ecore#//BindingIdentifier">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//BindingIdentifier/identifier"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference dom.ecore#//BindingIdentifier/defaultValue"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

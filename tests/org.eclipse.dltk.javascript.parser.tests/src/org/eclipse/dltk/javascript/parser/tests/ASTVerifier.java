@@ -413,7 +413,15 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 	@Override
 	public Boolean visitPropertyExpression(PropertyExpression node) {
 
-		testChar(Keywords.DOT, node.getDotPosition());
+		if (node.getOptionalChain() != -1)
+		{
+			testChar(Keywords.HOOK, node.getOptionalChain());
+			testChar(Keywords.DOT, node.getOptionalChain() + 1);
+		}
+		else
+		{
+			testChar(Keywords.DOT, node.getDotPosition());
+		}
 
 		visit(node.getObject());
 		visit(node.getProperty());

@@ -1230,7 +1230,12 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 
 				visit(node.getObject());
 
-				skipSpaces(formatterNode, node.getDotPosition());
+				if (node.getOptionalChain() != -1) {
+					skipSpaces(formatterNode, node.getOptionalChain());
+				}
+				else {
+					skipSpaces(formatterNode, node.getDotPosition());
+				}
 
 				processPunctuation(node.getDotPosition(), 1,
 						new PropertyExpressionPunctuationConfiguration());

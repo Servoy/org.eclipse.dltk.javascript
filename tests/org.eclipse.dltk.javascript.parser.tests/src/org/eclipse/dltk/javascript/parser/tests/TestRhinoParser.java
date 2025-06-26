@@ -1713,6 +1713,37 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testErrorWithOptionalChain() {
+		String source = "function onAction(event) {"
+				+ " event?."
+				+ "}";
+		
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);	
+		assertEquals(1, problems.size());
+		assertTrue(problems.get(0).getMessage().startsWith("missing name after . operator"));
+		
+		assertNotNull(scriptv4);
+		FunctionStatement fn = (FunctionStatement) scriptv4.getStatements().get(0).getChilds().get(0);
+		StatementBlock body = (StatementBlock) fn.getBody();
+		assertEquals(1, body.getStatements().size());
+		VoidExpression expr = (VoidExpression) body.getStatements().get(0);
+		assertTrue(expr.getExpression() instanceof PropertyExpression);
+		PropertyExpression propExpr = (PropertyExpression) expr.getExpression();
+		assertEquals(32, propExpr.getOptionalChain());
+		assertEquals(-1, propExpr.getDotPosition());
+		assertTrue(propExpr.getObject() instanceof Identifier);
+		assertTrue(propExpr.getProperty() instanceof ErrorExpression);
+	}
+	
+	@Test
 	public void testError2() {
 		//array comprehension feature (obsolete)
 		String source = "var numbers = [1, 2, 3, 4];\r\n"

@@ -145,6 +145,11 @@ public class CompletionString {
 				break;
 			}
 			if (c == '.') {
+				if (i > 0 && id.charAt(i - 1) == '?') {
+					// optional chain
+					--i;
+					continue;
+				}
 				// skip white space
 				while (--i >= 0) {
 					if (!Character.isWhitespace(id.charAt(i))) {

@@ -39,7 +39,7 @@ public class CompletionPath {
 	public CompletionPath(String path) {
 		final String parsed = CompletionString.parse(path, true, true);
 		final List<Segment> s = new ArrayList<Segment>();
-		final String[] tokens = parsed.split("\\.", -1);
+		final String[] tokens = parsed.split("\\.|\\?\\.", -1);
 		for (String token : tokens) {
 			SegmentType type = SegmentType.SIMPLE;
 			if (token.equals("[]")) {

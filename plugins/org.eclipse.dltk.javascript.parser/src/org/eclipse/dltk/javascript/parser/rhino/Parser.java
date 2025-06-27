@@ -3676,8 +3676,15 @@ public class Parser implements IParser{
 			addError("msg.no.name.after.dot", dotPos, 1);
 			ref = makeErrorNode();
 			//TODO check if we need to change makeErrorNode to get a specific position and not tokenBeg
-			ref.setStart(dotPos + 1);
-			ref.setEnd(dotPos + 1);
+			if (optionalChainPos > 0) {
+				// the length of the optional chain operator is 2
+				ref.setStart(optionalChainPos + 2); 
+				ref.setEnd(optionalChainPos + 2);
+			}
+			else {
+				ref.setStart(dotPos + 1);
+				ref.setEnd(dotPos + 1);
+			}
 		}
 
 		if (memberTypeFlags == Node.DESCENDANTS_FLAG) {

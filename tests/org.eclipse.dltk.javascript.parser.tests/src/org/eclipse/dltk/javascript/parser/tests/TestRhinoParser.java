@@ -1741,6 +1741,7 @@ public class TestRhinoParser {
 		assertEquals(-1, propExpr.getDotPosition());
 		assertTrue(propExpr.getObject() instanceof Identifier);
 		assertTrue(propExpr.getProperty() instanceof ErrorExpression);
+		assertEquals(34, propExpr.sourceEnd());
 	}
 	
 	@Test

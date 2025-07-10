@@ -12,13 +12,16 @@
 
 package org.eclipse.dltk.javascript.ast;
 
+import java.util.List;
+
 import org.eclipse.dltk.ast.ASTVisitor;
 
 public class SetMethod extends Method {
 
 	private Keyword setKeyword;
 	private Identifier argument;
-
+	private List<Argument> arguments;
+	
 	public SetMethod(JSNode parent) {
 		super(parent);
 	}
@@ -33,8 +36,8 @@ public class SetMethod extends Method {
 				setKeyword.traverse(visitor);
 			if (getName() != null)
 				getName().traverse(visitor);
-			if (argument != null)
-				argument.traverse(visitor);
+			if (getArgument() != null)
+				getArgument().traverse(visitor);
 			if (getBody() != null)
 				getBody().traverse(visitor);
 			visitor.endvisit(this);
@@ -42,13 +45,21 @@ public class SetMethod extends Method {
 	}
 
 	public Identifier getArgument() {
-		return this.argument;
+		return this.argument != null ? this.argument : (this.arguments != null && !this.arguments.isEmpty() ? this.arguments.get(0).getIdentifier() : null);
 	}
 
 	public void setArgument(Identifier argument) {
 		this.argument = argument;
 	}
 
+	public void setArguments(List<Argument> arguments) {
+		this.arguments = arguments;		
+	}
+
+	public List<Argument> getArguments() {
+		return this.arguments;
+	}
+	
 	public Keyword getSetKeyword() {
 		return this.setKeyword;
 	}

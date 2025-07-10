@@ -58,11 +58,6 @@ public class MethodShorthand extends Method implements JSScope {
 	}
 
 	@Override
-	public Comment getDocumentation() {
-		return getName() != null ? getName().getDocumentation() : null;
-	}
-
-	@Override
 	public void addDeclaration(JSDeclaration declaration) {
 		if (declarations == null) {
 			declarations = new ArrayList<JSDeclaration>();

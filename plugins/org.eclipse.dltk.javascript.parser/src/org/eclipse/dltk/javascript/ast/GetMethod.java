@@ -12,6 +12,11 @@
 
 package org.eclipse.dltk.javascript.ast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.dltk.ast.ASTVisitor;
 
 public class GetMethod extends Method {
@@ -57,6 +62,11 @@ public class GetMethod extends Method {
 		buffer.append(toSourceString(getBody(), indentationString));
 
 		return buffer.toString();
+	}
+	
+	@Override
+	public List<Argument> getArguments() {
+		return Collections.emptyList();
 	}
 
 }

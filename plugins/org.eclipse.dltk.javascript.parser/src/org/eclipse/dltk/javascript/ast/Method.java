@@ -12,6 +12,8 @@
 
 package org.eclipse.dltk.javascript.ast;
 
+import java.util.List;
+
 public abstract class Method extends ObjectInitializerPart implements
 		ISourceable, ISourceableBlock {
 
@@ -60,4 +62,10 @@ public abstract class Method extends ObjectInitializerPart implements
 		return true;
 	}
 
+	@Override
+	public Comment getDocumentation() {
+		return getName() != null ? getName().getDocumentation() : null;
+	}
+	
+	public abstract List<Argument> getArguments();
 }

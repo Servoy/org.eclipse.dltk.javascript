@@ -61,6 +61,7 @@ import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.GetAllChildrenExpression;
 import org.eclipse.dltk.javascript.ast.GetArrayItemExpression;
 import org.eclipse.dltk.javascript.ast.GetLocalNameExpression;
+import org.eclipse.dltk.javascript.ast.GetMethod;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.IfStatement;
@@ -80,6 +81,7 @@ import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.RegExpLiteral;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
+import org.eclipse.dltk.javascript.ast.SetMethod;
 import org.eclipse.dltk.javascript.ast.Statement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
@@ -1213,7 +1215,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return method;
 	}
 
-	protected JSMethod createMethod(MethodShorthand node) {
+	protected JSMethod createMethod(Method node) {
 		final JSMethod method = new JSMethod(node, getSource());
 		for (IModelBuilder extension : context.getModelBuilders()) {
 			extension.processMethod(node, method, reporter, getTypeChecker());
@@ -1701,10 +1703,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				if (childName == null) { // just in case
 					continue;
 				}
-				handleMethodShorthand(node, members, ms, childName);
+				handleMethodInitializer(node, members, ms, childName);
 				
-			} else {
-				// TODO handle get/set methods
+			} else if (part instanceof GetMethod || part instanceof SetMethod) {
+				handleMethodInitializer(node, members, (Method) part,
+						((Method) part).getName().getName());
 			}
 		}
 		IValueReference intializerValue = ConstantValue.of(RTypes.recordType(members));
@@ -1717,26 +1720,27 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return intializerValue;
 	}
 
-	protected IValueReference handleMethodShorthand(ObjectInitializer node,
-			final List<IRRecordMember> members, MethodShorthand ms,
+	protected IValueReference handleMethodInitializer(ObjectInitializer node,
+			final List<IRRecordMember> members, Method method,
 			final String childName) {
-		final JSDocTags tags = parseTags(ms.getName()
+		final JSDocTags tags = parseTags(method.getName()
 				.getDocumentation());
 
 		final JSMethod source;
 		final IValueReference result;
+		IRType propertyType = RTypes.any();
 		final ForwardDeclaration forward = forwardDeclarations
 				.remove(node);
 		if (forward != null) {
 			source = forward.method;
 			result = forward.reference;
 		} else {
-			if (ms.getBody() != null) {
-				source = createMethod(ms);
+			if (method.getBody() != null) {
+				source = createMethod(method);
 				source.setName(childName);
 				source.setLocation(ReferenceLocation.create(getSource(),
-						ms.getName().sourceStart(),
-						ms.getBody().sourceEnd()));
+						method.getName().sourceStart(),
+						method.getBody().sourceEnd()));
 				if (!tags.isEmpty()) {
 					final JSDocSupport jsdocSupport = getDocSupport();
 					if (jsdocSupport != null) {
@@ -1776,15 +1780,19 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 			enterContext(functionScope);
 			try {
-				visitFunctionBody(ms);
+				visitFunctionBody(method);
 			} finally {
 				leaveContext();
 			}
 		}
-
+		if (result != null && method instanceof MethodShorthand) {
+			propertyType = result.getDeclaredType();
+		}
+		if (method instanceof GetMethod && source.getType() != null) {
+			propertyType = source.getType().toRType(context);
+		}
 		members.add(new RRecordMember(childName,
-				result != null ? result.getDeclaredType()
-						: RTypes.any(),
+				propertyType,
 				source));
 		return result;
 	}

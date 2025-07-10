@@ -4456,9 +4456,8 @@ public class Parser implements IParser{
 			pn = new SetMethod(getParent());
 			if (fn.getArguments() != null && fn.getArguments().size() == 1)
 			{
-				Identifier identifier = fn.getArguments().get(0).getIdentifier();
-				identifier.setParent(pn);
-				((SetMethod)pn).setArgument(identifier);
+				((SetMethod)pn).setArguments(fn.getArguments());
+				fn.getArguments().get(0).getIdentifier().setParent(pn);
 			}
 			final Keyword setKeyword = new Keyword("set");
 			setKeyword.setStart(pos);

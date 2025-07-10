@@ -27,7 +27,7 @@ import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
-import org.eclipse.dltk.javascript.ast.MethodShorthand;
+import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
@@ -232,12 +232,12 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 		initialize(node, source);
 	}
 
-	public JSMethod(MethodShorthand node, ReferenceSource source) {
+	public JSMethod(Method node, ReferenceSource source) {
 		super(node.getArguments().size());
 		initialize(node, source);
 	}
 
-	private void initialize(MethodShorthand node, ReferenceSource source) {
+	private void initialize(Method node, ReferenceSource source) {
 		setLocation(ReferenceLocation.create(source, node.sourceStart(),
 				node.sourceEnd()));
 		setName(node.getName());

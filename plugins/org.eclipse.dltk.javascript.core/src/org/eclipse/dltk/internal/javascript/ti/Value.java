@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.core.Types;
+import org.eclipse.dltk.javascript.typeinference.IAssignProtection;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
@@ -250,6 +251,11 @@ public class Value extends ImmutableValue {
 							val.attributes);
 				} else {
 					this.attributes.putAll(val.attributes);
+				}
+				// do not copy over the assign protection attribute
+				if (val.attributes != null && val.attributes
+						.containsKey(IAssignProtection.ATTRIBUTE)) {
+					this.attributes.remove(IAssignProtection.ATTRIBUTE);
 				}
 			}
 			if (val.deletedChildren != null && val.deletedChildren.size() > 0) {

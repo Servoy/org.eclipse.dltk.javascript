@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 import org.antlr.runtime.ANTLRStringStream;
@@ -31,8 +32,11 @@ import org.eclipse.dltk.compiler.problem.ProblemCategoryManager;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.Comment;
+import org.eclipse.dltk.javascript.ast.DestructuringVariableDeclaration;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
+import org.eclipse.dltk.javascript.ast.IDestructuringPattern;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
+import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
@@ -348,6 +352,17 @@ public class JSDocSupport implements IModelBuilder {
 			IVariable variable, JSProblemReporter reporter,
 			ITypeChecker typeChecker) {
 		Comment comment = declaration.getDocumentation();
+		if (declaration instanceof DestructuringVariableDeclaration dv) {
+			IDestructuringPattern pattern = dv.getTarget();
+			List<Identifier> identifiers = pattern.getIdentifiers();
+			Optional<Identifier> first = identifiers.stream()
+					.filter(identifier -> identifier.getName()
+							.equals(variable.getName()))
+					.findFirst();
+			if (first.isPresent()) {
+				comment = first.get().getDocumentation();
+			}
+		}
 		if (comment == null) {
 			final IVariableStatement statement = declaration.getStatement();
 			final List<VariableBinding> vars = statement.getBindings();

@@ -140,7 +140,7 @@ public class ArrayInitializer extends Expression implements IDestructuringPatter
 				}
 			} else if (lhsItem instanceof BindingIdentifier binding) {
 				Identifier id = binding.getIdentifier();
-				if (id != null && name.equals(id.getName()) && i < rhs.getItems().size()) {
+				if (id != null && name.equals(id.getName())) {
 					if (i < rhs.getItems().size()) {
 						Expression init = rhs.getItems().get(i);
 						if (init == null || init instanceof EmptyExpression || "undefined".equals(init.toString()) ) {

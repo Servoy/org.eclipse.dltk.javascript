@@ -45,7 +45,7 @@ public class JSProblemReporter implements ErrorReporter {
 		reporter.setStart(reporter.getOffset(line-1, lineOffset));
 		reporter.report();
 		
-		JavaScriptParserPlugin.error(message);
+//		JavaScriptParserPlugin.error(message);
 	}
 
 	public void setFormattedMessage(JSProblemIdentifier id, Object... args) {

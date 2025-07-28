@@ -98,8 +98,12 @@ public abstract class FunctionNode extends Scope {
 			IStructureContext context) {
 		final boolean allowed = context.allow(IStructureContext.METHOD);
 		if (allowed) {
-			final MethodInfo info = new MethodInfo();
 			final ISourceNode nameNode = getNameNode();
+			if (nameNode == null) {
+				// If there is no name node, we cannot report the method
+				return;
+			}
+			final MethodInfo info = new MethodInfo();
 			info.declarationStart = min(nameNode.start(), function.start());
 			info.name = getName();
 			if (method.getVisibility() != null) {

@@ -882,7 +882,9 @@ public class TypeInfoValidator implements IBuildParticipant,
 					}
 				}
 			}
-			if (node.isDeclaration()) {
+			if (node.isDeclaration() && node.getName() != null) {
+				// only check function that already have a name, else you are
+				// just typing
 				final IValueReference child;
 				final IValueCollection parentScope = getParentScope(peekContext);
 				if (parentScope == null) {

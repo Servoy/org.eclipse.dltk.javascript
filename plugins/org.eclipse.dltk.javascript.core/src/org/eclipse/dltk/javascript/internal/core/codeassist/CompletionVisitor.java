@@ -30,6 +30,7 @@ import org.eclipse.dltk.javascript.typeinference.IValueReference;
 public class CompletionVisitor extends TypeInferencerVisitor {
 
 	private final int position;
+	private boolean skipPositionTest = false;
 
 	public CompletionVisitor(ITypeInferenceContext context, int position) {
 		super(context);
@@ -60,12 +61,26 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 			return result;
 		}
 
-		if (savedCollection == null && node != null
+		if (!skipPositionTest && savedCollection == null && node != null
 				&& node.sourceEnd() >= position) {
 			savedCollection = peekContext();
 			throw new PositionReachedException(node, result);
 		}
 		return result;
+	}
+
+	@Override
+	protected void handleDeclarations(JSScope scope) {
+		// don't test position in declarations, because that could be visiting
+		// something after the postion your are in
+		// that doesn't mean you are already in the scope that you really want
+		// to be in.
+		skipPositionTest = true;
+		try {
+			super.handleDeclarations(scope);
+		} finally {
+			skipPositionTest = false;
+		}
 	}
 
 	@Override

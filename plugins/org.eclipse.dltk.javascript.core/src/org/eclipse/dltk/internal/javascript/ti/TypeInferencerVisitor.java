@@ -1897,7 +1897,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return visit(node.getStatements());
 	}
 
-	private void handleDeclarations(JSScope scope) {
+	protected void handleDeclarations(JSScope scope) {
 		ArrayList<IValueReference> variables = new ArrayList<>();
 		ArrayList<ForwardDeclaration> forwardDecls = new ArrayList<>();
 		ArrayList<FunctionStatement> prototypeInitializer = new ArrayList<>();

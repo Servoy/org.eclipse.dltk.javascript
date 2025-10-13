@@ -56,7 +56,9 @@ class RLocalType extends RType implements IRLocalType {
 	}
 
 	public IValueReference getValue() {
-		IValueCollection value = (IValueCollection) functionValue.getAttribute(
+		IValueCollection value = functionValue == null ? null
+				: (IValueCollection) functionValue
+				.getAttribute(
 				IReferenceAttributes.FUNCTION_SCOPE, false);
 		if (value != null) {
 			return value.getThis();

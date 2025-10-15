@@ -258,7 +258,9 @@
       <parameters name="callback" directType="Function"/>
     </members>
     <members xsi:type="ref:Method" name="fill" description="Changes all elements in an array to a static value, from a start index (default 0) to an end index (default array.length). It returns the modified array.">
-      <parameters name="value" directType="Object"/>
+      <parameters name="value">
+     	 <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </parameters>
       <parameters name="start" directType="Number" kind="OPTIONAL"/>
       <parameters name="end" directType="Number" kind="OPTIONAL"/>
       <type xsi:type="ref:ArrayType">
@@ -291,9 +293,12 @@
       <parameters name="formIndex" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Property" name="length" directType="Number" description="The length returns an integer representing the length of an array."/>
-    <members xsi:type="ref:Method" name="map" directType="Array" description="Creates a new array with the results of calling a provided function on every element in this array. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
+    <members xsi:type="ref:Method" name="map" description="Creates a new array with the results of calling a provided function on every element in this array. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
       <parameters name="callback" directType="Function"/>
       <parameters name="thisArg" kind="OPTIONAL"/>
+      <type xsi:type="ref:ArrayType">
+        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+      </type>
     </members>
     <members xsi:type="ref:Method" name="pop" description="Removes and returns the last element of an array.">
     	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
@@ -427,8 +432,9 @@
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
-    <members xsi:type="ref:Method" name="at" directType="Object" description="Takes an integer value and returns the item at that index, allowing for positive and negative integers. Negative integers count back from the last item in the array.">
+    <members xsi:type="ref:Method" name="at" description="Takes an integer value and returns the item at that index, allowing for positive and negative integers. Negative integers count back from the last item in the array.">
      <parameters name="index" directType="Number"/>
+     <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
     </members>
     <members xsi:type="ref:Method" name="reduceRight" description="Applies a function against an accumulator and each value of the array (from right-to-left) to reduce it to a single value..">
       <parameters name="function(total, currentValue, index, arr)" directType="Function"/>
@@ -912,13 +918,17 @@
     </members>
  </ref:Type>
  <ref:GenericType name="Map" kind="PREDEFINED" superType="Object" description="The Map object holds key-value pairs and remembers the original insertion order of the keys. Any value (both objects and primitive values) may be used as either a key or a value">
-     <members xsi:type="ref:Property" name="size" directType="Number" description="The size accessor property returns the number of elements in a Map object."/>  
+ 	<typeParameters name="E"/>
+    <members xsi:type="ref:Property" name="size" directType="Number" description="The size accessor property returns the number of elements in a Map object."/>  
     <members xsi:type="ref:Method" name="set" directType="Map" description="The set() method adds or updates an entry in a Map object with a specified key and a value." static="false">
       <parameters name="key" directType="Object"/>
-      <parameters name="value" directType="Object"/>
+      <parameters name="value">
+    	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/E"/>
+      </parameters>
     </members>
-    <members xsi:type="ref:Method" name="get" directType="Object" description="The get() method returns a specified element from a Map object. If the value that is associated to the provided key is an object, then you will get a reference to that object and any change made to that object will effectively modify it inside the Map object." static="false">
+    <members xsi:type="ref:Method" name="get" description="The get() method returns a specified element from a Map object. If the value that is associated to the provided key is an object, then you will get a reference to that object and any change made to that object will effectively modify it inside the Map object." static="false">
       <parameters name="key" directType="Object"/>
+      <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/E"/>
     </members>
     <members xsi:type="ref:Method" name="clear" description="The clear() method removes all elements from a Map object." static="false">
     </members>
@@ -940,9 +950,12 @@
     </members>
  </ref:GenericType>
  <ref:GenericType name="Set" kind="PREDEFINED" superType="Object" description="The Set object lets you store unique values of any type, whether primitive values or object references">
-     <members xsi:type="ref:Property" name="size" directType="Number" description="The size accessor property returns the number of elements in a Set object."/>  
+    <typeParameters name="E"/>
+    <members xsi:type="ref:Property" name="size" directType="Number" description="The size accessor property returns the number of elements in a Set object."/>  
     <members xsi:type="ref:Method" name="add" directType="Set" description="The add() method inserts a new element with a specified value in to a Set object, if there isn't an element with the same value already in the Set" static="false">
-      <parameters name="value" directType="Object"/>
+      <parameters name="value">
+    	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
+      </parameters>
     </members>
     <members xsi:type="ref:Method" name="clear" description="The clear() method removes all elements from a Set object." static="false">
     </members>
@@ -956,7 +969,9 @@
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="has" directType="Boolean" description="The has() method returns a boolean indicating whether an element with the specified value exists in a Set object or not" static="false">
-      <parameters name="value" directType="Object"/>
+      <parameters name="value">
+    	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
+      </parameters>
     </members>
     <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method is an alias for the values() method." static="false">
     </members>

@@ -11,6 +11,8 @@
  */
 package org.eclipse.dltk.javascript.typeinfo.model.impl;
 
+import java.util.Collections;
+
 import org.eclipse.dltk.javascript.core.Types;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
@@ -189,10 +191,14 @@ public class MapTypeImpl extends MinimalEObjectImpl implements MapType {
 	 * @generated NOT
 	 */
 	public IRType toRType(ITypeSystem typeSystem) {
+		IRType valueType = RTypes.create(typeSystem, getValueType());
 		return RTypes.mapOf(RTypes.create(typeSystem, getKeyType()),
-				RTypes.create(typeSystem, getValueType()),
-				keyType != null ? typeSystem.convert(Types.MAP)
-						: typeSystem.convert(Types.SET));
+				valueType,
+				keyType != null
+						? typeSystem.parameterize(Types.MAP,
+								Collections.singletonList(valueType))
+						: typeSystem.parameterize(Types.SET,
+								Collections.singletonList(valueType)));
 	}
 
     /**

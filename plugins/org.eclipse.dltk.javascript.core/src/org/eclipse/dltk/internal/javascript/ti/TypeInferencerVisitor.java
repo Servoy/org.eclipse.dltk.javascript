@@ -1940,6 +1940,31 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						&& fs.getDocumentation().getText().contains("@parse")) {
 					prototypeInitializer.add(fs);
 				}
+				else if (initializer instanceof NewExpression ne
+						&& ((JSNode) declaration).getParent()
+								.getDocumentation() != null
+						&& ((JSNode) declaration).getParent().getDocumentation()
+								.getText()
+								.contains("@constructor")) {
+
+					FunctionStatement fs = null;
+					if (ne.getObjectClass() instanceof FunctionStatement fs1) {
+						fs = fs1;
+					} else if (ne.getObjectClass() instanceof CallExpression ce2
+							&& ce2.getExpression() instanceof FunctionStatement fs2) {
+						fs = fs2;
+					}
+
+					assert fs.isDeclaration();
+					final JSMethod method = createMethod(fs);
+					final IValueReference function = collection
+							.createChild(method.getName());
+					initializeFunction(method, function);
+					ForwardDeclaration fd = new ForwardDeclaration(method,
+							function, fs);
+					forwardDecls.add(fd);
+					forwardDeclarations.put(fs, fd);
+				}
 			}
 		}
 		}

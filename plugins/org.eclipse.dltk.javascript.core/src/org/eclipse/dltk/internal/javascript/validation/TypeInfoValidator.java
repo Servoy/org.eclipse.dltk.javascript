@@ -77,6 +77,7 @@ import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
+import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
@@ -2013,6 +2014,20 @@ public class TypeInfoValidator implements IBuildParticipant,
 								// handleDeclarations()
 								return;
 							}
+						}
+					} else if (node instanceof VariableDeclaration vd
+							&& vd.getInitializer() instanceof NewExpression ne
+							&& ne.getObjectClass() instanceof FunctionStatement fs) {
+						JSMethod method = (JSMethod) reference
+								.getAttribute(IReferenceAttributes.METHOD);
+						if (method != null && method.getLocation()
+								.getDeclarationStart() == fs.sourceStart()
+								&& method.getLocation()
+										.getDeclarationEnd() == fs
+												.sourceEnd()) {
+							// it is var X = new function() ... ;
+							// is handled first in the handleDeclarations()
+							return;
 						}
 					}
 				reporter.reportProblem(JavaScriptProblems.UNASSIGNABLE_ELEMENT,

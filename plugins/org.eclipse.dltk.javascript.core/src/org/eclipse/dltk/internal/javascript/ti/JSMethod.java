@@ -28,6 +28,7 @@ import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.JSNode;
 import org.eclipse.dltk.javascript.ast.Keyword;
 import org.eclipse.dltk.javascript.ast.Method;
+import org.eclipse.dltk.javascript.ast.NewExpression;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
@@ -201,24 +202,36 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 		super(4);
 	}
 
-	/**
-	 * @param node
-	 * @param source
-	 * @return
-	 */
 	public JSMethod(FunctionStatement node, ReferenceSource source) {
 		super(node.getArguments().size());
 		Identifier nameNode = node.getName();
-		if (nameNode == null && node.getParent() instanceof BinaryOperation) {
-			Expression left = ((BinaryOperation) node.getParent())
-					.getLeftExpression();
-			if (left instanceof PropertyExpression) {
-				Expression property = ((PropertyExpression) left).getProperty();
-				if (property instanceof Identifier)
-					nameNode = (Identifier) property;
+		if (nameNode == null) {
+			// handle assignments or "new function() {}" constructs
+			nameNode = extractPropertyIdentifier(node);
+		}
+
+		initialize(node, source, nameNode);
+	}
+
+	private Identifier extractPropertyIdentifier(JSNode node) {
+		JSNode parent = node.getParent();
+		// direct assignment (obj.method = function() {})
+		if (parent instanceof BinaryOperation bo) {
+			Expression left = bo.getLeftExpression();
+			if (left instanceof PropertyExpression pe) {
+				Expression property = pe.getProperty();
+				if (property instanceof Identifier id)
+					return id;
 			}
 		}
-		initialize(node, source, nameNode);
+
+		// new function() {} assigned (var X = new function() {...}();)
+		if (parent instanceof NewExpression ne
+				&& ne.getParent() instanceof VariableDeclaration vd) {
+			return vd.getIdentifier();
+		}
+
+		return null;
 	}
 
 	public JSMethod(FunctionStatement node, ReferenceSource source,
@@ -246,7 +259,18 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 	}
 
 	private void setDoc(JSNode node) {
-		final Comment documentation = JSDocSupport.getComment(node);
+		Comment documentation = JSDocSupport.getComment(node);
+		if (documentation == null) {
+			Identifier id = extractPropertyIdentifier(node);
+			if (id != null) {
+			documentation = id.getDocumentation();
+			//doc might be on the parent, like var statement
+			if (documentation == null && id.getParent() != null) {
+				documentation = id.getParent().getParent().getDocumentation();
+			}
+			}
+		}
+
 		if (documentation != null) {
 			setDocRange(documentation.getRange());
 		}

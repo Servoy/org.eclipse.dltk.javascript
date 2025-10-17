@@ -1940,7 +1940,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						&& fs.getDocumentation().getText().contains("@parse")) {
 					prototypeInitializer.add(fs);
 				}
-				else if (initializer instanceof NewExpression ne
+				else if ((initializer instanceof NewExpression
+						|| initializer instanceof CallExpression)
 						&& ((JSNode) declaration).getParent()
 								.getDocumentation() != null
 						&& ((JSNode) declaration).getParent().getDocumentation()
@@ -1948,11 +1949,21 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 								.contains("@constructor")) {
 
 					FunctionStatement fs = null;
-					if (ne.getObjectClass() instanceof FunctionStatement fs1) {
-						fs = fs1;
-					} else if (ne.getObjectClass() instanceof CallExpression ce2
-							&& ce2.getExpression() instanceof FunctionStatement fs2) {
-						fs = fs2;
+					Expression expr = initializer;
+
+					if (expr instanceof CallExpression ce2) {
+						if (ce2.getExpression() instanceof FunctionStatement fs2) {
+							fs = fs2;
+						}
+					} else if (expr instanceof NewExpression ne) {
+						Expression objectClass = ne.getObjectClass();
+
+						if (objectClass instanceof FunctionStatement fs1) {
+							fs = fs1;
+						} else if (objectClass instanceof CallExpression ce2
+								&& ce2.getExpression() instanceof FunctionStatement fs2) {
+							fs = fs2;
+						}
 					}
 
 					assert fs.isDeclaration();

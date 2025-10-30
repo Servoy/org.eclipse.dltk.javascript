@@ -2053,7 +2053,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 											.toRType(context));
 						}
 						JSTypeSet types = localChild.getTypes();
-						protoChild.getTypes().addAll(types);
+						if (!types.isEmpty()) {
+							protoChild.getTypes().addAll(types);
+						}
 
 					}
 				}

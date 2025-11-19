@@ -23,6 +23,9 @@ import org.eclipse.dltk.ui.documentation.DocumentationUtils;
 import org.eclipse.dltk.ui.documentation.IDocumentationResponse;
 import org.eclipse.dltk.ui.documentation.IScriptDocumentationProvider;
 import org.eclipse.dltk.ui.documentation.IScriptDocumentationProviderExtension2;
+import org.eclipse.dltk.ui.documentation.IScriptDocumentationTitleAdapter;
+import org.eclipse.dltk.ui.documentation.TextDocumentationResponse;
+import org.eclipse.dltk.utils.AdaptUtils;
 
 public class ScriptDocumentationProvider implements
 		IScriptDocumentationProvider, IScriptDocumentationProviderExtension2 {
@@ -43,21 +46,19 @@ public class ScriptDocumentationProvider implements
 	}
 
 	public IDocumentationResponse getDocumentationFor(Object element) {
-		if (element instanceof IMember) {
-			Reader reader = getInfo((IMember) element, true, true);
-			return DocumentationUtils
-					.wrap(element, ((IMember) element), reader);
-		} else if (element instanceof ILocalVariable) {
-			ILocalVariable unresolvedElement = (ILocalVariable) element;
+		if (element instanceof IMember member) {
+			Reader reader = getInfo(member, true, true);
+			return DocumentationUtils.wrap(element, member, reader);
+		} else if (element instanceof ILocalVariable variable) {
 			try {
-				ISourceRange sourceRange = unresolvedElement.getSourceRange();
+				ISourceRange sourceRange = variable.getSourceRange();
 				int possibleDocStart = 0;
 				int possibleDocEnd = sourceRange.getOffset();
 				ISourceRange docRange = JSDocContentAccess.getDocRange(
-						(ISourceModule) unresolvedElement.getOpenable(),
+						(ISourceModule) variable.getOpenable(),
 						possibleDocStart, possibleDocEnd);
 				if (docRange != null) {
-					String text = unresolvedElement.getOpenable().getBuffer()
+					String text = variable.getOpenable().getBuffer()
 							.getText(0, possibleDocEnd);
 					int indexOfLastLine = text.lastIndexOf('\n');
 					indexOfLastLine = text.lastIndexOf('\n',
@@ -71,6 +72,19 @@ public class ScriptDocumentationProvider implements
 						return DocumentationUtils.wrap(element,
 								((ILocalVariable) element),
 								new JavaDoc2HTMLTextReader(reader));
+					}
+					else if (variable.getDescription() != null) {
+						final IScriptDocumentationTitleAdapter titleAdapter = AdaptUtils
+								.getAdapter(variable,
+										IScriptDocumentationTitleAdapter.class);
+						return new TextDocumentationResponse(variable,
+								titleAdapter != null
+										? titleAdapter.getTitle(variable)
+										: null,
+								titleAdapter != null
+										? titleAdapter.getImage(variable)
+										: null,
+								variable.getDescription());
 					}
 				}
 			} catch (ModelException e) {

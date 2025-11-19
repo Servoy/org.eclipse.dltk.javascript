@@ -553,7 +553,8 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 
 			proposal.setCompletion(isFunction ? memberName + "()" : memberName);
 			proposal.setName(memberName);
-			proposal.setExtraInfo(member.getSource());
+			proposal.setExtraInfo(
+					member instanceof IRMethod ? member : member.getSource());
 			if (isFunction) {
 				List<IRParameter> parameters = null;
 				if (member.getType() instanceof IRFunctionType) {

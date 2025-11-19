@@ -352,18 +352,8 @@ public class JSDocTypeParser {
 	protected JSType doCreateGenericType(String baseType,
 			List<JSType> typeParams) throws ParseException {
 		if (!typeParams.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(baseType);
-			sb.append('<');
-			int index = 0;
-			for (JSType typeParam : typeParams) {
-				if (++index > 1) {
-					sb.append(',');
-				}
-				sb.append(typeParam.getName());
-			}
-			sb.append('>');
-			return TypeUtil.ref(sb.toString());
+			return TypeUtil.parameterizedType(TypeUtil.type(baseType),
+					typeParams);
 		}
 		return TypeUtil.ref(baseType);
 	}

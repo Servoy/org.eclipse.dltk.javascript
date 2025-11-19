@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IProblemCategory;
 import org.eclipse.dltk.compiler.problem.IProblemIdentifier;
+import org.eclipse.dltk.javascript.internal.core.RParamParameter;
 import org.eclipse.dltk.javascript.internal.core.RParameter;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMember;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMethod;
@@ -274,8 +275,7 @@ public class RModelBuilder {
 			for (Parameter parameter : parameters) {
 				final IRType paramType = parameter.getType() != null ? RTypes
 						.create(context, parameter.getType()) : RTypes.any();
-				params.add(new RParameter(parameter.getName(), paramType,
-						parameter.getKind()));
+				params.add(new RParamParameter(parameter, paramType));
 			}
 			return params;
 		}

@@ -64,6 +64,7 @@ import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinference.ValueReferenceUtil;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
+import org.eclipse.dltk.javascript.typeinfo.IRProperty;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
 import org.eclipse.dltk.javascript.typeinfo.JSDocTypeRegion;
@@ -209,7 +210,8 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 												argument.start(),
 												argument.end(),
 												argument.start(),
-												argument.end() - 1, null) };
+												argument.end() - 1, null,
+												null) };
 									}
 								}
 							} else if (paramNode.isInType(valueOffset)) {
@@ -340,11 +342,14 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 				return;
 			}
 			final IRType type = JavaScriptValidations.typeOf(value);
+			final String description = (String) value
+					.getAttribute(IReferenceAttributes.DESCRIPTION);
 			reportElement(new LocalVariable(m, value.getName(),
 					location.getDeclarationStart(),
 					location.getDeclarationEnd(), location.getNameStart(),
 					location.getNameEnd() - 1, type == null ? null
-							: type.getName()));
+							: type.getName(),
+					description));
 			return;
 		} else if (kind == ReferenceKind.FUNCTION
 				|| kind == ReferenceKind.GLOBAL || kind == ReferenceKind.FIELD) {
@@ -357,10 +362,12 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 				return;
 			}
 		} else if (kind == ReferenceKind.PROPERTY) {
-			final Collection<Property> properties = ValueReferenceUtil
-					.extractElements(value, Property.class);
+			final Collection<IRProperty> properties = ValueReferenceUtil
+					.extractElements(value, IRProperty.class);
 			if (properties != null) {
-				convertAndReportElements(m, properties);
+				for (IRProperty prop : properties) {
+					reportElement(prop);
+				}
 				return;
 			}
 			final IModelElement result = locateModelElement(location);
@@ -380,9 +387,16 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 				}
 				final IRMethod method = JavaScriptValidations.selectMethod(
 						methods, arguments, true);
-				if (method.getSource() instanceof Method) {
-					convertAndReportElement(m, (Method) method.getSource(),
-							null);
+				if (method.getSource() instanceof Method element) {
+					try {
+						IModelElement me = convert(m, element);
+						if (me != null)
+							reportElement(me);
+						else {
+							reportElement(method);
+						}
+					} catch (ModelException e) {
+					}
 					return;
 				}
 			}
@@ -464,7 +478,7 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 							location.getDeclarationStart(),
 							location.getDeclarationEnd(),
 							location.getNameStart(), location.getNameEnd() - 1,
-							null);
+							null, null);
 				}
 				final IModelElement result = locateModelElement(location);
 				if (result != null) {

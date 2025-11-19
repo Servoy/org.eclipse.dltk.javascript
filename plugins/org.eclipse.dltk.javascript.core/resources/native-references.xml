@@ -274,7 +274,19 @@
       </type>
     </members>
     <members xsi:type="ref:Method" name="forEach" description="Calls a function for each element in the array. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
-      <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+        <type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that forEach() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="includes" directType="Boolean" description="Determines whether an array includes a certain value among its entries, returning true or false as appropriate.">
@@ -917,36 +929,80 @@
       <parameters name="space" kind="OPTIONAL"/>
     </members>
  </ref:Type>
+  <ref:GenericType name="IterableValue" kind="PREDEFINED" superType="Object" description="A value object that the Iterator.next() object will return">  
+    <typeParameters name="E"/>
+    <members xsi:type="ref:Property" name="value"  description="the value for this iterable object" static="false">
+         <type xsi:type="ref:TypeVariableReference" variable="@ROOT/IterableValue/E"/>
+    </members>
+    <members xsi:type="ref:Property" name="done" directType="Boolean" description="a boolean telling if this was the last one (true) or not (false)" static="false"/>
+ </ref:GenericType>
+  <ref:GenericType name="Iterator" kind="PREDEFINED" superType="Object" description="An iterator is an object which defines a sequence and potentially a return value upon its termination">  
+    <typeParameters name="E"/>
+    <members xsi:type="ref:Method" name="next" description="Returns the next IterableValue  for this Iterable" static="false">
+     <type xsi:type="ref:ParameterizedType" target="IterableValue">
+        <actualTypeArguments xsi:type="ref:TypeVariableReference" variable="@ROOT/Iterator/E"/>
+     </type>
+    </members>
+ </ref:GenericType>
  <ref:GenericType name="Map" kind="PREDEFINED" superType="Object" description="The Map object holds key-value pairs and remembers the original insertion order of the keys. Any value (both objects and primitive values) may be used as either a key or a value">
- 	<typeParameters name="E"/>
+ 	<typeParameters name="K"/>
+ 	<typeParameters name="V"/>
     <members xsi:type="ref:Property" name="size" directType="Number" description="The size accessor property returns the number of elements in a Map object."/>  
     <members xsi:type="ref:Method" name="set" directType="Map" description="The set() method adds or updates an entry in a Map object with a specified key and a value." static="false">
-      <parameters name="key" directType="Object"/>
+      <parameters name="key">
+        <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/K"/>
+      </parameters>
       <parameters name="value">
-    	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/E"/>
+    	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/V"/>
       </parameters>
     </members>
     <members xsi:type="ref:Method" name="get" description="The get() method returns a specified element from a Map object. If the value that is associated to the provided key is an object, then you will get a reference to that object and any change made to that object will effectively modify it inside the Map object." static="false">
-      <parameters name="key" directType="Object"/>
-      <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/E"/>
+      <parameters name="key">
+        <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/K"/>
+      </parameters>
+      <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/V"/>
     </members>
     <members xsi:type="ref:Method" name="clear" description="The clear() method removes all elements from a Map object." static="false">
     </members>
     <members xsi:type="ref:Method" name="delete" directType="Boolean" description="The delete() method removes the specified element from a Map object by key." static="false">
       <parameters name="key" directType="Object"/>
     </members>
-    <members xsi:type="ref:Method" name="entries" directType="Iterator" description="The entries() method returns a new iterator object that contains the [key, value] pairs for each element in the Map object in insertion order. In this particular case, this iterator object is also an iterable, so the for-of loop can be used." static="false">
+    <members xsi:type="ref:Method" name="entries" description="The entries() method returns a new iterator object that contains the [key, value] pairs for each element in the Map object in insertion order. In this particular case, this iterator object is also an iterable, so the for-of loop can be used." static="false">
+      <type xsi:type="ref:ParameterizedType" target="Iterator">
+        <actualTypeArguments xsi:type="ref:SimpleType" target="Array"/>
+      </type>    
     </members>
     <members xsi:type="ref:Method" name="forEach" description="The forEach() method executes a provided function once per each key/value pair in the Map object, in insertion order." static="false">
-      <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+        <type xsi:type="ref:FunctionType">
+          <parameters name="value" description="The value of the current element being processed in the Map">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/V"/>
+          </parameters>
+          <parameters name="key" description="The key of the current element being processed in the Map">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/K"/>
+          </parameters>
+          <parameters name="map" kind="OPTIONAL" description="The Map object being traversed">
+            <type xsi:type="ref:MapType">
+                <keyType xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/K"/>
+                <valueType xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/V"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="has" directType="Boolean" description="The has() method returns a boolean indicating whether an element with the specified key exists or not." static="false">
       <parameters name="key" directType="Object"/>
     </members>
-    <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method returns a new iterator object that contains the keys for each element in the Map object in insertion order. In this particular case, this iterator object is also an iterable, so a for...of loop can be used." static="false">
+    <members xsi:type="ref:Method" name="keys" description="The keys() method returns a new iterator object that contains the keys for each element in the Map object in insertion order. In this particular case, this iterator object is also an iterable, so a for...of loop can be used." static="false">
+     <type xsi:type="ref:ParameterizedType" target="Iterator">
+        <actualTypeArguments xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/K"/>
+     </type>
     </members>
-    <members xsi:type="ref:Method" name="values" directType="Iterator" description="The values() method returns a new iterator object that contains the values for each element in the Map object in insertion order." static="false">
+    <members xsi:type="ref:Method" name="values" description="The values() method returns a new iterator object that contains the values for each element in the Map object in insertion order." static="false">
+     <type xsi:type="ref:ParameterizedType" target="Iterator">
+        <actualTypeArguments xsi:type="ref:TypeVariableReference" variable="@ROOT/Map/V"/>
+     </type>
     </members>
  </ref:GenericType>
  <ref:GenericType name="Set" kind="PREDEFINED" superType="Object" description="The Set object lets you store unique values of any type, whether primitive values or object references">
@@ -965,26 +1021,36 @@
     <members xsi:type="ref:Method" name="entries" directType="Iterator" description="The entries() method returns a new Iterator object that contains an array of [value, value] for each element in the Set object, in insertion order. For Set objects there is no key like in Map objects. However, to keep the API similar to the Map object, each entry has the same value for its key and value here, so that an array [value, value] is returned" static="false">
     </members>
     <members xsi:type="ref:Method" name="forEach" description="The forEach() method executes a provided function once for each value in the Set object, in insertion order." static="false">
-      <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+        <type xsi:type="ref:FunctionType">
+          <parameters name="value" description="The value of the current element being processed in the Set">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
+          </parameters>
+          <parameters name="key" description="The value of the current element being processed in the Set (same as value)">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
+          </parameters>
+          <parameters name="map" kind="OPTIONAL" description="The Set object being traversed">
+            <type xsi:type="ref:MapType">
+                <valueType xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="has" directType="Boolean" description="The has() method returns a boolean indicating whether an element with the specified value exists in a Set object or not" static="false">
-      <parameters name="value">
-    	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
-      </parameters>
+     <parameters name="key" directType="Object"/>
     </members>
     <members xsi:type="ref:Method" name="keys" directType="Iterator" description="The keys() method is an alias for the values() method." static="false">
+     <type xsi:type="ref:ParameterizedType" target="Iterator">
+        <actualTypeArguments xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
+     </type>
     </members>
     <members xsi:type="ref:Method" name="values" directType="Iterator" description="The values() method returns a new Iterator object that contains the values for each element in the Set object in insertion order" static="false">
+     <type xsi:type="ref:ParameterizedType" target="Iterator">
+        <actualTypeArguments xsi:type="ref:TypeVariableReference" variable="@ROOT/Set/E"/>
+     </type>
     </members>
- </ref:GenericType>
-  <ref:GenericType name="Iterator" kind="PREDEFINED" superType="Object" description="An iterator is an object which defines a sequence and potentially a return value upon its termination">  
-    <members xsi:type="ref:Method" name="next" directType="IterableValue" description="Returns the next IterableValue  for this Iterable" static="false">
-    </members>
- </ref:GenericType>
-  <ref:GenericType name="IterableValue" kind="PREDEFINED" superType="Object" description="A value object that the Iterator.next() object will return">  
-    <members xsi:type="ref:Property" name="value" directType="Object" description="the value for this iterable object" static="false"/>
-    <members xsi:type="ref:Property" name="done" directType="Boolean" description="a boolean telling if this was the last one (true) or not (false)" static="false"/>
  </ref:GenericType>
  <ref:GenericType name="BigInt" kind="PREDEFINED" superType="Object" description="BigInt is a built-in object that provides a way to represent whole numbers larger than 2^53-1.">
   <staticConstructor name="BigInt" directType="BigInt">

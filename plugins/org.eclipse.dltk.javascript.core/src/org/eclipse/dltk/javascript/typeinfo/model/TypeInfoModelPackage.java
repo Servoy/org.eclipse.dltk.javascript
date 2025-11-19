@@ -736,13 +736,22 @@ public interface TypeInfoModelPackage extends EPackage {
 	int PARAMETER__KIND = NAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Description</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int PARAMETER__DESCRIPTION = NAMED_ELEMENT_FEATURE_COUNT + 3;
+
+	/**
      * The number of structural features of the '<em>Parameter</em>' class.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-	int PARAMETER_FEATURE_COUNT = NAMED_ELEMENT_FEATURE_COUNT + 3;
+	int PARAMETER_FEATURE_COUNT = NAMED_ELEMENT_FEATURE_COUNT + 4;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.

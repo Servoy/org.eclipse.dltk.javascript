@@ -41,6 +41,11 @@ public class RProperty extends RMember<Property> implements IRProperty {
 	}
 
 	@Override
+	public String toString() {
+		return getName() + " : " + getType();
+	}
+
+	@Override
 	public IRVariable makeImmutable(Map<Object, Object> visited) {
 		IRType type = getType();
 		IRTypeDeclaration declaringType = getDeclaringType();

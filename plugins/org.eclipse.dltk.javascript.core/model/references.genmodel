@@ -85,6 +85,7 @@
     </genClasses>
     <genClasses ecoreClass="references.ecore#//Parameter">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute references.ecore#//Parameter/kind"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute references.ecore#//Parameter/description"/>
     </genClasses>
     <genClasses ecoreClass="references.ecore#//Constructor"/>
     <genClasses ecoreClass="references.ecore#//Property">

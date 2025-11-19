@@ -13,32 +13,29 @@ package org.eclipse.dltk.javascript.internal.core;
 
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.ImmutableType;
+import org.eclipse.dltk.javascript.typeinfo.model.Parameter;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
 
-public class RParameter implements IRParameter {
+public class RParamParameter implements IRParameter {
 
-	private final String name;
 	private final IRType type;
-	private final ParameterKind kind;
+	private final Parameter parameter;
 
-	public RParameter(String name, IRType type, ParameterKind kind) {
-		Assert.isNotNull(type);
-		this.name = name;
+	public RParamParameter(Parameter parameter, IRType type) {
+		this.parameter = parameter;
 		this.type = type;
-		this.kind = kind;
 	}
 
 	public String getName() {
-		return name;
+		return parameter.getName();
 	}
 
 	@Override
 	public String getDescription() {
-		return null;
+		return parameter.getDescription();
 	}
 
 	public IRType getType() {
@@ -46,7 +43,7 @@ public class RParameter implements IRParameter {
 	}
 
 	public ParameterKind getKind() {
-		return kind;
+		return parameter.getKind();
 	}
 
 	@Override
@@ -56,16 +53,10 @@ public class RParameter implements IRParameter {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof RParameter) {
-			final RParameter other = (RParameter) obj;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
+		if (obj instanceof RParamParameter param) {
+			if (!parameter.equals(param.parameter))
 				return false;
-			if (!type.equals(other.type))
-				return false;
-			if (kind != other.kind)
+			if (!type.equals(param.type))
 				return false;
 			return true;
 		} else {
@@ -75,22 +66,22 @@ public class RParameter implements IRParameter {
 
 	@Override
 	public String toString() {
-		return name + ":" + type;
+		return getName() + ":" + type;
 	}
 
 	public boolean isOptional() {
-		return kind == ParameterKind.OPTIONAL;
+		return getKind() == ParameterKind.OPTIONAL;
 	}
 
 	public boolean isVarargs() {
-		return kind == ParameterKind.VARARGS;
+		return getKind() == ParameterKind.VARARGS;
 	}
 
 	@Override
 	public IRParameter makeImmutable(Map<Object, Object> visited) {
 		if (type instanceof ImmutableType<?> local) {
-			return new RParameter(name, (IRType) local.makeImmutable(visited),
-					kind);
+			return new RParamParameter(parameter,
+					(IRType) local.makeImmutable(visited));
 		}
 		return this;
 	}

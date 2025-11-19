@@ -14,6 +14,8 @@ package org.eclipse.dltk.javascript.ui.scriptdoc;
 import java.io.Reader;
 
 import org.eclipse.dltk.core.IMember;
+import org.eclipse.dltk.javascript.typeinfo.IRMethod;
+import org.eclipse.dltk.javascript.typeinfo.IRProperty;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
@@ -60,6 +62,27 @@ public class ElementDocumentationProvider implements
 					jsElement.getDescription() != null ? jsElement
 							.getDescription() : "");
 			// }
+		}
+		else if (element instanceof IRMethod method) {
+			final Element jsElement = (Element) method.getSource();
+			// if (jsElement.getDescription() != null
+			// && jsElement.getDescription().length() != 0) {
+			return new TextDocumentationResponse(element,
+					method.toString(),
+					getElementImageDescriptor(jsElement),
+					jsElement.getDescription() != null
+							? jsElement.getDescription()
+							: "");
+		}
+		else if (element instanceof IRProperty property) {
+			final Element jsElement = (Element) property.getSource();
+			// if (jsElement.getDescription() != null
+			// && jsElement.getDescription().length() != 0) {
+			return new TextDocumentationResponse(element, property.toString(),
+					getElementImageDescriptor(jsElement),
+					jsElement.getDescription() != null
+							? jsElement.getDescription()
+							: "");
 		}
 		return null;
 	}

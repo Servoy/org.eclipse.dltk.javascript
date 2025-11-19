@@ -95,6 +95,10 @@ public interface IModelBuilder {
 		 */
 		void setKind(ParameterKind kind);
 
+		String getDescription();
+
+		void setDescription(String description);
+
 	}
 
 	public interface IMethod extends IMember {

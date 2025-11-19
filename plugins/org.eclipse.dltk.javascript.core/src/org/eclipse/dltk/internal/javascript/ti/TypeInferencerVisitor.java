@@ -140,6 +140,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
 import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
 import org.eclipse.dltk.javascript.typeinfo.IRMapType;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
+import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.typeinfo.IRProperty;
 import org.eclipse.dltk.javascript.typeinfo.IRRecordMember;
 import org.eclipse.dltk.javascript.typeinfo.IRRecordType;
@@ -181,6 +182,8 @@ import org.xml.sax.InputSource;
 public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	private boolean visitFunctionBody;
+
+	protected final Map<ASTNode, IRFunctionType> functionTypes = new HashMap<>();
 
 	public TypeInferencerVisitor(ITypeInferenceContext context) {
 		this(context, true);
@@ -585,13 +588,16 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	public IValueReference visitCallExpression(CallExpression node) {
 		final IValueReference reference = visit(node.getExpression());
 		final List<ASTNode> args = node.getArguments();
+		
+		parseFunctionTypes(reference, args);
 		final IValueReference[] arguments = new IValueReference[args.size()];
 		for (int i = 0; i < args.size(); ++i) {
 			arguments[i] = visit(args.get(i));
 		}
 		if (reference != null) {
-			final List<IRMethod> methods = ValueReferenceUtil.extractElements(
-					reference, IRMethod.class);
+
+			final List<IRMethod> methods = ValueReferenceUtil
+					.extractElements(reference, IRMethod.class);
 			if (methods != null && methods.size() == 1) {
 				final IRMethod method = methods.get(0);
 				IValueReference ref = checkSpecialJavascriptFunctionCalls(
@@ -629,6 +635,30 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			return reference.getChild(IValueReference.FUNCTION_OP);
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * @param reference
+	 * @param callArgs
+	 */
+	protected void parseFunctionTypes(IValueReference reference,
+			final List<ASTNode> callArgs) {
+		final List<IRMethod> methods = reference != null
+				? ValueReferenceUtil.extractElements(reference, IRMethod.class)
+				: null;
+		if (methods != null && methods.size() > 0) {
+			// normally this is only 1 method but there are overloads..
+			for (IRMethod method : methods) {
+				List<IRParameter> parameters = method.getParameters();
+				for (int i = 0; i < parameters.size(); i++) {
+					IRType type = parameters.get(i).getType();
+					if (type instanceof IRFunctionType ft
+							&& i < callArgs.size()) {
+						functionTypes.put(callArgs.get(i), ft);
+					}
+				}
+			}
 		}
 	}
 
@@ -1205,12 +1235,28 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				listener.methodParsed(method);
 			}
 		}
+		IRFunctionType functionType = functionTypes.get(node);
+		int counter = 0;
+
 		for (Argument argument : node.getArguments()) {
 			IParameter parameter = method
 					.getParameter(argument.getIdentifier().getName());
 			if (parameter.getType() == null) {
 				setParameterTypeFromDefaultValue(argument, parameter);
 			}
+			if (functionType != null
+					&& functionType.getParameters().size() > counter) {
+				if (parameter.getType() == null) {
+					IRParameter ftParam = functionType.getParameters()
+							.get(counter);
+					if (ftParam != null) {
+						parameter.setType(getDocSupport().translateTypeName(
+								ftParam.getType().getName(), null, null));
+					}
+				}
+			}
+			// visit(argument.getIdentifier());
+			counter++;
 		}
 		return method;
 	}
@@ -1245,6 +1291,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	private JSMethod createMethod(ArrowFunctionStatement node) {
 		final JSMethod method = new JSMethod(node, getSource());
+		IRFunctionType functionType = functionTypes.get(node);
+		int counter = 0;
 		for (Argument argument : node.getArguments()) {
 			if (argument.getIdentifier().getDocumentation() != null) {
 				JSDocTags tags = JSDocSupport
@@ -1263,6 +1311,22 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				if (parameter.getType() == null)
 					setParameterTypeFromDefaultValue(argument, parameter);
 			}
+			if (functionType != null
+					&& functionType.getParameters().size() > counter) {
+				IParameter parameter = method
+						.getParameter(argument.getIdentifier().getName());
+				if (parameter.getType() == null) {
+					IRParameter ftParam = functionType.getParameters()
+							.get(counter);
+					if (ftParam != null) {
+						parameter.setType(getDocSupport().translateTypeName(
+								ftParam.getType().getName(), null, null));
+						parameter.setDescription(ftParam.getDescription());
+					}
+				}
+			}
+			// visit(argument.getIdentifier());
+			counter++;
 		}
 		return method;
 	}
@@ -1308,6 +1372,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				handleDeclarations(scope);
 			visit(node.getBody());
 		}
+	}
+
+	public void visitArrowFunctionBody(ArrowFunctionStatement node) {
+		handleDeclarations(node);
+		visit(node.getBody());
 	}
 
 	public void setType(IValueReference value, JSType type, boolean lazyEnabled) {
@@ -2562,6 +2631,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			refArg.setKind(ReferenceKind.ARGUMENT);
 			setTypeImpl(refArg, parameter.getType());
 			refArg.setLocation(parameter.getLocation());
+			if (parameter.getDescription() != null)
+				refArg.setAttribute(IReferenceAttributes.DESCRIPTION,
+						parameter.getDescription());
 		}
 		result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE, function);
 		enterContext(function);
@@ -2575,9 +2647,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				}
 				reporter.pushSuppressWarnings(suppressed);
 			}
-			// visitFunctionBody(node);
-			handleDeclarations(node);
-			visit(node.getBody());
+			visitArrowFunctionBody(node);
 		} finally {
 			if (reporter != null && suppressed != null) {
 				reporter.popSuppressWarnings();

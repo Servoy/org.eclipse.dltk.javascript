@@ -55,6 +55,7 @@ import org.eclipse.dltk.javascript.typeinfo.MemberPredicate;
 import org.eclipse.dltk.javascript.typeinfo.MemberPredicates;
 import org.eclipse.dltk.javascript.typeinfo.RSimpleType;
 import org.eclipse.dltk.javascript.typeinfo.RTypeMemberQuery;
+import org.eclipse.dltk.javascript.typeinfo.RTypeVariable;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
@@ -593,10 +594,11 @@ public abstract class ElementValue implements IValue {
 
 		public IValue getChild(String name, boolean resolve) {
 			if (IValueReference.FUNCTION_OP.equals(name)) {
-				if (method.getType() != null) {
+				IRType type = method.getType();
+				if (type != null) {
 					if (functionOperator == null) {
 						functionOperator = new TypeValue(
-								JSTypeSet.singleton(method.getType()));
+								JSTypeSet.singleton(type));
 					}
 					return functionOperator;
 				}

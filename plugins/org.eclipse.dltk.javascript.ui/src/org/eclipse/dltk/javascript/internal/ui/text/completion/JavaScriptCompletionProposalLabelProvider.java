@@ -17,6 +17,7 @@ import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMethod;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
+import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
@@ -75,7 +76,10 @@ public class JavaScriptCompletionProposalLabelProvider extends
 	protected String createMethodProposalLabel(CompletionProposal methodProposal) {
 		String returnType = null;
 		String source = null;
-		final Object info = methodProposal.getExtraInfo();
+		Object info = methodProposal.getExtraInfo();
+		if (info instanceof IRMethod) {
+			return info.toString();
+		}
 		if (info instanceof Method) {
 			final Method method = (Method) info;
 			final String label = getElementLabel(method, methodProposal);

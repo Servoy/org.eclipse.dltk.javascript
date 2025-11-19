@@ -11,18 +11,16 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.core.codeassist;
 
-import java.util.List;
-
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.internal.javascript.ti.ITypeInferenceContext;
 import org.eclipse.dltk.internal.javascript.ti.PositionReachedException;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
-import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
+import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
@@ -56,30 +54,31 @@ public class SelectionVisitor extends TypeInferencerVisitor {
 		return result;
 	}
 
-	@Override
-	public IValueReference visitCallExpression(CallExpression node) {
-		final IValueReference reference;
-		boolean nullValue = value == null;
-		try {
-			reference = visit(node.getExpression());
-		} finally {
-			boolean valueHit = value != null && nullValue;
-			final List<ASTNode> callArgs = node.getArguments();
-			final IValueReference[] arguments = new IValueReference[callArgs
-					.size()];
-			for (int i = 0, size = callArgs.size(); i < size; ++i) {
-				arguments[i] = visit(callArgs.get(i));
-			}
-			if (valueHit) {
-				this.arguments = arguments;
-			}
-		}
-		if (reference != null) {
-			return reference.getChild(IValueReference.FUNCTION_OP);
-		} else {
-			return null;
-		}
-	}
+	// @Override
+	// public IValueReference visitCallExpression(CallExpression node) {
+	// IValueReference reference = null;
+	// boolean nullValue = value == null;
+	// try {
+	// reference = visit(node.getExpression());
+	// } finally {
+	// boolean valueHit = value != null && nullValue;
+	// final List<ASTNode> callArgs = node.getArguments();
+	// final IValueReference[] arguments = new IValueReference[callArgs
+	// .size()];
+	// parseFunctionTypes(reference, callArgs);
+	// for (int i = 0, size = callArgs.size(); i < size; ++i) {
+	// arguments[i] = visit(callArgs.get(i));
+	// }
+	// if (valueHit) {
+	// this.arguments = arguments;
+	// }
+	// }
+	// if (reference != null) {
+	// return reference.getChild(IValueReference.FUNCTION_OP);
+	// } else {
+	// return null;
+	// }
+	// }
 
 	@Override
 	protected IValueReference extractNamedChild(IValueReference parent,
@@ -110,21 +109,39 @@ public class SelectionVisitor extends TypeInferencerVisitor {
 	}
 
 	@Override
+	public void visitArrowFunctionBody(ArrowFunctionStatement node) {
+		for (Argument argument : node.getArguments()) {
+			check(argument.getIdentifier(),
+					peekContext().getChild(argument.getArgumentName()));
+		}
+		super.visitArrowFunctionBody(node);
+	}
+
+	@Override
 	protected IValueReference createVariable(
 			IValueCollection context, VariableBinding declaration,
 			Identifier identifier) {
 		IValueReference variable = super.createVariable(context, declaration,
 				identifier);
-		if (declaration.getInitializer(identifier.getName()) != null) {
-			try {
-				IValueReference visit = visit(
-						declaration.getInitializer(identifier.getName()));
-				assign(variable, visit);
-			} catch (PositionReachedException e) {
-				// ignore this one else it exits to early
-			}
-		}
-		return check(identifier, variable);
+		return variable;
+		// if (declaration.getInitializer(identifier.getName()) != null) {
+		// try {
+		// IValueReference visit = visit(
+		// declaration.getInitializer(identifier.getName()));
+		// assign(variable, visit);
+		// } catch (PositionReachedException e) {
+		// // ignore this one else it exits to early
+		// }
+		// }
+		// return check(identifier, variable);
+	}
+
+	@Override
+	protected void initializeVariable(IValueReference reference,
+			VariableBinding declaration) {
+		super.initializeVariable(reference, declaration);
+
+		check(declaration.getIdentifier(), reference);
 	}
 
 	@Override

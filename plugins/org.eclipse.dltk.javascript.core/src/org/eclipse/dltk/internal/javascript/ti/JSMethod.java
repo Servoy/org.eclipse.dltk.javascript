@@ -380,6 +380,7 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 	public static class Parameter extends JSElement implements IParameter {
 
 		private ParameterKind kind = ParameterKind.NORMAL;
+		private String description;
 
 		public boolean isOptional() {
 			return kind == ParameterKind.OPTIONAL;
@@ -401,6 +402,17 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 		public String toString() {
 			return getType() != null ? getName() + ':' + getType().getName()
 					: getName();
+		}
+
+		@Override
+		public String getDescription() {
+			return description;
+		}
+
+		@Override
+		public void setDescription(String description) {
+			this.description = description;
+
 		}
 
 	}

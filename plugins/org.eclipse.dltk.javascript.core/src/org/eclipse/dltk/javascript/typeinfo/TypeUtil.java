@@ -119,6 +119,17 @@ public class TypeUtil {
 		return genericType;
 	}
 
+	public static ParameterizedType parameterizedType(Type targetType,
+			List<JSType> typeParameters) {
+		final ParameterizedType genericType = eINSTANCE
+				.createParameterizedType();
+		genericType.setTarget(targetType);
+		for (JSType typeParameter : typeParameters) {
+			genericType.getActualTypeArguments().add(typeParameter);
+		}
+		return genericType;
+	}
+
 	public static IRType extractArrayItemType(IRType type) {
 		if (type instanceof IRArrayType) {
 			return ((IRArrayType) type).getItemType();

@@ -29,12 +29,11 @@ class RMapType extends RType implements IRMapType {
 	public String getName() {
 		// if the key type is set but it is a String then just default to
 		// without it.
-		if (valueType != null && keyType != null
-				&& !ITypeNames.STRING.equals(keyType.getName())) {
-			return ITypeNames.OBJECT + '<' + keyType.getName() + ','
+		if (valueType != null && keyType != null) {
+			return ITypeNames.MAP + '<' + keyType.getName() + ','
 					+ valueType.getName() + '>';
 		}
-		return valueType != null ? ITypeNames.OBJECT + '<'
+		return valueType != null ? ITypeNames.SET + '<'
 				+ valueType.getName() + '>' : ITypeNames.OBJECT;
 	}
 

@@ -21,6 +21,8 @@ public interface IRParameter extends ImmutableType<IRParameter> {
 
 	IRType getType();
 
+	String getDescription();
+
 	boolean isOptional();
 
 	boolean isVarargs();

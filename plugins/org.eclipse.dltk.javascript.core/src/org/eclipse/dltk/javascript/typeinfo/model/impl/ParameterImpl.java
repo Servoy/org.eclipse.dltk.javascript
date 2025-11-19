@@ -96,6 +96,26 @@ public class ParameterImpl extends MinimalEObjectImpl implements Parameter {
 	protected ParameterKind kind = KIND_EDEFAULT;
 
 	/**
+	 * The default value of the '{@link #getDescription() <em>Description</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getDescription()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String DESCRIPTION_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getDescription() <em>Description</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getDescription()
+	 * @generated
+	 * @ordered
+	 */
+	protected String description = DESCRIPTION_EDEFAULT;
+
+	/**
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated
@@ -218,6 +238,29 @@ public class ParameterImpl extends MinimalEObjectImpl implements Parameter {
     }
 
 	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setDescription(String newDescription) {
+		String oldDescription = description;
+		description = newDescription;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					TypeInfoModelPackage.PARAMETER__DESCRIPTION, oldDescription,
+					description));
+	}
+
+	/**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -247,6 +290,8 @@ public class ParameterImpl extends MinimalEObjectImpl implements Parameter {
                 return getDirectType();
             case TypeInfoModelPackage.PARAMETER__KIND:
                 return getKind();
+			case TypeInfoModelPackage.PARAMETER__DESCRIPTION:
+				return getDescription();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -271,6 +316,9 @@ public class ParameterImpl extends MinimalEObjectImpl implements Parameter {
             case TypeInfoModelPackage.PARAMETER__KIND:
                 setKind((ParameterKind)newValue);
                 return;
+			case TypeInfoModelPackage.PARAMETER__DESCRIPTION:
+				setDescription((String) newValue);
+				return;
         }
         super.eSet(featureID, newValue);
     }
@@ -295,6 +343,9 @@ public class ParameterImpl extends MinimalEObjectImpl implements Parameter {
             case TypeInfoModelPackage.PARAMETER__KIND:
                 setKind(KIND_EDEFAULT);
                 return;
+			case TypeInfoModelPackage.PARAMETER__DESCRIPTION:
+				setDescription(DESCRIPTION_EDEFAULT);
+				return;
         }
         super.eUnset(featureID);
     }
@@ -315,6 +366,9 @@ public class ParameterImpl extends MinimalEObjectImpl implements Parameter {
                 return getDirectType() != null;
             case TypeInfoModelPackage.PARAMETER__KIND:
                 return kind != KIND_EDEFAULT;
+			case TypeInfoModelPackage.PARAMETER__DESCRIPTION:
+				return DESCRIPTION_EDEFAULT == null ? description != null
+						: !DESCRIPTION_EDEFAULT.equals(description);
         }
         return super.eIsSet(featureID);
     }

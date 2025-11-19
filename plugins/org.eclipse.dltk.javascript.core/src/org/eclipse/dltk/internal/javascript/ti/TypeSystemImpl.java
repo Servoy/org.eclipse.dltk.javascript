@@ -28,6 +28,7 @@ import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.annotations.Nullable;
 import org.eclipse.dltk.javascript.internal.core.RConstructor;
 import org.eclipse.dltk.javascript.internal.core.RMethod;
+import org.eclipse.dltk.javascript.internal.core.RParamParameter;
 import org.eclipse.dltk.javascript.internal.core.RParameter;
 import org.eclipse.dltk.javascript.internal.core.RParameterizedTypeDeclaration;
 import org.eclipse.dltk.javascript.internal.core.RProperty;
@@ -313,7 +314,7 @@ public class TypeSystemImpl implements ITypeSystem {
 		for (Parameter param : parameters) {
 			final IRType type = param.getType() != null ? RTypes.create(
 					typeSystem, param.getType()) : RTypes.any();
-			result.add(new RParameter(param.getName(), type, param.getKind()));
+			result.add(new RParamParameter(param, type));
 		}
 		return toImmutableList(result);
 	}

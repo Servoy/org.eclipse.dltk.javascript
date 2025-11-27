@@ -34,6 +34,7 @@ import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMethod;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
+import org.eclipse.dltk.javascript.typeinfo.IRElement;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
 import org.eclipse.dltk.javascript.ui.scriptdoc.JavaDoc2HTMLTextReader;
 import org.eclipse.dltk.javascript.ui.scriptdoc.ScriptDocumentationProvider;
@@ -49,7 +50,7 @@ public class JavaScriptProposalInfo extends ProposalInfo {
 
 	public JavaScriptProposalInfo(Object ref) {
 		super(null);
-		this.ref = ref;
+		this.ref = ref instanceof IRElement element ? element.getSource() : ref;
 	}
 
 	@Override

@@ -84,8 +84,10 @@ public class RMethod extends RMember<Method> implements IRMethod {
 			sb.append(parameters.get(i).toString());
 		}
 		sb.append(')');
-		sb.append(':');
-		sb.append(getType());
+		if (getType() != null) {
+			sb.append(':');
+			sb.append(getType());
+		}
 		return sb.toString();
 	}
 

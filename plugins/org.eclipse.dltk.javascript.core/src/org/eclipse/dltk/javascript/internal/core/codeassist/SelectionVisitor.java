@@ -11,11 +11,14 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.core.codeassist;
 
+import java.util.List;
+
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.internal.javascript.ti.ITypeInferenceContext;
 import org.eclipse.dltk.internal.javascript.ti.PositionReachedException;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
+import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
@@ -54,31 +57,21 @@ public class SelectionVisitor extends TypeInferencerVisitor {
 		return result;
 	}
 
-	// @Override
-	// public IValueReference visitCallExpression(CallExpression node) {
-	// IValueReference reference = null;
-	// boolean nullValue = value == null;
-	// try {
-	// reference = visit(node.getExpression());
-	// } finally {
-	// boolean valueHit = value != null && nullValue;
-	// final List<ASTNode> callArgs = node.getArguments();
-	// final IValueReference[] arguments = new IValueReference[callArgs
-	// .size()];
-	// parseFunctionTypes(reference, callArgs);
-	// for (int i = 0, size = callArgs.size(); i < size; ++i) {
-	// arguments[i] = visit(callArgs.get(i));
-	// }
-	// if (valueHit) {
-	// this.arguments = arguments;
-	// }
-	// }
-	// if (reference != null) {
-	// return reference.getChild(IValueReference.FUNCTION_OP);
-	// } else {
-	// return null;
-	// }
-	// }
+	@Override
+	public IValueReference visitCallExpression(CallExpression node) {
+		try {
+			return super.visitCallExpression(node);
+		} catch(PositionReachedException e) {
+			List<ASTNode> args = node.getArguments();
+			final IValueReference[] arguments = new IValueReference[args.size()];
+			for (int i = 0; i < args.size(); ++i) {
+				arguments[i] = visit(args.get(i));
+			}
+			this.arguments = arguments;
+			throw e;
+		}
+	}
+
 
 	@Override
 	protected IValueReference extractNamedChild(IValueReference parent,

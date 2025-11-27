@@ -38,6 +38,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
+import org.eclipse.dltk.javascript.typeinfo.MapOnType;
 import org.eclipse.dltk.javascript.typeinfo.RModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.TypeCompatibility;
@@ -145,8 +146,14 @@ public class JavaScriptValidations {
 					final IRType argumentType = typeOf(arguments[i]);
 					if (argumentType == null)
 						continue;
-					if (parameterType.isAssignableFrom(argumentType) == TypeCompatibility.FALSE)
+					if (parameterType.isAssignableFrom(
+							argumentType) == TypeCompatibility.FALSE) {
+						if (argumentType instanceof MapOnType dt) {
+							if (dt.canMap(parameterType) != TypeCompatibility.FALSE)
+								continue;
+						}
 						continue OUTER;
+					}
 				}
 				return method;
 			}

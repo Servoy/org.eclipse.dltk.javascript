@@ -124,6 +124,7 @@ import org.eclipse.dltk.javascript.typeinfo.ITypeInfoContext;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
+import org.eclipse.dltk.javascript.typeinfo.MapOnType;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.TypeCompatibility;
 import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
@@ -1610,7 +1611,12 @@ public class TypeInfoValidator implements IBuildParticipant,
 						.typeOf(argument);
 				}
 				if (argumentType != null) {
-					return paramType.isAssignableFrom(argumentType);
+					TypeCompatibility assignableFrom = paramType.isAssignableFrom(argumentType);
+					if ((assignableFrom == null || assignableFrom != TypeCompatibility.TRUE) && 
+							argumentType instanceof MapOnType dt) {
+						assignableFrom = dt.canMap(paramType);
+					}
+					return assignableFrom;
 				}
 			}
 			return TypeCompatibility.TRUE;

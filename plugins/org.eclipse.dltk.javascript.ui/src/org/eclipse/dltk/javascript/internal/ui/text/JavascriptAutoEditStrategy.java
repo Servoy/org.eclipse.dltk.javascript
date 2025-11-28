@@ -429,6 +429,10 @@ public class JavascriptAutoEditStrategy extends
 				a = getStringEnd(sm, a + 1, end, '"');
 				break;
 			}
+			case '`': {
+				a = getStringEnd(sm, a + 1, end, '`');
+				break;
+			}
 			case '/': {
 				int aPlus1 = a + 1;
 				if (aPlus1 < end) {
@@ -508,7 +512,7 @@ public class JavascriptAutoEditStrategy extends
 										a = aPlus1 + index + sb.length();
 									}
 									break;
-								} else if (c == '"' || c == '\'') {
+								} else if (c == '"' || c == '\'' || c == '`') {
 									int index = sm.substring(aPlus1 + 1, end)
 											.indexOf(c);
 									if (index != -1) {

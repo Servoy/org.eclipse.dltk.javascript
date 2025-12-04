@@ -24,12 +24,14 @@ import org.eclipse.dltk.internal.javascript.ti.JSDocProblem;
 import org.eclipse.dltk.internal.javascript.validation.ValidationMessages;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
 import org.eclipse.dltk.javascript.typeinfo.model.FunctionType;
+import org.eclipse.dltk.javascript.typeinfo.model.GenericType;
 import org.eclipse.dltk.javascript.typeinfo.model.JSType;
 import org.eclipse.dltk.javascript.typeinfo.model.Parameter;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
 import org.eclipse.dltk.javascript.typeinfo.model.RecordProperty;
 import org.eclipse.dltk.javascript.typeinfo.model.RecordType;
 import org.eclipse.dltk.javascript.typeinfo.model.SimpleType;
+import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelFactory;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelLoader;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelPackage;
@@ -352,7 +354,25 @@ public class JSDocTypeParser {
 	protected JSType doCreateGenericType(String baseType,
 			List<JSType> typeParams) throws ParseException {
 		if (!typeParams.isEmpty()) {
-			return TypeUtil.parameterizedType(TypeUtil.type(baseType),
+			Type type = TypeUtil.type(baseType);
+			if (!(type instanceof GenericType)) {
+				// this is a big of a hack because of using stuff beween <>
+				// which are not directly types
+				// but more information about the target type
+				StringBuilder sb = new StringBuilder();
+				sb.append(baseType);
+				sb.append('<');
+				int index = 0;
+				for (JSType typeParam : typeParams) {
+					if (++index > 1) {
+						sb.append(',');
+					}
+					sb.append(typeParam.getName());
+				}
+				sb.append('>');
+				return TypeUtil.ref(sb.toString());
+			}
+			return TypeUtil.parameterizedType(type,
 					typeParams);
 		}
 		return TypeUtil.ref(baseType);

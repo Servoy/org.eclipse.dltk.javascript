@@ -25,6 +25,7 @@ import org.eclipse.dltk.annotations.Internal;
 import org.eclipse.dltk.compiler.problem.IProblemIdentifier;
 import org.eclipse.dltk.internal.javascript.validation.ValidationMessages;
 import org.eclipse.dltk.javascript.core.JavaScriptProblems;
+import org.eclipse.dltk.javascript.internal.core.RMethod;
 import org.eclipse.dltk.javascript.typeinference.IAssignProtection;
 import org.eclipse.dltk.javascript.typeinference.ILocationProvider;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
@@ -55,13 +56,13 @@ import org.eclipse.dltk.javascript.typeinfo.MemberPredicate;
 import org.eclipse.dltk.javascript.typeinfo.MemberPredicates;
 import org.eclipse.dltk.javascript.typeinfo.RSimpleType;
 import org.eclipse.dltk.javascript.typeinfo.RTypeMemberQuery;
-import org.eclipse.dltk.javascript.typeinfo.RTypeVariable;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
+import org.eclipse.dltk.javascript.typeinfo.model.impl.MethodImpl;
 
 public abstract class ElementValue implements IValue {
 
@@ -640,6 +641,18 @@ public abstract class ElementValue implements IValue {
 				return new MethodValue(immutable);
 			}
 			return this;
+		}
+
+		@Override
+		public ReferenceLocation getLocation() {
+			if (method != null) {
+				Object attr = ((MethodImpl) ((RMethod) method).getSource())
+						.getAttribute(IReferenceAttributes.LOCATION);
+				if (attr instanceof ReferenceLocation location) {
+					return location;
+				}
+			}
+			return super.getLocation();
 		}
 	}
 

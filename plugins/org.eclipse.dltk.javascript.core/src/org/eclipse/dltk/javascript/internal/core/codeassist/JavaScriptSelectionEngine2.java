@@ -469,7 +469,8 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 			}
 			return resolveBuiltin(module.getScriptProject(), path);
 		}
-		if (type != null && type.getKind() == TypeKind.JAVASCRIPT) {
+		if (type != null && (type.getKind() == TypeKind.JAVASCRIPT)
+				|| (type.getKind() == TypeKind.JAVA)) {
 			ReferenceLocation location = (ReferenceLocation) element
 					.getAttribute(IReferenceAttributes.LOCATION);
 			if (location != null && location != ReferenceLocation.UNKNOWN) {
@@ -483,6 +484,10 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 				final IModelElement result = locateModelElement(location);
 				if (result != null) {
 					return result;
+				}
+				else if (type.getKind() == TypeKind.JAVA) {
+					// keep the same behavior as before if the element cannot be located
+					return TypeInfoManager.convertElement(module, element);
 				}
 			} else {
 				// TODO this only goes 1 deep, need support for nested types..

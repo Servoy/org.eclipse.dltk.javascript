@@ -58,7 +58,7 @@ class RFunctionType extends RType implements IRFunctionType {
 				sb.append(parameter.getType());
 			}
 			if (parameter.getKind() == ParameterKind.OPTIONAL) {
-				sb.append("=");
+				sb.append("?");
 			}
 		}
 		sb.append(')');

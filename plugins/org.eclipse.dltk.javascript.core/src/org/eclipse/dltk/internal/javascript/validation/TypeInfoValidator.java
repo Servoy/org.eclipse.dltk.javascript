@@ -982,6 +982,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 
 			final IValueReference reference = visit(expression);
 			modes.remove(expression);
+
+			parseFunctionTypes(reference, node.getArguments());
 			if (reference == null) {
 				visitList(node.getArguments());
 				return null;

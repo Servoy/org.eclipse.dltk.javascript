@@ -1618,6 +1618,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 					}
 					return assignableFrom;
 				}
+				return TypeCompatibility.FALSE;
 			}
 			return TypeCompatibility.TRUE;
 		}

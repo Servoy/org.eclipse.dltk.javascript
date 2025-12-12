@@ -654,7 +654,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				for (int i = 0; i < parameters.size(); i++) {
 					IRType type = parameters.get(i).getType();
 					if (type instanceof IRFunctionType ft
-							&& i < callArgs.size()) {
+							&& i < callArgs.size()
+							// if there are overloads then only set the first
+							// one which is very likley the preferred one (with
+							// generic types)
+							&& !functionTypes.containsKey(callArgs.get(i))) {
 						functionTypes.put(callArgs.get(i), ft);
 					}
 				}

@@ -9,6 +9,7 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.ui.text.completion;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.eclipse.dltk.core.CompletionProposal;
@@ -18,6 +19,7 @@ import org.eclipse.dltk.internal.javascript.ti.TypeSystemImpl;
 import org.eclipse.dltk.javascript.core.JavaScriptNature;
 import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
+import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
@@ -105,6 +107,8 @@ public class JavaScriptCompletionProposalCollector extends
 		StringBuilder sb = null;
 		final Integer paramLimit = (Integer) methodProposal
 				.getAttribute(ScriptCompletionProposalCollector.ATTR_PARAM_LIMIT);
+		checkFunctionTypeParameters(methodReferenceProposal, extraInfo,
+				paramLimit);
 		if (extraInfo instanceof Method) {
 			final Method method = (Method) extraInfo;
 			final EList<Parameter> parameters = method.getParameters();
@@ -183,8 +187,92 @@ public class JavaScriptCompletionProposalCollector extends
 						.setContextInformation(contextInformation);
 			}
 		}
-
 		return methodReferenceProposal;
+	}
+
+	public void checkFunctionTypeParameters(
+			AbstractScriptCompletionProposal methodReferenceProposal,
+			Object extraInfo, final Integer paramLimit) {
+
+		if (extraInfo instanceof IRMethod methodInfo) {
+
+			final List<IRParameter> parameters = methodInfo.getParameters();
+			if (parameters.isEmpty()) {
+				return;
+			}
+
+			StringBuilder replacement = new StringBuilder();
+			replacement.append(methodInfo.getName());
+			replacement.append('(');
+
+			boolean hasFunctionParameter = false;
+
+			for (int i = 0; i < parameters.size(); i++) {
+				IRParameter param = parameters.get(i);
+
+				if (i > 0) {
+					replacement.append(", ");
+				}
+
+				if (param.getType() instanceof IRFunctionType ft) {
+					hasFunctionParameter = true;
+
+					replacement.append(buildJsDoc(ft));
+					replacement.append(" (");
+					int idx = 0;
+					for (IRParameter fp : ft.getParameters()) {
+						if (idx > 0) {
+							replacement.append(", ");
+						}
+						replacement.append(fp.getName());
+						idx++;
+					}
+					replacement.append(')');
+
+					replacement.append(" => {\n");
+					replacement.append("\n");
+					replacement.append("\t}");
+
+				} else {
+					replacement.append(param.getName());
+				}
+
+				if (paramLimit != null && i + 1 >= paramLimit.intValue())
+					break;
+			}
+			if (!hasFunctionParameter) {
+				return;
+			}
+
+			replacement.append(')');
+			String replacementString = replacement.toString();
+			methodReferenceProposal.setReplacementString(replacementString);
+			int cursorPos = replacement.indexOf("\n\n") + 1; // TODO improve
+																// indentation
+			methodReferenceProposal.setCursorPosition(cursorPos);
+		}
+		// TODO return the replacement string and use it for the context
+		// information
+	}
+
+	private String buildJsDoc(IRFunctionType ft) {
+		StringBuilder doc = new StringBuilder();
+		doc.append("\n\t/**\n\t");
+
+		for (IRParameter p : ft.getParameters()) {
+			doc.append(" * @param ");
+
+			String type = "Object";
+			if (p.getType() != null) {
+				type = p.getType().getName();
+			}
+
+			doc.append("{").append(type).append("} ");
+			doc.append(p.getName()).append("\n\t");
+		}
+
+		doc.append(" */\n\t");
+		return doc.toString();
 	}
 
 	private ITypeSystem typeSystem;

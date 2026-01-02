@@ -1547,6 +1547,14 @@ public class TypeInfoValidator implements IBuildParticipant,
 				} else {
 					final TypeCompatibility pResult = testArgumentType(
 							parameter.getType(), argument);
+					if (pResult == TypeCompatibility.FALSE
+							&& JavaScriptValidations.typeOf(argument) == null) {
+						// this is an any type argument, so we shouldn't fail
+						// for now.
+						// comment this out when you want strict checking to see
+						// what really shouldn't be a any type..
+						continue;
+					}
 					if (pResult.after(result)) {
 						if (pResult == TypeCompatibility.FALSE
 								&& statuses.isEmpty()) {

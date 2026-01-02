@@ -268,7 +268,19 @@
       </type>
     </members>
     <members xsi:type="ref:Method" name="filter" description="Creates a new array with all elements that pass the test implemented by the provided function. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray).">
-      <parameters name="callback" directType="Function"/>
+       <parameters name="callback">
+        <type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that forEach() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
@@ -306,7 +318,19 @@
     </members>
     <members xsi:type="ref:Property" name="length" directType="Number" description="The length returns an integer representing the length of an array."/>
     <members xsi:type="ref:Method" name="map" description="Creates a new array with the results of calling a provided function on every element in this array. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
-      <parameters name="callback" directType="Function"/>
+       <parameters name="callback">
+        <type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that forEach() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
       <parameters name="thisArg" kind="OPTIONAL"/>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>

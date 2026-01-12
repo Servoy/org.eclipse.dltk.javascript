@@ -107,9 +107,14 @@ public class JavaScriptCompletionProposalCollector extends
 		StringBuilder sb = null;
 		final Integer paramLimit = (Integer) methodProposal
 				.getAttribute(ScriptCompletionProposalCollector.ATTR_PARAM_LIMIT);
-		checkFunctionTypeParameters(methodReferenceProposal, extraInfo,
+		String info = checkFunctionTypeParameters(methodReferenceProposal,
+				extraInfo,
 				paramLimit);
-		if (extraInfo instanceof Method) {
+		if (info != null) {
+			// do not show any context information as it is already included in
+			// the replacement string
+			methodReferenceProposal.setContextInformation(null);
+		} else if (extraInfo instanceof Method) {
 			final Method method = (Method) extraInfo;
 			final EList<Parameter> parameters = method.getParameters();
 			if (parameters.size() > 0) {
@@ -181,8 +186,8 @@ public class JavaScriptCompletionProposalCollector extends
 					methodProposal, sb.toString());
 			final int pos = methodProposal.getCompletion().indexOf('(');
 			if (pos >= 0) {
-				contextInformation.setContextInformationPosition(methodProposal
-						.getReplaceStart() + pos + 1);
+				contextInformation.setContextInformationPosition(
+						methodProposal.getReplaceStart() + pos + 1);
 				methodReferenceProposal
 						.setContextInformation(contextInformation);
 			}
@@ -190,7 +195,7 @@ public class JavaScriptCompletionProposalCollector extends
 		return methodReferenceProposal;
 	}
 
-	public void checkFunctionTypeParameters(
+	public String checkFunctionTypeParameters(
 			AbstractScriptCompletionProposal methodReferenceProposal,
 			Object extraInfo, final Integer paramLimit) {
 
@@ -198,7 +203,7 @@ public class JavaScriptCompletionProposalCollector extends
 
 			final List<IRParameter> parameters = methodInfo.getParameters();
 			if (parameters.isEmpty()) {
-				return;
+				return null;
 			}
 
 			StringBuilder replacement = new StringBuilder();
@@ -229,7 +234,7 @@ public class JavaScriptCompletionProposalCollector extends
 					}
 					replacement.append(')');
 
-					replacement.append(" => {\n");
+					replacement.append(" => {\n\t\t");
 					replacement.append("\n");
 					replacement.append("\t}");
 
@@ -241,18 +246,17 @@ public class JavaScriptCompletionProposalCollector extends
 					break;
 			}
 			if (!hasFunctionParameter) {
-				return;
+				return null;
 			}
 
 			replacement.append(')');
 			String replacementString = replacement.toString();
 			methodReferenceProposal.setReplacementString(replacementString);
-			int cursorPos = replacement.indexOf("\n\n") + 1; // TODO improve
-																// indentation
+			int cursorPos = replacement.indexOf("{\n\t\t") + 3;
 			methodReferenceProposal.setCursorPosition(cursorPos);
+			return replacementString;
 		}
-		// TODO return the replacement string and use it for the context
-		// information
+		return null;
 	}
 
 	private String buildJsDoc(IRFunctionType ft) {

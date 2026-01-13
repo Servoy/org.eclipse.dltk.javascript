@@ -148,25 +148,38 @@ public class JavaScriptTypeCompletionProposalComputer extends
 
 	private int findMethodCallOpenParen(
 			ContentAssistInvocationContext context) {
-		final int contextPosition = context.getInvocationOffset();
+		final int offset = context.getInvocationOffset();
 		IDocument document = context.getDocument();
 		JavaHeuristicScanner scanner = new JavaHeuristicScanner(document);
-		int bound = Math.max(-1, contextPosition - 200);
-
-		int pos = contextPosition - 1;
-		do {
-			int paren = scanner.findOpeningPeer(pos, bound, '(', ')');
+		try {
+			// look for the nearest '(' before cursor
+			int paren = scanner.findOpeningPeer(offset - 1, -1, '(', ')');
 			if (paren == JavaHeuristicScanner.NOT_FOUND)
-				break;
+				return -1;
 
-			int token = scanner.previousToken(paren - 1, bound);
-			if (token == Symbols.TokenIDENT)
-				return paren;
+			// must be preceded by an identifier (method call)
+			int token = scanner.previousToken(paren - 1, -1);
+			if (token != Symbols.TokenIDENT)
+				return -1;
 
-			pos = paren - 1;
-		} while (true);
+			for (int i = paren + 1; i < offset; i++) {
+				if (!Character.isWhitespace(document.getChar(i)))
+					return -1;
+			}
+			int pos = offset;
+			int length = document.getLength();
+			while (pos < length
+					&& Character.isWhitespace(document.getChar(pos)))
+				pos++; // skip whitespace
 
-		return -1;
+			if (pos >= length || document.getChar(pos) != ')')
+				return -1;
+
+			return paren;
+
+		} catch (Exception e) {
+			return -1;
+		}
 	}
 
 	private String getMethodName(IDocument doc, int parenPos) {

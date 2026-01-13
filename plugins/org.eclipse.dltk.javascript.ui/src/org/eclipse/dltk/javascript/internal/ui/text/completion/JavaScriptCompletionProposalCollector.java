@@ -225,8 +225,6 @@ public class JavaScriptCompletionProposalCollector extends
 
 				if (param.getType() instanceof IRFunctionType ft) {
 					hasFunctionParameter = true;
-
-					replacement.append(buildJsDoc(ft));
 					replacement.append(" (");
 					int idx = 0;
 					for (IRParameter fp : ft.getParameters()) {
@@ -291,26 +289,6 @@ public class JavaScriptCompletionProposalCollector extends
 		} catch (Exception e) {
 			return false;
 		}
-	}
-
-	private String buildJsDoc(IRFunctionType ft) {
-		StringBuilder doc = new StringBuilder();
-		doc.append("\n\t/**\n\t");
-
-		for (IRParameter p : ft.getParameters()) {
-			doc.append(" * @param ");
-
-			String type = "Object";
-			if (p.getType() != null) {
-				type = p.getType().getName();
-			}
-
-			doc.append("{").append(type).append("} ");
-			doc.append(p.getName()).append("\n\t");
-		}
-
-		doc.append(" */\n\t");
-		return doc.toString();
 	}
 
 	private ITypeSystem typeSystem;

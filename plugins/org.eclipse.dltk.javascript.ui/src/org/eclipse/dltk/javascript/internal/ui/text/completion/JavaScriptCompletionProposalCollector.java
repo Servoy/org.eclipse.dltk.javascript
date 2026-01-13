@@ -18,6 +18,7 @@ import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.TypeSystemImpl;
 import org.eclipse.dltk.javascript.core.JavaScriptNature;
 import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
+import org.eclipse.dltk.javascript.internal.ui.text.Symbols;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
@@ -30,13 +31,16 @@ import org.eclipse.dltk.javascript.typeinfo.model.GenericType;
 import org.eclipse.dltk.javascript.typeinfo.model.Method;
 import org.eclipse.dltk.javascript.typeinfo.model.Parameter;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
+import org.eclipse.dltk.javascript.ui.scriptdoc.JavaHeuristicScanner;
 import org.eclipse.dltk.ui.text.completion.AbstractScriptCompletionProposal;
+import org.eclipse.dltk.ui.text.completion.ContentAssistInvocationContext;
 import org.eclipse.dltk.ui.text.completion.IScriptCompletionProposal;
 import org.eclipse.dltk.ui.text.completion.LazyScriptCompletionProposal;
 import org.eclipse.dltk.ui.text.completion.ProposalContextInformation;
 import org.eclipse.dltk.ui.text.completion.ScriptCompletionProposal;
 import org.eclipse.dltk.ui.text.completion.ScriptCompletionProposalCollector;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("restriction")
@@ -249,7 +253,9 @@ public class JavaScriptCompletionProposalCollector extends
 				return null;
 			}
 
-			replacement.append(')');
+			if (!cursorInsideArgumentList(getInvocationContext())) {
+				replacement.append(')');
+			}
 			String replacementString = replacement.toString();
 			methodReferenceProposal.setReplacementString(replacementString);
 			int cursorPos = replacement.indexOf("{\n\t\t") + 3;
@@ -257,6 +263,34 @@ public class JavaScriptCompletionProposalCollector extends
 			return replacementString;
 		}
 		return null;
+	}
+
+	private boolean cursorInsideArgumentList(
+			ContentAssistInvocationContext context) {
+
+		IDocument document = context.getDocument();
+		int offset = context.getInvocationOffset();
+
+		JavaHeuristicScanner scanner = new JavaHeuristicScanner(document);
+		int bound = Math.max(-1, offset - 200); // do not walk the whole
+												// document
+
+		try {
+			int openParen = scanner.findOpeningPeer(offset - 1, bound, '(',
+					')');
+			if (openParen == JavaHeuristicScanner.NOT_FOUND)
+				return false;
+			int token = scanner.previousToken(openParen - 1, bound);
+			if (token != Symbols.TokenIDENT)
+				return false;
+			int closeParen = scanner.findClosingPeer(openParen + 1,
+					document.getLength(), '(', ')');
+			return closeParen == JavaHeuristicScanner.NOT_FOUND
+					|| offset <= closeParen;
+
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	private String buildJsDoc(IRFunctionType ft) {

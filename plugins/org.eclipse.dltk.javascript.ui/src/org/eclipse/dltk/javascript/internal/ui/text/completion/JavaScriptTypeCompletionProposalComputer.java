@@ -15,13 +15,18 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.javascript.internal.ui.JavaScriptUI;
 import org.eclipse.dltk.javascript.internal.ui.text.Symbols;
+import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
+import org.eclipse.dltk.javascript.typeinfo.IRMethod;
+import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.ui.scriptdoc.JavaHeuristicScanner;
 import org.eclipse.dltk.ui.text.completion.ContentAssistInvocationContext;
 import org.eclipse.dltk.ui.text.completion.IScriptCompletionProposalExtension2;
 import org.eclipse.dltk.ui.text.completion.ScriptCompletionProposalCollector;
 import org.eclipse.dltk.ui.text.completion.ScriptCompletionProposalComputer;
 import org.eclipse.dltk.ui.text.completion.ScriptContentAssistInvocationContext;
+import org.eclipse.dltk.ui.text.completion.ScriptMethodCompletionProposal;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
@@ -105,4 +110,87 @@ public class JavaScriptTypeCompletionProposalComputer extends
 				context.getSourceModule());
 	}
 
+	@Override
+	public List<ICompletionProposal> computeCompletionProposals(
+			ContentAssistInvocationContext context, IProgressMonitor monitor) {
+		List<ICompletionProposal> proposals = super.computeCompletionProposals(
+				context, monitor);
+		int parenPos = findMethodCallOpenParen(context);
+		if (parenPos == -1) {
+			return proposals;
+		}
+
+		String method = getMethodName(context.getDocument(), parenPos);
+		if (method == null) {
+			return proposals;
+		}
+
+		// re-trigger method reference completion when inside ()
+		method = method.trim();
+		if (context instanceof ScriptContentAssistInvocationContext cx) {
+			final int completionOffset = guessContextInformationPosition(cx);
+			List<ICompletionProposal> reTriggeredProposals = super.computeScriptCompletionProposals(
+					completionOffset,
+					cx, monitor);
+
+			// filter only those proposals that have a function parameter
+			List<ICompletionProposal> filtered = reTriggeredProposals.stream()
+					.filter(p -> p instanceof ScriptMethodCompletionProposal sp
+							&& sp.getExtraInfo() instanceof IRMethod methodInfo
+							&& hasFunctionParameter(methodInfo))
+					.toList();
+
+			// if no function parameter proposals, return the normal proposals
+			return filtered.isEmpty() ? proposals : filtered;
+		}
+		return proposals;
+	}
+
+	private int findMethodCallOpenParen(
+			ContentAssistInvocationContext context) {
+		final int contextPosition = context.getInvocationOffset();
+		IDocument document = context.getDocument();
+		JavaHeuristicScanner scanner = new JavaHeuristicScanner(document);
+		int bound = Math.max(-1, contextPosition - 200);
+
+		int pos = contextPosition - 1;
+		do {
+			int paren = scanner.findOpeningPeer(pos, bound, '(', ')');
+			if (paren == JavaHeuristicScanner.NOT_FOUND)
+				break;
+
+			int token = scanner.previousToken(paren - 1, bound);
+			if (token == Symbols.TokenIDENT)
+				return paren;
+
+			pos = paren - 1;
+		} while (true);
+
+		return -1;
+	}
+
+	private String getMethodName(IDocument doc, int parenPos) {
+		try {
+			JavaHeuristicScanner scanner = new JavaHeuristicScanner(doc);
+			int token = scanner.previousToken(parenPos - 1, -1);
+			if (token == Symbols.TokenIDENT) {
+				int start = scanner.getPosition() + 1;
+				int end = parenPos - 1;
+				return doc.get(start, end - start + 1);
+			}
+		} catch (Exception e) {
+			// shouldn't happen
+			JavaScriptUI.log(e);
+		}
+		return null;
+	}
+
+	private boolean hasFunctionParameter(IRMethod methodInfo) {
+		for (IRParameter p : methodInfo.getParameters()) {
+			if (p.getType() instanceof IRFunctionType) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -255,7 +255,19 @@
       </type>
     </members>
     <members xsi:type="ref:Method" name="every" directType="Boolean" description="Tests whether all elements in the array pass the test implemented by the provided function. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray).">
-      <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+      	<type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that every() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
     </members>
     <members xsi:type="ref:Method" name="fill" description="Changes all elements in an array to a static value, from a start index (default 0) to an end index (default array.length). It returns the modified array.">
       <parameters name="value">
@@ -274,7 +286,7 @@
               <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
           </parameters>
           <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
-          <parameters name="traversedArray" kind="OPTIONAL" description="The array that forEach() is being applied to.">
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that filter() is being applied to.">
             <type xsi:type="ref:ArrayType">
                 <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
             </type>
@@ -324,7 +336,7 @@
               <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
           </parameters>
           <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
-          <parameters name="traversedArray" kind="OPTIONAL" description="The array that forEach() is being applied to.">
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that map() is being applied to.">
             <type xsi:type="ref:ArrayType">
                 <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
             </type>
@@ -360,14 +372,41 @@
       </type>
     </members>
     <members xsi:type="ref:Method" name="reduce" description="Reduces the array to a single value by executing a provided function for each value of the array (from left-to-right).">
-      <parameters name="function(total, currentValue, [index] , [arr])" directType="Function"/>
+      <parameters name="callback">
+        <type xsi:type="ref:FunctionType">
+          <parameters name="totalValue" description="The accumulated value previously returned in the last invocation of the callback, or initialValue, if supplied.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that reduce() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
       <parameters name="initialValue" kind="OPTIONAL" directType="Object"/>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
     <members xsi:type="ref:Method" name="some" directType="Boolean" description="Tests whether some element in the array passes the test implemented by the provided function. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
-      <parameters name="callback" directType="Function"/>
+       <parameters name="callback">
+      <type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that some() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="sort" description="Sorts the elements of an array. The function will be called with 2 arguments (a,b)">
@@ -377,10 +416,34 @@
       </type>
     </members>
     <members xsi:type="ref:Method" name="find" directType="Object" description="Returns the value of the first element in the provided array that satisfies the provided testing function. If no values satisfy the testing function, undefined is returned.The callback function can invoked with three arguments: the element value, the element index(optional), the array being traversed (optional).">
-      <parameters name="callback" directType="Function"/>
+       <parameters name="callback">
+      	<type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that find() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
     </members>
     <members xsi:type="ref:Method" name="findIndex" directType="Number" description="Returns the index of the first element in the provided array which satisfies the provided testing function. If no values satisfy the testing function, -1 is returned. The callback function can invoked with three arguments: the element value, the element index (optional), the array being traversed (optional).">
-      <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+      	<type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that findIndex() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
     </members>
     <members xsi:type="ref:Method" name="splice" description="Removes and adds new elements to an array. Returns the removed elements as an Array">
       <parameters name="index" directType="Number"/>
@@ -398,11 +461,35 @@
       </parameters>
     </members>
     <members xsi:type="ref:Method" name="findLast" description="Iterates the array in reverse order and returns the value of the first element that satisfies the provided testing function. If no elements satisfy the testing function, undefined is returned.">
-        <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+      	<type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that findLast() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
         <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
     </members>
     <members xsi:type="ref:Method" name="findLastIndex" description="Iterates the array in reverse order and returns the index of the first element that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.">
-        <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+      	<type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that findLastIndex() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
     </members>
     <members xsi:type="ref:Method" name="toReversed" description="Returns a new array with the elements in reversed order.">
         <type xsi:type="ref:ArrayType">
@@ -480,7 +567,19 @@
       </type>
     </members>
     <members xsi:type="ref:Method" name="flatMap" description="returns a new array formed by applying a given callback function to each element of the array, and then flattening the result by one level.">
-      <parameters name="callback" directType="Function"/>
+      <parameters name="callback">
+      	<type xsi:type="ref:FunctionType">
+          <parameters name="elementValue" description="The current element being processed in the array.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />
+          <parameters name="traversedArray" kind="OPTIONAL" description="The array that flatMap() is being applied to.">
+            <type xsi:type="ref:ArrayType">
+                <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </type>
+          </parameters>
+        </type>
+      </parameters>
        <parameters name="thisArg" kind="OPTIONAL"/>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>

@@ -231,7 +231,14 @@ public class JavaScriptCompletionProposalCollector extends
 						if (idx > 0) {
 							replacement.append(", ");
 						}
+						if (fp.isVarargs()) {
+							replacement.append("...");
+						}
 						replacement.append(fp.getName());
+						// TODO handle optional when rhino supports it
+//						if (fp.isOptional())
+//							replacement.append('?');
+
 						idx++;
 					}
 					replacement.append(')');

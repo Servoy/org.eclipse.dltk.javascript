@@ -9,6 +9,8 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.internal.ui.text.completion;
 
+import java.util.List;
+
 import org.eclipse.dltk.core.CompletionProposal;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.JSMethod;
@@ -17,7 +19,9 @@ import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IMethod;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
+import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
+import org.eclipse.dltk.javascript.typeinfo.IRParameter;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
@@ -33,6 +37,7 @@ import org.eclipse.dltk.javascript.ui.typeinfo.IElementLabelProvider.Mode;
 import org.eclipse.dltk.ui.ScriptElementImageDescriptor;
 import org.eclipse.dltk.ui.ScriptElementImageProvider;
 import org.eclipse.dltk.ui.text.completion.CompletionProposalLabelProvider;
+import org.eclipse.dltk.ui.text.completion.ScriptCompletionProposalCollector;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 @SuppressWarnings("restriction")
@@ -77,8 +82,24 @@ public class JavaScriptCompletionProposalLabelProvider extends
 		String returnType = null;
 		String source = null;
 		Object info = methodProposal.getExtraInfo();
-		if (info instanceof IRMethod) {
-			return info.toString();
+		if (info instanceof IRMethod methodInfo) {
+			StringBuilder label = new StringBuilder();
+			label.append(methodProposal.getName());
+			label.append('(');
+			List<IRParameter> params = methodInfo.getParameters();
+			int count = 0;
+			Integer paramLimit = (Integer) methodProposal.getAttribute(
+					ScriptCompletionProposalCollector.ATTR_PARAM_LIMIT);
+			for (IRParameter p : params) {
+				if (paramLimit != null && count >= paramLimit)
+					break;
+				if (count > 0)
+					label.append(", ");
+				appendIRParameterLabel(label, p);
+				count++;
+			}
+			label.append(')');
+			return label.toString();
 		}
 		if (info instanceof Method) {
 			final Method method = (Method) info;
@@ -125,6 +146,31 @@ public class JavaScriptCompletionProposalLabelProvider extends
 			nameBuffer.append(source);
 		}
 		return nameBuffer.toString();
+	}
+
+	private void appendIRParameterLabel(StringBuilder buf, IRParameter p) {
+		buf.append(p.getName());
+		if (p.isOptional())
+			buf.append('?');
+		buf.append(':');
+
+		IRType type = p.getType();
+		if (type instanceof IRFunctionType ft) {
+			buf.append("function(");
+
+			List<IRParameter> fps = ft.getParameters();
+			for (int i = 0; i < fps.size(); i++) {
+				IRParameter fp = fps.get(i);
+				if (i > 0)
+					buf.append(", ");
+				buf.append(fp.getName());
+				if (fp.isOptional())
+					buf.append('?');
+			}
+			buf.append(')');
+		} else {
+			buf.append(type != null ? type.getName() : "any");
+		}
 	}
 
 	@Override

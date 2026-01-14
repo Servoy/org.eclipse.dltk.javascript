@@ -225,7 +225,7 @@ public class JavaScriptCompletionProposalCollector extends
 
 				if (param.getType() instanceof IRFunctionType ft) {
 					hasFunctionParameter = true;
-					replacement.append(" (");
+					replacement.append("(");
 					int idx = 0;
 					for (IRParameter fp : ft.getParameters()) {
 						if (idx > 0) {

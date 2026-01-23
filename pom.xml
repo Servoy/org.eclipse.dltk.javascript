@@ -10,8 +10,7 @@
 	<version>5.1.1-SNAPSHOT</version>
 
 	<properties>
-		<tycho-version>4.0.8</tycho-version>
-		<tycho.extra.version>4.0.8</tycho.extra.version>
+		<tycho-version>4.0.12</tycho-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>

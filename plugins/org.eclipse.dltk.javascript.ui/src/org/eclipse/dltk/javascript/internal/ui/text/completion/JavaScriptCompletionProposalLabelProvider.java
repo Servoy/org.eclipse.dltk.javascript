@@ -99,6 +99,17 @@ public class JavaScriptCompletionProposalLabelProvider extends
 				count++;
 			}
 			label.append(')');
+			if (methodInfo.getType() != null
+					&& methodInfo.getType().getName() != null) {
+				label.append(": ").append(methodInfo.getType().getName());
+			}
+			if (info instanceof Method m && m.getDeclaringType() != null
+					&& m.getDeclaringType().getName() != null) {
+				// use Method instead of IRMethod to display the declaring type
+				// the same as before
+				label.append(" - ")
+						.append(m.getDeclaringType().getName());
+			}
 			return label.toString();
 		}
 		if (info instanceof Method) {

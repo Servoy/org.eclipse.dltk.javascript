@@ -126,8 +126,8 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 		}
 		ITypeSystem.CURRENT.runWith(inferencer2, new Runnable() {
 			public void run() {
-				final CompletionPath path = new CompletionPath(calculator
-						.getCompletion());
+				CompletionPath path = new CompletionPath(
+						calculator.getCompletion());
 				final ASTNode node = nodeFinder.getNode();
 				if (node instanceof Identifier) {
 					setSourceRange(node.start(), node.end());
@@ -137,8 +137,8 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 						lastSegment = "";
 					setSourceRange(position - lastSegment.length(), position);
 				}
-				final Reporter reporter = new Reporter(inferencer2, path
-						.lastSegment(), position, TypeInfoManager
+				final Reporter reporter = new Reporter(inferencer2,
+						path.lastSegment(), position, TypeInfoManager
 						.createExtensions(inferencer2,
 								IValidatorExtension.class, null));
 				if (calculator.isMember() && !path.isEmpty()
@@ -323,6 +323,8 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 		final Set<String> processed = new HashSet<String>();
 		final boolean camelCase = DLTKCore.ENABLED.equals(DLTKCore
 				.getOption(DLTKCore.CODEASSIST_CAMEL_CASE_MATCH));
+		final boolean substringMatch = DLTKCore.ENABLED.equals(
+				DLTKCore.getOption(DLTKCore.CODEASSIST_SUBSTRING_MATCH));
 		final boolean visibilityCheck = DLTKCore.ENABLED.equals(Platform
 				.getPreferencesService().getString(JavaScriptPlugin.PLUGIN_ID,
 						DLTKCore.CODEASSIST_VISIBILITY_CHECK, null, null));
@@ -368,7 +370,9 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 
 		boolean matches(String name) {
 			return CharOperation.prefixEquals(prefix, name, false) || camelCase
-					&& CharOperation.camelCaseMatch(prefix, name.toCharArray());
+					&& CharOperation.camelCaseMatch(prefix, name.toCharArray())
+					|| substringMatch && CharOperation.substringMatch(prefix,
+							name.toCharArray());		
 		}
 
 		private MemberValidationEvent memberValidationEvent;

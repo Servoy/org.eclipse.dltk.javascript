@@ -325,6 +325,8 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 				.getOption(DLTKCore.CODEASSIST_CAMEL_CASE_MATCH));
 		final boolean substringMatch = DLTKCore.ENABLED.equals(
 				DLTKCore.getOption(DLTKCore.CODEASSIST_SUBSTRING_MATCH));
+		final boolean subwordMatch = DLTKCore.ENABLED
+				.equals(DLTKCore.getOption(DLTKCore.CODEASSIST_SUBWORD_MATCH));
 		final boolean visibilityCheck = DLTKCore.ENABLED.equals(Platform
 				.getPreferencesService().getString(JavaScriptPlugin.PLUGIN_ID,
 						DLTKCore.CODEASSIST_VISIBILITY_CHECK, null, null));
@@ -372,7 +374,9 @@ public class JavaScriptCompletionEngine2 extends ScriptCompletionEngine
 			return CharOperation.prefixEquals(prefix, name, false) || camelCase
 					&& CharOperation.camelCaseMatch(prefix, name.toCharArray())
 					|| substringMatch && CharOperation.substringMatch(prefix,
-							name.toCharArray());		
+							name.toCharArray())
+					|| subwordMatch && CharOperation.subWordMatch(prefix,
+							name.toCharArray());
 		}
 
 		private MemberValidationEvent memberValidationEvent;

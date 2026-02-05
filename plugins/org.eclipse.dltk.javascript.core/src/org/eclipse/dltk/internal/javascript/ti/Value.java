@@ -47,6 +47,8 @@ public class Value extends ImmutableValue {
 	@Override
 	public void setDeclaredType(IRType declaredType) {
 		this.declaredType = declaredType;
+		if (elementValues != null)
+			elementValues.clear();
 	}
 
 	@Override

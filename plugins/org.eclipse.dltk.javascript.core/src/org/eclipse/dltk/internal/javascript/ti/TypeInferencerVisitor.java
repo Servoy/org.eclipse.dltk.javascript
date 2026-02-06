@@ -1530,62 +1530,65 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				variable = visit(bo.getLeftExpression());
 				type = this.context.getType(id.getName());
 			}
-			if (variable != null && type != null) {
-				IRType declaredType = variable.getDeclaredType();
-				if (statements.size() == 1) {
+
+			IRType declaredType = null;
+			if (variable != null) {
+				declaredType = variable.getDeclaredType();
+			}
+			if (statements.size() == 1) {
 				// if this is one statement it can be just instanceof and then
-					// it should have that type inside the block
-					if (!isNot && variable != null && type != null) {
+				// it should have that type inside the block
+				if (!isNot && variable != null && type != null) {
+					declaredType = variable.getDeclaredType();
+					variable.setDeclaredType(type.toRType(context));
+				}
+				if (statements.get(0) == onlyBranch) {
+					visit(statements.get(0));
+				} else {
+					final Branching branching = branching();
+					visit(statements.get(0));
+					branching.end();
+				}
+				// it was just instanceof removed the type again
+				if (variable != null && type != null) {
+					// it was instanceof without the not operator then just set
+					// the previous type back
+					if (!isNot) {
+						variable.setDeclaredType(declaredType);
+					} else {
+						// if it was one statement with a not operator then set
+						// the type from now on.
 						variable.setDeclaredType(type.toRType(context));
 					}
-					if (statements.get(0) == onlyBranch) {
-						visit(statements.get(0));
-					} else {
-						final Branching branching = branching();
-						visit(statements.get(0));
-						branching.end();
-					}
-					// it was just instanceof removed the type again
+				}
+			} else {
+				final Branching branching = branching();
+				final List<NestedValueCollection> collections = new ArrayList<NestedValueCollection>(
+						statements.size());
+				for (Statement statement : statements) {
+					final NestedValueCollection nestedCollection = new NestedValueCollection(
+							peekContext());
+					enterContext(nestedCollection);
+
 					if (variable != null && type != null) {
-					// it was instanceof without the not operator then just set
-						// the previous type back
-						if (!isNot) {
-							variable.setDeclaredType(declaredType);
-						} else {
-						// if it was one statement with a not operator then set
-							// the type from now on.
+						if (!isNot && statement == node.getThenStatement()) {
+							variable.setDeclaredType(type.toRType(context));
+						} else if (isNot
+								&& statement == node.getElseStatement()) {
 							variable.setDeclaredType(type.toRType(context));
 						}
 					}
-				} else {
-					final Branching branching = branching();
-					final List<NestedValueCollection> collections = new ArrayList<NestedValueCollection>(
-							statements.size());
-					for (Statement statement : statements) {
-						final NestedValueCollection nestedCollection = new NestedValueCollection(
-								peekContext());
-						enterContext(nestedCollection);
 
-						if (variable != null && type != null) {
-						if (!isNot && statement == node.getThenStatement()) {
-								variable.setDeclaredType(type.toRType(context));
-							} else if (isNot
-									&& statement == node.getElseStatement()) {
-								variable.setDeclaredType(type.toRType(context));
-							}
-						}
+					visit(statement);
 
-						visit(statement);
-
-						if (variable != null && type != null) {
-							variable.setDeclaredType(declaredType);
-						}
-						leaveContext();
-						collections.add(nestedCollection);
+					if (variable != null && type != null) {
+						variable.setDeclaredType(declaredType);
 					}
-					NestedValueCollection.mergeTo(peekContext(), collections);
-					branching.end();
+					leaveContext();
+					collections.add(nestedCollection);
 				}
+				NestedValueCollection.mergeTo(peekContext(), collections);
+				branching.end();
 			}
 		}
 	}

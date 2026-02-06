@@ -764,6 +764,11 @@ public abstract class ElementValue implements IValue {
 			return child == PhantomValue.VALUE ? null : child;
 		}
 
+		@Override
+		public JSTypeSet getTypes() {
+			return getDeclaredTypes();
+		}
+
 		public IRType getDeclaredType() {
 			return property.getType();
 		}

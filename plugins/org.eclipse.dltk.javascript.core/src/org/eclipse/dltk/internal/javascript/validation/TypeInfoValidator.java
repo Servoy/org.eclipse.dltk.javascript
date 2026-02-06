@@ -1327,6 +1327,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 				if (method.isTyped()) {
 					if (compatibility == TypeCompatibility.FALSE) {
 						problemId = JavaScriptProblems.WRONG_PARAMETERS;
+					} else if (compatibility == TypeCompatibility.ANY) {
+						problemId = JavaScriptProblems.ANY_TYPE;
 					} else {
 						problemId = JavaScriptProblems.WRONG_PARAMETERS_PARAMETERIZATION;
 					}
@@ -1370,7 +1372,9 @@ public class TypeInfoValidator implements IBuildParticipant,
 				}
 				reporter.reportProblem(
 						compatibility == TypeCompatibility.FALSE ? JavaScriptProblems.WRONG_PARAMETERS
-								: JavaScriptProblems.WRONG_PARAMETERS_PARAMETERIZATION,
+								: compatibility == TypeCompatibility.ANY
+										? JavaScriptProblems.ANY_TYPE
+										: JavaScriptProblems.WRONG_PARAMETERS_PARAMETERIZATION,
 						NLS.bind(
 								ValidationMessages.MethodNotApplicableInScript,
 								new String[] {
@@ -1553,7 +1557,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 						// for now.
 						// comment this out when you want strict checking to see
 						// what really shouldn't be a any type..
-						continue;
+						// continue;
 					}
 					if (pResult.after(result)) {
 						if (pResult == TypeCompatibility.FALSE
@@ -1579,7 +1583,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 						// for now.
 						// comment this out when you want strict checking to see
 						// what really shouldn't be a any type..
-						continue;
+						// continue;
 					}
 					if (pResult.after(result)) {
 						if (pResult == TypeCompatibility.FALSE
@@ -1636,7 +1640,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 					}
 					return assignableFrom;
 				}
-				return TypeCompatibility.FALSE;
+				return TypeCompatibility.ANY;
 			}
 			return TypeCompatibility.TRUE;
 		}
@@ -1702,6 +1706,10 @@ public class TypeInfoValidator implements IBuildParticipant,
 				if (sb.length() != 0) {
 					sb.append(',');
 				}
+				IRType declarationType = null;
+				if (argument != null) {
+					declarationType = argument.getDeclaredType();
+				}
 				if (argument == null) {
 					sb.append("null");
 				} else if (parameter != null
@@ -1713,8 +1721,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 							.getAttribute(IReferenceAttributes.R_METHOD);
 					sb.append(RTypes.functionType(getContext(),
 							method.getParameters(), method.getType()).getName());
-				} else if (argument.getDeclaredType() != null) {
-					sb.append(argument.getDeclaredType().getName());
+				} else if (declarationType != null) {
+					sb.append(declarationType.getName());
 				} else {
 					final JSTypeSet types = argument.getTypes();
 					if (types.size() > 0) {
@@ -2464,7 +2472,9 @@ public class TypeInfoValidator implements IBuildParticipant,
 						if (compatibility != TypeCompatibility.TRUE) {
 							reporter.reportProblem(
 									compatibility == TypeCompatibility.FALSE ? JavaScriptProblems.WRONG_PARAMETERS
-											: JavaScriptProblems.WRONG_PARAMETERS_PARAMETERIZATION,
+											: compatibility == TypeCompatibility.ANY
+													? JavaScriptProblems.ANY_TYPE
+													: JavaScriptProblems.WRONG_PARAMETERS_PARAMETERIZATION,
 									NLS.bind(
 											"The constructor {0}({1}) is not applicable for the arguments ({2})",
 											new String[] {

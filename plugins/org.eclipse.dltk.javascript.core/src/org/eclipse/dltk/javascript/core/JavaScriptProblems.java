@@ -84,6 +84,8 @@ public enum JavaScriptProblems implements IProblemIdentifier,
 	 */
 	PARAMETERIZED_TYPE_INCORRECT_ARGUMENTS,
 
+	ANY_TYPE,
+
 	/**
 	 * @since 3.0
 	 */

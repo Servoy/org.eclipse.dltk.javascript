@@ -1539,7 +1539,6 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				// if this is one statement it can be just instanceof and then
 				// it should have that type inside the block
 				if (!isNot && variable != null && type != null) {
-					declaredType = variable.getDeclaredType();
 					variable.setDeclaredType(type.toRType(context));
 				}
 				if (statements.get(0) == onlyBranch) {

@@ -918,6 +918,9 @@
    <section id="org.eclipse.dltk.javascript.ui.problems.misc" name="Other problems" priority="150">
       <!--defaultEntry namespace="org.eclipse.dltk.javascript.core.JavaScriptProblems"/-->
       <!--defaultEntry namespace="org.eclipse.dltk.javascript.parser.JavaScriptParserProblems"/-->
+	  <problem
+            id="org.eclipse.dltk.javascript.core.JavaScriptProblems#ANY_TYPE"
+            label="Parameter does not have a type"/>
       <problem
             id="org.eclipse.dltk.javascript.core.JavaScriptProblems#WRONG_TYPE_EXPRESSION"
             label="Undefined javascript type"/>

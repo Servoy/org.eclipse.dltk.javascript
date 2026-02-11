@@ -87,6 +87,13 @@ class RArrayType extends RType
 			return compatibility == TypeCompatibility.TRUE ? compatibility
 					: TypeCompatibility.UNPARAMETERIZED;
 		} else {
+			if (type instanceof RSimpleType simpleType) {
+				if (Types.ARRAY.equals((simpleType).getTarget())) {
+					if (Types.ARRAY.equals(this.getTarget())) {
+						return TypeCompatibility.TRUE;
+					}
+				}
+			}
 			return TypeCompatibility.FALSE;
 		}
 	}

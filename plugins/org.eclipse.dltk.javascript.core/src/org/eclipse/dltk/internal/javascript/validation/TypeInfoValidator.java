@@ -1551,7 +1551,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 				} else {
 					final TypeCompatibility pResult = testArgumentType(
 							parameter.getType(), argument);
-					if (pResult == TypeCompatibility.FALSE
+					if (pResult == TypeCompatibility.ANY
 							&& JavaScriptValidations.typeOf(argument) == null) {
 						// this is an any type argument, so we shouldn't fail
 						// for now.
@@ -1577,7 +1577,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 					IValueReference argument = arguments[i];
 					final TypeCompatibility pResult = testArgumentType(
 							paramType, argument);
-					if (pResult == TypeCompatibility.FALSE
+					if (pResult == TypeCompatibility.ANY
 							&& JavaScriptValidations.typeOf(argument) == null) {
 						// this is an any type argument, so we shouldn't fail
 						// for now.

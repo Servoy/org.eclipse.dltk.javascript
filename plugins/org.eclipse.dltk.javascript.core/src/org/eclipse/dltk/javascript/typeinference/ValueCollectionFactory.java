@@ -13,6 +13,7 @@ import org.eclipse.dltk.internal.javascript.ti.IValueProvider;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValue;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValueCollection;
 import org.eclipse.dltk.internal.javascript.ti.NestedValueCollection;
+import org.eclipse.dltk.internal.javascript.ti.ThisValue;
 import org.eclipse.dltk.internal.javascript.ti.TopValueCollection;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencer2;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
@@ -20,6 +21,7 @@ import org.eclipse.dltk.internal.javascript.ti.Value;
 import org.eclipse.dltk.internal.javascript.ti.ValueCollection;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
+import org.eclipse.dltk.javascript.typeinfo.IRType;
 
 public class ValueCollectionFactory {
 
@@ -31,6 +33,25 @@ public class ValueCollectionFactory {
 
 			public boolean isScope() {
 				return false;
+			}
+		};
+	}
+
+	/**
+	 * @return a standard none scoped {@link IValueCollection}
+	 */
+	public static IValueCollection createValueCollection(IRType thisType) {
+		final ThisValue thisValue = new ThisValue();
+		thisValue.setDeclaredType(thisType);
+		return new ValueCollection(null, new Value()) {
+
+			public boolean isScope() {
+				return false;
+			}
+
+			@Override
+			public IValueReference getThis() {
+				return thisValue;
 			}
 		};
 	}

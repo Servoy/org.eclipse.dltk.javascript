@@ -106,6 +106,11 @@ public abstract class TypeInferencerVisitorBase extends
 			topCollection.getValue().mergeValue(
 					((IValueProvider) topValueCollection).getValue());
 		}
+		if (topValueCollection != null && topValueCollection
+				.getThis() instanceof ThisValue thisValue) {
+			topCollection.getThis()
+					.setDeclaredType(thisValue.getDeclaredType());
+		}
 	}
 
 	protected List<ITypeInferenceHandler> createHandlers() {

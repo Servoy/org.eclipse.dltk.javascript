@@ -2221,6 +2221,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					}
 				});
 			}
+			if (thisValue.getDeclaredType() == null
+					&& collection.getThis() != null
+					&& collection.getThis().getDeclaredType() != null) {
+				thisValue.setDeclaredType(
+						collection.getThis().getDeclaredType());
+			}
 			final IValueCollection function = new FunctionValueCollection(
 					peekContext(), decl.method.getName(), thisValue,
 					decl.funcNode.isInlineBlock());

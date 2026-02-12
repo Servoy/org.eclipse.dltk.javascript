@@ -105,9 +105,20 @@ class RFunctionType extends RType implements IRFunctionType {
 							IRParameter funcParam = funcType.getParameters()
 									.get(i);
 							if (funcParam.getType() != null) {
-								if (parameter.getType()
-										.isAssignableFrom(funcParam
+								if (funcParam.getType()
+										.isAssignableFrom(parameter
 												.getType()) == TypeCompatibility.FALSE) {
+									if (parameter.isVarargs() && parameter
+											.getType().getName()
+											.equals(ITypeNames.OBJECT)) {
+										// special case, if it is a function
+										// type that has a varargs of object
+										// type then just allow a actual
+										// function to have a specific type,
+										// this is very likely how it will be
+										// called.
+										break;
+									}
 									paramsType = TypeCompatibility.FALSE;
 									break;
 								}

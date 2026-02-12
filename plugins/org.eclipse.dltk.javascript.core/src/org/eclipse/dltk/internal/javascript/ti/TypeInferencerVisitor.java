@@ -219,9 +219,19 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	private final Stack<Branching> branchings = new Stack<Branching>();
 
 	private class Branching {
+		Map<IValueReference, IRType> values = new HashMap<>();
+
 		public void end() {
 			branchings.remove(this);
 		}
+	}
+
+	protected Map<IValueReference, IRType> getBranchTypes() {
+		Map<IValueReference, IRType> result = new HashMap<>();
+		for (Branching branching : branchings) {
+			result.putAll(branching.values);
+		}
+		return result;
 	}
 
 	protected Branching branching() {
@@ -1514,7 +1524,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		}
 		if (!statements.isEmpty()) {
 			IValueReference variable = null;
-			Type type = null;
+			IRType type = null;
 			boolean isNot = false;
 			Expression conditionExpression = node.getCondition();
 			if (conditionExpression instanceof UnaryOperation uo
@@ -1528,7 +1538,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					&& bo.isInstanceof()
 					&& bo.getRightExpression() instanceof Identifier id) {
 				variable = visit(bo.getLeftExpression());
-				type = this.context.getType(id.getName());
+				Type t = this.context.getType(id.getName());
+				type = t != null ? t.toRType(context) : null;
 			}
 
 			IRType declaredType = null;
@@ -1539,12 +1550,15 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				// if this is one statement it can be just instanceof and then
 				// it should have that type inside the block
 				if (!isNot && variable != null && type != null) {
-					variable.setDeclaredType(type.toRType(context));
+					variable.setDeclaredType(type);
 				}
 				if (statements.get(0) == onlyBranch) {
 					visit(statements.get(0));
 				} else {
 					final Branching branching = branching();
+					if (variable != null && type != null) {
+						branching.values.put(variable, type);
+					}
 					visit(statements.get(0));
 					branching.end();
 				}
@@ -1557,24 +1571,26 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					} else {
 						// if it was one statement with a not operator then set
 						// the type from now on.
-						variable.setDeclaredType(type.toRType(context));
+						variable.setDeclaredType(type);
 					}
 				}
 			} else {
-				final Branching branching = branching();
 				final List<NestedValueCollection> collections = new ArrayList<NestedValueCollection>(
 						statements.size());
 				for (Statement statement : statements) {
+					final Branching branching = branching();
 					final NestedValueCollection nestedCollection = new NestedValueCollection(
 							peekContext());
 					enterContext(nestedCollection);
 
 					if (variable != null && type != null) {
 						if (!isNot && statement == node.getThenStatement()) {
-							variable.setDeclaredType(type.toRType(context));
+							variable.setDeclaredType(type);
+							branching.values.put(variable, type);
 						} else if (isNot
 								&& statement == node.getElseStatement()) {
-							variable.setDeclaredType(type.toRType(context));
+							variable.setDeclaredType(type);
+							branching.values.put(variable, type);
 						}
 					}
 
@@ -1585,9 +1601,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					}
 					leaveContext();
 					collections.add(nestedCollection);
+					branching.end();
 				}
 				NestedValueCollection.mergeTo(peekContext(), collections);
-				branching.end();
 			}
 		}
 	}

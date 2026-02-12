@@ -13,6 +13,7 @@ package org.eclipse.dltk.internal.javascript.ti;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,6 +91,14 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 
 	public TypeInferencerVisitor getVisitor() {
 		return visitor;
+	}
+
+	@Override
+	public Map<IValueReference, IRType> getBranchTypes() {
+		if (visitor != null) {
+			return visitor.getBranchTypes();
+		}
+		return Collections.emptyMap();
 	}
 
 	public void setModelElement(IModelElement modelElement) {

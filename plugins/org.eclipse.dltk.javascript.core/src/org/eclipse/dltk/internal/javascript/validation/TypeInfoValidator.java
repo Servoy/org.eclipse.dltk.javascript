@@ -299,21 +299,38 @@ public class TypeInfoValidator implements IBuildParticipant,
 		private final IValueReference reference;
 		private final IValueReference[] arguments;
 		private final List<IRMethod> methods;
+		private Map<IValueReference, IRType> branchedTypes;
 
 		public CallExpressionValidator(FunctionScope scope,
 				CallExpression node, IValueReference reference,
-				IValueReference[] arguments, List<IRMethod> methods) {
+				IValueReference[] arguments, List<IRMethod> methods,
+				Map<IValueReference, IRType> branchedTypes) {
 			this.scope = scope;
 			this.node = node;
 			this.reference = reference;
 			this.arguments = arguments;
 			this.methods = methods;
+			this.branchedTypes = branchedTypes;
 		}
 
 		@Override
 		public void call(ValidationVisitor visitor) {
-			visitor.validateCallExpression(scope, node, reference, arguments,
-					methods);
+
+			Map<IValueReference, IRType> storedTypes = new HashMap<>();
+			try {
+				branchedTypes.forEach((ref, type) -> {
+					storedTypes.put(ref, ref.getDeclaredType());
+					ref.setDeclaredType(type);
+				});
+				visitor.validateCallExpression(scope, node, reference,
+						arguments, methods);
+			} finally {
+				storedTypes.forEach((ref, type) -> {
+					ref.setDeclaredType(type);
+				});
+
+			}
+
 		}
 
 		@Override
@@ -449,22 +466,38 @@ public class TypeInfoValidator implements IBuildParticipant,
 		private final IValueReference typeReference;
 		private final IValueReference[] arguments;
 		private final IValueCollection collection;
+		private Map<IValueReference, IRType> branchedTypes;
 
 		public NewExpressionValidator(FunctionScope scope, NewExpression node,
 				IValueReference reference, IValueReference typeReference,
-				IValueReference[] arguments, IValueCollection collection) {
+				IValueReference[] arguments, IValueCollection collection,
+				Map<IValueReference, IRType> branchedTypes) {
 			this.scope = scope;
 			this.node = node;
 			this.reference = reference;
 			this.typeReference = typeReference;
 			this.arguments = arguments;
 			this.collection = collection;
+			this.branchedTypes = branchedTypes;
 		}
 
 		@Override
 		public void call(ValidationVisitor visitor) {
-			visitor.validateNewExpression(scope, collection,
-					node.getObjectClass(), reference, typeReference, arguments);
+			Map<IValueReference, IRType> storedTypes = new HashMap<>();
+			try {
+				branchedTypes.forEach((ref, type) -> {
+					storedTypes.put(ref, ref.getDeclaredType());
+					ref.setDeclaredType(type);
+				});
+				visitor.validateNewExpression(scope, collection,
+						node.getObjectClass(), reference, typeReference,
+						arguments);
+			} finally {
+				storedTypes.forEach((ref, type) -> {
+					ref.setDeclaredType(type);
+				});
+
+			}
 		}
 
 		@Override
@@ -478,19 +511,33 @@ public class TypeInfoValidator implements IBuildParticipant,
 		private final PropertyExpression node;
 		private final IValueReference reference;
 		private final boolean exists;
+		private Map<IValueReference, IRType> branchedTypes;
 
 		public PropertyExpressionHolder(FunctionScope scope,
 				PropertyExpression node, IValueReference reference,
-				boolean exists) {
+				boolean exists, Map<IValueReference, IRType> branchedTypes) {
 			this.scope = scope;
 			this.node = node;
 			this.reference = reference;
 			this.exists = exists;
+			this.branchedTypes = branchedTypes;
 		}
 
 		@Override
 		public void call(ValidationVisitor visitor) {
-			visitor.validateProperty(scope, node, reference, exists);
+			Map<IValueReference, IRType> storedTypes = new HashMap<>();
+			try {
+				branchedTypes.forEach((ref, type) -> {
+					storedTypes.put(ref, ref.getDeclaredType());
+					ref.setDeclaredType(type);
+				});
+				visitor.validateProperty(scope, node, reference, exists);
+			} finally {
+				storedTypes.forEach((ref, type) -> {
+					ref.setDeclaredType(type);
+				});
+				
+			}
 		}
 
 		@Override
@@ -712,7 +759,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 				pushExpressionValidator(new NewExpressionValidator(
 						peekFunctionScope(), node, result.getValue(),
 						result.getTypeValue(), result.getArguments(),
-						peekContext()));
+						peekContext(), getContext().getBranchTypes()));
 			}
 			if (isBigInt(result.getValue())) {
 				reporter.reportProblem(
@@ -1036,13 +1083,13 @@ public class TypeInfoValidator implements IBuildParticipant,
 				} else {
 					pushExpressionValidator(new CallExpressionValidator(
 							peekFunctionScope(), node, reference, arguments,
-							methods));
+							methods, getContext().getBranchTypes()));
 					return ConstantValue.of(method.getType());
 				}
 			} else {
 				pushExpressionValidator(new CallExpressionValidator(
 						peekFunctionScope(), node, reference, arguments,
-						methods));
+						methods, getContext().getBranchTypes()));
 				if (methods != null && methods.size() > 1) {
 					// try to found the best match
 					IRMethod bestMatch = null;
@@ -1803,7 +1850,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 			}
 			if (currentMode() != VisitorMode.CALL) {
 				pushExpressionValidator(new PropertyExpressionHolder(
-						peekFunctionScope(), node, result, result.exists()));
+						peekFunctionScope(), node, result, result.exists(),
+						getContext().getBranchTypes()));
 			}
 			return result;
 		}

@@ -77,11 +77,14 @@ class RArrayType extends RType
 		}
 		if (type instanceof RArrayType) {
 			final IRType ortherItem = ((RArrayType) type).itemType;
-			if (ortherItem == RTypes.EMPTY_ARRAY_ITEM_TYPE) {
+			// if other is empty type or the parameter type is null then it
+			// should just match
+			// (Arary<String> should be able to go into just Array)
+			if (ortherItem == RTypes.EMPTY_ARRAY_ITEM_TYPE
+					|| itemType == null) {
 				return TypeCompatibility.TRUE;
 			}
-			final TypeCompatibility compatibility = itemType != null
-					&& ortherItem != null
+			final TypeCompatibility compatibility = ortherItem != null
 					? itemType.isAssignableFrom(ortherItem)
 					: TypeCompatibility.FALSE;
 			return compatibility == TypeCompatibility.TRUE ? compatibility

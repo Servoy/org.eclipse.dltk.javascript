@@ -96,35 +96,30 @@ class RFunctionType extends RType implements IRFunctionType {
 			}
 			TypeCompatibility paramsType = TypeCompatibility.TRUE;
 			if (returnType == TypeCompatibility.TRUE) {
-				paramsType = ((funcType.getParameters() == null || funcType
-						.getParameters().size() == 0) && (getParameters() == null || getParameters()
-						.size() == 0)) ? TypeCompatibility.TRUE
-						: TypeCompatibility.FALSE;
-				if ((funcType.getParameters() != null && funcType
-						.getParameters().size() > 0)
-						&& (getParameters() != null && getParameters().size() > 0)) {
-					paramsType = TypeCompatibility.TRUE;
-					for (int i = 0; i < getParameters().size(); i++) {
-						IRParameter parameter = getParameters().get(i);
-						if (parameter.getType() != null) {
-							if (i < funcType.getParameters().size()) {
-								IRParameter funcParam = funcType
-										.getParameters().get(i);
-								if (funcParam.getType() != null) {
-									if (parameter.getType()
-											.isAssignableFrom(funcParam
-													.getType()) == TypeCompatibility.FALSE) {
-										paramsType = TypeCompatibility.FALSE;
-										break;
-									}
-								} else {
+				boolean optionalParams = false;
+				for (int i = 0; i < getParameters().size(); i++) {
+					IRParameter parameter = getParameters().get(i);
+					optionalParams = optionalParams || parameter.isOptional();
+					if (parameter.getType() != null) {
+						if (i < funcType.getParameters().size()) {
+							IRParameter funcParam = funcType.getParameters()
+									.get(i);
+							if (funcParam.getType() != null) {
+								if (parameter.getType()
+										.isAssignableFrom(funcParam
+												.getType()) == TypeCompatibility.FALSE) {
 									paramsType = TypeCompatibility.FALSE;
 									break;
 								}
-							} else if (!parameter.isOptional()) {
+							} else {
 								paramsType = TypeCompatibility.FALSE;
 								break;
 							}
+						} else {
+							if (!optionalParams) {
+								paramsType = TypeCompatibility.FALSE;
+							}
+							break;
 						}
 					}
 				}

@@ -14,11 +14,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.dltk.javascript.core,
  org.eclipse.dltk.javascript.parser,
  org.eclipse.emf.ecore.change,
- org.eclipse.text
+ org.eclipse.text,
+ org.eclipse.dltk.javascript.rhino;bundle-version="1.8.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
-Import-Package: com.ibm.icu.text,
- org.mozilla.javascript
+Import-Package: com.ibm.icu.text
 Export-Package: org.eclipse.dltk.internal.javascript.corext.refactoring,
  org.eclipse.dltk.internal.javascript.corext.refactoring.code,
  org.eclipse.dltk.internal.javascript.corext.refactoring.structure,

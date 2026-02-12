@@ -120,7 +120,7 @@ public class OperatorFactoryRhino {
 			r = BinaryOperator.XOR_ASSIGN;
 			break;
 		default:
-			throw new IllegalStateException("Unknown binary operator");
+			throw new IllegalStateException("Unknown binary operator: " + node.getOperation() + " for node: " + node); 
 		}
 		return r;
 	}
@@ -156,7 +156,7 @@ public class OperatorFactoryRhino {
 			r = UnaryOperator.VOID;
 			break;
 		default:
-			throw new IllegalStateException("Unknown binary operator");
+			throw new IllegalStateException("Unknown binary operator: " + node.getOperation() + " for node: " + node); 
 		}
 		return r;
 	}

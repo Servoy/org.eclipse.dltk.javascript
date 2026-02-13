@@ -93,7 +93,12 @@ class RArrayType extends RType
 			if (type instanceof RSimpleType simpleType) {
 				if (Types.ARRAY.equals((simpleType).getTarget())) {
 					if (Types.ARRAY.equals(this.getTarget())) {
-						return TypeCompatibility.TRUE;
+						// this is for case when we have Array<Object> and Array
+						// without parameterization, in this case we should
+						// consider them compatible
+						if (Types.OBJECT.equals(
+								this.declaration.getSuperType().getSource()))
+							return TypeCompatibility.TRUE;
 					}
 				}
 			}

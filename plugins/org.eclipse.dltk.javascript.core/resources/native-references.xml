@@ -1287,12 +1287,16 @@
 		]]></description>
 		<parameters name="onFulfilled">
         	<type xsi:type="ref:FunctionType">
-          	<parameters name="value" description="The resolved value of the promise.">
-         	  	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Promise/E"/>
-          	</parameters>
+          		<parameters name="value" kind="OPTIONAL" description="The resolved value of the promise.">
+         		  	<type xsi:type="ref:TypeVariableReference" variable="@ROOT/Promise/E"/>
+          		</parameters>
         	</type>
     	</parameters>
-    	<parameters name="onRejected" directType="Function" kind="OPTIONAL"/>
+    	<parameters name="onRejected"  kind="OPTIONAL">
+        	<type xsi:type="ref:FunctionType">
+            	<parameters name="reason" description="The reason why this Promise is rejected"  kind="OPTIONAL" directType="Object"/>
+            </type>
+     	</parameters>
   	</members>
   	<members xsi:type="ref:Method" name="catch" directType="Promise">
 		<description><![CDATA[
@@ -1305,7 +1309,11 @@
 	        <br/>
 	        <strong>@return</strong> {Promise} A promise that executes the rejection handler and resolves based on its outcome.
     	]]></description>
-    	<parameters name="onRejected" directType="Function"/>
+    	<parameters name="onRejected">
+            <type xsi:type="ref:FunctionType">
+        	    <parameters name="error" description="The error that the promise can throw"  kind="OPTIONAL" directType="Object"/>
+            </type>
+        </parameters>
   	</members>
   	<members xsi:type="ref:Method" name="finally" directType="Promise">
  		<description><![CDATA[

@@ -77,11 +77,12 @@ class RArrayType extends RType
 		}
 		if (type instanceof RArrayType) {
 			final IRType ortherItem = ((RArrayType) type).itemType;
-			// if other is empty type or the parameter type is null then it
-			// should just match
+			// if this is empty type or is null then it should just match
 			// (Arary<String> should be able to go into just Array)
-			if (ortherItem == RTypes.EMPTY_ARRAY_ITEM_TYPE
-					|| itemType == null) {
+			// but not the other way around
+			if (itemType == RTypes.EMPTY_ARRAY_ITEM_TYPE
+					|| itemType == null
+					|| itemType.getName().equals(ITypeNames.OBJECT)) {
 				return TypeCompatibility.TRUE;
 			}
 			final TypeCompatibility compatibility = ortherItem != null
@@ -93,12 +94,7 @@ class RArrayType extends RType
 			if (type instanceof RSimpleType simpleType) {
 				if (Types.ARRAY.equals((simpleType).getTarget())) {
 					if (Types.ARRAY.equals(this.getTarget())) {
-						// this is for case when we have Array<Object> and Array
-						// without parameterization, in this case we should
-						// consider them compatible
-						if (Types.OBJECT.equals(
-								this.declaration.getSuperType().getSource()))
-							return TypeCompatibility.TRUE;
+						return TypeCompatibility.TRUE;
 					}
 				}
 			}

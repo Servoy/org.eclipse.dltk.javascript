@@ -41,7 +41,8 @@
     </members>
   </ref:Type>
   <ref:TypeAlias source="object" target="Object"/>
-  <ref:Type name="Object" kind="PREDEFINED">
+  <ref:GenericType name="Object" kind="PREDEFINED">
+    <typeParameters name="V"/>
   	<members xsi:type="ref:Property" name="constructor" directType="Object" description="Returns a reference to the Object function that created the instance's prototype."/>
     <members xsi:type="ref:Method" name="toString" directType="String" description="Returns a string representing the specified object."/>
     <members xsi:type="ref:Method" name="toLocaleString" description="Returns a string representing the object. This method is meant to be overriden by derived objects for locale-specific purposes."/>
@@ -102,7 +103,7 @@
     <members xsi:type="ref:Method" name="isExtensible" directType="Boolean" description="Determines if an object is extensible (whether it can have new properties added to it)." static="true">
     	<parameters name="object" directType="Object"/>
     </members>
-    <members xsi:type="ref:Method" name="keys" description="Returns an array of all own enumerable properties found upon a given object, in the same order as that provided by a for-in loop (the difference being that a for-in loop enumerates properties in the prototype chain as well)." static="true">
+    <members xsi:type="ref:Method" name="keys" description="Returns an array of all own enumerable property names found upon a given object, in the same order as that provided by a for-in loop (the difference being that a for-in loop enumerates properties in the prototype chain as well)." static="true">
     	<parameters name="object" directType="Object"/>
 		<type xsi:type="ref:ArrayType">
 			<itemType xsi:type="ref:SimpleType" target="String"/><!-- String or Number -->
@@ -119,16 +120,16 @@
     	<parameters name="value1" directType="Object"/>
     	<parameters name="value2" directType="Object"/>
     </members>
-    <members xsi:type="ref:Method" name="values" description="Returns an array whose elements are strings corresponding to the enumerable string-keyed property values found directly upon object." static="true">
+    <members xsi:type="ref:Method" name="values" description="Returns an array whose elements are values corresponding to the enumerable string-keyed property values found directly upon object." static="true">
         <parameters name="object1" directType="Object"/>
         <type xsi:type="ref:ArrayType">
-            <itemType xsi:type="ref:SimpleType" target="String"/>
+            <itemType xsi:type="ref:SimpleType" target="Object"/>
         </type>
     </members>
     <members xsi:type="ref:Method" name="entries" description="Returns an array whose elements are arrays corresponding to the enumerable string-keyed property key-value pairs found directly upon object." static="true">
         <parameters name="object1" directType="Object"/>
         <type xsi:type="ref:ArrayType">
-            <itemType xsi:type="ref:SimpleType" target="String"/>
+            <itemType xsi:type="ref:SimpleType" target="Array"/>
         </type>
     </members>
     <members xsi:type="ref:Method" name="fromEntries" directType="Object" description="Transforms a list of key-value pairs into an object." static="true">
@@ -138,7 +139,7 @@
         <parameters name="obj" directType="Object"/>
         <parameters name="prototype" directType="Object"/>
     </members>
-  </ref:Type>
+  </ref:GenericType>
   <ref:TypeAlias source="regexp" target="RegExp"/>
   <ref:Type name="RegExp" kind="PREDEFINED" superType="Object">
     <members xsi:type="ref:Property" name="global" directType="Boolean" description="Whether to test the regular expression against all possible matches in a string, or only against the first." />

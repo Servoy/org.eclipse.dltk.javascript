@@ -22,6 +22,7 @@ import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.annotations.Nullable;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.core.Types;
+import org.eclipse.dltk.javascript.internal.core.RParameterizedTypeDeclaration;
 import org.eclipse.dltk.javascript.typeinfo.model.ArrayType;
 import org.eclipse.dltk.javascript.typeinfo.model.ClassType;
 import org.eclipse.dltk.javascript.typeinfo.model.Constructor;
@@ -139,6 +140,11 @@ public class TypeUtil {
 			return type;
 		} else if (type != null && type.getName().equals(ITypeNames.XMLLIST)) {
 			return E4XTypes.XML;
+		} else if (type instanceof IRSimpleType simple && simple
+				.getDeclaration() instanceof RParameterizedTypeDeclaration decl
+				&& decl.getActualTypeArguments().size() == 1) {
+			IRType irType = decl.getActualTypeArguments().get(0);
+			return irType;
 		} else {
 			return null;
 		}

@@ -333,19 +333,6 @@ public class JSDocTypeParser {
 						typeParam.eClass().getName());
 			}
 			return TypeUtil.classType(((SimpleType) typeParam).getTarget());
-		} else if (ITypeNames.OBJECT.equals(baseType)) {
-			if (typeParams.isEmpty() || typeParams.size() > 2) {
-				throw new JSDocParseException(
-						NLS.bind(
-								ValidationMessages.IncorrectNumberOfTypeArguments,
-								ITypeNames.OBJECT),
-						JavaScriptProblems.PARAMETERIZED_TYPE_INCORRECT_ARGUMENTS);
-			} else if (typeParams.size() == 2) {
-				return TypeUtil.mapOf(typeParams.get(0), typeParams.get(1));
-			} else {
-				assert typeParams.size() == 1;
-				return TypeUtil.mapOf(null, typeParams.get(0));
-			}
 		} else {
 			return doCreateGenericType(baseType, typeParams);
 		}

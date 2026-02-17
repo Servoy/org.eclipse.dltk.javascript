@@ -13,6 +13,9 @@ package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.Map;
 
+import org.eclipse.dltk.javascript.core.Types;
+import org.eclipse.dltk.javascript.typeinfo.model.Type;
+
 class RMapType extends RType implements IRMapType {
 
 	private final IRType valueType;
@@ -49,6 +52,13 @@ class RMapType extends RType implements IRMapType {
 			return valueType.equals(other.valueType);
 		}
 		return false;
+	}
+
+	@Override
+	public Type getTarget() {
+		if (valueType != null && keyType != null)
+			return Types.MAP;
+		return Types.SET;
 	}
 
 	@Override

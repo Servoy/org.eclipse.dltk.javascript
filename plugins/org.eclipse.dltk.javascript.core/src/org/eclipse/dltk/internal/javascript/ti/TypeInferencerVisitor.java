@@ -1539,7 +1539,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					&& bo.getRightExpression() instanceof Identifier id) {
 				variable = visit(bo.getLeftExpression());
 				Type t = this.context.getType(id.getName());
-				type = t != null ? t.toRType(context) : null;
+				type = t != null ? RTypes.simple(context, t) : null;
 			}
 
 			IRType declaredType = null;

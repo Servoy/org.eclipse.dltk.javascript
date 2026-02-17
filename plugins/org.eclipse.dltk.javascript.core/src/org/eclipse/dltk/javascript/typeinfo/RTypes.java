@@ -12,6 +12,7 @@
 package org.eclipse.dltk.javascript.typeinfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -174,6 +175,12 @@ public class RTypes {
 	public static IRSimpleType simple(ITypeSystem typeSystem, Type type) {
 		if (Types.ARRAY == type) {
 			return arrayOf(typeSystem, none());
+		} else if (Types.MAP == type) {
+			return mapOf(none(), none(), typeSystem.parameterize(Types.MAP,
+					Arrays.asList(none(), none())));
+		} else if (Types.SET == type) {
+			return mapOf(none(), null, typeSystem.parameterize(Types.SET,
+					Collections.singletonList(none())));
 		} else {
 			return (IRSimpleType) type.toRType(typeSystem);
 		}

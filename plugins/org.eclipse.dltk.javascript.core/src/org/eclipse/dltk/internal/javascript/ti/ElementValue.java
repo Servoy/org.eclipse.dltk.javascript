@@ -60,6 +60,7 @@ import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.TypeInfoManager;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
+import org.eclipse.dltk.javascript.typeinfo.model.ParameterizedType;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
 import org.eclipse.dltk.javascript.typeinfo.model.impl.MethodImpl;
@@ -743,7 +744,15 @@ public abstract class ElementValue implements IValue {
 					} else if (property.getType() instanceof IRMapType) {
 						arrayType = ((IRMapType) property.getType())
 								.getValueType();
+					} else if (property.getType() instanceof IRSimpleType simple
+							&& simple.getTarget()
+									.getSuperTypeExpr() instanceof ParameterizedType decl
+							&& decl.getActualTypeArguments().size() == 1) {
+						arrayType = decl.getActualTypeArguments().get(0)
+								.toRType(simple.getDeclaration()
+										.getTypeSystem());
 					}
+
 					if (arrayType != null) {
 						child = new TypeValue(arrayType);
 						children.put(name, child);

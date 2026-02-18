@@ -1146,6 +1146,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				if (bo.getLeftExpression() instanceof PropertyExpression pe) {
 					IValueCollection context = peekContext();
 					if (context instanceof IFunctionValueCollection) {
+						thisValue.setLocation(context.getThis().getLocation());
 						if (pe.getObject() instanceof ThisExpression) {
 
 							String name = ((IFunctionValueCollection) context)
@@ -2753,6 +2754,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		IValueCollection context = peekContext();
 		if (context instanceof IFunctionValueCollection fvc) {
 			IValueReference parentThis = fvc.getThis();
+			if (parentThis instanceof ThisValue v) {
+				return v;
+			}
+		} else if (context instanceof NestedValueCollection nvc) {
+			IValueReference parentThis = nvc.getThis();
 			if (parentThis instanceof ThisValue v) {
 				return v;
 			}

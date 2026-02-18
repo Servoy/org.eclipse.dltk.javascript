@@ -55,6 +55,7 @@ import org.eclipse.dltk.javascript.ast.MultiLineComment;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
+import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.core.NodeFinder;
 import org.eclipse.dltk.javascript.parser.JavaScriptParserUtil;
 import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTag;
@@ -158,7 +159,7 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 			if (DEBUG) {
 				System.out.println(node.getClass().getName() + "=" + node); //$NON-NLS-1$
 			}
-			if (node instanceof Identifier
+			if (node instanceof Identifier || node instanceof ThisExpression
 					|| isStringLiteralInObjectLiteral(node)) {
 				final TypeInferencer2 inferencer2 = new TypeInferencer2();
 				final SelectionVisitor visitor = new SelectionVisitor(
@@ -352,7 +353,8 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 					description));
 			return;
 		} else if (kind == ReferenceKind.FUNCTION
-				|| kind == ReferenceKind.GLOBAL || kind == ReferenceKind.FIELD) {
+				|| kind == ReferenceKind.GLOBAL || kind == ReferenceKind.FIELD
+				|| kind == ReferenceKind.THIS) {
 			if (location == ReferenceLocation.UNKNOWN) {
 				return;
 			}

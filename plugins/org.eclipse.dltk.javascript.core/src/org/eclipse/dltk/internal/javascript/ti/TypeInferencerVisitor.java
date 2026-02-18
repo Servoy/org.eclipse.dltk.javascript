@@ -2205,7 +2205,15 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 
 			if (decl.method.isConstructor()) {
-				// fill in the this value
+				// if it is really the constuctor method, set the location in
+				// the thisvalue, so that it is used in RLocalType or in the
+				// selection engine to match
+				FunctionStatement mFs = decl.funcNode;
+				thisValue.setLocation(ReferenceLocation.create(getSource(),
+						mFs.sourceStart(), mFs.sourceEnd(),
+						mFs.getIdentifier().sourceStart(),
+						mFs.getIdentifier().sourceEnd()));
+				// fill in the getIdentifier value
 				List<ASTNode> childs = decl.funcNode.getBody().getChilds();
 				childs.forEach(child -> {
 					if (child instanceof VoidExpression ve

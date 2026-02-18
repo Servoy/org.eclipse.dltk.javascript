@@ -21,6 +21,7 @@ import org.eclipse.dltk.internal.javascript.ti.AnonymousValue;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValue;
+import org.eclipse.dltk.internal.javascript.ti.ThisValue;
 import org.eclipse.dltk.internal.javascript.ti.Value;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
@@ -202,6 +203,10 @@ class RLocalType extends RType implements IRLocalType {
 	public IValidationStatus isAssignableFrom(IValueReference argument) {
 		if (argument == null)
 			return TypeCompatibility.TRUE;
+		if (argument instanceof ThisValue
+				&& argument.getLocation().equals(getReferenceLocation())) {
+			return TypeCompatibility.TRUE;
+		}
 		Set<IRType> types = JavaScriptValidations.getTypes(argument);
 		return testLocation(types, new HashSet<IRType>());
 	}

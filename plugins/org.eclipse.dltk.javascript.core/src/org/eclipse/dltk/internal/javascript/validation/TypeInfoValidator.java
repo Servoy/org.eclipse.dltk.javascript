@@ -1675,6 +1675,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 							.getAttribute(IReferenceAttributes.R_METHOD);
 					argumentType = RTypes.functionType(getContext(),
 							method.getParameters(), method.getType());
+				} else if (argument instanceof ThisValue) {
+					argumentType = RTypes.OBJECT;
 				} else {
 					argumentType = JavaScriptValidations
 						.typeOf(argument);

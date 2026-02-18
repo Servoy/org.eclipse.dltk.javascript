@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.annotations.Nullable;
@@ -145,6 +146,15 @@ public class TypeUtil {
 				&& decl.getActualTypeArguments().size() == 1) {
 			IRType irType = decl.getActualTypeArguments().get(0);
 			return irType;
+		} else if (type instanceof IRRecordType record) {
+			Set<IRType> types = record.getMembers().stream()
+					.map(IRRecordMember::getType)
+					.collect(Collectors.toSet());
+			if (types.size() == 1) {
+				return types.iterator().next();
+			} else {
+				return RTypes.union(types);
+			}
 		} else {
 			return null;
 		}

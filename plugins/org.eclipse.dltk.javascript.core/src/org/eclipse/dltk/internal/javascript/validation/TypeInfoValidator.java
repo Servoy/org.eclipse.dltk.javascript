@@ -54,6 +54,7 @@ import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.ITypeInferenceContext;
 import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.ti.JSMethod;
+import org.eclipse.dltk.internal.javascript.ti.ThisValue;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencer2;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
@@ -1598,14 +1599,6 @@ public class TypeInfoValidator implements IBuildParticipant,
 				} else {
 					final TypeCompatibility pResult = testArgumentType(
 							parameter.getType(), argument);
-					if (pResult == TypeCompatibility.ANY
-							&& JavaScriptValidations.typeOf(argument) == null) {
-						// this is an any type argument, so we shouldn't fail
-						// for now.
-						// comment this out when you want strict checking to see
-						// what really shouldn't be a any type..
-						// continue;
-					}
 					if (pResult.after(result)) {
 						if (pResult == TypeCompatibility.FALSE
 								&& statuses.isEmpty()) {
@@ -1624,14 +1617,6 @@ public class TypeInfoValidator implements IBuildParticipant,
 					IValueReference argument = arguments[i];
 					final TypeCompatibility pResult = testArgumentType(
 							paramType, argument);
-					if (pResult == TypeCompatibility.ANY
-							&& JavaScriptValidations.typeOf(argument) == null) {
-						// this is an any type argument, so we shouldn't fail
-						// for now.
-						// comment this out when you want strict checking to see
-						// what really shouldn't be a any type..
-						// continue;
-					}
 					if (pResult.after(result)) {
 						if (pResult == TypeCompatibility.FALSE
 								&& statuses.isEmpty()) {
@@ -1688,6 +1673,12 @@ public class TypeInfoValidator implements IBuildParticipant,
 						assignableFrom = dt.canMap(paramType);
 					}
 					return assignableFrom;
+				}
+				else if (paramType == RTypes.any()) {
+					// if argument type is null that means that it is Any
+					// so if the parameter is also any we can say that this is
+					// compatible
+					return TypeCompatibility.TRUE;
 				}
 				return TypeCompatibility.ANY;
 			}
@@ -1777,7 +1768,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 					if (types.size() > 0) {
 						sb.append(types.toRType().getName());
 					} else {
-						sb.append('?');
+						sb.append("Any");
 					}
 				}
 			}

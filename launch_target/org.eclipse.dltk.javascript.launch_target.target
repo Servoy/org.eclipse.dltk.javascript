@@ -29,12 +29,21 @@
                     <version>4.13.0</version>
                     <type>jar</type>
                 </dependency>
+                <dependency>
+                    <groupId>com.servoy</groupId>
+                    <artifactId>org.eclipse.dltk.javascript.rhino</artifactId>
+                    <version>1.8.0.s12</version>
+                </dependency>
             </dependencies>
             <repositories>
                 <repository>
                     <id>central</id>
                     <url>https://repo1.maven.org/maven2/</url>
                 </repository>
+                  <repository>
+                     <id>servoy</id>
+                     <url>https://developer.servoy.com/mvn_repository/</url>
+                 </repository>
             </repositories>
         </location>
     </locations>

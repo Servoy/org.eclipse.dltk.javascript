@@ -1913,16 +1913,12 @@ public class Parser implements IParser{
 					}
 					else if (init instanceof LetStatement) {
 						vs.getBindings().forEach(binding -> {
-							if (binding instanceof DestructuringVariableDeclaration dvd) {
-								dvd.getVariableNames().forEach(name -> {
-									//no need to check for duplicates here, was done in variables(..)
-									blockScopes.peek().add(name, SymbolKind.LET, dvd);
-								});
-							}
-							else if (binding instanceof VariableDeclaration var) {
-							//no need to check for duplicates here, was done in variables(..)
-								blockScopes.peek().add(var.getVariableName(), SymbolKind.LET, var);
-							}
+							binding.getVariableNames().forEach(name -> {
+								// no need to check for duplicates here, was
+								// done in variables(..)
+								blockScopes.peek().add(name, SymbolKind.LET,
+										binding);
+							});
 						});
 					}
 				}

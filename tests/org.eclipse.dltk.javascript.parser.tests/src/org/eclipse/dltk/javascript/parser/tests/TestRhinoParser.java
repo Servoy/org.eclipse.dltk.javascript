@@ -3223,12 +3223,13 @@ public class TestRhinoParser {
 	
 	@Test
 	public void testArrayDestructuringWithIdentifier() {
-	    String source = "let [a, b] = arr;";
+	    String source = "let arr = [10, 20];\n"
+	    		+ "let [a, b] = arr;";
 
 	    Script script = getScriptv4(source);
 	    assertNotNull(script);
 
-	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+	    VoidExpression expression = (VoidExpression) script.getStatements().get(1);
 	    LetStatement letStatement = (LetStatement) expression.getExpression();
 	    DestructuringVariableDeclaration destructuringDecl = 
 	        (DestructuringVariableDeclaration) letStatement.getBindings().get(0);
@@ -3248,8 +3249,8 @@ public class TestRhinoParser {
 	    assertEquals("b", ids.get(1).getName());
 
 	    // Because the initializer is a single identifier (arr), we can't resolve specific destructured values
-	    assertNull(destructuringDecl.getInitializer("a"));
-	    assertNull(destructuringDecl.getInitializer("b"));
+	    assertTrue(destructuringDecl.getInitializer("a") == initializer);
+	    assertTrue(destructuringDecl.getInitializer("b") == initializer);
 	}
 
 	
@@ -3283,12 +3284,13 @@ public class TestRhinoParser {
 	
 	@Test
 	public void testObjectDestructuringWithIdentifier() {
-	    String source = "let {x, y} = obj;";
+	    String source = "let obj = {x:1,y:'string'};\n"
+	    				+ "let {x, y} = obj;";
 
 	    Script script = getScriptv4(source);
 	    assertNotNull(script);
 
-	    VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+	    VoidExpression expression = (VoidExpression) script.getStatements().get(1);
 	    LetStatement letStatement = (LetStatement) expression.getExpression();
 	    DestructuringVariableDeclaration destructuringDecl =
 	        (DestructuringVariableDeclaration) letStatement.getBindings().get(0);
@@ -3308,8 +3310,8 @@ public class TestRhinoParser {
 	    assertEquals("y", ids.get(1).getName());
 
 	    // Since 'obj' is not a literal object, we can't determine the values of x and y
-	    assertNull(destructuringDecl.getInitializer("x"));
-	    assertNull(destructuringDecl.getInitializer("y"));
+	    assertTrue(destructuringDecl.getInitializer("x") == initializer);
+	    assertTrue(destructuringDecl.getInitializer("y") == initializer);
 	}
 	
 	@Test

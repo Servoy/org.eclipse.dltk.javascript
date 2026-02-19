@@ -13,13 +13,13 @@
 package org.eclipse.dltk.javascript.ast;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.dltk.ast.ASTVisitor;
 
 public class SetMethod extends Method {
 
 	private Keyword setKeyword;
-	private Identifier argument;
 	private List<Argument> arguments;
 	
 	public SetMethod(JSNode parent) {
@@ -45,11 +45,19 @@ public class SetMethod extends Method {
 	}
 
 	public Identifier getArgument() {
-		return this.argument != null ? this.argument : (this.arguments != null && !this.arguments.isEmpty() ? this.arguments.get(0).getIdentifier() : null);
+		return this.arguments != null && !this.arguments.isEmpty() ? this.arguments.get(0).getIdentifier() : null;
 	}
 
 	public void setArgument(Identifier argument) {
-		this.argument = argument;
+		Argument a = new Argument(this);
+		a.setIdentifier(argument);
+		if (this.arguments == null) {
+			this.arguments = List.of(a);
+		} else if (this.arguments.isEmpty()) {
+			this.arguments.add(a);
+		} else {
+			this.arguments.set(0, a);
+		}
 	}
 
 	public void setArguments(List<Argument> arguments) {
@@ -76,7 +84,10 @@ public class SetMethod extends Method {
 		buffer.append(" ");
 		buffer.append(toSourceString(getName(), indentationString));
 		buffer.append(" (");
-		buffer.append(toSourceString(argument, indentationString));
+		String joined = arguments.stream()
+		        .map(argument -> toSourceString(argument, indentationString))
+		        .collect(Collectors.joining(", "));
+		buffer.append(joined);
 		buffer.append(")\n");
 		buffer.append(toSourceString(getBody(), indentationString));
 

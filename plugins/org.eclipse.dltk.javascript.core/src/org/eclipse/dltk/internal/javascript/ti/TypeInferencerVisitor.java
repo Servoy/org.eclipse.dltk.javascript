@@ -2065,62 +2065,63 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				}
 			} else if (declaration instanceof VariableBinding binding) {
 				for (Identifier identifier : binding.getIdentifiers()) {
-				final IValueReference var = createVariable(collection,
-						binding, identifier);
-				if (binding.getParent() instanceof ConstStatement) {
-					var.setAttribute(IAssignProtection.ATTRIBUTE, PROTECT_CONST);
-				}
-				variables.add(var);
-
-				Expression initializer = binding
-						.getInitializer(identifier.getName());
-				if (initializer instanceof ParenthesizedExpression pe) {
-					initializer = pe.getExpression();
-				}
-				if (initializer instanceof CallExpression ce
-						&& ce.getExpression() instanceof FunctionStatement fs
-						&& fs.getDocumentation() != null
-						&& fs.getDocumentation().getText().contains("@parse")) {
-					prototypeInitializer.add(fs);
-				}
-				else if ((initializer instanceof NewExpression
-						|| initializer instanceof CallExpression)
-						&& ((JSNode) declaration).getParent()
-								.getDocumentation() != null
-						&& ((JSNode) declaration).getParent().getDocumentation()
-								.getText()
-								.contains("@constructor")) {
-
-					FunctionStatement fs = null;
-					Expression expr = initializer;
-
-					if (expr instanceof CallExpression ce2) {
-						if (ce2.getExpression() instanceof FunctionStatement fs2) {
-							fs = fs2;
-						}
-					} else if (expr instanceof NewExpression ne) {
-						Expression objectClass = ne.getObjectClass();
-
-						if (objectClass instanceof FunctionStatement fs1) {
-							fs = fs1;
-						} else if (objectClass instanceof CallExpression ce2
-								&& ce2.getExpression() instanceof FunctionStatement fs2) {
-							fs = fs2;
-						}
+					final IValueReference var = createVariable(collection,
+							binding, identifier);
+					if (binding.getParent() instanceof ConstStatement) {
+						var.setAttribute(IAssignProtection.ATTRIBUTE,
+								PROTECT_CONST);
 					}
+					variables.add(var);
 
-					assert fs.isDeclaration();
-					final JSMethod method = createMethod(fs);
-					final IValueReference function = collection
-							.createChild(method.getName());
-					initializeFunction(method, function);
-					ForwardDeclaration fd = new ForwardDeclaration(method,
-							function, fs);
-					forwardDecls.add(fd);
-					forwardDeclarations.put(fs, fd);
+					Expression initializer = binding
+							.getInitializer(identifier.getName());
+					if (initializer instanceof ParenthesizedExpression pe) {
+						initializer = pe.getExpression();
+					}
+					if (initializer instanceof CallExpression ce && ce
+							.getExpression() instanceof FunctionStatement fs
+							&& fs.getDocumentation() != null
+							&& fs.getDocumentation().getText()
+									.contains("@parse")) {
+						prototypeInitializer.add(fs);
+					} else if ((initializer instanceof NewExpression
+							|| initializer instanceof CallExpression)
+							&& ((JSNode) declaration).getParent()
+									.getDocumentation() != null
+							&& ((JSNode) declaration).getParent()
+									.getDocumentation().getText()
+									.contains("@constructor")) {
+
+						FunctionStatement fs = null;
+						Expression expr = initializer;
+
+						if (expr instanceof CallExpression ce2) {
+							if (ce2.getExpression() instanceof FunctionStatement fs2) {
+								fs = fs2;
+							}
+						} else if (expr instanceof NewExpression ne) {
+							Expression objectClass = ne.getObjectClass();
+
+							if (objectClass instanceof FunctionStatement fs1) {
+								fs = fs1;
+							} else if (objectClass instanceof CallExpression ce2
+									&& ce2.getExpression() instanceof FunctionStatement fs2) {
+								fs = fs2;
+							}
+						}
+
+						assert fs.isDeclaration();
+						final JSMethod method = createMethod(fs);
+						final IValueReference function = collection
+								.createChild(method.getName());
+						initializeFunction(method, function);
+						ForwardDeclaration fd = new ForwardDeclaration(method,
+								function, fs);
+						forwardDecls.add(fd);
+						forwardDeclarations.put(fs, fd);
+					}
 				}
 			}
-		}
 		}
 		for (ForwardDeclaration decl : forwardDecls) {
 			if (decl.method.isConstructor()) {

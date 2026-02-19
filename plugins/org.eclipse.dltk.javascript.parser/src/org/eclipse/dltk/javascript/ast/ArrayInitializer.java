@@ -129,7 +129,7 @@ public class ArrayInitializer extends Expression implements IDestructuringPatter
 
 	@Override
 	public Expression getInitializerFor(String name, Expression value) {
-		if (!(value instanceof ArrayInitializer)) return null;
+		if (!(value instanceof ArrayInitializer)) return value;
 		ArrayInitializer rhs = (ArrayInitializer) value;
 		for (int i = 0; i < items.size(); i++) {
 			Expression lhsItem = items.get(i);

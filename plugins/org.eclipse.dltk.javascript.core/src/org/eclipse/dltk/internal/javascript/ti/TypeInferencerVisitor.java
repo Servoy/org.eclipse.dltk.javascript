@@ -50,6 +50,7 @@ import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DecimalLiteral;
 import org.eclipse.dltk.javascript.ast.DefaultXmlNamespaceStatement;
+import org.eclipse.dltk.javascript.ast.DestructuringVariableDeclaration;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
 import org.eclipse.dltk.javascript.ast.EmptyStatement;
@@ -147,6 +148,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRRecordType;
 import org.eclipse.dltk.javascript.typeinfo.IRSimpleType;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.IRTypeDeclaration;
+import org.eclipse.dltk.javascript.typeinfo.IRUnionType;
 import org.eclipse.dltk.javascript.typeinfo.IRVariable;
 import org.eclipse.dltk.javascript.typeinfo.ITypeInferenceListener;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
@@ -270,16 +272,17 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		if (node.getItems().isEmpty()) {
 			return new ConstantValue(RTypes.arrayOf());
 		}
-		final Set<IRType> types = new HashSet<IRType>();
-		for (ASTNode astNode : node.getItems()) {
+		final Map<String, IRType> types = new HashMap<>();
+		for (var i = 0; i < node.getItems().size(); i++) {
+			ASTNode astNode = node.getItems().get(i);
 			if (astNode instanceof StringLiteral) {
-				types.add(RTypes.STRING);
+				types.put(Integer.toString(i), RTypes.STRING);
 			} else if (astNode instanceof DecimalLiteral) {
-				types.add(RTypes.NUMBER);
+				types.put(Integer.toString(i), RTypes.NUMBER);
 			} else if (astNode instanceof BooleanLiteral) {
-				types.add(RTypes.BOOLEAN);
+				types.put(Integer.toString(i), RTypes.BOOLEAN);
 			} else if (astNode instanceof BigIntLiteral) {
-				types.add(RTypes.BIGINT);
+				types.put(Integer.toString(i), RTypes.BIGINT);
 			} else if (astNode instanceof NullExpression
 					|| astNode instanceof EmptyExpression) {
 				// ignore
@@ -292,7 +295,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 									+ " - item type is null");
 							continue;
 						}
-						types.add(type.normalize());
+						types.put(Integer.toString(i), type.normalize());
 					}
 				}
 				// TODO (alex) else add(Object) ?
@@ -303,10 +306,19 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		} else {
 			if (types.size() == 1) {
 				return new ConstantValue(RTypes.arrayOf(context,
-						CommonSuperTypeFinder.evaluate(context, types)));
+						CommonSuperTypeFinder.evaluate(context,
+								types.values())));
 			} else {
-				return new ConstantValue(RTypes.arrayOf(context,
-						RTypes.union(types)));
+				// if it are multiply values (a union)
+				// then we very likely also need to know what the type is per
+				// entry just like a RecordType would also know this per entry.
+				ConstantValue constantValue = new ConstantValue(
+						RTypes.arrayOf(context, RTypes.union(types.values())));
+				for (Entry<String, IRType> entry : types.entrySet()) {
+					constantValue.getChild(entry.getKey())
+							.setDeclaredType(entry.getValue());
+				}
+				return constantValue;
 			}
 		}
 	}
@@ -922,7 +934,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	protected void initializeVariable(final IValueReference reference,
 			VariableBinding declaration) {
 		if (declaration.getInitializer(reference.getName()) != null) {
-			final IValueReference assignment;
+			IValueReference assignment;
 			reference
 					.setAttribute(IReferenceAttributes.RESOLVING, Boolean.TRUE);
 			try {
@@ -934,6 +946,27 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			if (assignment != null) {
 				final IRVariable variable = (IRVariable) reference
 						.getAttribute(IReferenceAttributes.R_VARIABLE);
+				if (declaration instanceof DestructuringVariableDeclaration dvd) {
+					IRType declaredType = assignment.getDeclaredType();
+					IRType arrayItemType = TypeUtil
+							.extractArrayItemType(declaredType);
+
+					// if this has an array item type which is not a union
+					// (multiply types)
+					// then ths type is the type of the variable
+					// if it is union type we need to check the index.
+					if (arrayItemType != null
+							&& !(arrayItemType instanceof IRUnionType)) {
+						assignment = ConstantValue.of(arrayItemType);
+					} else if (declaredType instanceof IRArrayType) {
+						int variableIndex = dvd.getVariableNames()
+								.indexOf(reference.getName());
+						assignment = assignment
+								.getChild(Integer.toString(variableIndex));
+					} else if (declaredType instanceof IRRecordType) {
+						assignment = assignment.getChild(reference.getName());
+					}
+				}
 				if (variable != null && variable.getType() != null) {
 					// if declared type specified then just add it as a value on
 					// top of what we already have. So that we don't clear the

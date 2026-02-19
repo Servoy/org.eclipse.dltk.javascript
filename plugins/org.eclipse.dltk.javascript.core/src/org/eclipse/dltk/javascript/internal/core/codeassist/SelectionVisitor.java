@@ -19,6 +19,7 @@ import org.eclipse.dltk.internal.javascript.ti.PositionReachedException;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.CallExpression;
+import org.eclipse.dltk.javascript.ast.DestructuringVariableDeclaration;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Identifier;
@@ -134,7 +135,12 @@ public class SelectionVisitor extends TypeInferencerVisitor {
 			VariableBinding declaration) {
 		super.initializeVariable(reference, declaration);
 
-		check(declaration.getIdentifier(), reference);
+		if (declaration instanceof DestructuringVariableDeclaration dvd) {
+			dvd.getIdentifiers().stream()
+					.filter(id -> id.getName().equals(reference.getName()))
+					.forEach(id -> check(id, reference));
+		} else
+			check(declaration.getIdentifier(), reference);
 	}
 
 	@Override

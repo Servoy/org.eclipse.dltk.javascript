@@ -184,7 +184,7 @@ public class ObjectInitializer extends Expression implements IDestructuringPatte
 	@Override
 	public Expression getInitializerFor(String name, Expression value) {
 		if (!(value instanceof ObjectInitializer))
-			return null;
+			return value;
 		ObjectInitializer rhs = (ObjectInitializer) value;
 		for (int i = 0; i < initializers.size(); i++) {
 			ObjectInitializerPart lhsProp = initializers.get(i);

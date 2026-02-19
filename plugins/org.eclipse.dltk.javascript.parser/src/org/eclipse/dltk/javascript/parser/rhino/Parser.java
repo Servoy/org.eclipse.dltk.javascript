@@ -1906,17 +1906,24 @@ public class Parser implements IParser{
 			if (mustMatchToken(Token.RP, "msg.no.paren.for.ctrl", true)) rp = ts.getTokenBeg();
 
 			if (isForIn || isForOf) {
-				if (init instanceof IVariableStatement) {
+				if (init instanceof IVariableStatement vs) {
 					// check that there was only one variable given
-					if (((IVariableStatement) init).getVariables().size() > 1) {
+					if (vs.getVariables().size() > 1) {
 						reportError("msg.mult.index");
 					}
-					else if (((IVariableStatement) init).getVariables().size() == 1){
-						VariableDeclaration d = ((IVariableStatement) init).getVariables().get(0);
-						//no need to check for duplicates here, was done in variables(..)
-						if (init instanceof LetStatement) {
-							blockScopes.peek().add(d.getVariableName(), SymbolKind.LET, d);
-						}
+					else if (init instanceof LetStatement) {
+						vs.getBindings().forEach(binding -> {
+							if (binding instanceof DestructuringVariableDeclaration dvd) {
+								dvd.getVariableNames().forEach(name -> {
+									//no need to check for duplicates here, was done in variables(..)
+									blockScopes.peek().add(name, SymbolKind.LET, dvd);
+								});
+							}
+							else if (binding instanceof VariableDeclaration var) {
+							//no need to check for duplicates here, was done in variables(..)
+								blockScopes.peek().add(var.getVariableName(), SymbolKind.LET, var);
+							}
+						});
 					}
 				}
 				if (isForOf && isForEach) {

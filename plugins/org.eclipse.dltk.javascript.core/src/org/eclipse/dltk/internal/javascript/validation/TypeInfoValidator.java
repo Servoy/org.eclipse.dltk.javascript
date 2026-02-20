@@ -2121,6 +2121,30 @@ public class TypeInfoValidator implements IBuildParticipant,
 			super.initializeVariable(reference, declaration);
 		}
 
+		@Override
+		protected void setInitialVariableValue(IValueReference reference,
+				IValueReference assignment, IRVariable variable) {
+			super.setInitialVariableValue(reference, assignment, variable);
+
+			if (variable.getType() != null
+					&& assignment.getTypes().size() > 0) {
+				for (IRType type : assignment.getTypes()) {
+					TypeCompatibility comp = variable.getType()
+							.isAssignableFrom(type);
+					if (comp != TypeCompatibility.TRUE) {
+						reporter.reportProblem(
+								JavaScriptProblems.INVALID_ASSIGN_LEFT,
+								NLS.bind(
+										ValidationMessages.AssignmentNotFollowingDeclaredType,
+										type.getName(),
+										variable.getType().getName()),
+								reference.getLocation().getDeclarationStart(),
+								reference.getLocation().getDeclarationEnd());
+					}
+				}
+			}
+		}
+
 		private void validateHidesByVariable(IValueCollection context,
 				VariableBinding declaration, Identifier identifier) {
 			if (declaration.getParent() instanceof LetStatement)

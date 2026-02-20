@@ -971,7 +971,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					// if declared type specified then just add it as a value on
 					// top of what we already have. So that we don't clear the
 					// current one.
-					reference.addValue(assignment, false);
+					setInitialVariableValue(reference, assignment, variable);
 				} else {
 					// assign only if no declared type specified
 					assign(reference, assignment);
@@ -985,6 +985,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					declaration.getInitializer(reference.getName()));
 
 		}
+	}
+
+	protected void setInitialVariableValue(IValueReference reference,
+			IValueReference assignment, IRVariable variable) {
+		reference.addValue(assignment, false);
 	}
 
 	/**

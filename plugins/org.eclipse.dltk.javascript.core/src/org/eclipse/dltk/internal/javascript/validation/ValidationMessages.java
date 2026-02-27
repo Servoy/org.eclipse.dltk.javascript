@@ -75,6 +75,8 @@ public class ValidationMessages extends NLS {
 	public static String UnassignableClass;
 	public static String UnassignableFunction;
 
+	public static String AssignmentNotFollowingDeclaredType;
+
 	public static String NotGenericType;
 	public static String IncorrectNumberOfTypeArguments;
 	public static String ParameterizedBoundMismatch;

@@ -2108,6 +2108,22 @@ public class TypeInfoValidator implements IBuildParticipant,
 						ValidationMessages.UnassignableFunction,
 						node.sourceStart(), node.sourceEnd());
 				}
+			} else if (reference != null && right != null
+					&& right.getTypes().size() > 0) {
+				for (IRType type : right.getTypes()) {
+					TypeCompatibility comp = reference.getDeclaredType() != null
+							? reference.getDeclaredType().isAssignableFrom(type)
+							: TypeCompatibility.TRUE;
+					if (comp != TypeCompatibility.TRUE) {
+						reporter.reportProblem(
+								JavaScriptProblems.INVALID_ASSIGN_LEFT,
+								NLS.bind(
+										ValidationMessages.AssignmentNotFollowingDeclaredType,
+										type.getName(),
+										reference.getDeclaredType().getName()),
+								node.sourceStart(), node.sourceEnd());
+					}
+				}
 			}
 		}
 
@@ -2129,9 +2145,10 @@ public class TypeInfoValidator implements IBuildParticipant,
 			if (variable.getType() != null
 					&& assignment.getTypes().size() > 0) {
 				for (IRType type : assignment.getTypes()) {
-					TypeCompatibility comp = variable.getType()
-							.isAssignableFrom(type);
-					if (comp != TypeCompatibility.TRUE) {
+					if (variable.getType()
+							.isAssignableFrom(type) != TypeCompatibility.TRUE
+							&& type.isAssignableFrom(variable
+									.getType()) != TypeCompatibility.TRUE) {
 						reporter.reportProblem(
 								JavaScriptProblems.INVALID_ASSIGN_LEFT,
 								NLS.bind(

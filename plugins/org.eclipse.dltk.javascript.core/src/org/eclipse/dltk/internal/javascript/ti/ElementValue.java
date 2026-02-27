@@ -928,6 +928,11 @@ public abstract class ElementValue implements IValue {
 		}
 
 		@Override
+		public JSTypeSet getTypes() {
+			return getDeclaredTypes();
+		}
+
+		@Override
 		public ReferenceLocation getLocation() {
 			if (element != null
 					&& element.getSource() instanceof ILocationProvider) {

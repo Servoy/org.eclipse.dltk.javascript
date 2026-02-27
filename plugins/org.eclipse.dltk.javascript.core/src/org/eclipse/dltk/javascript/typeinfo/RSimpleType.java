@@ -82,6 +82,10 @@ public class RSimpleType extends RType implements IRSimpleType {
 		} else if (type instanceof RSimpleType) {
 			final IRTypeDeclaration other = ((RSimpleType) type)
 					.getDeclaration();
+			if (Types.BOOLEAN.equals(other.getSource())
+					&& Types.NUMBER.equals(this.declaration.getSource())) {
+				return TypeCompatibility.TRUE;
+			}
 			return declaration.isAssignableFrom(other);
 		} else if (type instanceof IRLocalType
 				&& getTarget().getKind() == TypeKind.UNKNOWN

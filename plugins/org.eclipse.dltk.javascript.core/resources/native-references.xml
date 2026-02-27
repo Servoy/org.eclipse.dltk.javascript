@@ -346,7 +346,6 @@
       </parameters>
       <parameters name="thisArg" kind="OPTIONAL"/>
       <type xsi:type="ref:ArrayType">
-        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
     <members xsi:type="ref:Method" name="pop" description="Removes and returns the last element of an array.">
@@ -583,7 +582,6 @@
       </parameters>
        <parameters name="thisArg" kind="OPTIONAL"/>
       <type xsi:type="ref:ArrayType">
-        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
   </ref:GenericType>

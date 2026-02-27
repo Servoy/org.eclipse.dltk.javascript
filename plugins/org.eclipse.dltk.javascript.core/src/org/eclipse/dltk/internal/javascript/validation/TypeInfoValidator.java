@@ -2109,12 +2109,14 @@ public class TypeInfoValidator implements IBuildParticipant,
 						node.sourceStart(), node.sourceEnd());
 				}
 			} else if (reference != null && right != null
-					&& right.getTypes().size() > 0) {
+					&& right.getTypes().size() > 0
+					&& reference.getDeclaredType() != null) {
+				IRType declaredType = reference.getDeclaredType();
 				for (IRType type : right.getTypes()) {
-					TypeCompatibility comp = reference.getDeclaredType() != null
-							? reference.getDeclaredType().isAssignableFrom(type)
-							: TypeCompatibility.TRUE;
-					if (comp != TypeCompatibility.TRUE) {
+					if (declaredType
+							.isAssignableFrom(type) != TypeCompatibility.TRUE
+							&& type.isAssignableFrom(
+									declaredType) != TypeCompatibility.TRUE) {
 						reporter.reportProblem(
 								JavaScriptProblems.INVALID_ASSIGN_LEFT,
 								NLS.bind(

@@ -171,9 +171,12 @@ public interface IModelBuilder {
 
 		void setTypeDef(JSType type);
 
-		void setEnum(boolean b);
+		default void setEnum(boolean b) {
+		}
 
-		boolean isEnum();
+		default boolean isEnum() {
+			return false;
+		}
 
 	}
 

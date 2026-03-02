@@ -449,7 +449,6 @@ public class JSDocTypeParser {
 				input.consume();
 				ch = input.LT(1);
 			}
-			boolean validPropertyName = true;
 			final int nameStart = input.index();
 			String name = null;
 			if (ch == '"' || ch == '\'') {
@@ -463,7 +462,6 @@ public class JSDocTypeParser {
 					throw new ParseException("Ending quote expected",
 							input.index());
 				}
-				validPropertyName = false;
 				name = input.substring(nameStart + 1, input.index() - 1);
 				input.consume();
 			} else if (Character.isJavaIdentifierStart(ch)) {
@@ -502,8 +500,7 @@ public class JSDocTypeParser {
 					property.setType(TypeInfoModelFactory.eINSTANCE
 							.createAnyType());
 				}
-				if (validPropertyName)
-					type.getMembers().add(property);
+				type.getMembers().add(property);
 				skipSpaces(input);
 				if (input.LT(1) == ',') {
 					input.consume();

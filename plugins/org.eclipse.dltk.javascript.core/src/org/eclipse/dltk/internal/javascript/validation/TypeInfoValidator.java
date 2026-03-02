@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -2112,19 +2113,27 @@ public class TypeInfoValidator implements IBuildParticipant,
 					&& right.getTypes().size() > 0
 					&& reference.getDeclaredType() != null) {
 				IRType declaredType = reference.getDeclaredType();
+				Map<IRType, TypeCompatibility> compatibilities = new HashMap<IRType, TypeCompatibility>();
 				for (IRType type : right.getTypes()) {
-					if (declaredType
+					compatibilities.put(type, declaredType
 							.isAssignableFrom(type) != TypeCompatibility.TRUE
 							&& type.isAssignableFrom(
-									declaredType) != TypeCompatibility.TRUE) {
-						reporter.reportProblem(
-								JavaScriptProblems.INVALID_ASSIGN_LEFT,
-								NLS.bind(
-										ValidationMessages.AssignmentNotFollowingDeclaredType,
-										type.getName(),
-										reference.getDeclaredType().getName()),
-								node.sourceStart(), node.sourceEnd());
-					}
+									declaredType) != TypeCompatibility.TRUE
+											? TypeCompatibility.FALSE
+											: TypeCompatibility.TRUE);
+
+				}
+				if (!compatibilities.isEmpty() && compatibilities
+						.containsValue(TypeCompatibility.FALSE)) {
+					reporter.reportProblem(
+							JavaScriptProblems.INVALID_ASSIGN_LEFT,
+							NLS.bind(
+									ValidationMessages.AssignmentNotFollowingDeclaredType,
+									compatibilities.keySet().stream()
+											.map(IRType::getName)
+											.collect(Collectors.joining("|")),
+									reference.getDeclaredType().getName()),
+							node.sourceStart(), node.sourceEnd());
 				}
 			}
 		}

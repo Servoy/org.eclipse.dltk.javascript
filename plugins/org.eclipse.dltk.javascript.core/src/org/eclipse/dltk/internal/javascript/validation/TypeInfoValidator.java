@@ -2135,7 +2135,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 									compatibilities.keySet().stream()
 											.map(IRType::getName)
 											.collect(Collectors.joining("|")),
-									reference.getDeclaredType().getName()),
+									reference.getDeclaredType().getName(),
+									reference.getName()),
 							node.sourceStart(), node.sourceEnd());
 				}
 			}

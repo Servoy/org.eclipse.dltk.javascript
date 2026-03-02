@@ -43,6 +43,18 @@ public class REnumType implements IRLocalType {
 			other.getReferenceLocation().equals(getReferenceLocation());
 			return TypeCompatibility.TRUE;
 		}
+		if (type instanceof IRSimpleType simpleType) {
+			// if it assigned to a simple type then we check if the member type
+			// is of this type.
+			// all members should be of the same type so we can just check the
+			// first one.
+			if (recordType.getMembers().size() > 0) {
+				IRRecordMember member = recordType.getMembers().iterator()
+						.next();
+				return member.getType().isAssignableFrom(simpleType);
+			}
+
+		}
 		return TypeCompatibility.FALSE;
 	}
 

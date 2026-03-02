@@ -383,6 +383,7 @@ public class JSDocSupport implements IModelBuilder {
 		parseDeprecation(variable, tags, reporter);
 		parseAccessModifiers(variable, tags, reporter);
 		parseSuppressWarnings(variable, tags, reporter);
+		variable.setEnum(tags.get(JSDocTag.ENUM) != null);
 	}
 
 	private void parseTypeDef(IVariable variable, JSDocTags tags,

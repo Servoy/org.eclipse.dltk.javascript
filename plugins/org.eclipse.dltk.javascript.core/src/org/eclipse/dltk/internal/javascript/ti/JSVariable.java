@@ -7,6 +7,7 @@ import org.eclipse.dltk.javascript.typeinfo.model.Visibility;
 public class JSVariable extends JSElement implements IVariable {
 
 	private boolean deprecated;
+	private boolean enumVariable;
 	private Visibility visibility;
 	private JSType typeDef;
 
@@ -40,6 +41,16 @@ public class JSVariable extends JSElement implements IVariable {
 
 	public void setVisibility(Visibility visibility) {
 		this.visibility = visibility;
+	}
+
+	@Override
+	public boolean isEnum() {
+		return enumVariable;
+	}
+
+	@Override
+	public void setEnum(boolean b) {
+		enumVariable = b;
 	}
 
 }

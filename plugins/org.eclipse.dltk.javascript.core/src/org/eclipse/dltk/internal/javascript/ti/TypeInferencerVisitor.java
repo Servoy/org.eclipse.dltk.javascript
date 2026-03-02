@@ -153,6 +153,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRVariable;
 import org.eclipse.dltk.javascript.typeinfo.ITypeInferenceListener;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
+import org.eclipse.dltk.javascript.typeinfo.REnumType;
 import org.eclipse.dltk.javascript.typeinfo.RModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
 import org.eclipse.dltk.javascript.typeinfo.ReferenceSource;
@@ -952,6 +953,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			if (assignment != null) {
 				final IRVariable variable = (IRVariable) reference
 						.getAttribute(IReferenceAttributes.R_VARIABLE);
+				final IVariable var = (IVariable) reference
+						.getAttribute(IReferenceAttributes.VARIABLE);
 				if (declaration instanceof DestructuringVariableDeclaration dvd) {
 					IRType declaredType = assignment.getDeclaredType();
 					IRType arrayItemType = TypeUtil
@@ -973,7 +976,16 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						assignment = assignment.getChild(reference.getName());
 					}
 				}
-				if (variable != null && variable.getType() != null) {
+				if (var != null && var.isEnum()) {
+					// if this is an enum it should be 1 record type.
+					JSTypeSet types = assignment.getTypes();
+					if (types.size() == 1
+							&& types.toRType() instanceof IRRecordType rType) {
+						REnumType enumType = new REnumType(var.getName(), rType,
+								reference.getLocation());
+						assign(reference, ConstantValue.of(enumType));
+					}
+				} else if (variable != null && variable.getType() != null) {
 					// if declared type specified then just add it as a value on
 					// top of what we already have. So that we don't clear the
 					// current one.

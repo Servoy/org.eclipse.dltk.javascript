@@ -40,6 +40,7 @@ import org.eclipse.dltk.javascript.typeinfo.IElementResolver;
 import org.eclipse.dltk.javascript.typeinfo.ILocalTypeReference;
 import org.eclipse.dltk.javascript.typeinfo.IMemberEvaluator;
 import org.eclipse.dltk.javascript.typeinfo.IModelBuilder;
+import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
 import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
@@ -853,6 +854,12 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		}
 		if (result != null && result.getKind() == ReferenceKind.FUNCTION) {
 			return RTypes.localType(name, result);
+		}
+		else if (result != null && result.getAttribute(
+				IReferenceAttributes.VARIABLE) instanceof IVariable variable
+				&& variable.isEnum()
+				&& result.getDeclaredType() instanceof IRLocalType enumType) {
+			return enumType;
 		}
 		return null;
 	}

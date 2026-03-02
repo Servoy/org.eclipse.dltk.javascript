@@ -18,7 +18,7 @@ public class JSDocTag implements ISourceNode {
 	public static String[] getTags() {
 		return new String[] { PARAM, THIS, RETURN, RETURNS, THROWS, TYPE,TYPEDEF,
 				DEPRECATED, EXTENDS, CONSTRUCTOR, PRIVATE, PROTECTED, PUBLIC, AUTHOR,
-				VERSION, SEE, SINCE, EXAMPLE, SUPPRESS_WARNINGS, INHERIT_DOC };
+				VERSION, SEE, SINCE, EXAMPLE, SUPPRESS_WARNINGS, INHERIT_DOC,ENUM };
 	}
 
 	public static final String PARAM = "@param"; //$NON-NLS-1$
@@ -42,6 +42,7 @@ public class JSDocTag implements ISourceNode {
 	public static final String SINCE = "@since";
 	public static final String EXAMPLE = "@example";
 	public static final String INHERIT_DOC = "@inheritDoc";
+	public static final String ENUM = "@enum";
 
 	public static final String SUPPRESS_WARNINGS = "@SuppressWarnings";
 

@@ -333,7 +333,7 @@
     <members xsi:type="ref:Method" name="map" description="Creates a new array with the results of calling a provided function on every element in this array. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
        <parameters name="callback">
         <type xsi:type="ref:FunctionType">
-          <parameters name="elementValue" description="The current element being processed in the array.">
+          <parameters name="elementValue" kind="OPTIONAL" description="The current element being processed in the array.">
               <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
           </parameters>
           <parameters name="elementIndex" directType="Number" kind="OPTIONAL" description="The index of the element that is being processed" />

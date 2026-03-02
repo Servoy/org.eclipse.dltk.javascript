@@ -2169,7 +2169,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 								NLS.bind(
 										ValidationMessages.AssignmentNotFollowingDeclaredType,
 										type.getName(),
-										variable.getType().getName()),
+										variable.getType().getName(),
+										variable.getName()),
 								reference.getLocation().getDeclarationStart(),
 								reference.getLocation().getDeclarationEnd());
 					}

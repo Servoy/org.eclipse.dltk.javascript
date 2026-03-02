@@ -316,9 +316,10 @@ public class ImmutableValue implements IValue, IValue2 {
 		IValue value = null;
 		if (elementValues != null)
 			value = elementValues.get(name);
-		if (value == null && (declaredType != null || !types.isEmpty())) {
-			if (declaredType != null) {
-				value = ElementValue.findMemberA(declaredType, name, resolve);
+		if (value == null) {
+			IRType declared = getDeclaredType();
+			if (declared != null) {
+				value = ElementValue.findMemberA(declared, name, resolve);
 				if (value != null) {
 					if (elementValues == null)
 						elementValues = new ConcurrentHashMap<String, IValue>(
@@ -334,7 +335,9 @@ public class ImmutableValue implements IValue, IValue2 {
 
 				}
 			}
-			for (IRType type : types) {
+			JSTypeSet typeSet = getTypes();
+			if (typeSet != null)
+				for (IRType type : typeSet) {
 				value = ElementValue.findMemberA(type, name, resolve);
 				if (value != null) {
 					if (elementValues == null)
@@ -347,8 +350,6 @@ public class ImmutableValue implements IValue, IValue2 {
 					// ImmutableValue class itself.
 					if (value instanceof Value v
 							&& getClass() == ImmutableValue.class) {
-						System.err.println(
-								"creating immutable for elementValues 2");
 						value = v.getImmutableValue(new HashMap<>());
 					}
 					elementValues.put(name, value);

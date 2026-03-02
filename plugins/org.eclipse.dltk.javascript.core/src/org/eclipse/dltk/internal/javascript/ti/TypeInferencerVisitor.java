@@ -934,6 +934,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			RecordType type = (RecordType) variable.getTypeDef();
 			type.setTypeName(varName);
 			this.context.registerRecordType(type);
+		} else if (variable.isEnum()) {
+			// if it is an enum we must initalize it asap so that that enum
+			// variable has its REnumType set that can then be resolved when
+			// parsing functions returning that enum (that should be mappedon
+			// that REnumType not Simple type
+			initializeVariable(reference, declaration);
 		}
 		return reference;
 	}

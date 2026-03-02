@@ -1,10 +1,14 @@
 package org.eclipse.dltk.javascript.typeinfo;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IValidationStatus;
+import org.eclipse.dltk.internal.javascript.ti.AnonymousValue;
 import org.eclipse.dltk.internal.javascript.ti.ConstantValue;
+import org.eclipse.dltk.internal.javascript.ti.ElementValue;
+import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.javascript.typeinference.IValueReference;
 import org.eclipse.dltk.javascript.typeinference.ReferenceLocation;
@@ -12,17 +16,18 @@ import org.eclipse.dltk.javascript.typeinfo.IModelBuilder.IVariable;
 
 public class REnumType implements IRLocalType {
 
-	private final IRRecordType recordType;
+	private final IRType type;
 	private final String name;
 	private final ReferenceLocation location;
 
-	public REnumType(String name, IRRecordType recordType,
+	public REnumType(String name, IRType recordType,
 			ReferenceLocation location) {
 		this.name = name;
-		this.recordType = recordType;
+		this.type = recordType;
 		this.location = location;
 
 	}
+
 	@Override
 	public String getName() {
 		return name;
@@ -43,19 +48,7 @@ public class REnumType implements IRLocalType {
 			other.getReferenceLocation().equals(getReferenceLocation());
 			return TypeCompatibility.TRUE;
 		}
-		if (type instanceof IRSimpleType simpleType) {
-			// if it assigned to a simple type then we check if the member type
-			// is of this type.
-			// all members should be of the same type so we can just check the
-			// first one.
-			if (recordType.getMembers().size() > 0) {
-				IRRecordMember member = recordType.getMembers().iterator()
-						.next();
-				return member.getType().isAssignableFrom(simpleType);
-			}
-
-		}
-		return TypeCompatibility.FALSE;
+		return this.type.isAssignableFrom(type);
 	}
 
 	@Override
@@ -95,15 +88,31 @@ public class REnumType implements IRLocalType {
 
 	@Override
 	public IValueReference getDirectChild(String name) {
-		IRRecordMember member = recordType.getMember(name);
-		if (member != null) {
-			IValueReference memberType = ConstantValue.of(this);
-			ReferenceLocation memberLocation = member
-					.getSource() instanceof IVariable variable
-							? variable.getLocation()
-							: location;
-			memberType.setLocation(memberLocation);
-			return memberType;
+
+		if (type instanceof IRRecordType recordType) {
+			// if this is a record type then we assume this is the assignment of
+			// the enum this could potentially also be a enum having record type
+			// members.. so then we need to know this and just return the member
+			// type
+			IRRecordMember member = recordType.getMember(name);
+			if (member != null) {
+				IValueReference memberType = ConstantValue
+						.of(new REnumType(name, member.getType(), location));
+				ReferenceLocation memberLocation = member
+						.getSource() instanceof IVariable variable
+								? variable.getLocation()
+								: location;
+				memberType.setLocation(memberLocation);
+				return memberType;
+			}
+
+		} else if (type instanceof IRSimpleType simple) {
+			IValue member = ElementValue.findMember(simple, name);
+			if (member != null) {
+				return new AnonymousValue(member);
+			}
+		} else if (type instanceof IRLocalType localType) {
+			return localType.getDirectChild(name);
 		}
 		return null;
 	}
@@ -115,8 +124,20 @@ public class REnumType implements IRLocalType {
 
 	@Override
 	public Set<String> getDirectChildren() {
-		return recordType.getMembers().stream().map(member -> member.getName())
-				.collect(java.util.stream.Collectors.toSet());
+
+		if (type instanceof IRRecordType recordType) {
+			return recordType.getMembers().stream()
+					.map(member -> member.getName())
+					.collect(java.util.stream.Collectors.toSet());
+
+		} else if (type instanceof IRSimpleType simple) {
+			return simple.getDeclaration().getMembers().stream()
+					.map(member -> member.getName())
+					.collect(java.util.stream.Collectors.toSet());
+		} else if (type instanceof IRLocalType localType) {
+			return localType.getDirectChildren();
+		}
+		return Collections.emptySet();
 	}
 
 }

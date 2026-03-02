@@ -383,26 +383,29 @@ public class TypeInfoValidator implements IBuildParticipant,
 					continue;
 				final IRType type = JavaScriptValidations
 						.typeOf(element.returnValueReference);
-				TypeCompatibility compatibility = null;
-				if (methodType instanceof IRTypeExtension) {
-					final IValidationStatus status = ((IRTypeExtension) methodType)
-							.isAssignableFrom(element.returnValueReference);
-					if (status != null) {
-						if (status instanceof TypeCompatibility) {
-							compatibility = (TypeCompatibility) status;
-						} else if (status != ValidationStatus.OK) {
-							JavaScriptValidations
-									.reportValidationStatus(
-											visitor.getProblemReporter(),
-											status,
-											element.node,
-											JavaScriptProblems.DECLARATION_MISMATCH_ACTUAL_RETURN_TYPE,
-											ValidationMessages.DeclarationMismatchWithActualReturnType,
-											jsMethod.getName());
+				TypeCompatibility compatibility = element.returnValueReference
+						.getAttribute(IReferenceAttributes.JSON_PARSE) != null
+								? TypeCompatibility.TRUE
+								: null;
+				if (compatibility == null) {
+					if (methodType instanceof IRTypeExtension) {
+						final IValidationStatus status = ((IRTypeExtension) methodType)
+								.isAssignableFrom(element.returnValueReference);
+						if (status != null) {
+							if (status instanceof TypeCompatibility) {
+								compatibility = (TypeCompatibility) status;
+							} else if (status != ValidationStatus.OK) {
+								JavaScriptValidations.reportValidationStatus(
+										visitor.getProblemReporter(), status,
+										element.node,
+										JavaScriptProblems.DECLARATION_MISMATCH_ACTUAL_RETURN_TYPE,
+										ValidationMessages.DeclarationMismatchWithActualReturnType,
+										jsMethod.getName());
+							}
 						}
+					} else if (type != null && methodType != null) {
+						compatibility = methodType.isAssignableFrom(type);
 					}
-				} else if (type != null && methodType != null) {
-					compatibility = methodType.isAssignableFrom(type);
 				}
 				if (compatibility != null
 						&& compatibility != TypeCompatibility.TRUE) {

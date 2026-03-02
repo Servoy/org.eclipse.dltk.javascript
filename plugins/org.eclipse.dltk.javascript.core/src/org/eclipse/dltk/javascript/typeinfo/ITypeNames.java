@@ -21,6 +21,7 @@ public interface ITypeNames {
 	public static final String NUMBER = "Number"; //$NON-NLS-1$
 	public static final String BOOLEAN = "Boolean"; //$NON-NLS-1$
 	public static final String OBJECT = "Object"; //$NON-NLS-1$
+	public static final String JSON = "JSON"; //$NON-NLS-1$
 	public static final String REGEXP = "RegExp"; //$NON-NLS-1$
 	public static final String FUNCTION = "Function"; //$NON-NLS-1$
 	public static final String ERROR = "Error"; //$NON-NLS-1$

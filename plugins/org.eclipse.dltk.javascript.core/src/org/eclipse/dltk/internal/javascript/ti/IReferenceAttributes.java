@@ -29,4 +29,5 @@ public interface IReferenceAttributes {
 	String LOCAL_TYPE_LOCATION = "LOCAL_TYPE_LOCATION";
 
 	String THIS_VALUE = "THIS_VALUE";
+	String JSON_PARSE = "JSON_PARSE";
 }

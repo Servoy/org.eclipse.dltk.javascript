@@ -763,6 +763,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					}
 				}
 				return value;
+			} else if ((method.getName().equals("parse") && ITypeNames.JSON
+					.equals(method.getDeclaringType().getName()))) {
+				IValueReference parseType = ConstantValue.of(method.getType());
+				parseType.setAttribute(IReferenceAttributes.JSON_PARSE,
+						Boolean.TRUE);
+				return parseType;
 			}
 		}
 		return null;

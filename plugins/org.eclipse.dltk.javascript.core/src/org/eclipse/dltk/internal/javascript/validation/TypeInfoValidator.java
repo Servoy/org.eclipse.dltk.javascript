@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.annotations.NonNull;
 import org.eclipse.dltk.annotations.Nullable;
 import org.eclipse.dltk.ast.ASTNode;
+import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.dltk.compiler.problem.IProblemIdentifier;
 import org.eclipse.dltk.compiler.problem.IValidationStatus;
@@ -54,6 +55,7 @@ import org.eclipse.dltk.internal.javascript.ti.ConstantValue;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.ITypeInferenceContext;
 import org.eclipse.dltk.internal.javascript.ti.IValue;
+import org.eclipse.dltk.internal.javascript.ti.JSDocSupport;
 import org.eclipse.dltk.internal.javascript.ti.JSMethod;
 import org.eclipse.dltk.internal.javascript.ti.ThisValue;
 import org.eclipse.dltk.internal.javascript.ti.TypeInferencer2;
@@ -61,6 +63,7 @@ import org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor;
 import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.CallExpression;
+import org.eclipse.dltk.javascript.ast.Comment;
 import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.ForStatement;
@@ -92,6 +95,8 @@ import org.eclipse.dltk.javascript.parser.ISuppressWarningsState;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
 import org.eclipse.dltk.javascript.parser.PropertyExpressionUtils;
 import org.eclipse.dltk.javascript.parser.Reporter;
+import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTag;
+import org.eclipse.dltk.javascript.parser.jsdoc.JSDocTags;
 import org.eclipse.dltk.javascript.typeinference.IAssignProtection;
 import org.eclipse.dltk.javascript.typeinference.IAssignProtection2;
 import org.eclipse.dltk.javascript.typeinference.IValueCollection;
@@ -1601,8 +1606,49 @@ public class TypeInfoValidator implements IBuildParticipant,
 								((ValidationMultiStatus) status).getChildren());
 					}
 				} else {
-					final TypeCompatibility pResult = testArgumentType(
+					TypeCompatibility pResult = testArgumentType(
 							parameter.getType(), argument);
+					if (pResult != TypeCompatibility.TRUE
+							&& problemNode instanceof Identifier id
+							&& id.getParent() instanceof CallExpression callExpr
+							&& callExpr.getArguments().size() > i) {
+						ASTNode astNode = callExpr.getArguments().get(i);
+						Comment[] comment = new Comment[1];
+						try {
+							astNode.traverse(new ASTVisitor() {
+								@Override
+								public boolean visitGeneral(ASTNode node)
+										throws Exception {
+									if (node instanceof Comment c) {
+										comment[0] = c;
+										return false;
+									}
+									if (node instanceof JSNode jsNode) {
+										Comment documentation = jsNode
+												.getDocumentation();
+										if (documentation != null) {
+											comment[0] = documentation;
+											return false;
+										}
+									}
+									return true;
+								}
+							});
+						} catch (Exception e) {
+						}
+						if (comment[0] != null) {
+							JSDocTags jsDocTags = JSDocSupport
+									.parse(comment[0]);
+							System.err.println(jsDocTags);
+							JSDocTag typeTag = jsDocTags.get(JSDocTag.TYPE);
+							if (typeTag != null) {
+								Type type = context.getType(JSDocSupport
+										.cutBraces(typeTag.value()));
+								pResult = parameter.getType().isAssignableFrom(
+										type.toRType(context));
+							}
+						}
+					}
 					if (pResult.after(result)) {
 						if (pResult == TypeCompatibility.FALSE
 								&& statuses.isEmpty()) {

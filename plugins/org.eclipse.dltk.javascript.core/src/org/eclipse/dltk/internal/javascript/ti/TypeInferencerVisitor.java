@@ -444,14 +444,23 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return false;
 	}
 
+	/**
+	 * this is used in the binary operation for addition. This will return if it
+	 * is string for many cases expect if the type is Boolean or Number
+	 * 
+	 * @param ref
+	 * @return
+	 */
 	private boolean isString(IValueReference ref) {
 		if (ref != null) {
-			if (ref.getTypes().contains(RTypes.STRING))
-				return true;
-			if (RTypes.STRING.equals(ref.getDeclaredType()))
-				return true;
+			if (ref.getTypes().contains(RTypes.NUMBER)
+					|| ref.getTypes().contains(RTypes.BOOLEAN))
+				return false;
+			if (RTypes.NUMBER.equals(ref.getDeclaredType())
+					|| RTypes.BOOLEAN.equals(ref.getDeclaredType()))
+				return false;
 		}
-		return false;
+		return true;
 	}
 
 	protected IValueReference visitAssign(IValueReference left,

@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.dltk.javascript.ast.Keywords;
 import org.eclipse.dltk.javascript.typeinference.ReferenceKind;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
+import org.eclipse.dltk.javascript.typeinfo.RTypes;
 
 /**
  * Value representing "this" in function bodies.
@@ -23,6 +24,7 @@ public class ThisValue extends AnonymousReferenceValue {
 
 	public ThisValue() {
 		getValue().setAttribute(IReferenceAttributes.THIS_VALUE, Boolean.TRUE);
+		getValue().addType(RTypes.OBJECT);
 	}
 
 	@Override

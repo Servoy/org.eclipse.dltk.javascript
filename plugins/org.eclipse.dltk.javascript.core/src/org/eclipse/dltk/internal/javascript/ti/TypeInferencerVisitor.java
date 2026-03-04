@@ -1607,10 +1607,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 
 			if (conditionExpression instanceof BinaryOperation bo
-					&& bo.isInstanceof()
-					&& bo.getRightExpression() instanceof Identifier id) {
+					&& bo.isInstanceof()) {
+				Expression rightExpression = bo.getRightExpression();
 				variable = visit(bo.getLeftExpression());
-				Type t = this.context.getType(id.getName());
+				Type t = this.context
+						.getType(rightExpression.toSourceString(""));
 				type = t != null ? RTypes.simple(context, t) : null;
 			}
 

@@ -2160,7 +2160,9 @@ public class TypeInfoValidator implements IBuildParticipant,
 				}
 			} else if (reference != null && right != null
 					&& right.getTypes().size() > 0
-					&& reference.getDeclaredType() != null) {
+					&& reference.getDeclaredType() != null
+					&& (node == null || (node instanceof BinaryOperation bo
+							&& bo.isAssignOperator()))) {
 				IRType declaredType = reference.getDeclaredType();
 				Map<IRType, TypeCompatibility> compatibilities = new HashMap<IRType, TypeCompatibility>();
 				for (IRType type : right.getTypes()) {
@@ -2203,9 +2205,12 @@ public class TypeInfoValidator implements IBuildParticipant,
 				IValueReference assignment, IRVariable variable) {
 			super.setInitialVariableValue(reference, assignment, variable);
 
-			if (variable.getType() != null
-					&& assignment.getTypes().size() > 0) {
-				for (IRType type : assignment.getTypes()) {
+			if (variable.getType() != null) {
+				JSTypeSet types = assignment.getDeclaredTypes();
+				if (types.isEmpty()) {
+					types = assignment.getTypes();
+				}
+				for (IRType type : types) {
 					if (variable.getType()
 							.isAssignableFrom(type) != TypeCompatibility.TRUE
 							&& type.isAssignableFrom(variable

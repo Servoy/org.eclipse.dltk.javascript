@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.dltk.compiler.problem.IProblemCategory;
@@ -157,8 +158,10 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof JSMethod) {
-			JSMethod m = (JSMethod) o;
+		if (o instanceof JSMethod m) {
+			if (m.location != null || this.location != null) {
+				return Objects.equals(m.location, this.location);
+			}
 			if (m.getName().equals(this.getName())) {
 				if (m.getParameterCount() == this.getParameterCount()) {
 					for (int i = 0; i < this.getParameterCount(); i++) {

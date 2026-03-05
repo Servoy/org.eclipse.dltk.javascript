@@ -134,6 +134,13 @@ class RFunctionType extends RType implements IRFunctionType {
 			return TypeCompatibility
 					.valueOf(Types.FUNCTION == ((IRSimpleType) type)
 							.getTarget());
+		} else if (type instanceof IRClassType cType
+				&& (cType.getTarget().getName().equals(ITypeNames.NUMBER)
+						|| cType.getTarget().getName()
+								.equals(ITypeNames.BOOLEAN)
+						|| cType.getTarget().getName()
+								.equals(ITypeNames.STRING))) {
+			return TypeCompatibility.TRUE;
 		} else {
 			return TypeCompatibility.FALSE;
 		}

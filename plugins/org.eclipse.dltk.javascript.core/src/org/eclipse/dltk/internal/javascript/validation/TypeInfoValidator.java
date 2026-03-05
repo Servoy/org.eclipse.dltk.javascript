@@ -1610,7 +1610,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 							parameter.getType(), argument);
 					if (pResult != TypeCompatibility.TRUE
 							&& problemNode instanceof Identifier id
-							&& id.getParent() instanceof CallExpression callExpr
+							&& findCallExpression(
+									id) instanceof CallExpression callExpr
 							&& callExpr.getArguments().size() > i) {
 						ASTNode astNode = callExpr.getArguments().get(i);
 						Comment[] comment = new Comment[1];
@@ -1639,7 +1640,6 @@ public class TypeInfoValidator implements IBuildParticipant,
 						if (comment[0] != null) {
 							JSDocTags jsDocTags = JSDocSupport
 									.parse(comment[0]);
-							System.err.println(jsDocTags);
 							JSDocTag typeTag = jsDocTags.get(JSDocTag.TYPE);
 							if (typeTag != null) {
 								Type type = context.getType(JSDocSupport
@@ -1694,6 +1694,17 @@ public class TypeInfoValidator implements IBuildParticipant,
 				return TypeCompatibility.TRUE;
 			}
 			return result;
+		}
+
+		private Object findCallExpression(Identifier id) {
+			JSNode parent = id.getParent();
+			while (parent != null) {
+				if (parent instanceof CallExpression) {
+					return parent;
+				}
+				parent = parent.getParent();
+			}
+			return null;
 		}
 
 		/**

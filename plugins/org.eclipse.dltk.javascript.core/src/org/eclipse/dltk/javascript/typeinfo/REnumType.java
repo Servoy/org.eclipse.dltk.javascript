@@ -53,6 +53,11 @@ public class REnumType implements IRLocalType {
 					.filter(tc -> tc != TypeCompatibility.TRUE).findAny()
 					.orElse(TypeCompatibility.TRUE);
 		}
+		// if this is a record type hten it is the Enum class itself still, (so passed in as a parameter)
+		if (this.type instanceof IRRecordType recordType) {
+			return recordType.getMembers().iterator().next().getType()
+					.isAssignableFrom(type);
+		}
 		return this.type.isAssignableFrom(type);
 	}
 

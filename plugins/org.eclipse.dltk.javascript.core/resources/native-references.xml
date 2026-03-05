@@ -371,7 +371,7 @@
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
     </members>
-    <members xsi:type="ref:Method" name="reduce" description="Reduces the array to a single value by executing a provided function for each value of the array (from left-to-right).">
+    <members xsi:type="ref:Method" name="reduce"   directType="Object" description="Reduces the array to a single value by executing a provided function for each value of the array (from left-to-right).">
       <parameters name="callback">
         <type xsi:type="ref:FunctionType">
           <parameters name="totalValue" description="The accumulated value previously returned in the last invocation of the callback, or initialValue, if supplied.">
@@ -389,9 +389,6 @@
         </type>
       </parameters>
       <parameters name="initialValue" kind="OPTIONAL" directType="Object"/>
-      <type xsi:type="ref:ArrayType">
-        <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
-      </type>
     </members>
     <members xsi:type="ref:Method" name="some" directType="Boolean" description="Tests whether some element in the array passes the test implemented by the provided function. The callback will be called with 3 arguments (elementValue,elementIndex,traversedArray). Optionally with a thisObject argument to use as this when executing callback.">
        <parameters name="callback">

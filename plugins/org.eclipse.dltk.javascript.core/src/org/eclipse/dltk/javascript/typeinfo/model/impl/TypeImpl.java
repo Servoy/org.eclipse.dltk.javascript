@@ -460,6 +460,16 @@ public class TypeImpl extends ElementImpl implements Type {
 		return eIsProxy();
     }
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
+	 */
+	@Override
+	public boolean isJavaKind() {
+		return kind == TypeKind.JAVA;
+	}
+
     /**
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -340,4 +340,6 @@ public interface Type extends Element {
 	 */
 	Type getPrototypeType();
 
+	boolean isJavaKind();
+
 } // Type

@@ -155,7 +155,11 @@ public class TypeUtil {
 			} else {
 				return RTypes.union(types);
 			}
-		} else {
+		} else if (type instanceof REnumType){
+			// and array lookup of an Enum is just the enum type itself
+			return type;
+		}
+		else {
 			return null;
 		}
 	}

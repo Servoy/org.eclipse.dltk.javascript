@@ -48,6 +48,11 @@ public class REnumType implements IRLocalType {
 			other.getReferenceLocation().equals(getReferenceLocation());
 			return TypeCompatibility.TRUE;
 		}
+		if (type instanceof IRUnionType union) {
+			return union.getTargets().stream().map(t -> isAssignableFrom(t))
+					.filter(tc -> tc != TypeCompatibility.TRUE).findAny()
+					.orElse(TypeCompatibility.TRUE);
+		}
 		return this.type.isAssignableFrom(type);
 	}
 

@@ -100,8 +100,11 @@ public class JavascriptPartitionScanner extends RuleBasedPartitionScanner {
 		IToken singleLineComment = new Token(
 				IJavaScriptPartitions.JS_SINGLE_LINE_COMMENT);
 		IToken doc = new Token(IJavaScriptPartitions.JS_DOC);
+		IToken stringTemplate = new Token(
+				IJavaScriptPartitions.JS_STRING);
 
 		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
+		rules.add(new MultiLineRule("`", "`", stringTemplate, '\\'));
 		rules.add(new EndOfLineRule("//", singleLineComment) {
 			@Override
 			protected boolean sequenceDetected(ICharacterScanner scanner,

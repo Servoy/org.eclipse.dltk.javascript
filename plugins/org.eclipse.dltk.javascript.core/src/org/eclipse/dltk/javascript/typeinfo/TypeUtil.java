@@ -152,6 +152,8 @@ public class TypeUtil {
 					.collect(Collectors.toSet());
 			if (types.size() == 1) {
 				return types.iterator().next();
+			} else if (types.size() == 0) {
+				return null;
 			} else {
 				return RTypes.union(types);
 			}

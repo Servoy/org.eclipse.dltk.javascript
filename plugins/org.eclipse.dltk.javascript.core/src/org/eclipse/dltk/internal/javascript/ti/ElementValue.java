@@ -850,7 +850,7 @@ public abstract class ElementValue implements IValue {
 
 	private static class RTypeValue extends ElementValue implements IValue {
 
-		private final IRType type;
+		private IRType type;
 		private final Map<String, IValue> children = new HashMap<String, IValue>();
 		private final IRMember element;
 
@@ -917,6 +917,11 @@ public abstract class ElementValue implements IValue {
 
 		public IRType getDeclaredType() {
 			return type;
+		}
+
+		@Override
+		public void setDeclaredType(IRType declaredType) {
+			type = declaredType;
 		}
 
 		public JSTypeSet getDeclaredTypes() {
@@ -1175,7 +1180,7 @@ public abstract class ElementValue implements IValue {
 		return JSTypeSet.emptySet();
 	}
 
-	public final void setDeclaredType(IRType declaredType) {
+	public void setDeclaredType(IRType declaredType) {
 	}
 
 	public void addType(IRType type) {

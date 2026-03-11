@@ -16,6 +16,7 @@ import java.io.Reader;
 import org.eclipse.dltk.core.IMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRProperty;
+import org.eclipse.dltk.javascript.typeinfo.IRRecordMember;
 import org.eclipse.dltk.javascript.typeinfo.TypeUtil;
 import org.eclipse.dltk.javascript.typeinfo.model.Element;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
@@ -79,6 +80,16 @@ public class ElementDocumentationProvider implements
 			// if (jsElement.getDescription() != null
 			// && jsElement.getDescription().length() != 0) {
 			return new TextDocumentationResponse(element, property.toString(),
+					getElementImageDescriptor(jsElement),
+					jsElement.getDescription() != null
+							? jsElement.getDescription()
+							: "");
+		} else if (element instanceof IRRecordMember recordMember) {
+			final Element jsElement = (Element) recordMember.getSource();
+			// if (jsElement.getDescription() != null
+			// && jsElement.getDescription().length() != 0) {
+			return new TextDocumentationResponse(element,
+					recordMember.toString(),
 					getElementImageDescriptor(jsElement),
 					jsElement.getDescription() != null
 							? jsElement.getDescription()

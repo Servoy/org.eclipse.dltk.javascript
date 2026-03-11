@@ -66,6 +66,7 @@ import org.eclipse.dltk.javascript.typeinference.ValueReferenceUtil;
 import org.eclipse.dltk.javascript.typeinfo.IRMember;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
 import org.eclipse.dltk.javascript.typeinfo.IRProperty;
+import org.eclipse.dltk.javascript.typeinfo.IRRecordMember;
 import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
 import org.eclipse.dltk.javascript.typeinfo.JSDocTypeRegion;
@@ -369,6 +370,14 @@ public class JavaScriptSelectionEngine2 extends ScriptSelectionEngine {
 			if (properties != null) {
 				for (IRProperty prop : properties) {
 					reportElement(prop);
+				}
+				return;
+			}
+			final Collection<IRRecordMember> members = ValueReferenceUtil
+					.extractElements(value, IRRecordMember.class);
+			if (members != null) {
+				for (IRRecordMember member : members) {
+					reportElement(member);
 				}
 				return;
 			}

@@ -892,7 +892,10 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	@Override
 	public IValueReference visitConditionalOperator(ConditionalOperator node) {
 		visit(node.getCondition());
-		return merge(visit(node.getTrueValue()), visit(node.getFalseValue()));
+		IValueReference[] handleCondition = handleCondition(node.getCondition(),
+				node.getTrueValue(),
+				node.getFalseValue());
+		return merge(handleCondition[0], handleCondition[1]);
 	}
 
 	protected static final IAssignProtection PROTECT_CONST = new IAssignProtection() {
@@ -1577,28 +1580,44 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 	}
 
 	protected void visitIfStatements(IfStatement node) {
-		final List<Statement> statements = new ArrayList<Statement>(2);
-		Statement onlyBranch = null;
-		final Boolean condition = evaluateCondition(node.getCondition());
+		Expression nodeCondition = node.getCondition();
+		Statement elseStatement = node.getElseStatement();
+		Statement thenStatement = node.getThenStatement();
+		handleCondition(nodeCondition, thenStatement, elseStatement);
+	}
+
+	/**
+	 * @param nodeCondition
+	 * @param elseStatement
+	 * @param thenStatement
+	 */
+	private IValueReference[] handleCondition(Expression nodeCondition,
+			JSNode thenStatement, JSNode elseStatement) {
+		final List<JSNode> statements = new ArrayList<JSNode>(2);
+		final Boolean condition = evaluateCondition(nodeCondition);
+		JSNode onlyBranch = null;
 		if ((condition == null || condition.booleanValue())
-				&& node.getThenStatement() != null) {
-			statements.add(node.getThenStatement());
+				&& thenStatement != null) {
+			statements.add(thenStatement);
 			if (condition != null && condition.booleanValue()) {
-				onlyBranch = node.getThenStatement();
+				onlyBranch = thenStatement;
 			}
 		}
 		if ((condition == null || !condition.booleanValue())
-				&& node.getElseStatement() != null) {
-			statements.add(node.getElseStatement());
+				&& elseStatement != null) {
+			statements.add(elseStatement);
 			if (condition != null && !condition.booleanValue()) {
-				onlyBranch = node.getElseStatement();
+				onlyBranch = elseStatement;
 			}
 		}
+		IValueReference thenReturn = null;
+		IValueReference elseReturn = null;
+
 		if (!statements.isEmpty()) {
 			IValueReference variable = null;
 			IRType type = null;
 			boolean isNot = false;
-			Expression conditionExpression = node.getCondition();
+			Expression conditionExpression = nodeCondition;
 			if (conditionExpression instanceof UnaryOperation uo
 					&& uo.isNotOperator()
 					&& uo.getExpression() instanceof ParenthesizedExpression pe) {
@@ -1618,6 +1637,21 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			IRType declaredType = null;
 			if (variable != null) {
 				declaredType = variable.getDeclaredType();
+				if (declaredType instanceof IRUnionType union
+						&& (type instanceof IRArrayType
+								|| type instanceof IRMapType)) {
+					// if the declared type is a union type and the type we want
+					// to set is an array or map type then try to extract the
+					// array or map item type from the union type and use that
+					// as
+					// the type to set. So we don't loost the generic part of
+					// the array or map type.
+					IRType t = type;
+					IRType genericType = union.getTargets().stream().filter(
+							unionType -> unionType.getClass() == t.getClass())
+							.findFirst().orElse(null);
+					type = genericType != null ? genericType : type;
+				}
 			}
 			if (statements.size() == 1) {
 				// if this is one statement it can be just instanceof and then
@@ -1626,13 +1660,13 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					variable.setDeclaredType(type);
 				}
 				if (statements.get(0) == onlyBranch) {
-					visit(statements.get(0));
+					thenReturn = visit(statements.get(0));
 				} else {
 					final Branching branching = branching();
 					if (variable != null && type != null) {
 						branching.values.put(variable, type);
 					}
-					visit(statements.get(0));
+					thenReturn = visit(statements.get(0));
 					branching.end();
 				}
 				// it was just instanceof removed the type again
@@ -1650,24 +1684,29 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			} else {
 				final List<NestedValueCollection> collections = new ArrayList<NestedValueCollection>(
 						statements.size());
-				for (Statement statement : statements) {
+				for (JSNode statement : statements) {
 					final Branching branching = branching();
 					final NestedValueCollection nestedCollection = new NestedValueCollection(
 							peekContext());
 					enterContext(nestedCollection);
 
 					if (variable != null && type != null) {
-						if (!isNot && statement == node.getThenStatement()) {
+						if (!isNot && statement == thenStatement) {
 							variable.setDeclaredType(type);
 							branching.values.put(variable, type);
 						} else if (isNot
-								&& statement == node.getElseStatement()) {
+								&& statement == elseStatement) {
 							variable.setDeclaredType(type);
 							branching.values.put(variable, type);
 						}
 					}
 
-					visit(statement);
+					IValueReference visit = visit(statement);
+					if (thenReturn == null) {
+						thenReturn = visit;
+					} else if (visit != null) {
+						elseReturn = visit;
+					}
 
 					if (variable != null && type != null) {
 						variable.setDeclaredType(declaredType);
@@ -1679,6 +1718,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				NestedValueCollection.mergeTo(peekContext(), collections);
 			}
 		}
+		return new IValueReference[] { thenReturn, elseReturn };
 	}
 
 	@Override

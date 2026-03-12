@@ -692,7 +692,10 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 			result.add(member.getName());
 		}
 		for (IElementResolver resolver : TypeInfoManager.getElementResolvers()) {
-			Set<String> globals = resolver.listGlobals(this, prefix);
+			Set<String> globals = resolver.listGlobals(this, prefix,
+					this.visitor.getCollection() instanceof TopValueCollection
+							? null
+							: this.visitor.getCollection());
 			if (globals != null) {
 				result.addAll(globals);
 			}

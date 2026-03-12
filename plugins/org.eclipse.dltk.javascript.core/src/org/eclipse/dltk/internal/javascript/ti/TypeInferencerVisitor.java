@@ -2483,7 +2483,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		for (Statement statement : node.getStatements()) {
 			visit(statement);
 		}
-		if (node.getParent() instanceof FunctionStatement == false) {
+		if (!(node.getParent() instanceof FunctionStatement)) {
 			leaveContext();
 		}
 		return null;

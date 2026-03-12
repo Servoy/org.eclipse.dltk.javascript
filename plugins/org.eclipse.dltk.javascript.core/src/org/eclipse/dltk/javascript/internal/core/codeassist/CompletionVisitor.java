@@ -32,6 +32,30 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 	private final int position;
 	private boolean skipPositionTest = false;
 
+	/**
+	 * True while we are visiting the JSScope node whose source range contains
+	 * the completion position. This is scoped to that single node via
+	 * try/finally in visit(ASTNode).
+	 */
+	private boolean inScopeThatContainsPosition = false;
+
+	/**
+	 * When true, the next context that is left belongs to the scope that
+	 * contains the position and should be remembered as the completion
+	 * collection.
+	 */
+	private boolean rememberNextContextOnLeave = false;
+
+	/**
+	 * The concrete collection instance that was active when we entered the
+	 * scope that contains the completion position. We keep this reference so
+	 * that even if the underlying visitor changes its notion of the "current"
+	 * collection (for example, having TopValueCollection at index 0 and the
+	 * function collection at index 1), we still remember the function
+	 * collection we actually want to use for completion.
+	 */
+	private IValueCollection actualCurrentCollection = null;
+
 	public CompletionVisitor(ITypeInferenceContext context, int position) {
 		super(context);
 		this.position = position;
@@ -39,6 +63,41 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 
 	static class Level {
 		boolean enabled;
+	}
+
+	@Override
+	public void enterContext(IValueCollection collection) {
+		// If we are entering a value collection while visiting the scope that
+		// contains the completion position, then this collection is exactly the
+		// one we want to keep when that scope is left (for example, a
+		// FunctionValueCollection for a function body).
+		if (inScopeThatContainsPosition) {
+			rememberNextContextOnLeave = true;
+			// Cache the concrete collection instance we are entering. Using this
+			// avoids relying on super.getCollection() later, which might already
+			// have switched back to TopValueCollection when leaveContext() is
+			// invoked.
+			actualCurrentCollection = collection;
+		}
+		super.enterContext(collection);
+	}
+
+	@Override
+	public IValueCollection leaveContext() {
+		// Capture the collection we are about to leave if it is the one flagged
+		// in enterContext() while we were visiting the scope that contains the
+		// completion position.
+		if (rememberNextContextOnLeave && savedCollection == null
+				&& actualCurrentCollection != null) {
+			// Remember this collection for completion so that even after the
+			// context is popped, getCollection() keeps returning the innermost
+			// scope that contained the completion position (for example, a
+			// function's body when completing on the last empty line before }).
+			savedCollection = actualCurrentCollection;
+			rememberNextContextOnLeave = false;
+			actualCurrentCollection = null;
+		}
+		return super.leaveContext();
 	}
 
 	private Stack<Level> levels = new Stack<Level>();
@@ -50,12 +109,37 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 	@Override
 	public IValueReference visit(ASTNode node) {
 		if (node instanceof JSScope) {
-			if (levels.isEmpty() && positionReached == null
-					&& node.sourceStart() >= position) {
-				return null;
+			boolean isCorrectScopeType = node instanceof FunctionStatement
+					|| node instanceof StatementBlock;
+			// Determine if this scope's source range contains the completion
+			// position.
+			boolean containsPosition = node.sourceStart() <= position
+					&& position <= node.sourceEnd()
+					&& isCorrectScopeType;
+
+			boolean oldInScope = inScopeThatContainsPosition;
+			if (containsPosition) {
+				// We are now visiting the scope that actually contains the
+				// completion position.
+				inScopeThatContainsPosition = true;
 			}
-			return super.visit(node);
+
+			try {
+				if (levels.isEmpty() && positionReached == null
+						&& node.sourceStart() >= position) {
+					// We haven't reached the position yet, and this scope starts
+					// at or after the position, so nothing inside will help.
+					return null;
+				}
+				return super.visit(node);
+			} finally {
+				// Restore previous flag when leaving this scope node so that
+				// inScopeThatContainsPosition is only true while we are visiting
+				// the JSScope that contains the position.
+				inScopeThatContainsPosition = oldInScope;
+			}
 		}
+
 		final IValueReference result = super.visit(node);
 		if (!levels.isEmpty() && levels.peek().enabled) {
 			return result;
@@ -63,6 +147,10 @@ public class CompletionVisitor extends TypeInferencerVisitor {
 
 		if (!skipPositionTest && savedCollection == null && node != null
 				&& node.sourceEnd() >= position) {
+			// For non-scope nodes we still allow the old early-stop behavior,
+			// but only if no collection has been remembered yet. In practice
+			// savedCollection will already be set from leaveContext() when
+			// completing inside a function body.
 			savedCollection = peekContext();
 			throw new PositionReachedException(node, result);
 		}

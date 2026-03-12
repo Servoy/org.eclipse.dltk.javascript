@@ -14,6 +14,7 @@ package org.eclipse.dltk.javascript.typeinfo;
 import java.util.Set;
 
 import org.eclipse.dltk.annotations.ConfigurationElement;
+import org.eclipse.dltk.javascript.typeinference.IValueCollection;
 import org.eclipse.dltk.javascript.typeinfo.model.Member;
 
 @ConfigurationElement("resolver")
@@ -28,5 +29,6 @@ public interface IElementResolver {
 	 *            the prefix, not <code>null</code>
 	 * @return
 	 */
-	Set<String> listGlobals(ITypeInfoContext context, String prefix);
+	Set<String> listGlobals(ITypeInfoContext context, String prefix,
+			IValueCollection valueCollection);
 }

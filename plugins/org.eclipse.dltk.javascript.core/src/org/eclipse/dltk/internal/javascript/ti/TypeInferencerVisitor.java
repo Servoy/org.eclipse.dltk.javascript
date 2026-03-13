@@ -405,8 +405,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				typeSet.addAll(right.getTypes());
 			}
 			return new ConstantValue(typeSet);
-		} else {
-			// TODO handle other operations
+		} else if (node.isArithmeticOperation()) {
+			// this should be after the node.isAddition above because then it
+			// can be come a string
+			return ConstantValue.of(RTypes.NUMBER);
+		}
+		else {
 			return null;
 		}
 	}

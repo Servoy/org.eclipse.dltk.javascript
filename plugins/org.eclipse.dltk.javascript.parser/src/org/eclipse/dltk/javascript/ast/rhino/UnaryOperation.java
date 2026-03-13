@@ -62,4 +62,9 @@ public class UnaryOperation extends org.eclipse.dltk.javascript.ast.UnaryOperati
 	public boolean isVoid() {
 		return operation == Token.VOID;
 	}
+	
+	@Override
+	public boolean isUnaryPlusMin() {
+		return operation == Token.POS || operation == Token.NEG;
+	}
 }

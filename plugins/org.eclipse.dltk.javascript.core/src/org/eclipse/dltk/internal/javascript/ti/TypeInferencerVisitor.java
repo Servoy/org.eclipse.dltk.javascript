@@ -2577,6 +2577,9 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		} else if (node.isVoid()) {
 			visit(node.getExpression());
 			return null;
+		} else if (node.isUnaryPlusMin()) {
+			visit(node.getExpression());
+			return ConstantValue.of(RTypes.NUMBER);
 		} else {
 			return visit(node.getExpression());
 		}

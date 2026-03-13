@@ -92,6 +92,10 @@ public abstract class UnaryOperation extends Expression {
 
 		return buffer.toString();
 	}
+	
+	public boolean isUnaryPlusMin() {
+		return false;
+	}
 
 	public abstract boolean isIncDec();
 

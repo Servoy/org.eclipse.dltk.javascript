@@ -118,6 +118,13 @@ public class RSimpleType extends RType implements IRSimpleType {
 				return fixedrType.isAssignableFrom(type);
 			}
 		}
+		else if (type instanceof IRMapType mapType && mapType.getDeclaration()
+				.getSource().getName().equals(getName())) {
+			// if it is a map type and the declaration (Set or Map) is the same
+			// as this simple type then just make it assignable (since we don't
+			// know the key and value types)
+			return TypeCompatibility.TRUE;
+		}
 		return testAssignableTo(type);
 	}
 

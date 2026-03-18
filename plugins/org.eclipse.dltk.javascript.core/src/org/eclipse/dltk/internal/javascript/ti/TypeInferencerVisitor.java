@@ -14,6 +14,7 @@ package org.eclipse.dltk.internal.javascript.ti;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -1633,21 +1634,27 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			IValueReference variable = null;
 			IRType type = null;
 			boolean isNot = false;
-			Expression conditionExpression = nodeCondition;
-			if (conditionExpression instanceof UnaryOperation uo
-					&& uo.isNotOperator()
-					&& uo.getExpression() instanceof ParenthesizedExpression pe) {
-				conditionExpression = pe.getExpression();
-				isNot = true;
-			}
+			List<Expression> binaryOrUnaryOperation = findBinaryOrUnaryOperation(
+					nodeCondition);
+			for (Expression conditionExpression : binaryOrUnaryOperation) {
+				if (conditionExpression instanceof UnaryOperation uo
+						&& uo.isNotOperator()
+						&& uo.getExpression() instanceof ParenthesizedExpression pe) {
+					conditionExpression = pe.getExpression();
+					isNot = true;
+				}
 
-			if (conditionExpression instanceof BinaryOperation bo
-					&& bo.isInstanceof()) {
-				Expression rightExpression = bo.getRightExpression();
-				variable = visit(bo.getLeftExpression());
-				Type t = this.context
-						.getType(rightExpression.toSourceString(""));
-				type = t != null ? RTypes.simple(context, t) : null;
+				if (conditionExpression instanceof BinaryOperation bo
+						&& bo.isInstanceof()) {
+					Expression rightExpression = bo.getRightExpression();
+					variable = visit(bo.getLeftExpression());
+					Type t = this.context
+							.getType(rightExpression.toSourceString(""));
+					type = t != null ? RTypes.simple(context, t) : null;
+				}
+				// for nwo we support 1 instanceof for 1 variable.
+				if (variable != null)
+					break;
 			}
 
 			IRType declaredType = null;
@@ -1680,7 +1687,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				} else {
 					final Branching branching = branching();
 					if (variable != null && type != null) {
-						branching.values.put(variable, type);
+						if (!isNot)
+							branching.values.put(variable, type);
+						else
+							branching.values.put(variable,
+									variable.getDeclaredType());
 					}
 					thenReturn = visit(statements.get(0));
 					branching.end();
@@ -1735,6 +1746,28 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 		}
 		return new IValueReference[] { thenReturn, elseReturn };
+	}
+
+	private List<Expression> findBinaryOrUnaryOperation(
+			Expression nodeCondition) {
+		if (nodeCondition instanceof BinaryOperation bo) {
+			ArrayList<Expression> result = new ArrayList<Expression>();
+			result.add(bo);
+			if (bo.getLeftExpression() instanceof BinaryOperation leftBo) {
+				result.addAll(findBinaryOrUnaryOperation(leftBo));
+			} else if (bo
+					.getLeftExpression() instanceof UnaryOperation leftUo) {
+				result.add(leftUo);
+			}
+			if (bo.getRightExpression() instanceof BinaryOperation rightBo) {
+				result.addAll(findBinaryOrUnaryOperation(rightBo));
+			} else if (bo
+					.getRightExpression() instanceof UnaryOperation rightUo) {
+				result.add(rightUo);
+			}
+			return result;
+		}
+		return Collections.emptyList();
 	}
 
 	@Override

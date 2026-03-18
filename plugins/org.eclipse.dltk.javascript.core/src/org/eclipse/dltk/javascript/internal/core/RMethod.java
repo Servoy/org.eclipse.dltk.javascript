@@ -41,6 +41,11 @@ public class RMethod extends RMember<Method> implements IRMethod {
 		super(method, typeDeclaration);
 	}
 
+	public RMethod(RMethod method, IRType type) {
+		super(method.member, type, method.typeDeclaration);
+		this.parameters = method.parameters;
+	}
+
 	@Override
 	protected void initialize(ITypeSystem typeSystem) {
 		super.initialize(typeSystem);

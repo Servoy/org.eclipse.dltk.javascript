@@ -21,6 +21,7 @@ import org.eclipse.dltk.internal.javascript.ti.AnonymousValue;
 import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.IValue;
 import org.eclipse.dltk.internal.javascript.ti.ImmutableValue;
+import org.eclipse.dltk.internal.javascript.ti.JSVariable;
 import org.eclipse.dltk.internal.javascript.ti.ThisValue;
 import org.eclipse.dltk.internal.javascript.ti.Value;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
@@ -54,6 +55,27 @@ class RLocalType extends RType implements IRLocalType {
 			value = immutableValue;
 		}
 		return new RLocalType(name, value);
+	}
+
+	@Override
+	public IRType getEnumValueType() {
+		if (functionValue != null) {
+			JSVariable variable = (JSVariable) functionValue
+					.getAttribute(IReferenceAttributes.VARIABLE, false);
+			if (variable != null && variable.isEnum()) {
+				// if the value is declared on the enum itself just return that.
+				if (functionValue.getDeclaredType() != null) {
+					return functionValue.getDeclaredType();
+				}
+				JSTypeSet types = functionValue.getTypes();
+				for (IRType type : types) {
+					if (type instanceof IRLocalType local) {
+						return local.getEnumValueType();
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public IValueReference getValue() {

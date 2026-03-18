@@ -783,6 +783,18 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				parseType.setAttribute(IReferenceAttributes.JSON_PARSE,
 						Boolean.TRUE);
 				return parseType;
+			} else if (method.getName().equals("valueOf") && ITypeNames.OBJECT
+					.equals(method.getDeclaringType().getName())) {
+				IRType parentType = JavaScriptValidations
+						.typeOf(reference.getParent());
+				if (parentType instanceof IRLocalType localType) {
+
+					IRType type = localType.getEnumValueType();
+					if (type != null) {
+						return ConstantValue.of(type);
+					}
+				}
+				return parentType != null ? ConstantValue.of(parentType) : null;
 			}
 		}
 		return null;

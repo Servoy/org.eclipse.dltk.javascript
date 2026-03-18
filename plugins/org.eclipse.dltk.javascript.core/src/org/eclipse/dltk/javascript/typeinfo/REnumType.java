@@ -34,6 +34,14 @@ public class REnumType implements IRLocalType {
 	}
 
 	@Override
+	public IRType getEnumValueType() {
+		if (this.type instanceof IRRecordType recordType) {
+			return recordType.getMembers().iterator().next().getType();
+		}
+		return null;
+	}
+
+	@Override
 	public IValidationStatus isAssignableFrom(IValueReference argument) {
 
 		return isAssignableFrom(JavaScriptValidations.typeOf(argument));

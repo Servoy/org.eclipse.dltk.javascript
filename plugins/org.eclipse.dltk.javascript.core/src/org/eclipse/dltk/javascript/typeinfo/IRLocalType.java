@@ -33,4 +33,12 @@ public interface IRLocalType
 
 	public Set<String> getDirectChildren();
 
+	/**
+	 * If this type is an enum, then return the type of the enum values,
+	 * otherwise null.
+	 * 
+	 * @return the type of the enum values, or null if this is not an enum
+	 */
+	public IRType getEnumValueType();
+
 }

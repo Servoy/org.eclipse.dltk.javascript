@@ -26,7 +26,7 @@ import org.eclipse.dltk.javascript.typeinfo.model.Visibility;
 
 public class RMember<E extends Member> implements IRMember {
 	protected final E member;
-	private final RTypeDeclaration typeDeclaration;
+	protected final RTypeDeclaration typeDeclaration;
 	private IRType type;
 	private boolean initialized;
 

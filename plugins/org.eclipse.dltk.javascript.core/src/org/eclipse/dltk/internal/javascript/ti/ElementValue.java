@@ -199,15 +199,21 @@ public abstract class ElementValue implements IValue {
 							selection.toArray(new IRMember[selection.size()]));
 				}
 			}
-		} else if (type instanceof IRLocalType) {
-			final IValueReference child = ((IRLocalType) type)
-					.getDirectChild(name);
+		} else if (type instanceof IRLocalType localType) {
+			final IValueReference child = localType.getDirectChild(name);
 			if (child != null) {
 				final IValue value = ((IValueProvider) child).getValue();
 				if (value != null)
 					return value;
 			}
-			return findMember(RTypes.OBJECT, name);
+			IValue member = findMember(RTypes.OBJECT, name);
+			if (member instanceof MethodValue mValue && "valueOf".equals(name)
+					&& localType.getEnumValueType() != null) {
+				member = new MethodValue(new RMethod((RMethod) mValue.method,
+						localType.getEnumValueType()));
+				return member;
+			}
+			return member;
 		} else if (type instanceof IRSimpleType) {
 			final IRTypeDeclaration t = ((IRSimpleType) type).getDeclaration();
 			if (t != null) {

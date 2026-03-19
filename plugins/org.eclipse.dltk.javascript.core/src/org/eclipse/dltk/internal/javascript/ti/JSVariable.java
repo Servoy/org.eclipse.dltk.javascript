@@ -8,6 +8,7 @@ public class JSVariable extends JSElement implements IVariable {
 
 	private boolean deprecated;
 	private boolean enumVariable;
+	private boolean constantVariable;
 	private Visibility visibility;
 	private JSType typeDef;
 
@@ -51,6 +52,16 @@ public class JSVariable extends JSElement implements IVariable {
 	@Override
 	public void setEnum(boolean b) {
 		enumVariable = b;
+	}
+
+	@Override
+	public boolean isConstant() {
+		return constantVariable;
+	}
+
+	@Override
+	public void setConstant(boolean b) {
+		constantVariable = b;
 	}
 
 }

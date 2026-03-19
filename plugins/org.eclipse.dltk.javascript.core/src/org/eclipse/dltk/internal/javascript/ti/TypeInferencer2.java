@@ -857,9 +857,9 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 		}
 		else if (result != null && result.getAttribute(
 				IReferenceAttributes.VARIABLE) instanceof IVariable variable
-				&& variable.isEnum()
-				&& result.getDeclaredType() instanceof IRLocalType enumType) {
-			return enumType;
+				&& (variable.isEnum() || variable.isConstant()) && result
+						.getDeclaredType() instanceof IRLocalType enumOrConstantType) {
+			return enumOrConstantType;
 		}
 		return null;
 	}

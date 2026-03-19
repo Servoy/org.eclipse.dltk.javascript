@@ -154,6 +154,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRVariable;
 import org.eclipse.dltk.javascript.typeinfo.ITypeInferenceListener;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
+import org.eclipse.dltk.javascript.typeinfo.RConstantType;
 import org.eclipse.dltk.javascript.typeinfo.REnumType;
 import org.eclipse.dltk.javascript.typeinfo.RModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
@@ -969,6 +970,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			// parsing functions returning that enum (that should be mappedon
 			// that REnumType not Simple type
 			initializeVariable(reference, declaration);
+		} else if (variable.isConstant()) {
+			initializeVariable(reference, declaration);
 		}
 		return reference;
 	}
@@ -1017,6 +1020,15 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					if (types.size() == 1
 							&& types.toRType() instanceof IRRecordType rType) {
 						REnumType enumType = new REnumType(var.getName(), rType,
+								reference.getLocation());
+						assign(reference, ConstantValue.of(enumType));
+					}
+				} else if (var != null && var.isConstant()) {
+					JSTypeSet types = assignment.getTypes();
+					if (types.size() == 1
+							&& types.toRType() instanceof IRRecordType rType) {
+						RConstantType enumType = new RConstantType(
+								var.getName(), rType,
 								reference.getLocation());
 						assign(reference, ConstantValue.of(enumType));
 					}

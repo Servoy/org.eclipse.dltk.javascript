@@ -174,7 +174,14 @@ public interface IModelBuilder {
 		default void setEnum(boolean b) {
 		}
 
+		default void setConstant(boolean b) {
+		}
+
 		default boolean isEnum() {
+			return false;
+		}
+
+		default boolean isConstant() {
 			return false;
 		}
 

@@ -85,15 +85,19 @@ public class ElementDocumentationProvider implements
 							? jsElement.getDescription()
 							: "");
 		} else if (element instanceof IRRecordMember recordMember) {
-			final Element jsElement = (Element) recordMember.getSource();
-			// if (jsElement.getDescription() != null
-			// && jsElement.getDescription().length() != 0) {
-			return new TextDocumentationResponse(element,
-					recordMember.toString(),
-					getElementImageDescriptor(jsElement),
-					jsElement.getDescription() != null
-							? jsElement.getDescription()
-							: "");
+			if (recordMember.getSource() instanceof Element jsElement) {
+				// if (jsElement.getDescription() != null
+				// && jsElement.getDescription().length() != 0) {
+				return new TextDocumentationResponse(element,
+						recordMember.toString(),
+						getElementImageDescriptor(jsElement),
+						jsElement.getDescription() != null
+								? jsElement.getDescription()
+								: "");
+			} else {
+				return new TextDocumentationResponse(element,
+						recordMember.getName(), null, ""); //$NON-NLS-1$
+			}
 		}
 		return null;
 	}

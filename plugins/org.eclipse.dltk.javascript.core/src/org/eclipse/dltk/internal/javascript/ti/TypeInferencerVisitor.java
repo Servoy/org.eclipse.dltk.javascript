@@ -154,7 +154,6 @@ import org.eclipse.dltk.javascript.typeinfo.IRVariable;
 import org.eclipse.dltk.javascript.typeinfo.ITypeInferenceListener;
 import org.eclipse.dltk.javascript.typeinfo.ITypeNames;
 import org.eclipse.dltk.javascript.typeinfo.JSTypeSet;
-import org.eclipse.dltk.javascript.typeinfo.RConstantType;
 import org.eclipse.dltk.javascript.typeinfo.REnumType;
 import org.eclipse.dltk.javascript.typeinfo.RModelBuilder;
 import org.eclipse.dltk.javascript.typeinfo.RTypes;
@@ -964,13 +963,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			RecordType type = (RecordType) variable.getTypeDef();
 			type.setTypeName(varName);
 			this.context.registerRecordType(type);
-		} else if (variable.isEnum()) {
+		} else if (variable.isEnum() || variable.isConstant()) {
 			// if it is an enum we must initalize it asap so that that enum
 			// variable has its REnumType set that can then be resolved when
-			// parsing functions returning that enum (that should be mappedon
+			// parsing functions returning that enum (that should be mapped on
 			// that REnumType not Simple type
-			initializeVariable(reference, declaration);
-		} else if (variable.isConstant()) {
 			initializeVariable(reference, declaration);
 		}
 		return reference;
@@ -1027,10 +1024,21 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					JSTypeSet types = assignment.getTypes();
 					if (types.size() == 1
 							&& types.toRType() instanceof IRRecordType rType) {
-						RConstantType enumType = new RConstantType(
-								var.getName(), rType,
-								reference.getLocation());
-						assign(reference, ConstantValue.of(enumType));
+						assign(reference, ConstantValue.of(rType));
+
+						// NEW: mark all record members as const/protected
+						for (IRRecordMember member : rType.getMembers()) {
+							String name = member.getName();
+
+							IValueReference propRef = reference.getChild(name);
+							assign(propRef, ConstantValue.of(member.getType()));
+							if (propRef != null) {
+								propRef.setAttribute(
+										IAssignProtection.ATTRIBUTE,
+										PROTECT_CONST);
+							}
+						}
+
 					}
 				} else if (variable != null && variable.getType() != null) {
 					// if declared type specified then just add it as a value on

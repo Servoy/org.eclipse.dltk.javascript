@@ -87,8 +87,6 @@ public class RSimpleType extends RType implements IRSimpleType {
 				return TypeCompatibility.TRUE;
 			}
 			return declaration.isAssignableFrom(other);
-		} else if (type instanceof RConstantType constantType) {
-			return constantType.isAssignableFrom(this);
 		} else if (type instanceof IRLocalType
 				&& getTarget().getKind() == TypeKind.UNKNOWN
 				&& type.getName().equals(getName())) {

@@ -160,8 +160,6 @@ public class TypeUtil {
 		} else if (type instanceof REnumType) {
 			// and array lookup of an Enum is just the enum type itself
 			return type;
-		} else if (type instanceof RConstantType) {
-			return type;
 		} else {
 			return null;
 		}

@@ -52,7 +52,8 @@ public class LazyTypeReference extends AbstractReference {
 					}
 				}
 				setKind(ReferenceKind.TYPE);
-				setDeclaredType(RTypes.localType(className, createChild));
+				setDeclaredType(
+						RTypes.localType(className, createChild, context));
 				resolved = true;
 			} else if (className.indexOf('.') != -1) {
 				StringTokenizer st = new StringTokenizer(className, ".");
@@ -83,7 +84,8 @@ public class LazyTypeReference extends AbstractReference {
 									.getValue());
 						else
 							addValue(src);
-						setDeclaredType(RTypes.localType(className, child));
+						setDeclaredType(
+								RTypes.localType(className, child, context));
 					}
 					setKind(ReferenceKind.TYPE);
 					resolved = true;

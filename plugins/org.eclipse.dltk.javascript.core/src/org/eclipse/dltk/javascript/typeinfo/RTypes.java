@@ -24,7 +24,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.dltk.annotations.Nullable;
+import org.eclipse.dltk.internal.javascript.ti.IReferenceAttributes;
 import org.eclipse.dltk.internal.javascript.ti.IValueProvider;
+import org.eclipse.dltk.internal.javascript.ti.JSMethod;
 import org.eclipse.dltk.internal.javascript.validation.JavaScriptValidations;
 import org.eclipse.dltk.javascript.core.JavaScriptPlugin;
 import org.eclipse.dltk.javascript.core.Types;
@@ -358,8 +360,16 @@ public class RTypes {
 		return new RArrayType(typeSystem, itemType);
 	}
 
-	public static IRLocalType localType(String name, IValueReference value) {
-		return new RLocalType(name, ((IValueProvider) value).getValue());
+	public static IRLocalType localType(String name, IValueReference value,
+			ITypeSystem typeSystem) {
+		IRType extendsType = null;
+		Object attribute = value.getAttribute(IReferenceAttributes.METHOD);
+		if (attribute instanceof JSMethod method
+				&& method.getExtendsType() != null) {
+			extendsType = method.getExtendsType().toRType(typeSystem);
+		}
+		return new RLocalType(name, ((IValueProvider) value).getValue(),
+				extendsType);
 	}
 
 	/**

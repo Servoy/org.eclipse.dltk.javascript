@@ -41,4 +41,13 @@ public interface IRLocalType
 	 */
 	public IRType getEnumValueType();
 
+	/**
+	 * If this type extends another type, then return the type it extends,
+	 * otherwise null.
+	 * 
+	 * @return the type this type extends, or null if it does not extend any
+	 *         type
+	 */
+	public IRType getExtendsType();
+
 }

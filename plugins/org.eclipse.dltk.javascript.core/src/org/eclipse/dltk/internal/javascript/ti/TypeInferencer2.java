@@ -853,7 +853,7 @@ public class TypeInferencer2 extends TypeSystemImpl implements
 			}
 		}
 		if (result != null && result.getKind() == ReferenceKind.FUNCTION) {
-			return RTypes.localType(name, result);
+			return RTypes.localType(name, result, this);
 		}
 		else if (result != null && result.getAttribute(
 				IReferenceAttributes.VARIABLE) instanceof IVariable variable

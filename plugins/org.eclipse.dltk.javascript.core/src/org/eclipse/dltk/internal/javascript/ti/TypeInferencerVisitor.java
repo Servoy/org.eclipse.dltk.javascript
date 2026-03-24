@@ -496,7 +496,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 										.getFunctionName();
 								scope.getThis().setDeclaredType(
 										RTypes.localType(name, context
-												.getParent().getChild(name)));
+												.getParent().getChild(name),
+												this.context));
 							}
 						} 
 						else {
@@ -1263,7 +1264,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							String name = ((IFunctionValueCollection) context)
 									.getFunctionName();
 							thisValue.setDeclaredType(RTypes.localType(name,
-									context.getParent().getChild(name)));
+									context.getParent().getChild(name),
+									this.context));
 						} else if (pe
 								.getObject() instanceof PropertyExpression pe2
 								&& pe2.getObject() instanceof Identifier name
@@ -1273,7 +1275,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 							// the parent
 							thisValue.setDeclaredType(RTypes.localType(
 									name.getName(), context.getParent()
-											.getChild(name.getName())));
+											.getChild(name.getName()),
+									this.context));
 						}
 					}
 				}
@@ -1287,7 +1290,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				IValueCollection context = peekContext();
 				if (context instanceof IFunctionValueCollection) {
 					thisValue.setDeclaredType(RTypes.localType(name.getName(),
-							context.getParent().getChild(name.getName())));
+							context.getParent().getChild(name.getName()),
+							this.context));
 				}
 			}
 
@@ -1880,7 +1884,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					}
 					if (className != null && !className.equals("<anonymous>")) {
 						result.value.setDeclaredType(RTypes.localType(
-								className, result.typeValue));
+								className, result.typeValue, this.context));
 					} else {
 						result.value.setDeclaredType(RTypes.OBJECT);
 					}

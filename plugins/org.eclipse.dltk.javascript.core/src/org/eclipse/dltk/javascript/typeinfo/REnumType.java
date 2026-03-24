@@ -42,6 +42,11 @@ public class REnumType implements IRLocalType {
 	}
 
 	@Override
+	public IRType getExtendsType() {
+		return null;
+	}
+
+	@Override
 	public IValidationStatus isAssignableFrom(IValueReference argument) {
 
 		return isAssignableFrom(JavaScriptValidations.typeOf(argument));

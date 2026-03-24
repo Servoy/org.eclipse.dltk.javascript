@@ -38,10 +38,12 @@ class RLocalType extends RType implements IRLocalType {
 
 	private final IValue functionValue;
 	private final String name;
+	private final IRType extendsType;
 
-	RLocalType(String name, IValue functionValue) {
+	RLocalType(String name, IValue functionValue, IRType extendsType) {
 		this.name = name;
 		this.functionValue = functionValue;
+		this.extendsType = extendsType;
 	}
 
 	public RLocalType makeImmutable(Map<Object, Object> visited) {
@@ -54,7 +56,15 @@ class RLocalType extends RType implements IRLocalType {
 		} else {
 			value = immutableValue;
 		}
-		return new RLocalType(name, value);
+		return new RLocalType(name, value,
+				extendsType instanceof IRLocalType local
+						? local.makeImmutable(visited)
+						: extendsType);
+	}
+
+	@Override
+	public IRType getExtendsType() {
+		return extendsType;
 	}
 
 	@Override
@@ -131,12 +141,18 @@ class RLocalType extends RType implements IRLocalType {
 			IValueReference fromChild = getChildFromDeclaredTypes(name,
 					declaredValue.getDeclaredTypes(), set);
 			if (fromChild == null && !PROTOTYPE_PROPERTY.equals(name)) {
-				IValueReference prototype = new AnonymousValue(
-						irType.functionValue)
-						.getChild(PROTOTYPE_PROPERTY);
-				fromChild = prototype.getChild(name);
-				if (!fromChild.exists())
-					fromChild = null;
+
+				IRType extendsType = irType.getExtendsType();
+				if (extendsType instanceof RLocalType local) {
+					fromChild = getChild(local, name, set);
+				}
+				if (fromChild == null || !fromChild.exists()) {
+					IValueReference prototype = new AnonymousValue(
+							irType.functionValue).getChild(PROTOTYPE_PROPERTY);
+					fromChild = prototype.getChild(name);
+					if (!fromChild.exists())
+						fromChild = null;
+				}
 			}
 			return fromChild;
 		}
@@ -203,9 +219,15 @@ class RLocalType extends RType implements IRLocalType {
 
 	@Override
 	public TypeCompatibility isAssignableFrom(IRType type) {
-		if (type instanceof IRLocalType) {
+		if (type instanceof IRLocalType localType) {
 			if (getReferenceLocation().equals(
-					((IRLocalType) type).getReferenceLocation())) {
+					localType.getReferenceLocation())) {
+				return TypeCompatibility.TRUE;
+			}
+			IRType extendsType = localType.getExtendsType();
+			// declared type could be the super type.
+			if (extendsType != null && extendsType != localType
+					&& this.isAssignableFrom(extendsType).ok()) {
 				return TypeCompatibility.TRUE;
 			}
 		} else if (type instanceof IRSimpleType
@@ -230,29 +252,12 @@ class RLocalType extends RType implements IRLocalType {
 			return TypeCompatibility.TRUE;
 		}
 		Set<IRType> types = JavaScriptValidations.getTypes(argument);
-		return testLocation(types, new HashSet<IRType>());
-	}
-
-	/**
-	 * @param types
-	 */
-	private IValidationStatus testLocation(Iterable<IRType> types,
-			HashSet<IRType> set) {
-		for (IRType irType : types) {
-			if (irType instanceof IRLocalType && set.add(irType)) {
-				if (getReferenceLocation().equals(
-						((IRLocalType) irType).getReferenceLocation())) {
-					return TypeCompatibility.TRUE;
-				}
-				
-				IValidationStatus status = testLocation(((IRLocalType) irType)
-						.getValue().getDeclaredTypes(), set);
-				if (status == TypeCompatibility.TRUE)
-					return status;
-			}
-		}
+		if (types.stream().map(this::isAssignableFrom)
+				.filter(status -> status.ok()).findFirst().isPresent())
+			return TypeCompatibility.TRUE;
 		return TypeCompatibility.FALSE;
 	}
+
 
 	public String getName() {
 		return name;

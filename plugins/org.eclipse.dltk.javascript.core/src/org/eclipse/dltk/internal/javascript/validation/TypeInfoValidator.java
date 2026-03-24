@@ -2171,13 +2171,16 @@ public class TypeInfoValidator implements IBuildParticipant,
 						node.sourceStart(), node.sourceEnd());
 				}
 			} else if (reference != null && right != null
-					&& right.getTypes().size() > 0
 					&& reference.getDeclaredType() != null
 					&& (node == null || (node instanceof BinaryOperation bo
 							&& bo.isAssignOperator()))) {
 				IRType declaredType = reference.getDeclaredType();
+				JSTypeSet types = right.getDeclaredTypes();
+				if (types.isEmpty()) {
+					types = right.getTypes();
+				}
 				Map<IRType, TypeCompatibility> compatibilities = new HashMap<IRType, TypeCompatibility>();
-				for (IRType type : right.getTypes()) {
+				for (IRType type : types) {
 					compatibilities.put(type, declaredType
 							.isAssignableFrom(type) != TypeCompatibility.TRUE
 							&& type.isAssignableFrom(

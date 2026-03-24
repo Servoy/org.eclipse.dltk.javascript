@@ -1804,6 +1804,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				result.add(rightUo);
 			}
 			return result;
+		} else if (nodeCondition instanceof UnaryOperation) {
+			return Arrays.asList(nodeCondition);
 		}
 		return Collections.emptyList();
 	}

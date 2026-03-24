@@ -139,6 +139,7 @@ import org.eclipse.dltk.javascript.typeinfo.IRArrayType;
 import org.eclipse.dltk.javascript.typeinfo.IRClassType;
 import org.eclipse.dltk.javascript.typeinfo.IRConstructor;
 import org.eclipse.dltk.javascript.typeinfo.IRFunctionType;
+import org.eclipse.dltk.javascript.typeinfo.IRIterableType;
 import org.eclipse.dltk.javascript.typeinfo.IRLocalType;
 import org.eclipse.dltk.javascript.typeinfo.IRMapType;
 import org.eclipse.dltk.javascript.typeinfo.IRMethod;
@@ -1167,6 +1168,12 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 								&& itemType != RTypes.any()) {
 							type = irType;
 						}
+					} else if (irType instanceof IRIterableType iterable) {
+						IRType itemType = iterable.getIterableType();
+						if (itemType != RTypes.none()
+								&& itemType != RTypes.any()) {
+							type = irType;
+						}
 					}
 				}
 			}
@@ -1178,6 +1185,11 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			} else if (type instanceof IRMapType
 					&& JavaScriptValidations.typeOf(itemReference) == null) {
 				final IRType itemType = ((IRMapType) type).getValueType();
+				setIRType(itemReference, itemType, true);
+			} else if (type instanceof IRIterableType
+					&& JavaScriptValidations.typeOf(itemReference) == null) {
+				final IRType itemType = ((IRIterableType) type)
+						.getIterableType();
 				setIRType(itemReference, itemType, true);
 			} else if (ITypeNames.XMLLIST.equals(type.getName())) {
 				itemReference.setDeclaredType(E4XTypes.XML);

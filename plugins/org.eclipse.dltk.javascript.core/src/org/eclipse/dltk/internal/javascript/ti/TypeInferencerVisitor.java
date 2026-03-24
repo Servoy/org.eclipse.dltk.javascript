@@ -259,6 +259,15 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		}
 		if (branchings.isEmpty()) {
 			dest.setValue(src);
+		} else if (!branchings.peek().values.isEmpty()
+				&& dest instanceof IValueProvider destProvider
+				&& destProvider.getValue() instanceof IValue destValue
+				&& src instanceof IValueProvider srcProvider
+				&& srcProvider.getValue() instanceof IValue srcValue) {
+			// if this has a branch and the values do containe the type we set
+			// here we need to do really a merge.
+			destValue.mergeValue(srcValue);
+
 		} else {
 			dest.addValue(src, false);
 		}

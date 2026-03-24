@@ -39,6 +39,7 @@ public class FunctionValueCollection extends ValueCollection implements
 		this.block = block;
 		IValueReference arguments = createChild("arguments");
 		arguments.setKind(ReferenceKind.LOCAL);
+		arguments.setDeclaredType(RTypes.arrayOf());
 		IValueReference argumentsLength = arguments.getChild("length");
 		argumentsLength.setDeclaredType(RTypes.NUMBER);
 		IValueReference argumentsArray = arguments

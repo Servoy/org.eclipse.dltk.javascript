@@ -383,6 +383,8 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			return right;
 		} else if (node.isLogicalAnd()) {
 			return coalesce(right, left);
+		} else if (node.isInstanceof()) {
+			return ConstantValue.of(RTypes.BOOLEAN);
 		} else if (node.returnsBoolean()) {
 			return ConstantValue.of(RTypes.BOOLEAN);
 		} else if (isNumber(left) && isNumber(right)) {

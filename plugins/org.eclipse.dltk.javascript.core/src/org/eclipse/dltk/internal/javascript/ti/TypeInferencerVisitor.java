@@ -13,6 +13,7 @@ package org.eclipse.dltk.internal.javascript.ti;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -171,6 +172,7 @@ import org.eclipse.dltk.javascript.typeinfo.model.Parameter;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterKind;
 import org.eclipse.dltk.javascript.typeinfo.model.ParameterizedType;
 import org.eclipse.dltk.javascript.typeinfo.model.RecordType;
+import org.eclipse.dltk.javascript.typeinfo.model.SimpleType;
 import org.eclipse.dltk.javascript.typeinfo.model.Type;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeKind;
 import org.eclipse.dltk.javascript.typeinfo.model.TypeVariableClassType;
@@ -1695,26 +1697,36 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 						&& bo.isInstanceof()) {
 					Expression rightExpression = bo.getRightExpression();
 					variable = visit(bo.getLeftExpression());
-					Type t = this.context
-							.getType(rightExpression.toSourceString(""));
-					type = t != null ? RTypes.simple(context, t) : null;
+					SimpleType t = this.context
+							.getTypeRef(rightExpression.toSourceString(""));
+					type = t != null ? RTypes.create(context, t) : null;
 				}
-				// for nwo we support 1 instanceof for 1 variable.
+				// for now we support 1 instanceof for 1 variable.
 				if (variable != null)
 					break;
 			}
 
 			IRType declaredType = null;
+			IRType declaredTypeOrTypes = null;
 			if (variable != null) {
 				declaredType = variable.getDeclaredType();
-				if (declaredType instanceof IRUnionType union
+				if (declaredType == null) {
+					// this could also be an assignment, see if it has exactly 1
+					// type set.
+					JSTypeSet types = variable.getTypes();
+					if (types.size() > 0) {
+						declaredTypeOrTypes = types.toRType();
+					}
+				} else {
+					declaredTypeOrTypes = declaredType;
+				}
+				if (declaredTypeOrTypes instanceof IRUnionType union
 						&& (type instanceof IRArrayType
 								|| type instanceof IRMapType)) {
 					// if the declared type is a union type and the type we want
 					// to set is an array or map type then try to extract the
 					// array or map item type from the union type and use that
-					// as
-					// the type to set. So we don't loost the generic part of
+					// as the type to set. So we don't loost the generic part of
 					// the array or map type.
 					IRType t = type;
 					IRType genericType = union.getTargets().stream().filter(
@@ -1765,17 +1777,55 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					enterContext(nestedCollection);
 
 					if (variable != null && type != null) {
-						if (!isNot && statement == thenStatement) {
-							variable.setDeclaredType(type);
-							branching.values.put(variable, type);
-						} else if (isNot
-								&& statement == elseStatement) {
-							variable.setDeclaredType(type);
-							branching.values.put(variable, type);
+						if (statement == thenStatement) {
+							if (!isNot) {
+								variable.setDeclaredType(type);
+								branching.values.put(variable, type);
+							} else if (declaredTypeOrTypes instanceof IRUnionType union) {
+								Set<IRType> targets = new HashSet<>(
+										union.getTargets());
+								targets.remove(type);
+								IRType newType = null;
+								if (targets.size() == 1) {
+									newType = targets.iterator().next();
+								} else if (targets.size() > 1) {
+									newType = RTypes.union(targets);
+								}
+								if (newType != null) {
+									variable.setDeclaredType(newType);
+									branching.values.put(variable, newType);
+								}
+							}
+						} else if (statement == elseStatement) {
+							if (isNot) {
+								variable.setDeclaredType(type);
+								branching.values.put(variable, type);
+							} else if (declaredTypeOrTypes instanceof IRUnionType union) {
+								Set<IRType> targets = new HashSet<>(
+										union.getTargets());
+								targets.remove(type);
+								IRType newType = null;
+								if (targets.size() == 1) {
+									newType = targets.iterator().next();
+								} else if (targets.size() > 1) {
+									newType = RTypes.union(targets);
+								}
+								if (newType != null) {
+									variable.setDeclaredType(newType);
+									branching.values.put(variable, newType);
+								}
+							}
 						}
 					}
 
 					IValueReference visit = visit(statement);
+					// this condition shold try to return the type
+					// so if this reference has a declared type
+					// then it is very likley the reference to a variable that
+					// is set just make it a constant value then.
+					if (visit != null && visit.getDeclaredType() != null) {
+						visit = ConstantValue.of(visit.getDeclaredType());
+					}
 					if (thenReturn == null) {
 						thenReturn = visit;
 					} else if (visit != null) {

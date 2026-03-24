@@ -1735,7 +1735,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 					}
 					return assignableFrom;
 				}
-				else if (paramType == RTypes.any()) {
+				else if (paramType == RTypes.any()
+						|| paramType == RTypes.EMPTY_ARRAY_ITEM_TYPE) {
 					// if argument type is null that means that it is Any
 					// so if the parameter is also any we can say that this is
 					// compatible

@@ -102,8 +102,10 @@ public class JavascriptPartitionScanner extends RuleBasedPartitionScanner {
 		IToken doc = new Token(IJavaScriptPartitions.JS_DOC);
 		IToken stringTemplate = new Token(
 				IJavaScriptPartitions.JS_PARTITIONING);
+		IToken regexToken = new Token(IJavaScriptPartitions.JS_STRING);
 
 		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
+		rules.add(new JavaScriptRegexRule(regexToken));
 		rules.add(new MultiLineRule("`", "`", stringTemplate, '\\'));
 		rules.add(new EndOfLineRule("//", singleLineComment) {
 			@Override
@@ -142,5 +144,55 @@ public class JavascriptPartitionScanner extends RuleBasedPartitionScanner {
 		IPredicateRule[] result = new IPredicateRule[rules.size()];
 		rules.toArray(result);
 		setPredicateRules(result);
+	}
+
+	static class JavaScriptRegexRule implements IPredicateRule {
+		private final IToken token;
+
+		public JavaScriptRegexRule(IToken token) {
+			this.token = token;
+		}
+
+		@Override
+		public IToken evaluate(ICharacterScanner scanner) {
+			return evaluate(scanner, false);
+		}
+
+		@Override
+		public IToken getSuccessToken() {
+			return token;
+		}
+
+		@Override
+		public IToken evaluate(ICharacterScanner scanner, boolean resume) {
+			int c = scanner.read();
+			if (c == '/') {
+				int next = scanner.read();
+				if (next != '/' && next != '*') {
+					// regex
+					while ((c = scanner.read()) != ICharacterScanner.EOF) {
+						if (c == '\\') {
+							scanner.read();
+						} else if (c == '/') {
+							while (isFlag((char) (c = scanner.read()))) {
+								// consume flags
+							}
+							scanner.unread();
+							return token;
+						} else if (c == '\n' || c == '\r') {
+							break;
+						}
+					}
+				}
+				scanner.unread();
+			}
+			scanner.unread();
+			return Token.UNDEFINED;
+		}
+
+		private boolean isFlag(char c) {
+			return c == 'g' || c == 'i' || c == 'm' || c == 'u' || c == 'y'
+					|| c == 's';
+		}
 	}
 }

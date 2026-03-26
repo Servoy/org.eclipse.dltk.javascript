@@ -978,7 +978,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			RecordType type = (RecordType) variable.getTypeDef();
 			type.setTypeName(varName);
 			this.context.registerRecordType(type);
-		} else if (variable.isEnum() || variable.isConstant()) {
+		} else if (variable.isEnum()) {
 			// if it is an enum we must initalize it asap so that that enum
 			// variable has its REnumType set that can then be resolved when
 			// parsing functions returning that enum (that should be mapped on
@@ -1039,21 +1039,27 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					JSTypeSet types = assignment.getTypes();
 					if (types.size() == 1
 							&& types.toRType() instanceof IRRecordType rType) {
-						assign(reference, ConstantValue.of(rType));
+						// assign(reference, ConstantValue.of(rType));
 
-						// NEW: mark all record members as const/protected
 						for (IRRecordMember member : rType.getMembers()) {
-							String name = member.getName();
-
-							IValueReference propRef = reference.getChild(name);
-							assign(propRef, ConstantValue.of(member.getType()));
+							IValueReference propRef = reference
+									.getChild(member.getName());
+							IValueReference constantValue = ConstantValue
+									.of(member.getType());
+							assign(propRef, constantValue);
 							if (propRef != null) {
 								propRef.setAttribute(
 										IAssignProtection.ATTRIBUTE,
 										PROTECT_CONST);
+								// the property kind and the attribute element
+								// is used to have tooltip on hovering the
+								// constant element
+								propRef.setKind(ReferenceKind.PROPERTY);
+								propRef.setAttribute(
+										IReferenceAttributes.ELEMENT,
+										member);
 							}
 						}
-
 					}
 				} else if (variable != null && variable.getType() != null) {
 					// if declared type specified then just add it as a value on

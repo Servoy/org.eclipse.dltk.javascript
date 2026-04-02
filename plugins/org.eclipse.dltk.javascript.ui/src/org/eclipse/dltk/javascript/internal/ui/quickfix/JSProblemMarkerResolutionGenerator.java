@@ -42,12 +42,19 @@ public class JSProblemMarkerResolutionGenerator implements
 			if (ids.length > 0) {
 				ArrayList<IMarkerResolution> resolutions = new ArrayList<IMarkerResolution>();
 				for (int i = 0; i < ids.length; i++) {
+					IFile file = (IFile) marker.getResource();
+					int charStart = marker.getAttribute(IMarker.CHAR_START, -1);
 
 					GenerateSuppressWarningsResolution resolution = new GenerateSuppressWarningsResolution(
-							(IFile) marker.getResource(), marker.getAttribute(
-									IMarker.CHAR_START, -1), ids[i]);
+							file, charStart, ids[i]);
 					if (resolution.isValid()) {
 						resolutions.add(resolution);
+					}
+
+					GenerateSuppressWarningsLineResolution lineResolution = new GenerateSuppressWarningsLineResolution(
+							file, charStart, ids[i]);
+					if (lineResolution.isValid()) {
+						resolutions.add(lineResolution);
 					}
 				}
 				return resolutions.toArray(new IMarkerResolution[resolutions

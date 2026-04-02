@@ -47,11 +47,19 @@ public class JSScriptCorrectionProcessor implements IScriptCorrectionProcessor {
 					JavaScriptNature.NATURE_ID, JSDocTag.SUPPRESS_WARNINGS,
 					annotation.getId());
 			for (int i = 0; i < id.length; i++) {
+				IFile file = (IFile) annotation.getSourceModule().getResource();
+				int offset = context.getInvocationContext().getOffset();
+
 				GenerateSuppressWarningsResolution resolution = new GenerateSuppressWarningsResolution(
-						(IFile) annotation.getSourceModule().getResource(),
-						context.getInvocationContext().getOffset(), id[i]);
+						file, offset, id[i]);
 				if (resolution.isValid()) {
 					context.addResolution(resolution, annotation);
+				}
+
+				GenerateSuppressWarningsLineResolution lineResolution = new GenerateSuppressWarningsLineResolution(
+						file, offset, id[i]);
+				if (lineResolution.isValid()) {
+					context.addResolution(lineResolution, annotation);
 				}
 			}
 		}

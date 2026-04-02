@@ -33,7 +33,7 @@ public class GenerateSuppressWarningsResolution extends TextFileEditResolution {
 		if (fs != null) {
 			return "Add SuppressWarnings("
 					+ type
-					+ ") to '"
+					+ ") to the function '"
 					+ getFunctionStatement(getScriptFile(),
 							getProblemStartIdx()).getFunctionName() + "'";
 		}

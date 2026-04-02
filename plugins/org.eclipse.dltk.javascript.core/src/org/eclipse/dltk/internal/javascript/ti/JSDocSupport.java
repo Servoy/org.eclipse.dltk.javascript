@@ -33,6 +33,7 @@ import org.eclipse.dltk.javascript.ast.BinaryOperation;
 import org.eclipse.dltk.javascript.ast.CallExpression;
 import org.eclipse.dltk.javascript.ast.Comment;
 import org.eclipse.dltk.javascript.ast.DestructuringVariableDeclaration;
+import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.IDestructuringPattern;
 import org.eclipse.dltk.javascript.ast.IVariableStatement;
@@ -175,7 +176,7 @@ public class JSDocSupport implements IModelBuilder {
 		}
 	}
 
-	protected void parseSuppressWarnings(IElement element, JSDocTags tags,
+	protected void parseSuppressWarnings(Object element, JSDocTags tags,
 			JSProblemReporter reporter) {
 		final List<JSDocTag> suppressWarnings = tags
 				.list(JSDocTag.SUPPRESS_WARNINGS);
@@ -386,6 +387,19 @@ public class JSDocSupport implements IModelBuilder {
 		variable.setEnum(tags.get(JSDocTag.ENUM) != null);
 		variable.setConstant(tags.get(JSDocTag.CONSTANT) != null);
 	}
+
+	@Override
+	public void processStatement(Expression statement,
+			JSProblemReporter reporter, ITypeChecker typeChecker) {
+		Comment comment = statement.getDocumentation();
+		if (comment == null) {
+			return;
+		}
+		final JSDocTags tags = parse(comment);
+		parseSuppressWarnings(statement, tags, reporter);
+
+	}
+
 
 	private void parseTypeDef(IVariable variable, JSDocTags tags,
 			JSProblemReporter reporter, ITypeChecker typeChecker) {
@@ -881,7 +895,7 @@ public class JSDocSupport implements IModelBuilder {
 	}
 
 	private void processSuppressWarnings(JSDocTag tag,
-			@NonNull CountingReporter reporter, IElement element) {
+			@NonNull CountingReporter reporter, Object element) {
 		final CharStream input = new ANTLRStringStream(tag.value());
 		final boolean hasParenthesis = input.LT(1) == '(';
 		if (hasParenthesis) {
@@ -900,7 +914,9 @@ public class JSDocSupport implements IModelBuilder {
 				for (;;) {
 					ch = input.LT(1);
 					if (ch == quote) {
-						suppressWarning(tag, reporter, element, input, start);
+						suppressWarning(tag, reporter, element,
+									input, start);
+
 						input.consume();
 						break;
 					} else if (ch == CharStream.EOF) {
@@ -949,13 +965,16 @@ public class JSDocSupport implements IModelBuilder {
 	}
 
 	private void suppressWarning(JSDocTag tag,
-			@NonNull CountingReporter reporter, IElement element,
+			@NonNull CountingReporter reporter, Object element,
 			final CharStream input, final int start) {
 		final String categoryId = input.substring(start, input.index() - 1);
 		if (categoryId.length() != 0) {
 			final IProblemCategory category = getCategory(categoryId);
 			if (category != null) {
-				element.addSuppressedWarning(category);
+				if (element instanceof IElement ielement)
+					ielement.addSuppressedWarning(category);
+				if (element instanceof Expression expression)
+					expression.addSuppressedWarning(category);
 			} else {
 				reporter.reportProblem(JSDocProblem.WRONG_SUPPRESS_WARNING, NLS
 						.bind("Unsupported {0}({1})",

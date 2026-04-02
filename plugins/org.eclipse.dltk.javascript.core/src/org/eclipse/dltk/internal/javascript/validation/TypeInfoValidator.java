@@ -2201,6 +2201,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 									reference.getDeclaredType().getName(),
 									reference.getName()),
 							node.sourceStart(), node.sourceEnd());
+
+					reporter.popSuppressWarningsIfOnSameLine(node.sourceStart());
 				}
 			}
 		}

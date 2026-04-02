@@ -12,10 +12,28 @@
 
 package org.eclipse.dltk.javascript.ast;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.dltk.compiler.problem.IProblemCategory;
+
 public abstract class Expression extends JSNode implements ISourceable {
 
 	public Expression(JSNode parent) {
 		super(parent);
 	}
+	private Set<IProblemCategory> suppressedWarnings = null;
 
+	public Set<IProblemCategory> getSuppressedWarnings() {
+		return suppressedWarnings != null ? suppressedWarnings : Collections
+				.<IProblemCategory> emptySet();
+	}
+
+	public void addSuppressedWarning(IProblemCategory warningCategoryId) {
+		if (suppressedWarnings == null) {
+			suppressedWarnings = new HashSet<IProblemCategory>();
+		}
+		suppressedWarnings.add(warningCategoryId);
+	}
 }

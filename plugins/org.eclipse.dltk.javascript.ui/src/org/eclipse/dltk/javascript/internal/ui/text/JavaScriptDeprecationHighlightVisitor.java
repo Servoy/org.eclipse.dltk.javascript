@@ -105,4 +105,17 @@ public class JavaScriptDeprecationHighlightVisitor extends ValidationVisitor
 	public void restoreSuppressWarnings(ISuppressWarningsState state) {
 	}
 
+	@Override
+	public void pushSuppressWarningsForLine(int nodeStart,
+			Collection<IProblemIdentifier> suppressed) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void popSuppressWarningsIfOnSameLine(int nodeStart) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.dltk.annotations.ConfigurationElement;
 import org.eclipse.dltk.compiler.problem.IProblemCategory;
 import org.eclipse.dltk.core.ISourceRange;
+import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
 import org.eclipse.dltk.javascript.ast.Method;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
@@ -217,6 +218,9 @@ public interface IModelBuilder {
 			JSProblemReporter reporter, ITypeChecker typeChecker);
 
 	void processVariable(VariableBinding declaration, IVariable variabe,
+			JSProblemReporter reporter, ITypeChecker typeChecker);
+
+	void processStatement(Expression statement,
 			JSProblemReporter reporter, ITypeChecker typeChecker);
 
 }

@@ -11,9 +11,11 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.parser.v4;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Stack;
 
 import org.eclipse.dltk.compiler.problem.DefaultProblem;
@@ -243,6 +245,31 @@ public class Reporter extends LineTracker implements IProblemReporter,
 	public void popSuppressWarnings() {
 		if (suppressedStack != null && !suppressedStack.isEmpty()) {
 			suppressed = suppressedStack.pop();
+		}
+	}
+
+	private Stack<Map.Entry<Integer, SuppressWarningsSet>> lineNodeStack = null;
+
+	public void pushSuppressWarningsForLine(int nodeStart,
+			Collection<IProblemIdentifier> suppressed) {
+		pushSuppressWarnings(suppressed);
+		if (lineNodeStack == null) {
+			lineNodeStack = new Stack<>();
+		}
+		final SuppressWarningsSet set = new SuppressWarningsSet(suppressed);
+		lineNodeStack.push(new AbstractMap.SimpleEntry<>(nodeStart, set));
+	}
+
+	public void popSuppressWarningsIfOnSameLine(int nodeStart) {
+		if (lineNodeStack == null || lineNodeStack.isEmpty()) {
+			return;
+		}
+		final Map.Entry<Integer, SuppressWarningsSet> top = lineNodeStack.peek();
+		final int pushedLine = getLineNumberOfOffset(top.getKey());
+		final int currentLine = getLineNumberOfOffset(nodeStart);
+		if (pushedLine == currentLine) {
+			lineNodeStack.pop();
+			popSuppressWarnings();
 		}
 	}
 

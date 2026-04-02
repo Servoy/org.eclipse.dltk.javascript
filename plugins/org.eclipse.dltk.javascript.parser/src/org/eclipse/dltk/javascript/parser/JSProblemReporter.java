@@ -23,6 +23,21 @@ public interface JSProblemReporter extends ProblemReporter, IProblemReporter {
 	void popSuppressWarnings();
 
 	/**
+	 * Pushes suppress warnings for the given source position (nodeStart).
+	 * The pair (nodeStart, suppressed) is stored so it can be conditionally
+	 * popped when another node on the same line triggers a problem.
+	 */
+	void pushSuppressWarningsForLine(int nodeStart,
+			Collection<IProblemIdentifier> suppressed);
+
+	/**
+	 * Pops the suppress warnings that were pushed for the same source line as
+	 * the given nodeStart, if any. Does nothing if no such entry is on the
+	 * stack or if the top entry is not on the same line.
+	 */
+	void popSuppressWarningsIfOnSameLine(int nodeStart);
+
+	/**
 	 * Returns the current state of suppress warnings or <code>null</code>.
 	 */
 	ISuppressWarningsState getSuppressWarnings();

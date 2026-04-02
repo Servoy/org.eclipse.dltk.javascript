@@ -1630,9 +1630,29 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		return null;
 	}
 
+
 	@Override
 	public IValueReference visitIdentifier(Identifier node) {
-		return peekContext().getChild(node.getName());
+		for (IModelBuilder extension : context.getModelBuilders()) {
+			extension.processStatement(node, reporter, getTypeChecker());
+		}
+		Set<IProblemIdentifier> suppressed = null;
+		try {
+			if (reporter != null && !node.getSuppressedWarnings().isEmpty()) {
+				suppressed = new HashSet<IProblemIdentifier>();
+				for (IProblemCategory category : node.getSuppressedWarnings()) {
+					suppressed.addAll(category.contents());
+				}
+				reporter.pushSuppressWarningsForLine(node.sourceStart(),
+						suppressed);
+			}
+			return peekContext().getChild(node.getName());
+
+		} finally {
+			// if (reporter != null && suppressed != null) {
+			// reporter.popSuppressWarnings();
+			// }
+		}
 
 	}
 
@@ -2737,7 +2757,25 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitVariableStatement(VariableStatement node) {
-		return initializeVariables(node);
+		for (IModelBuilder extension : context.getModelBuilders()) {
+			extension.processStatement(node, reporter, getTypeChecker());
+		}
+		Set<IProblemIdentifier> suppressed = null;
+		try {
+			if (reporter != null && !node.getSuppressedWarnings().isEmpty()) {
+				suppressed = new HashSet<IProblemIdentifier>();
+				for (IProblemCategory category : node.getSuppressedWarnings()) {
+					suppressed.addAll(category.contents());
+				}
+				reporter.pushSuppressWarnings(suppressed);
+			}
+			return initializeVariables(node);
+
+		} finally {
+			if (reporter != null && suppressed != null) {
+				reporter.popSuppressWarnings();
+			}
+		}
 	}
 
 	private IValueReference initializeVariables(IVariableStatement node) {

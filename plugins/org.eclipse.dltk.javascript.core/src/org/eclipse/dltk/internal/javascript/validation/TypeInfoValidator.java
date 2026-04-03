@@ -840,6 +840,8 @@ public class TypeInfoValidator implements IBuildParticipant,
 									new String[] { method.getName(),
 											TypeUtil.getName(method.getType()) }),
 							location.getNameStart(), location.getNameEnd());
+					reporter.popSuppressWarningsIfOnSameLine(
+							location.getNameStart());
 				}
 			}
 		}
@@ -1319,7 +1321,6 @@ public class TypeInfoValidator implements IBuildParticipant,
 												.toSourceString("")),
 								methodNode.sourceStart(), methodNode
 										.sourceEnd());
-
 					} else {
 						if (reference.getParent() == null) {
 							if (isIdentifier(expression) && !reference.exists()) {
@@ -2115,6 +2116,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 				reporter.reportProblem(JavaScriptProblems.BIGINT_TYPE_ERROR,
 						ValidationMessages.MixBigInt, node.sourceStart(),
 						node.sourceEnd());
+				reporter.popSuppressWarningsIfOnSameLine(node.sourceStart());
 			} else if (reference != null
 					&& reference.getKind() == ReferenceKind.FUNCTION) {
 				// test if it is not a function override of a super local type class.
@@ -2832,6 +2834,7 @@ public class TypeInfoValidator implements IBuildParticipant,
 				String message, ISourceNode node) {
 			reporter.reportProblem(identifier, message, node.start(),
 					node.end());
+			reporter.popSuppressWarningsIfOnSameLine(node.start());
 		}
 
 		private static boolean stronglyTyped(IValueReference reference) {

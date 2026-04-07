@@ -811,6 +811,54 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 					}
 				}
 				return parentType != null ? ConstantValue.of(parentType) : null;
+			} else if ((method.getName().equals("map")
+					&& ITypeNames.ARRAY
+							.equals(method.getType().getName()))) {
+				for (IValueReference argument : arguments) {
+					if (argument != null) {
+						Object functionScopeAttr = argument.getAttribute(
+								IReferenceAttributes.FUNCTION_SCOPE);
+
+						if (functionScopeAttr instanceof FunctionValueCollection functionScope) {
+							IRType returnType = functionScope.getReturnValue()
+									.getDeclaredTypes().toRType();
+							if (returnType != null) {
+								return ConstantValue
+										.of(RTypes.arrayOf(context,
+												returnType));
+							} else {
+								returnType = functionScope.getReturnValue()
+										.getTypes().toRType();
+								if (returnType != null) {
+									return ConstantValue.of(RTypes
+											.arrayOf(context, returnType));
+								}
+							}
+						}
+					}
+				}
+			} else if ((method.getName().equals("reduce")
+					&& ITypeNames.OBJECT.equals(method.getType().getName()))) {
+				for (IValueReference argument : arguments) {
+					if (argument != null) {
+						Object functionScopeAttr = argument.getAttribute(
+								IReferenceAttributes.FUNCTION_SCOPE);
+
+						if (functionScopeAttr instanceof FunctionValueCollection functionScope) {
+							IRType returnType = functionScope.getReturnValue()
+									.getDeclaredTypes().toRType();
+							if (returnType != null) {
+								return ConstantValue.of(returnType);
+							} else {
+								returnType = functionScope.getReturnValue()
+										.getTypes().toRType();
+								if (returnType != null) {
+									return ConstantValue.of(returnType);
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		return null;

@@ -1585,7 +1585,23 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	public void visitArrowFunctionBody(ArrowFunctionStatement node) {
 		handleDeclarations(node);
-		visit(node.getBody());
+		if (node.getBody() instanceof VoidExpression voidExpression) {
+			// Implicit arrow return: `item => item` or `item => expr`
+			// Visit the expression once and treat its result as the return
+			// value
+			final IValueReference implicitReturn = visit(
+					voidExpression.getExpression());
+			if (implicitReturn != null) {
+				final IValueReference returnValue = peekContext()
+						.getReturnValue();
+				if (returnValue != null) {
+					returnValue.addValue(implicitReturn,
+							!(implicitReturn instanceof LazyTypeReference));
+				}
+			}
+		} else {
+			visit(node.getBody());
+		}
 	}
 
 	public void setType(IValueReference value, JSType type, boolean lazyEnabled) {

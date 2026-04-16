@@ -797,7 +797,16 @@ public class Parser implements IParser{
 		try {
 			if (isExpressionClosure) {
 				Expression returnValue = assignExpr();
-				return toVoidExpression(returnValue);
+				// the rhino parser wraps it in a ReturnStatement with an EXPRESSION_CLOSURE_PROP flag
+				// but not sure if we want a ReturnStatemeent without a 'return' keyword, then we need to check this everywhwre
+				// so we'll just convert it to a VoidExpression
+				VoidExpression voidExpression = new VoidExpression(getParent());
+				voidExpression.setExpression(returnValue);
+				assert returnValue.sourceStart() >= 0;
+				assert returnValue.sourceEnd() > 0;
+				voidExpression.setStart(returnValue.sourceStart());
+				voidExpression.setEnd(returnValue.sourceEnd());
+				return voidExpression;
 			} else {
 				StatementBlock block = new StatementBlock(fnNode); // starts at LC position
 				parents.push(block);

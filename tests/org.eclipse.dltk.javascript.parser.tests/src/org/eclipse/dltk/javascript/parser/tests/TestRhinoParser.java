@@ -1440,6 +1440,23 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testArrowFunctionExpressionClosure() {
+		String source = "var arrayForMapFunction = returnArray.map(item => item;)";
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		assertNotNull(scriptv4);
+		assertEquals(2, problems.size());
+		assertEquals("missing ) after argument list", problems.get(0).getMessage());
+	}
+	
+	@Test
 	public void testFunc() {
 		String source ="/**\r\n"
 				+ "	 * @properties={typeid:24,uuid:\"46504F39-D010-4933-B11E-639EA779E496\"}\r\n"

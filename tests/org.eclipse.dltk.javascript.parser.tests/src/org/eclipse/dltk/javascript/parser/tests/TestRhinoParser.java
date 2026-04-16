@@ -2730,6 +2730,31 @@ public class TestRhinoParser {
 		assertEquals(script.getComments().get(0).sourceEnd(), scriptv4.getComments().get(0).sourceEnd());
 		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
+
+	@Test
+	public void testArrowRhinoWithLineEndingOnlyThis() {
+		String source = "()=>this";
+		Script scriptv4 = getScriptv4(source);
+		System.err.println(scriptv4);
+		VoidExpression voidExpression = (VoidExpression) scriptv4.getStatements().get(0);
+		ArrowFunctionStatement arrowFunction = (ArrowFunctionStatement) voidExpression.getExpression();
+		Expression thisExpression = ((VoidExpression)arrowFunction.getBody()).getExpression();
+		assertEquals(thisExpression.sourceStart(), 4);
+		assertEquals(thisExpression.sourceEnd(), 8);
+	}
+	
+	@Test
+	public void testArrowRhinoWithLineEndingThisWithProperty() {
+		String source = "()=>this.xs";
+		Script scriptv4 = getScriptv4(source);
+		System.err.println(scriptv4);
+		VoidExpression voidExpression = (VoidExpression) scriptv4.getStatements().get(0);
+		ArrowFunctionStatement arrowFunction = (ArrowFunctionStatement) voidExpression.getExpression();
+		PropertyExpression expression = (PropertyExpression) ((VoidExpression)arrowFunction.getBody()).getExpression();
+		Expression thisExpression = expression.getObject();
+		assertEquals(thisExpression.sourceStart(), 4);
+		assertEquals(thisExpression.sourceEnd(), 8);
+	}
 	
 	@Test
 	public void testIncrement() {

@@ -3480,4 +3480,31 @@ public class TestRhinoParser {
 	    assertEquals("b", ids.get(1).getName());
 	    assertEquals("2", decl.getInitializer("b").toString());
 	}
+	
+	@Test
+	public void testUndefined() {
+		//undefined should be parsed as an identifier
+		String source = "x = undefined;";
+		
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		VoidExpression expression = (VoidExpression) script.getStatements().get(0);
+		VoidExpression expressionv4 = (VoidExpression) scriptv4.getStatements().get(0);
+		assertTrue(expression.getExpression() instanceof BinaryOperation);
+		assertTrue(expressionv4.getExpression() instanceof BinaryOperation);
+		BinaryOperation assignment = (BinaryOperation) expression.getExpression();
+		BinaryOperation assignmentv4 = (BinaryOperation) expressionv4.getExpression();
+		
+		assertTrue(assignment.getRightExpression() instanceof Identifier);
+		assertTrue(assignmentv4.getRightExpression() instanceof Identifier);
+		Identifier right = (Identifier) assignment.getRightExpression();
+		Identifier rightv4 = (Identifier) assignmentv4.getRightExpression();
+		assertEquals("undefined", rightv4.getName());
+		assertEquals( right.getName(), rightv4.getName());
+	}
 }

@@ -164,6 +164,9 @@ public class TypeSystemImpl implements ITypeSystem {
 		if (!processedTypes.add(type)) {
 			return null;
 		}
+		if (type.isProxy()) {
+			type = resolveType(type);
+		}
 		final RTypeDeclaration declaration = new RTypeDeclaration(this, type);
 		declarations.put(type, declaration);
 		if (TRACE) {

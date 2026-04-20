@@ -3947,6 +3947,11 @@ public class Parser implements IParser{
 			re.setText("/"+ts.getString()+"/"+ (flags == null ? "" : flags));
 			return re;
 
+        case Token.UNDEFINED:
+        {
+            consumeToken();
+            return createNameNode();
+        }
 		case Token.NULL:
 			consumeToken();
 			NullExpression ex = new NullExpression(getParent());

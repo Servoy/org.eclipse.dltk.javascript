@@ -2802,7 +2802,11 @@ public class Parser implements IParser{
 		case Token.VAR:
 		case Token.CONST:
 			SymbolKind k = getSymbolKind(declType);
-			final SymbolKind replaced = getScope().add(name.getName(), k, declaration);
+			SymbolTable varScope = getScope();
+			if (declType == Token.CONST) {
+				varScope = definingScope;
+			}
+			final SymbolKind replaced = varScope.add(name.getName(), k, declaration);
 			if (replaced != null && errorReporter != null) {
 				final Identifier identifier = declaration.getIdentifier();
 				errorReporter.setRange(identifier.sourceStart(),

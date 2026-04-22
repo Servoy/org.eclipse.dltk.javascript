@@ -1737,14 +1737,14 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		
 		FunctionStatement func = (FunctionStatement)scriptv4.getStatements().get(0).getChilds().get(0);
-		assertEquals(2, func.getDeclarations().size());
+		assertEquals(1, func.getDeclarations().size());
 		assertEquals("b", func.getDeclarations().get(0).getIdentifier().getName());
-		assertEquals("c", func.getDeclarations().get(1).getIdentifier().getName());
 		
 		IfStatement if_ = (IfStatement) func.getBody().getStatements().get(0);
 		StatementBlock block = (StatementBlock) if_.getThenStatement();
-		assertEquals(1, block.getDeclarations().size());
+		assertEquals(2, block.getDeclarations().size());
 		assertEquals("a", block.getDeclarations().get(0).getIdentifier().getName());
+		assertEquals("c", block.getDeclarations().get(1).getIdentifier().getName());
 		
 		assertEquals(4, block.getStatements().size());
 		ForInStatement forin = (ForInStatement) block.getStatements().get(3);
@@ -2634,8 +2634,9 @@ public class TestRhinoParser {
 		};
 		Script scriptv4 = rhinoParser.parse(source, reporter);
 		assertNotNull(scriptv4);
-		assertEquals(1, problems.size());
-		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		//the old parser handles const as as duplicate declaration, the new parser does not because they are in different scopes
+		assertEquals(0, problems.size());
+		assertFalse(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
 	}
 	
 	@Test

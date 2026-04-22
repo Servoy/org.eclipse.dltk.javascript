@@ -1646,6 +1646,22 @@ public class TestRhinoParser {
 //		assertNotNull(forOf.getBody());
 //		assertEquals("a += 1;\n", ((StatementBlock)forOf.getBody()).getStatements().get(0).toString());
 //	}
+
+	// not supported in Rhino	
+//	@Test
+//	public void testConstInParentAndblock() {
+//		String source = "function test2() {" +
+//						"  const x = 10;" +
+//						"  for (let y = 1; y<10;y++) {" +
+//						"	const x= 11;" +
+//						"	console.l(x + y)" +
+//						"  }" +
+//						"}";	
+//						
+//		Script scriptv4 = getScriptv4(source);
+//		assertNotNull(scriptv4);
+//		fail();
+//	}
 	
 	@Test
 	public void testLet() {

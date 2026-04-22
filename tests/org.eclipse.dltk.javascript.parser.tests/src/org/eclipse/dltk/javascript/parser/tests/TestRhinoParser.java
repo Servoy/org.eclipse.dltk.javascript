@@ -1687,6 +1687,45 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testConst_scope() {
+		String source = "function test2() {\r\n"
+				+ "	const x = 10;\r\n"
+				+ "	for (let y = 1; y<10;y++) {\r\n"
+				+ "		const x= 11;\r\n"
+				+ "		console.l(x + y);\r\n"
+				+ "	}\r\n"
+				+ " \r\n"
+				+ "}";
+		
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =  new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		IProblemReporter reporter = new IProblemReporter() {		
+			@Override
+			public void reportProblem(IProblem problem) {
+				problems.add(problem);
+			}
+		};
+		Script scriptv4 = rhinoParser.parse(source, reporter);
+		
+		assertNotNull(scriptv4);
+		FunctionStatement func = (FunctionStatement)scriptv4.getStatements().get(0).getChilds().get(0);
+		assertEquals(1, func.getDeclarations().size());
+		assertTrue(((VoidExpression)func.getBody().getStatements().get(0)).getExpression() instanceof ConstStatement);
+		ConstStatement const1 = (ConstStatement) ((VoidExpression)func.getBody().getStatements().get(0)).getExpression();
+		assertEquals("x", const1.getVariables().get(0).getIdentifier().getName());
+		StatementBlock block = (StatementBlock) func.getBody();
+		assertTrue(block.getStatements().get(1) instanceof ForStatement);
+		ForStatement for_ = (ForStatement) block.getStatements().get(1);
+		StatementBlock forBlock = (StatementBlock) for_.getBody();
+		assertEquals(1, forBlock.getDeclarations().size());	
+		ConstStatement const2 = (ConstStatement) ((VoidExpression)forBlock.getStatements().get(0)).getExpression();
+		assertEquals("x", const2.getVariables().get(0).getIdentifier().getName());
+		assertEquals(const1.getVariables().get(0).getIdentifier().getName(), const2.getVariables().get(0).getIdentifier().getName());
+		
+		assertEquals(0, problems.size());
+	}
+	
+	@Test
 	public void testScopes() {
 		String source = "function test(p){ if (p < 0) { "
 				+ " let a = 5; "
@@ -2518,11 +2557,11 @@ public class TestRhinoParser {
 		Script scriptv4 = rhinoParser.parse(source, reporter);	
 		assertEquals(5, problems.size());
 		assertEquals(JavaScriptParserProblems.DUPLICATE_VAR, problems.get(0).getID());
-		assertEquals("Duplicate declaration of test", problems.get(0).getMessage());
+		assertEquals("Duplicate declaration of var test", problems.get(0).getMessage());
 		assertEquals(JavaScriptParserProblems.DUPLICATE_PARAMETER, problems.get(1).getID());
 		assertEquals("Duplicate parameter a", problems.get(1).getMessage());
 		assertEquals(JavaScriptParserProblems.DUPLICATE_FUNCTION, problems.get(2).getID());
-		assertEquals("Duplicate declaration of f", problems.get(2).getMessage());
+		assertEquals("Duplicate declaration of function f", problems.get(2).getMessage());
 		assertEquals(JavaScriptParserProblems.VAR_DUPLICATES_OTHER, problems.get(3).getID());
 		assertEquals("Variable f hides function", problems.get(3).getMessage());
 		assertEquals(JavaScriptParserProblems.FUNCTION_DUPLICATES_OTHER, problems.get(4).getID());

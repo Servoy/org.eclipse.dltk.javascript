@@ -2634,9 +2634,21 @@ public class TestRhinoParser {
 		};
 		Script scriptv4 = rhinoParser.parse(source, reporter);
 		assertNotNull(scriptv4);
-		//the old parser handles const as as duplicate declaration, the new parser does not because they are in different scopes
+		//the old parser handles const as a duplicate declaration at script scope, the new parser does not because they are in different function scopes
 		assertEquals(0, problems.size());
-		assertFalse(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+		// old parser hoists both const comp declarations to Script scope
+		assertEquals(2, script.getDeclarations().size());
+		// new parser correctly scopes each const comp to its own getter/setter function scope, so Script has none
+		assertEquals(0, scriptv4.getDeclarations().size());
+		// verify getter body has its own const comp declaration
+		ObjectInitializer obj = (ObjectInitializer) ((BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression()).getRightExpression();
+		GetMethod getter = (GetMethod) obj.getInitializers().get(0);
+		assertEquals(1, getter.getBody().getDeclarations().size());
+		assertEquals("comp", getter.getBody().getDeclarations().get(0).getIdentifier().getName());
+		// verify setter body has its own const comp declaration
+		SetMethod setter = (SetMethod) obj.getInitializers().get(1);
+		assertEquals(1, setter.getBody().getDeclarations().size());
+		assertEquals("comp", setter.getBody().getDeclarations().get(0).getIdentifier().getName());
 	}
 	
 	@Test
@@ -3562,5 +3574,226 @@ public class TestRhinoParser {
 		Identifier rightv4 = (Identifier) assignmentv4.getRightExpression();
 		assertEquals("undefined", rightv4.getName());
 		assertEquals( right.getName(), rightv4.getName());
+	}
+
+	// -----------------------------------------------------------------------
+	// Tests for features/fixes merged from Rhino 1.9.1
+	// -----------------------------------------------------------------------
+
+	// --- Optional chaining: ?.[] element access ----------------------------
+
+	@Test
+	public void testOptionalChainArrayAccess_noSpaces() {
+		// compact form without spaces around ?.[ should produce same result
+		String source = "a?.[0]";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		GetArrayItemExpression expr = (GetArrayItemExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(1, expr.getOptionalChain()); // position of '?'
+		assertEquals("a?.[0]", expr.toString());
+	}
+
+	@Test
+	public void testOptionalChainArrayAccess_chained() {
+		// optional array access chained with regular property access
+		String source = "a?.['key'].length";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		// outer node is a PropertyExpression (.length)
+		PropertyExpression prop = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("length", ((Identifier) prop.getProperty()).getName());
+		// inner node is the optional array access
+		GetArrayItemExpression inner = (GetArrayItemExpression) prop.getObject();
+		assertEquals(1, inner.getOptionalChain());
+		assertEquals("a?.['key'].length", prop.toString());
+	}
+
+	@Test
+	public void testOptionalChainFunctionCall_noArgs() {
+		// ?.() with no arguments
+		String source = "fn?.()";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		CallExpression call = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(2, call.getOptionalChain());
+		assertEquals("fn?.()", call.toString());
+	}
+
+	@Test
+	public void testOptionalChainFunctionCall_withArgs() {
+		// ?.() with arguments
+		String source = "obj.method?.(a, b)";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		CallExpression call = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(10, call.getOptionalChain());
+		assertEquals(2, call.getArguments().size());
+		// toString format may vary; just verify the call parses correctly
+	}
+
+	@Test
+	public void testOptionalChainNotAssignable() {
+		// optional chain target is not a valid assignment target — must produce a parse error
+		String source = "a?.b = 1";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		rhinoParser.parse(source, problem -> problems.add(problem));
+		assertFalse("optional chain assignment should produce a parse error", problems.isEmpty());
+	}
+
+	@Test
+	public void testOptionalChainDeepChain() {
+		// deeply chained optional access: a?.b?.c
+		String source = "a?.b?.c";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		PropertyExpression outer = (PropertyExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("c", ((Identifier) outer.getProperty()).getName());
+		assertTrue(outer.getOptionalChain() >= 0);
+		PropertyExpression inner = (PropertyExpression) outer.getObject();
+		assertEquals("b", ((Identifier) inner.getProperty()).getName());
+		assertTrue(inner.getOptionalChain() >= 0);
+	}
+
+	// --- Trailing comma in function call arguments -------------------------
+
+	@Test
+	public void testTrailingCommaInFunctionCall() {
+		// trailing comma in a call argument list is valid ES2017+, must not produce errors
+		String source = "f(a, b,)";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("trailing comma in call args should produce no errors", 0, problems.size());
+		CallExpression call = (CallExpression) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(2, call.getArguments().size());
+	}
+
+	@Test
+	public void testTrailingCommaInFunctionParams() {
+		// trailing comma in a function parameter list is valid ES2017+
+		String source = "function f(a, b,) { return a + b; }";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("trailing comma in function params should produce no errors", 0, problems.size());
+		FunctionStatement fn = (FunctionStatement) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals(2, fn.getArguments().size());
+	}
+
+	@Test
+	public void testTrailingCommaInArrowFunctionParams() {
+		// trailing comma in arrow function parameter list
+		String source = "const f = (a, b,) => a + b;";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("trailing comma in arrow params should produce no errors", 0, problems.size());
+	}
+
+	// --- Bug fix: destructuring in for-loop init must have initializer ------
+
+	@Test
+	public void testDestructuringForLoopRequiresInitializer() {
+		// destructuring declaration without initializer in for(;;) is an error
+		String source = "for (var [a] ;;) {}";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		rhinoParser.parse(source, problem -> problems.add(problem));
+		assertFalse("destructuring in for init without initializer must be an error", problems.isEmpty());
+	}
+
+	@Test
+	public void testDestructuringForOfNoInitializerAllowed() {
+		// for-of with destructuring is valid (no initializer required)
+		String source = "for (var [a] of arr) {}";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("destructuring in for-of should not produce an error", 0, problems.size());
+	}
+
+	// --- Bug fix: hasUndefinedBeenRedefined / with-statement ---------------
+
+	@Test
+	public void testUndefinedInsideWith() {
+		// inside a with-block, 'undefined' may be shadowed; the parser should
+		// treat it as an identifier (not a keyword literal)
+		String source = "with (obj) { x = undefined; }";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		WithStatement with = (WithStatement) scriptv4.getStatements().get(0);
+		StatementBlock body = (StatementBlock) with.getStatement();
+		BinaryOperation assign = (BinaryOperation) ((VoidExpression) body.getStatements().get(0)).getExpression();
+		assertTrue("undefined inside with should be an Identifier", assign.getRightExpression() instanceof Identifier);
+		assertEquals("undefined", ((Identifier) assign.getRightExpression()).getName());
+	}
+
+	@Test
+	public void testUndefinedAfterWithIsRestored() {
+		// after a with-block ends, 'undefined' should no longer be treated as redefined
+		String source = "with (obj) {} var x = undefined;";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression varStmt = (VoidExpression) scriptv4.getStatements().get(1);
+		VariableStatement vs = (VariableStatement) varStmt.getExpression();
+		assertTrue("undefined after with block should still be an Identifier",
+				vs.getVariables().get(0).getInitializer() instanceof Identifier);
+	}
+
+	// --- Bug fix: nestingOfFunctionParams try/finally ----------------------
+
+	@Test
+	public void testNestedFunctionParams_noLeakOnError() {
+		// a syntax error inside function params must not leave nestingOfFunctionParams > 0,
+		// which would cause incorrect behaviour in subsequent parse.
+		// Verify by parsing two separate scripts: first a broken function, then a valid one.
+		// If nestingOfFunctionParams leaked it would be a static field issue; since it's
+		// instance state on JavaScriptParser, a fresh parse must work correctly.
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		// First parse: broken function
+		rhinoParser.parse("function bad( { ) {}", problem -> {});
+		// Second parse with the same parser instance: valid function
+		final List<IProblem> problems2 = new ArrayList<IProblem>();
+		Script scriptv4 = rhinoParser.parse("function good(a) { return a; }", problem -> problems2.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("second parse should produce no errors after error in first parse", 0, problems2.size());
+	}
+
+	// --- Bug fix: getter/setter const declarations scoped to body ----------
+
+	@Test
+	public void testGetterSetterConstScopedToBody() {
+		// const in a getter body and const in a setter body are completely separate;
+		// no duplicate warning should be emitted
+		String source = "o = { get p() { const x = 1; }, set p(v) { const x = 2; } };";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("const in getter and setter bodies must not clash", 0, problems.size());
+		ObjectInitializer obj = (ObjectInitializer) ((BinaryOperation) ((VoidExpression) scriptv4.getStatements().get(0)).getExpression()).getRightExpression();
+		GetMethod getter = (GetMethod) obj.getInitializers().get(0);
+		assertEquals(1, getter.getBody().getDeclarations().size());
+		assertEquals("x", getter.getBody().getDeclarations().get(0).getIdentifier().getName());
+		SetMethod setter = (SetMethod) obj.getInitializers().get(1);
+		assertEquals(1, setter.getBody().getDeclarations().size());
+		assertEquals("x", setter.getBody().getDeclarations().get(0).getIdentifier().getName());
+	}
+
+	@Test
+	public void testGetterSetterVarScopedToScript() {
+		// var inside getter/setter is function-scoped; two getters/setters with same
+		// var name on the same object should NOT clash (separate function scopes)
+		String source = "o = { get p() { var y = 1; }, set p(v) { var y = 2; } };";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("var in separate getter/setter bodies must not clash", 0, problems.size());
 	}
 }

@@ -181,6 +181,8 @@ public class Parser implements IParser{
 	private Comment currentJsDocComment;
 
 	protected int nestingOfFunction;
+	private int nestingOfFunctionParams;
+	private boolean hasUndefinedBeenRedefined;
 	private LabelledStatement currentLabel;
 	private boolean inDestructuringAssignment;
 	protected boolean inUseStrictDirective;
@@ -575,6 +577,14 @@ public class Parser implements IParser{
 		return nestingOfFunction != 0;
 	}
 
+	boolean insideFunctionBody() {
+		return nestingOfFunction != 0;
+	}
+
+	boolean insideFunctionParams() {
+		return nestingOfFunctionParams != 0;
+	}
+
 	private void enterLoop(LoopStatement loop) {
 		if (loopSet == null) loopSet = new ArrayList<>();
 		loopSet.add(loop);
@@ -867,6 +877,8 @@ public class Parser implements IParser{
 	}
 
 	private void parseFunctionParams(FunctionStatement fnNode) throws IOException {
+		++nestingOfFunctionParams;
+		try {
 		if (matchToken(Token.RP, true)) {
 			fnNode.setRP(ts.getTokenBeg());
 			return;
@@ -988,6 +1000,9 @@ public class Parser implements IParser{
 
 		if (mustMatchToken(Token.RP, "msg.no.paren.after.parms", true)) {
 			fnNode.setRP(ts.getTokenBeg());
+		}
+		} finally {
+			--nestingOfFunctionParams;
 		}
 	}
 
@@ -1882,6 +1897,14 @@ public class Parser implements IParser{
 				forStatement.setForKeyword(forKeyword);
 				forStatement.setInitial(init);
 				parents.push(forStatement);
+				// For ordinary for loops, destructuring declarations must have initializers
+				if (init instanceof IVariableStatement) {
+					for (VariableBinding vi : ((IVariableStatement) init).getBindings()) {
+						if (vi instanceof DestructuringVariableDeclaration && vi.getInitializer() == null) {
+							reportError("msg.destruct.assign.no.init");
+						}
+					}
+				}
 				if (mustMatchToken(Token.SEMI, "msg.no.semi.for", true)) {
 					forStatement.setInitialSemicolonPosition(ts.getTokenBeg());
 				}
@@ -2284,13 +2307,19 @@ public class Parser implements IParser{
 
 		pn.setWithKeyword(createKeyword(Token.WITH, pos));
 		pn.setStart(pos);
-		Statement body = getNextStatementAfterInlineComments(pn);
-		pn.setEnd(body.end());
-		//        pn.setJsDocNode(withComment);
-		pn.setExpression(obj);
-		pn.setStatement(body);
-		pn.setLP(lp);
-		pn.setRP(rp);
+		boolean previousHasUndefinedBeenRedefined = hasUndefinedBeenRedefined;
+		try {
+			hasUndefinedBeenRedefined = true;
+			Statement body = getNextStatementAfterInlineComments(pn);
+			pn.setEnd(body.end());
+			//        pn.setJsDocNode(withComment);
+			pn.setExpression(obj);
+			pn.setStatement(body);
+			pn.setLP(lp);
+			pn.setRP(rp);
+		} finally {
+			hasUndefinedBeenRedefined = previousHasUndefinedBeenRedefined;
+		}
 		parents.pop();
 		return pn;
 	}
@@ -2647,10 +2676,14 @@ public class Parser implements IParser{
 				if (!(destructuring instanceof IDestructuringPattern))
 					reportError("msg.bad.assign.left", kidPos, end - kidPos);
 				markDestructuring(destructuring);
+		} else {
+			// Simple variable name
+			if (tt == Token.UNDEFINED) {
+				consumeToken();
 			} else {
-				// Simple variable name
 				mustMatchToken(Token.NAME, "msg.bad.var", true);
-				name = createNameNode();
+			}
+			name = createNameNode();
 				if (inUseStrictDirective) {
 					String id = ts.getString();
 					if ("eval".equals(id) || "arguments".equals(ts.getString())) {
@@ -2779,6 +2812,8 @@ public class Parser implements IParser{
 				return;
 			}
 			codeBug();
+		} else if ("undefined".equals(name.getName())) {
+			hasUndefinedBeenRedefined = true;
 		}
 		SymbolTable definingScope = !blockScopes.isEmpty() ? blockScopes.peek() : getScope();
 		SymbolKind kind = getScope().canAdd(name.getName());
@@ -2872,8 +2907,15 @@ public class Parser implements IParser{
 				addStrictWarning("msg.no.side.effects", "", pos, pn.end() - pos);
 			if (peekToken() == Token.YIELD) reportError("msg.yield.parenthesized");
 			if (allowTrailingComma && peekToken() == Token.RP) {
-				commas.add(opPos);               
-				return pn;
+				commas.add(opPos);
+				// Trailing comma - build CommaExpression so parenExpr can detect it
+				CommaExpression c = new CommaExpression(getParent());
+				c.setCommas(commas);
+				items.forEach(item -> ((JSNode) item).setParent(c));
+				c.setItems(items);
+				c.setStart(pos);
+				c.setEnd(end);
+				return c;
 			}
 			Expression assignExpr = assignExpr();
 			items.add(assignExpr);
@@ -2918,10 +2960,10 @@ public class Parser implements IParser{
 			Comment jsdocNode = getAndResetJsDoc();
 			int opPos = ts.getTokenBeg(); 
 			
-			markDestructuring(pn);
-			if (inDestructuringAssignment) {
-				if (isNotValidSimpleAssignmentTarget(pn))
-					reportError("msg.syntax.invalid.assignment.lhs");
+		markDestructuring(pn);
+		if (isNotValidSimpleAssignmentTarget(pn))
+			reportError("msg.syntax.invalid.assignment.lhs");
+		if (inDestructuringAssignment) {
 
 				BindingIdentifier id = new BindingIdentifier(getParent());
 				id.setIdentifier((Identifier) pn);
@@ -2958,10 +3000,12 @@ public class Parser implements IParser{
 	}
 
 	private boolean isNotValidSimpleAssignmentTarget(Expression pn) {
-//		if (pn.getType() == Token.GETPROP)
-//            return isNotValidSimpleAssignmentTarget(((PropertyGet) pn).getLeft());
-//        return pn.getType() == Token.QUESTION_DOT;
-		return pn instanceof Identifier == false; //for now
+		// Optional chain targets are not valid simple assignment targets
+		if (pn instanceof IsOptionalChain oc && oc.getOptionalChain() >= 0) return true;
+		if (pn instanceof PropertyExpression pe) {
+			return isNotValidSimpleAssignmentTarget(pe.getObject());
+		}
+		return false;
 	}
 
 	private BinaryOperation createBinaryOperation(int tt, int opPos, Expression leftExpression, Expression rightExpression,
@@ -3452,10 +3496,10 @@ public class Parser implements IParser{
 		if (pn == null) codeBug();
 		int pos = pn.sourceStart();
 		int isOptionalChain = -1;
-		tailLoop:
-			for (; ; ) {
-				int tt = peekToken();
-				isOptionalChain = (tt == Token.QUESTION_DOT ? ts.getTokenBeg() : isOptionalChain);
+	tailLoop:
+		for (; ; ) {
+			int tt = peekToken();
+			isOptionalChain = (tt == Token.QUESTION_DOT ? ts.getTokenBeg() : -1);
 				switch (tt) {
 				case Token.EOL:
 					pn.setEnd(ts.getTokenEnd());
@@ -3595,21 +3639,6 @@ public class Parser implements IParser{
 			memberTypeFlags = Node.DESCENDANTS_FLAG;
 		}
 
-		if (!compilerEnv.isXmlAvailable()) {
-			int maybeName = nextToken();
-			if (maybeName != Token.NAME
-					&& !(compilerEnv.isReservedKeywordAsIdentifier()
-							&& TokenStream.isKeyword(
-									ts.getString(),
-									compilerEnv.getLanguageVersion(),
-									inUseStrictDirective))) {
-				reportError("msg.no.name.after.dot");
-			}
-
-			Identifier name = createNameNode(true, Token.GETPROP);
-			return createPropertyExpression(pn, dotPos, name);
-		}
-
 		Expression ref = null; // right side of . or .. operator
 
 		int token = peekToken();
@@ -3618,6 +3647,50 @@ public class Parser implements IParser{
 			token = peekUntilNonComment(token);
 			consumeToken();
 		}
+
+		// Fast path for non-XML: only NAME (and reserved-as-identifier keywords) are valid
+		// after '.', unless we're in an optional chain ('?.') which may be followed by '[' or '('
+		if (!compilerEnv.isXmlAvailable()) {
+			switch (token) {
+			case Token.LB:
+	            if (tt == Token.QUESTION_DOT) {
+	                // a ?.[ expr ]
+	                consumeToken();
+	                Expression g = makeElemGet(pn);
+					if (g instanceof IsOptionalChain oc) {
+						oc.setOptionalChain(optionalChainPos);
+					}
+	                return g;
+	            } else {
+	                reportError("msg.no.name.after.dot");
+	                return makeErrorNode();
+	            }
+
+	        case Token.LP:
+	            if (tt == Token.QUESTION_DOT) {
+	                // a function call such as f?.()
+	                consumeToken(); // consume the '('
+	                return makeFunctionCall(pn, ts.getTokenBeg(), optionalChainPos);
+	            } else {
+	                reportError("msg.no.name.after.dot");
+	                return makeErrorNode();
+	            }
+
+		default:
+			int maybeName = nextToken();
+				if (maybeName != Token.NAME
+						&& !(compilerEnv.isReservedKeywordAsIdentifier()
+								&& TokenStream.isKeyword(
+										ts.getString(),
+										compilerEnv.getLanguageVersion(),
+										inUseStrictDirective))) {
+					reportError("msg.no.name.after.dot");
+				}
+				Identifier name = createNameNode(true, Token.GETPROP);
+				return createPropertyExpression(pn, dotPos, name);
+			}
+		}
+
 		switch (token) {
 		case Token.THROW:
 			// needed for generator.throw();
@@ -3672,14 +3745,15 @@ public class Parser implements IParser{
         case Token.LP:
             if (tt == Token.QUESTION_DOT) {
                 // a function call such as f?.()
+                consumeToken(); // consume the '('
                 return makeFunctionCall(pn, ts.getTokenBeg(), optionalChainPos);
             } else {
                 reportError("msg.no.name.after.dot");
                 return makeErrorNode();
             }
 
-		default:
-			if (compilerEnv.isReservedKeywordAsIdentifier()) {
+	default:
+		if (compilerEnv.isReservedKeywordAsIdentifier()) {
 				// allow keywords as property names, e.g. ({if: 1})
 				String name = Token.keywordToName(token);
 				if (name != null) {
@@ -3954,6 +4028,8 @@ public class Parser implements IParser{
         case Token.UNDEFINED:
         {
             consumeToken();
+            // In Rhino 1.9: if hasUndefinedBeenRedefined, treat as Name (variable reference);
+            // otherwise treat as KeywordLiteral. DLTK always uses a Name node for undefined.
             return createNameNode();
         }
 		case Token.NULL:
@@ -4022,7 +4098,7 @@ public class Parser implements IParser{
 			boolean hasTrailingComma = false;
 			if (e instanceof CommaExpression) {
 				CommaExpression expr = (CommaExpression) e;
-				hasTrailingComma = expr.getCommas() != null && expr.getCommas().size() > expr.getItems().size();
+				hasTrailingComma = expr.getCommas() != null && expr.getCommas().size() >= expr.getItems().size();
 			}
 			if ((hasTrailingComma || e instanceof EmptyExpression) && peekToken() != Token.ARROW) {
 				reportError("msg.syntax");
@@ -4458,7 +4534,7 @@ public class Parser implements IParser{
 
 	private Method methodDefinition(int pos, Identifier propName, int entryKind)
 			throws IOException { 
-		FunctionStatement fn = function(FunctionNode.FUNCTION_EXPRESSION, false, entryKind == METHOD_ENTRY);
+		FunctionStatement fn = function(FunctionNode.FUNCTION_EXPRESSION, false, true);
 		// We've already parsed the function name, so fn should be anonymous.
 		Identifier name = fn.getName();
 		if (name != null && name.getName().length() != 0) {
@@ -4502,6 +4578,9 @@ public class Parser implements IParser{
 			pn.setName(propName);
 			pn.setBody(fn.getBody());
 			fn.getBody().setParent(pn);
+			// Transfer declarations from the FunctionStatement to the body StatementBlock
+			// so they are accessible via getter/setter.getBody().getDeclarations()
+			fn.getDeclarations().forEach(decl -> fn.getBody().addDeclaration(decl));
 			pn.setLP(fn.getLP());
 			pn.setRP(fn.getRP());
 		}
@@ -4804,6 +4883,7 @@ public class Parser implements IParser{
 		//        private Map<String, LabeledStatement> savedLabelSet;
 		private List<LoopStatement> savedLoopSet;
 		private List<Statement> savedLoopAndSwitchSet;
+		private boolean savedHasUndefinedBeenRedefined;
 
 		PerFunctionVariables(ArrowFunctionStatement fnNode) {
 			savedCurrentScriptOrFn = Parser.this.currentScriptOrFn;
@@ -4826,6 +4906,9 @@ public class Parser implements IParser{
 
 			savedInForInit = Parser.this.inForInit;
 			Parser.this.inForInit = false;
+
+			savedHasUndefinedBeenRedefined = Parser.this.hasUndefinedBeenRedefined;
+			// inherit current value (don't reset)
 		}
 
 		void restore() {
@@ -4836,6 +4919,7 @@ public class Parser implements IParser{
 			Parser.this.loopAndSwitchSet = savedLoopAndSwitchSet;
 			Parser.this.endFlags = savedEndFlags;
 			Parser.this.inForInit = savedInForInit;
+			Parser.this.hasUndefinedBeenRedefined = savedHasUndefinedBeenRedefined;
 		}
 	}
 

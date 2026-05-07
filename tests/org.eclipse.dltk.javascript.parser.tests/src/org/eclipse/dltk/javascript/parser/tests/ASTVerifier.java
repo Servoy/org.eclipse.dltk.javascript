@@ -59,6 +59,8 @@ import org.eclipse.dltk.javascript.ast.ObjectInitializerPart;
 import org.eclipse.dltk.javascript.ast.ParenthesizedExpression;
 import org.eclipse.dltk.javascript.ast.PropertyExpression;
 import org.eclipse.dltk.javascript.ast.PropertyInitializer;
+import org.eclipse.dltk.javascript.ast.ComputedPropertyKey;
+import org.eclipse.dltk.javascript.ast.SpreadProperty;
 import org.eclipse.dltk.javascript.ast.RegExpLiteral;
 import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
@@ -389,6 +391,13 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 				testSetMethod((SetMethod) part);
 			} else if (part instanceof PropertyInitializer) {
 				testPropertyInitializer((PropertyInitializer) part);
+			} else if (part instanceof SpreadProperty) {
+				// spread property: nothing to verify for position tokens
+				visit(((SpreadProperty) part).getExpression());
+			} else if (part instanceof ComputedPropertyKey) {
+				ComputedPropertyKey cpk = (ComputedPropertyKey) part;
+				visit(cpk.getKey());
+				visit(cpk.getValue());
 			} else {
 				Assert.fail(part.getClass().getName());
 			}

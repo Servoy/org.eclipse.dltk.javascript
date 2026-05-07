@@ -93,6 +93,9 @@ import org.eclipse.dltk.javascript.core.dom.VariableStatement;
 import org.eclipse.dltk.javascript.core.dom.WhileStatement;
 import org.eclipse.dltk.javascript.core.dom.WildcardIdentifier;
 import org.eclipse.dltk.javascript.core.dom.WithStatement;
+import org.eclipse.dltk.javascript.core.dom.ComputedPropertyKey;
+import org.eclipse.dltk.javascript.core.dom.SpreadElement;
+import org.eclipse.dltk.javascript.core.dom.SpreadProperty;
 import org.eclipse.dltk.javascript.core.dom.XmlExpressionFragment;
 import org.eclipse.dltk.javascript.core.dom.XmlFragment;
 import org.eclipse.dltk.javascript.core.dom.XmlInitializer;
@@ -719,6 +722,12 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 	 * @generated
 	 */
 	private EClass bindingIdentifierEClass = null;
+
+	private EClass spreadElementEClass = null;
+
+	private EClass spreadPropertyEClass = null;
+
+	private EClass computedPropertyKeyEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -2735,6 +2744,41 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		return (EReference)bindingIdentifierEClass.getEStructuralFeatures().get(1);
 	}
 
+	@Override
+	public EClass getSpreadElement() {
+		return spreadElementEClass;
+	}
+
+	@Override
+	public EReference getSpreadElement_Expression() {
+		return (EReference)spreadElementEClass.getEStructuralFeatures().get(0);
+	}
+
+	@Override
+	public EClass getSpreadProperty() {
+		return spreadPropertyEClass;
+	}
+
+	@Override
+	public EReference getSpreadProperty_Expression() {
+		return (EReference)spreadPropertyEClass.getEStructuralFeatures().get(0);
+	}
+
+	@Override
+	public EClass getComputedPropertyKey() {
+		return computedPropertyKeyEClass;
+	}
+
+	@Override
+	public EReference getComputedPropertyKey_Key() {
+		return (EReference)computedPropertyKeyEClass.getEStructuralFeatures().get(0);
+	}
+
+	@Override
+	public EReference getComputedPropertyKey_Value() {
+		return (EReference)computedPropertyKeyEClass.getEStructuralFeatures().get(1);
+	}
+
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3065,6 +3109,16 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		createEReference(bindingIdentifierEClass, BINDING_IDENTIFIER__IDENTIFIER);
 		createEReference(bindingIdentifierEClass, BINDING_IDENTIFIER__DEFAULT_VALUE);
 
+		spreadElementEClass = createEClass(SPREAD_ELEMENT);
+		createEReference(spreadElementEClass, SPREAD_ELEMENT__EXPRESSION);
+
+		spreadPropertyEClass = createEClass(SPREAD_PROPERTY);
+		createEReference(spreadPropertyEClass, SPREAD_PROPERTY__EXPRESSION);
+
+		computedPropertyKeyEClass = createEClass(COMPUTED_PROPERTY_KEY);
+		createEReference(computedPropertyKeyEClass, COMPUTED_PROPERTY_KEY__KEY);
+		createEReference(computedPropertyKeyEClass, COMPUTED_PROPERTY_KEY__VALUE);
+
 		// Create enums
 		unaryOperatorEEnum = createEEnum(UNARY_OPERATOR);
 		binaryOperatorEEnum = createEEnum(BINARY_OPERATOR);
@@ -3201,6 +3255,10 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		bindingIdentifierEClass.getESuperTypes().add(this.getIPropertyName());
 		bindingIdentifierEClass.getESuperTypes().add(this.getIPropertySelector());
 		bindingIdentifierEClass.getESuperTypes().add(this.getIProperty());
+		spreadElementEClass.getESuperTypes().add(this.getExpression());
+		spreadElementEClass.getESuperTypes().add(this.getIArrayElement());
+		spreadPropertyEClass.getESuperTypes().add(this.getPropertyAssignment());
+		computedPropertyKeyEClass.getESuperTypes().add(this.getPropertyAssignment());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(nodeEClass, Node.class, "Node", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -3483,6 +3541,16 @@ public class DomPackageImpl extends EPackageImpl implements DomPackage {
 		initEClass(bindingIdentifierEClass, BindingIdentifier.class, "BindingIdentifier", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getBindingIdentifier_Identifier(), this.getIdentifier(), null, "identifier", null, 1, 1, BindingIdentifier.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getBindingIdentifier_DefaultValue(), this.getExpression(), null, "defaultValue", null, 0, 1, BindingIdentifier.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(spreadElementEClass, SpreadElement.class, "SpreadElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getSpreadElement_Expression(), this.getExpression(), null, "expression", null, 1, 1, SpreadElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(spreadPropertyEClass, SpreadProperty.class, "SpreadProperty", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getSpreadProperty_Expression(), this.getExpression(), null, "expression", null, 1, 1, SpreadProperty.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(computedPropertyKeyEClass, ComputedPropertyKey.class, "ComputedPropertyKey", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getComputedPropertyKey_Key(), this.getExpression(), null, "key", null, 1, 1, ComputedPropertyKey.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getComputedPropertyKey_Value(), this.getExpression(), null, "value", null, 1, 1, ComputedPropertyKey.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(unaryOperatorEEnum, UnaryOperator.class, "UnaryOperator");

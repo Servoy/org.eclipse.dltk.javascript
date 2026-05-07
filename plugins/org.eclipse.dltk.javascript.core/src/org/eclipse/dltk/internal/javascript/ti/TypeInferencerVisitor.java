@@ -105,6 +105,9 @@ import org.eclipse.dltk.javascript.ast.XmlFragment;
 import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
+import org.eclipse.dltk.javascript.ast.ComputedPropertyKey;
+import org.eclipse.dltk.javascript.ast.SpreadElement;
+import org.eclipse.dltk.javascript.ast.SpreadProperty;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
@@ -335,6 +338,24 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				return constantValue;
 			}
 		}
+	}
+
+	@Override
+	public IValueReference visitSpreadElement(SpreadElement node) {
+		// Visit the spread expression and propagate its type (element type unknown)
+		return visit(node.getExpression());
+	}
+
+	@Override
+	public IValueReference visitSpreadProperty(SpreadProperty node) {
+		return visit(node.getExpression());
+	}
+
+	@Override
+	public IValueReference visitComputedPropertyKey(
+			ComputedPropertyKey node) {
+		visit(node.getKey());
+		return visit(node.getValue());
 	}
 
 	@Override
@@ -2201,6 +2222,13 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			} else if (part instanceof GetMethod || part instanceof SetMethod) {
 				handleMethodInitializer(node, members, (Method) part,
 						((Method) part).getName().getName());
+			} else if (part instanceof SpreadProperty sp) {
+				// spread property: visit the spread expression for side effects
+				visit(sp.getExpression());
+			} else if (part instanceof ComputedPropertyKey cpk) {
+				// computed key: visit key and value for side effects
+				visit(cpk.getKey());
+				visit(cpk.getValue());
 			}
 		}
 		IValueReference intializerValue = ConstantValue.of(RTypes.recordType(members));

@@ -100,6 +100,9 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		HANDLERS.put(LetStatement.class, 53);
 		HANDLERS.put(BigIntLiteral.class, 54);
 		HANDLERS.put(BindingIdentifier.class, 55);
+		HANDLERS.put(SpreadElement.class, 56);
+		HANDLERS.put(SpreadProperty.class, 57);
+		HANDLERS.put(ComputedPropertyKey.class, 58);
 		
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v3.BinaryOperation.class, 1);
 		HANDLERS.put(org.eclipse.dltk.javascript.ast.v4.BinaryOperation.class, 1);
@@ -223,7 +226,13 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 		case 54:
 			return visitBigIntLiteral((BigIntLiteral)node);
 		case 55:
-			return visitBindingIdentifier((BindingIdentifier)node);
+			return visitBindingIdentifier((BindingIdentifier) node);
+		case 56:
+			return visitSpreadElement((SpreadElement) node);
+		case 57:
+			return visitSpreadProperty((SpreadProperty) node);
+		case 58:
+			return visitComputedPropertyKey((ComputedPropertyKey) node);
 		}
 		return visitUnknownNode(node);
 	}
@@ -413,6 +422,18 @@ public abstract class ASTVisitor<E> implements INodeVisitor<E> {
 	public abstract E visitLetStatement(LetStatement node);
 
 	public E visitBindingIdentifier(BindingIdentifier node) {
+		return null;
+	}
+
+	public E visitSpreadElement(SpreadElement node) {
+		return null;
+	}
+
+	public E visitSpreadProperty(SpreadProperty node) {
+		return null;
+	}
+
+	public E visitComputedPropertyKey(ComputedPropertyKey node) {
 		return null;
 	}
 

@@ -666,4 +666,13 @@ public interface DomFactory extends EFactory {
 	 */
 	BindingIdentifier createBindingIdentifier();
 
+	/** @generated */
+	SpreadElement createSpreadElement();
+
+	/** @generated */
+	SpreadProperty createSpreadProperty();
+
+	/** @generated */
+	ComputedPropertyKey createComputedPropertyKey();
+
 } //DomFactory

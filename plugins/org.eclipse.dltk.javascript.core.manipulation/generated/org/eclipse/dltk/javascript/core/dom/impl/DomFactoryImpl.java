@@ -132,6 +132,9 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 			case DomPackage.BIG_INT_LITERAL: return createBigIntLiteral();
 			case DomPackage.METHOD_SHORTHAND_ASSIGNMENT: return createMethodShorthandAssignment();
 			case DomPackage.BINDING_IDENTIFIER: return createBindingIdentifier();
+			case DomPackage.SPREAD_ELEMENT: return createSpreadElement();
+			case DomPackage.SPREAD_PROPERTY: return createSpreadProperty();
+			case DomPackage.COMPUTED_PROPERTY_KEY: return createComputedPropertyKey();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -1006,6 +1009,24 @@ public class DomFactoryImpl extends EFactoryImpl implements DomFactory {
 	public BindingIdentifier createBindingIdentifier() {
 		BindingIdentifierImpl bindingIdentifier = new BindingIdentifierImpl();
 		return bindingIdentifier;
+	}
+
+	@Override
+	public org.eclipse.dltk.javascript.core.dom.SpreadElement createSpreadElement() {
+		SpreadElementImpl spreadElement = new SpreadElementImpl();
+		return spreadElement;
+	}
+
+	@Override
+	public org.eclipse.dltk.javascript.core.dom.SpreadProperty createSpreadProperty() {
+		SpreadPropertyImpl spreadProperty = new SpreadPropertyImpl();
+		return spreadProperty;
+	}
+
+	@Override
+	public org.eclipse.dltk.javascript.core.dom.ComputedPropertyKey createComputedPropertyKey() {
+		ComputedPropertyKeyImpl computedPropertyKey = new ComputedPropertyKeyImpl();
+		return computedPropertyKey;
 	}
 
 } //DomFactoryImpl

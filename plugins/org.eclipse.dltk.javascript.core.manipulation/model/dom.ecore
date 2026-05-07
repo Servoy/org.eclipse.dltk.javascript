@@ -454,4 +454,18 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="defaultValue" eType="#//Expression"
         containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SpreadElement" eSuperTypes="#//Expression #//IArrayElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+        eType="#//Expression" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SpreadProperty" eSuperTypes="#//PropertyAssignment">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+        eType="#//Expression" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComputedPropertyKey" eSuperTypes="#//PropertyAssignment">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="key" lowerBound="1"
+        eType="#//Expression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" lowerBound="1"
+        eType="#//Expression" containment="true"/>
+  </eClassifiers>
 </ecore:EPackage>

@@ -4378,6 +4378,63 @@ public interface DomPackage extends EPackage {
 	int BINDING_IDENTIFIER_FEATURE_COUNT = NODE_FEATURE_COUNT + 2;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.SpreadElementImpl <em>Spread Element</em>}' class.
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.SpreadElementImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getSpreadElement()
+	 * @generated
+	 */
+	int SPREAD_ELEMENT = 87;
+
+	/** @generated @ordered */
+	int SPREAD_ELEMENT__BEGIN = EXPRESSION__BEGIN;
+	/** @generated @ordered */
+	int SPREAD_ELEMENT__END = EXPRESSION__END;
+	/** @generated @ordered */
+	int SPREAD_ELEMENT__EXPRESSION = EXPRESSION_FEATURE_COUNT + 0;
+	/** @generated @ordered */
+	int SPREAD_ELEMENT_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.SpreadPropertyImpl <em>Spread Property</em>}' class.
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.SpreadPropertyImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getSpreadProperty()
+	 * @generated
+	 */
+	int SPREAD_PROPERTY = 88;
+
+	/** @generated @ordered */
+	int SPREAD_PROPERTY__BEGIN = PROPERTY_ASSIGNMENT__BEGIN;
+	/** @generated @ordered */
+	int SPREAD_PROPERTY__END = PROPERTY_ASSIGNMENT__END;
+	/** @generated @ordered */
+	int SPREAD_PROPERTY__NAME = PROPERTY_ASSIGNMENT__NAME;
+	/** @generated @ordered */
+	int SPREAD_PROPERTY__EXPRESSION = PROPERTY_ASSIGNMENT_FEATURE_COUNT + 0;
+	/** @generated @ordered */
+	int SPREAD_PROPERTY_FEATURE_COUNT = PROPERTY_ASSIGNMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.impl.ComputedPropertyKeyImpl <em>Computed Property Key</em>}' class.
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.ComputedPropertyKeyImpl
+	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getComputedPropertyKey()
+	 * @generated
+	 */
+	int COMPUTED_PROPERTY_KEY = 89;
+
+	/** @generated @ordered */
+	int COMPUTED_PROPERTY_KEY__BEGIN = PROPERTY_ASSIGNMENT__BEGIN;
+	/** @generated @ordered */
+	int COMPUTED_PROPERTY_KEY__END = PROPERTY_ASSIGNMENT__END;
+	/** @generated @ordered */
+	int COMPUTED_PROPERTY_KEY__NAME = PROPERTY_ASSIGNMENT__NAME;
+	/** @generated @ordered */
+	int COMPUTED_PROPERTY_KEY__KEY = PROPERTY_ASSIGNMENT_FEATURE_COUNT + 0;
+	/** @generated @ordered */
+	int COMPUTED_PROPERTY_KEY__VALUE = PROPERTY_ASSIGNMENT_FEATURE_COUNT + 1;
+	/** @generated @ordered */
+	int COMPUTED_PROPERTY_KEY_FEATURE_COUNT = PROPERTY_ASSIGNMENT_FEATURE_COUNT + 2;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4385,7 +4442,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getUnaryOperator()
 	 * @generated
 	 */
-	int UNARY_OPERATOR = 87;
+	int UNARY_OPERATOR = 90;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.dltk.javascript.core.dom.BinaryOperator <em>Binary Operator</em>}' enum.
@@ -4395,7 +4452,7 @@ public interface DomPackage extends EPackage {
 	 * @see org.eclipse.dltk.javascript.core.dom.impl.DomPackageImpl#getBinaryOperator()
 	 * @generated
 	 */
-	int BINARY_OPERATOR = 88;
+	int BINARY_OPERATOR = 91;
 
 
 	/**
@@ -6445,6 +6502,23 @@ public interface DomPackage extends EPackage {
 	 */
 	EReference getBindingIdentifier_DefaultValue();
 
+	/** @generated */
+	EClass getSpreadElement();
+	/** @generated */
+	EReference getSpreadElement_Expression();
+
+	/** @generated */
+	EClass getSpreadProperty();
+	/** @generated */
+	EReference getSpreadProperty_Expression();
+
+	/** @generated */
+	EClass getComputedPropertyKey();
+	/** @generated */
+	EReference getComputedPropertyKey_Key();
+	/** @generated */
+	EReference getComputedPropertyKey_Value();
+
 	/**
 	 * Returns the meta object for enum '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}'.
 	 * <!-- begin-user-doc -->
@@ -8212,6 +8286,23 @@ public interface DomPackage extends EPackage {
 		 * @generated
 		 */
 		EReference BINDING_IDENTIFIER__DEFAULT_VALUE = eINSTANCE.getBindingIdentifier_DefaultValue();
+
+		/** @generated */
+		EClass SPREAD_ELEMENT = eINSTANCE.getSpreadElement();
+		/** @generated */
+		EReference SPREAD_ELEMENT__EXPRESSION = eINSTANCE.getSpreadElement_Expression();
+
+		/** @generated */
+		EClass SPREAD_PROPERTY = eINSTANCE.getSpreadProperty();
+		/** @generated */
+		EReference SPREAD_PROPERTY__EXPRESSION = eINSTANCE.getSpreadProperty_Expression();
+
+		/** @generated */
+		EClass COMPUTED_PROPERTY_KEY = eINSTANCE.getComputedPropertyKey();
+		/** @generated */
+		EReference COMPUTED_PROPERTY_KEY__KEY = eINSTANCE.getComputedPropertyKey_Key();
+		/** @generated */
+		EReference COMPUTED_PROPERTY_KEY__VALUE = eINSTANCE.getComputedPropertyKey_Value();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.dltk.javascript.core.dom.UnaryOperator <em>Unary Operator</em>}' enum.

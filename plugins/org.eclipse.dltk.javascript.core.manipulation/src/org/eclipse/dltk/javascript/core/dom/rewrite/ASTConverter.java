@@ -70,9 +70,12 @@ import org.eclipse.dltk.javascript.ast.XmlLiteral;
 import org.eclipse.dltk.javascript.ast.XmlTextFragment;
 import org.eclipse.dltk.javascript.ast.YieldOperator;
 import org.eclipse.dltk.javascript.ast.v4.ArrowFunctionStatement;
+import org.eclipse.dltk.javascript.ast.ComputedPropertyKey;
 import org.eclipse.dltk.javascript.ast.v4.ForOfStatement;
 import org.eclipse.dltk.javascript.ast.v4.LetStatement;
 import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
+import org.eclipse.dltk.javascript.ast.SpreadElement;
+import org.eclipse.dltk.javascript.ast.SpreadProperty;
 import org.eclipse.dltk.javascript.ast.v4.TagFunctionExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringExpression;
 import org.eclipse.dltk.javascript.ast.v4.TemplateStringLiteral;
@@ -378,6 +381,34 @@ public class ASTConverter extends ASTVisitor<Node> {
 	}
 
 	@Override
+	public Node visitSpreadElement(SpreadElement node) {
+		org.eclipse.dltk.javascript.core.dom.SpreadElement res = DOM_FACTORY.createSpreadElement();
+		res.setExpression((Expression) visit(node.getExpression()));
+		res.setBegin(node.sourceStart());
+		res.setEnd(node.sourceEnd());
+		return res;
+	}
+
+	@Override
+	public Node visitSpreadProperty(SpreadProperty node) {
+		org.eclipse.dltk.javascript.core.dom.SpreadProperty res = DOM_FACTORY.createSpreadProperty();
+		res.setExpression((Expression) visit(node.getExpression()));
+		res.setBegin(node.sourceStart());
+		res.setEnd(node.sourceEnd());
+		return res;
+	}
+
+	@Override
+	public Node visitComputedPropertyKey(ComputedPropertyKey node) {
+		org.eclipse.dltk.javascript.core.dom.ComputedPropertyKey res = DOM_FACTORY.createComputedPropertyKey();
+		res.setKey((Expression) visit(node.getKey()));
+		res.setValue((Expression) visit(node.getValue()));
+		res.setBegin(node.sourceStart());
+		res.setEnd(node.sourceEnd());
+		return res;
+	}
+
+	@Override
 	public Node visitIfStatement(IfStatement node) {
 		org.eclipse.dltk.javascript.core.dom.IfStatement res = DOM_FACTORY
 				.createIfStatement();
@@ -454,6 +485,21 @@ public class ASTConverter extends ASTVisitor<Node> {
 				elem.setBody((BlockStatement) visit(ms.getBody()));
 				cur = elem;
 				res.getProperties().add(elem);
+			} else if (part instanceof SpreadProperty sp) {
+				org.eclipse.dltk.javascript.core.dom.SpreadProperty elem = DOM_FACTORY.createSpreadProperty();
+				elem.setExpression((Expression) visit(sp.getExpression()));
+				elem.setBegin(part.sourceStart());
+				elem.setEnd(part.sourceEnd());
+				res.getProperties().add(elem);
+				continue;
+			} else if (part instanceof ComputedPropertyKey cpk) {
+				org.eclipse.dltk.javascript.core.dom.ComputedPropertyKey elem = DOM_FACTORY.createComputedPropertyKey();
+				elem.setKey((Expression) visit(cpk.getKey()));
+				elem.setValue((Expression) visit(cpk.getValue()));
+				elem.setBegin(part.sourceStart());
+				elem.setEnd(part.sourceEnd());
+				res.getProperties().add(elem);
+				continue;
 			} else
 				throw new UnsupportedOperationException(
 						"Unknown initializer type");

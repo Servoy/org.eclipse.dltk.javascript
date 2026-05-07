@@ -46,6 +46,8 @@ import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
 import org.eclipse.dltk.javascript.ast.VoidExpression;
+import org.eclipse.dltk.javascript.ast.ComputedPropertyKey;
+import org.eclipse.dltk.javascript.ast.SpreadProperty;
 import org.eclipse.dltk.javascript.ast.v4.PropertyShorthand;
 import org.eclipse.dltk.javascript.parser.JSProblemReporter;
 import org.eclipse.dltk.javascript.structure.FunctionDeclaration;
@@ -264,6 +266,11 @@ public class StructureReporter3 extends
 			} else if (part instanceof PropertyShorthand) {
 				PropertyShorthand property = (PropertyShorthand) part;
 				visit(property.getExpression());
+			} else if (part instanceof SpreadProperty sp) {
+				visit(sp.getExpression());
+			} else if (part instanceof ComputedPropertyKey cpk) {
+				visit(cpk.getKey());
+				visit(cpk.getValue());
 			}
 		}
 		return !object.getChildren().isEmpty() ? object : null;

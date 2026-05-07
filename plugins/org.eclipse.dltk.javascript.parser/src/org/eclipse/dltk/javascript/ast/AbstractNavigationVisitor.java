@@ -243,6 +243,14 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 				final PropertyShorthand p = (PropertyShorthand) part;
 				visit(p.getExpression());
 			}
+			else if (part instanceof SpreadProperty) {
+				visit(((SpreadProperty) part).getExpression());
+			}
+			else if (part instanceof ComputedPropertyKey) {
+				final ComputedPropertyKey cpk = (ComputedPropertyKey) part;
+				visit(cpk.getKey());
+				visit(cpk.getValue());
+			}
 		}
 		return null;
 	}
@@ -435,5 +443,21 @@ public class AbstractNavigationVisitor<E> extends ASTVisitor<E> {
 	public E visitLetStatement(LetStatement node) {
 		processVariables(node.getBindings());
 		return null;
+	}
+
+	@Override
+	public E visitSpreadElement(SpreadElement node) {
+		return visit(node.getExpression());
+	}
+
+	@Override
+	public E visitSpreadProperty(SpreadProperty node) {
+		return visit(node.getExpression());
+	}
+
+	@Override
+	public E visitComputedPropertyKey(ComputedPropertyKey node) {
+		visit(node.getKey());
+		return visit(node.getValue());
 	}
 }

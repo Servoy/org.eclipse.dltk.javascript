@@ -21,7 +21,7 @@ public class GetArrayItemExpression extends Expression implements IsOptionalChai
 	private Expression index;
 	private int LB = -1;
 	private int RB = -1;
-	private int optionalChainPos;
+	private int optionalChainPos = -1;
 
 	public GetArrayItemExpression(JSNode parent) {
 		super(parent);

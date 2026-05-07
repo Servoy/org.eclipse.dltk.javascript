@@ -27,7 +27,7 @@ public class CallExpression extends Expression implements IsOptionalChain{
 	private IntList commas;
 	private int LP = -1;
 	private int RP = -1;
-	private int optionalChain;
+	private int optionalChain = -1;
 
 	public CallExpression(JSNode parent) {
 		super(parent);

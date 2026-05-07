@@ -35,6 +35,7 @@ import org.eclipse.dltk.javascript.ast.CaseClause;
 import org.eclipse.dltk.javascript.ast.CatchClause;
 import org.eclipse.dltk.javascript.ast.CommaExpression;
 import org.eclipse.dltk.javascript.ast.Comment;
+import org.eclipse.dltk.javascript.ast.ComputedPropertyKey;
 import org.eclipse.dltk.javascript.ast.ConditionalOperator;
 import org.eclipse.dltk.javascript.ast.ConstStatement;
 import org.eclipse.dltk.javascript.ast.ContinueStatement;
@@ -84,6 +85,8 @@ import org.eclipse.dltk.javascript.ast.ReturnStatement;
 import org.eclipse.dltk.javascript.ast.Script;
 import org.eclipse.dltk.javascript.ast.SetMethod;
 import org.eclipse.dltk.javascript.ast.SingleLineComment;
+import org.eclipse.dltk.javascript.ast.SpreadElement;
+import org.eclipse.dltk.javascript.ast.SpreadProperty;
 import org.eclipse.dltk.javascript.ast.Statement;
 import org.eclipse.dltk.javascript.ast.StatementBlock;
 import org.eclipse.dltk.javascript.ast.StringLiteral;
@@ -3416,10 +3419,24 @@ public class Parser implements IParser{
 					// Quick fix to handle scenario like f1(a,); but not f1(a,b
 					break;
 				}
-				if (peekToken() == Token.YIELD) {
-					reportError("msg.yield.parenthesized");
-				}
-				ASTNode en = assignExpr();
+			if (peekToken() == Token.YIELD) {
+				reportError("msg.yield.parenthesized");
+			}
+			ASTNode en;
+			if (peekToken() == Token.DOTDOTDOT
+					&& compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+				consumeToken();
+				int spreadPos = ts.getTokenBeg();
+				SpreadElement spread = new SpreadElement(call);
+				spread.setDotDotDot(spreadPos);
+				spread.setStart(spreadPos);
+				ASTNode spreadExpr = assignExpr();
+				spread.setExpression((Expression) spreadExpr);
+				spread.setEnd(spreadExpr.sourceEnd());
+				en = spread;
+			} else {
+				en = assignExpr();
+			}
 				//                if (peekToken() == Token.FOR) {
 				//                    try {
 				//                        result.add(generatorExpression(en, 0, true));
@@ -4218,7 +4235,20 @@ public class Parser implements IParser{
 				if (!after_lb_or_comma) {
 					reportError("msg.no.bracket.arg");
 				}
-				pn.getItems().add(assignExpr());
+				if (peekToken() == Token.DOTDOTDOT
+						&& compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+					consumeToken();
+					int spreadPos = ts.getTokenBeg();
+					SpreadElement spread = new SpreadElement(pn);
+					spread.setDotDotDot(spreadPos);
+					spread.setStart(spreadPos);
+					ASTNode spreadExpr = assignExpr();
+					spread.setExpression((Expression) spreadExpr);
+					spread.setEnd(spreadExpr.sourceEnd());
+					pn.getItems().add(spread);
+				} else {
+					pn.getItems().add(assignExpr());
+				}
 				after_lb_or_comma = false;
 				afterComma = -1;
 			}
@@ -4352,6 +4382,62 @@ public class Parser implements IParser{
 					if (afterComma != -1) warnTrailingComma(pos, elems, afterComma);
 					init.setRC(ts.getTokenBeg());
 					break commaLoop;
+				}
+				// --- ES6: spread property { ...expr } ---
+				if (tt == Token.DOTDOTDOT
+						&& compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+					consumeToken();
+					int spreadPos = ts.getTokenBeg();
+					SpreadProperty sp = new SpreadProperty(init);
+					sp.setDotDotDot(spreadPos);
+					sp.setStart(spreadPos);
+					Expression spreadExpr = (Expression) assignExpr();
+					sp.setExpression(spreadExpr);
+					sp.setEnd(spreadExpr.sourceEnd());
+					elems.add(sp);
+					if (matchToken(Token.COMMA, true)) {
+						afterComma = ts.getTokenEnd();
+						commas.add(ts.getTokenBeg());
+						continue;
+					} else {
+						break commaLoop;
+					}
+				}
+				// --- ES6: computed property key { [expr]: value } ---
+				if (tt == Token.LB
+						&& compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+					consumeToken();
+					int lbPos = ts.getTokenBeg();
+					parents.push(init);
+					Expression keyExpr = (Expression) assignExpr();
+					parents.pop();
+					int rbPos = -1;
+					if (mustMatchToken(Token.RB, "msg.no.bracket.index", true)) {
+						rbPos = ts.getTokenBeg();
+					}
+					int colonPos = -1;
+					if (mustMatchToken(Token.COLON, "msg.no.colon.prop", true)) {
+						colonPos = ts.getTokenBeg();
+					}
+					parents.push(init);
+					Expression valExpr = (Expression) assignExpr();
+					parents.pop();
+					ComputedPropertyKey cpk = new ComputedPropertyKey(init);
+					cpk.setStart(lbPos);
+					cpk.setLB(lbPos);
+					cpk.setKey(keyExpr);
+					cpk.setRB(rbPos);
+					cpk.setColon(colonPos);
+					cpk.setValue(valExpr);
+					cpk.setEnd(valExpr.sourceEnd());
+					elems.add(cpk);
+					if (matchToken(Token.COMMA, true)) {
+						afterComma = ts.getTokenEnd();
+						commas.add(ts.getTokenBeg());
+						continue;
+					} else {
+						break commaLoop;
+					}
 				}
 				Expression pname = objliteralProperty();
 				if (pname == null) {

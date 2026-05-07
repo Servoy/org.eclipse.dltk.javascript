@@ -4522,4 +4522,186 @@ public class TestRhinoParser {
         assertTrue("parse should not produce errors", problems.isEmpty());
        
 	}
+
+	// -----------------------------------------------------------------------
+	// Spread operator improvements (ES6)
+	// -----------------------------------------------------------------------
+
+	@Test
+	public void testSpreadInArrayLiteral() {
+		// [...arr] — single spread element
+		String source = "var a = [...arr];";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement vs = (VariableStatement) stmt.getExpression();
+		ArrayInitializer arr = (ArrayInitializer) vs.getBindings().get(0).getInitializer();
+		assertEquals(1, arr.getItems().size());
+		SpreadElement spread = (SpreadElement) arr.getItems().get(0);
+		assertNotNull(spread);
+		assertTrue(spread.getDotDotDot() >= 0);
+		assertTrue(spread.getExpression() instanceof Identifier);
+		assertEquals("arr", ((Identifier) spread.getExpression()).getName());
+	}
+
+	@Test
+	public void testSpreadInArrayLiteral_mixed() {
+		// [1, ...rest, 2] — spread in the middle
+		String source = "var a = [1, ...rest, 2];";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement vs = (VariableStatement) stmt.getExpression();
+		ArrayInitializer arr = (ArrayInitializer) vs.getBindings().get(0).getInitializer();
+		assertEquals(3, arr.getItems().size());
+		assertTrue(arr.getItems().get(0) instanceof DecimalLiteral);
+		SpreadElement spread = (SpreadElement) arr.getItems().get(1);
+		assertTrue(spread.getExpression() instanceof Identifier);
+		assertEquals("rest", ((Identifier) spread.getExpression()).getName());
+		assertTrue(arr.getItems().get(2) instanceof DecimalLiteral);
+	}
+
+	@Test
+	public void testSpreadInCallExpression() {
+		// f(...args) — spread in call argument list
+		String source = "f(...args);";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		CallExpression call = (CallExpression) stmt.getExpression();
+		assertEquals(1, call.getArguments().size());
+		SpreadElement spread = (SpreadElement) call.getArguments().get(0);
+		assertNotNull(spread);
+		assertTrue(spread.getDotDotDot() >= 0);
+		assertTrue(spread.getExpression() instanceof Identifier);
+		assertEquals("args", ((Identifier) spread.getExpression()).getName());
+	}
+
+	@Test
+	public void testSpreadInCallExpression_mixed() {
+		// f(a, ...b, c) — spread in the middle
+		String source = "f(a, ...b, c);";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		CallExpression call = (CallExpression) stmt.getExpression();
+		assertEquals(3, call.getArguments().size());
+		assertTrue(call.getArguments().get(0) instanceof Identifier);
+		SpreadElement spread = (SpreadElement) call.getArguments().get(1);
+		assertEquals("b", ((Identifier) spread.getExpression()).getName());
+		assertTrue(call.getArguments().get(2) instanceof Identifier);
+	}
+
+	@Test
+	public void testSpreadInObjectLiteral() {
+		// ({ ...obj }) — spread property
+		String source = "var x = { ...obj };";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement vs = (VariableStatement) stmt.getExpression();
+		ObjectInitializer obj = (ObjectInitializer) vs.getBindings().get(0).getInitializer();
+		assertEquals(1, obj.getInitializers().size());
+		SpreadProperty sp = (SpreadProperty) obj.getInitializers().get(0);
+		assertNotNull(sp);
+		assertTrue(sp.getDotDotDot() >= 0);
+		assertTrue(sp.getExpression() instanceof Identifier);
+		assertEquals("obj", ((Identifier) sp.getExpression()).getName());
+	}
+
+	@Test
+	public void testSpreadInObjectLiteral_mixed() {
+		// ({ a: 1, ...extra, b: 2 })
+		String source = "var x = { a: 1, ...extra, b: 2 };";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement vs = (VariableStatement) stmt.getExpression();
+		ObjectInitializer obj = (ObjectInitializer) vs.getBindings().get(0).getInitializer();
+		assertEquals(3, obj.getInitializers().size());
+		assertTrue(obj.getInitializers().get(0) instanceof PropertyInitializer);
+		SpreadProperty sp = (SpreadProperty) obj.getInitializers().get(1);
+		assertEquals("extra", ((Identifier) sp.getExpression()).getName());
+		assertTrue(obj.getInitializers().get(2) instanceof PropertyInitializer);
+	}
+
+	// -----------------------------------------------------------------------
+	// Computed property keys (ES6)
+	// -----------------------------------------------------------------------
+
+	@Test
+	public void testComputedPropertyKey_simpleString() {
+		// ({ ["key"]: 42 })
+		String source = "var x = { [\"key\"]: 42 };";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement vs = (VariableStatement) stmt.getExpression();
+		ObjectInitializer obj = (ObjectInitializer) vs.getBindings().get(0).getInitializer();
+		assertEquals(1, obj.getInitializers().size());
+		ComputedPropertyKey cpk = (ComputedPropertyKey) obj.getInitializers().get(0);
+		assertNotNull(cpk);
+		assertTrue(cpk.getLB() >= 0);
+		assertTrue(cpk.getRB() > cpk.getLB());
+		assertTrue(cpk.getColon() > cpk.getRB());
+		assertTrue(cpk.getKey() instanceof StringLiteral);
+		assertEquals("key", ((StringLiteral) cpk.getKey()).getValue());
+		assertTrue(cpk.getValue() instanceof DecimalLiteral);
+	}
+
+	@Test
+	public void testComputedPropertyKey_expression() {
+		// ({ [a + b]: 1 })
+		String source = "var x = { [a + b]: 1 };";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement vs = (VariableStatement) stmt.getExpression();
+		ObjectInitializer obj = (ObjectInitializer) vs.getBindings().get(0).getInitializer();
+		assertEquals(1, obj.getInitializers().size());
+		ComputedPropertyKey cpk = (ComputedPropertyKey) obj.getInitializers().get(0);
+		assertNotNull(cpk.getKey());
+		assertNotNull(cpk.getValue());
+		assertTrue(cpk.getKey() instanceof BinaryOperation);
+	}
+
+	@Test
+	public void testComputedPropertyKey_mixed() {
+		// ({ a: 1, [expr]: 2, b: 3 })
+		String source = "var x = { a: 1, [expr]: 2, b: 3 };";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement vs = (VariableStatement) stmt.getExpression();
+		ObjectInitializer obj = (ObjectInitializer) vs.getBindings().get(0).getInitializer();
+		assertEquals(3, obj.getInitializers().size());
+		assertTrue(obj.getInitializers().get(0) instanceof PropertyInitializer);
+		assertTrue(obj.getInitializers().get(1) instanceof ComputedPropertyKey);
+		assertTrue(obj.getInitializers().get(2) instanceof PropertyInitializer);
+		ComputedPropertyKey cpk = (ComputedPropertyKey) obj.getInitializers().get(1);
+		assertEquals("expr", ((Identifier) cpk.getKey()).getName());
+	}
+
+	@Test
+	public void testComputedPropertyKey_noErrors() {
+		// No parse errors expected for valid ES6 computed property
+		String source = "var x = { [Symbol.iterator]: function() {} };";
+		final List<IProblem> problems = new ArrayList<>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertTrue("No parse errors expected", problems.isEmpty());
+	}
+
+	@Test
+	public void testSpreadNoErrors() {
+		// No parse errors expected for valid ES6 spread usages
+		String source = "var a = [...x]; f(...y); var b = { ...z };";
+		final List<IProblem> problems = new ArrayList<>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		rhinoParser.parse(source, problem -> problems.add(problem));
+		assertTrue("No parse errors expected", problems.isEmpty());
+	}
 }

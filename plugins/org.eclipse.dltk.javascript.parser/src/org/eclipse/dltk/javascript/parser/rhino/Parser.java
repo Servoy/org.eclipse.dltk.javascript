@@ -1245,7 +1245,25 @@ public class Parser implements IParser{
 				}
 				paramNames.add(paramName);
 			}
-		} 
+		}
+		else if (params instanceof BinaryOperation
+				&& "=".equals(((BinaryOperation) params).getOperationText())
+				&& ((BinaryOperation) params).getLeftExpression() instanceof Identifier
+				&& compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+			// Default parameter in arrow function: (a, b = 10) => ...
+			// The paren expression is fully parsed before => is seen, so `b = 10`
+			// arrives here as a BinaryOperation. This post-parse reinterpretation
+			// mirrors what Rhino 1.9's arrowFunctionParams does with Assignment nodes.
+			BinaryOperation assign = (BinaryOperation) params;
+			Identifier ident = (Identifier) assign.getLeftExpression();
+			Argument arg = new Argument(fnNode);
+			fnNode.addArgument(arg);
+			arg.setIdentifier(ident);
+			arg.setStart(params.start());
+			arg.setEnd(params.end());
+			arg.setDefaultParamValue((Expression) assign.getRightExpression());
+			defineSymbol(Token.LP, ident);
+		}
 		else {
 			reportError("msg.no.parm", params.start(), params.end() - params.start());
 			//TODO how to add an error arg?

@@ -72,7 +72,7 @@ public abstract class UnaryOperation extends Expression {
 
 		Assert.isTrue(sourceStart() >= 0);
 		Assert.isTrue(sourceEnd() > 0);
-		Assert.isTrue(operationPos > 0);
+		Assert.isTrue(operationPos >= 0);
 		Assert.isTrue(operation > 0);
 
 		final StringBuilder buffer = new StringBuilder();

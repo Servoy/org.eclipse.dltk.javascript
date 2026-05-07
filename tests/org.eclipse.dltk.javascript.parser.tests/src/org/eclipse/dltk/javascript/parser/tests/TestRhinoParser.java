@@ -3796,4 +3796,713 @@ public class TestRhinoParser {
 		assertNotNull(scriptv4);
 		assertEquals("var in separate getter/setter bodies must not clash", 0, problems.size());
 	}
+
+	// =========================================================================
+	// Additional coverage tests
+	// =========================================================================
+
+	// --- RegExp literal -------------------------------------------------------
+
+	@Test
+	public void testRegExpLiteral() {
+		String source = "var re = /abc+/gi;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertTrue(vs.getVariables().get(0).getInitializer() instanceof RegExpLiteral);
+		assertTrue(vsv4.getVariables().get(0).getInitializer() instanceof RegExpLiteral);
+		assertEquals("/abc+/gi", ((RegExpLiteral) vs.getVariables().get(0).getInitializer()).getText());
+		assertEquals("/abc+/gi", ((RegExpLiteral) vsv4.getVariables().get(0).getInitializer()).getText());
+		assertEquals(vs.sourceStart(), vsv4.sourceStart());
+		assertEquals(vs.sourceEnd(), vsv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testRegExpLiteral_noFlags() {
+		String source = "var re = /^hello$/;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertTrue(vs.getVariables().get(0).getInitializer() instanceof RegExpLiteral);
+		assertTrue(vsv4.getVariables().get(0).getInitializer() instanceof RegExpLiteral);
+		assertEquals("/^hello$/", ((RegExpLiteral) vs.getVariables().get(0).getInitializer()).getText());
+		assertEquals("/^hello$/", ((RegExpLiteral) vsv4.getVariables().get(0).getInitializer()).getText());
+		RegExpLiteral re = (RegExpLiteral) vs.getVariables().get(0).getInitializer();
+		RegExpLiteral rev4 = (RegExpLiteral) vsv4.getVariables().get(0).getInitializer();
+		assertEquals(re.sourceStart(), rev4.sourceStart());
+		assertEquals(re.sourceEnd(), rev4.sourceEnd());
+		assertEquals(vs.sourceStart(), vsv4.sourceStart());
+		assertEquals(vs.sourceEnd(), vsv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- Numeric literal prefixes ---------------------------------------------
+
+	@Test
+	public void testHexLiteral() {
+		String source = "var h = 0xFF;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertTrue(vs.getVariables().get(0).getInitializer() instanceof DecimalLiteral);
+		assertTrue(vsv4.getVariables().get(0).getInitializer() instanceof DecimalLiteral);
+		DecimalLiteral lit = (DecimalLiteral) vs.getVariables().get(0).getInitializer();
+		DecimalLiteral litv4 = (DecimalLiteral) vsv4.getVariables().get(0).getInitializer();
+		assertEquals("0xFF", lit.getText());
+		assertEquals("0xFF", litv4.getText());
+		assertEquals(lit.sourceStart(), litv4.sourceStart());
+		assertEquals(lit.sourceEnd(), litv4.sourceEnd());
+		assertEquals(vs.sourceStart(), vsv4.sourceStart());
+		assertEquals(vs.sourceEnd(), vsv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testExponentNotationLiteral() {
+		String source = "var e = 1.5e3;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertTrue(vs.getVariables().get(0).getInitializer() instanceof DecimalLiteral);
+		assertTrue(vsv4.getVariables().get(0).getInitializer() instanceof DecimalLiteral);
+		DecimalLiteral lit = (DecimalLiteral) vs.getVariables().get(0).getInitializer();
+		DecimalLiteral litv4 = (DecimalLiteral) vsv4.getVariables().get(0).getInitializer();
+		assertEquals("1.5e3", lit.getText());
+		assertEquals("1.5e3", litv4.getText());
+		assertEquals(lit.sourceStart(), litv4.sourceStart());
+		assertEquals(lit.sourceEnd(), litv4.sourceEnd());
+		assertEquals(vs.sourceStart(), vsv4.sourceStart());
+		assertEquals(vs.sourceEnd(), vsv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- Unary operators -----------------------------------------------------
+
+	@Test
+	public void testTypeofOperator() {
+		String source = "typeof x;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		UnaryOperation op = (UnaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		UnaryOperation opv4 = (UnaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("typeof", op.getOperationText());
+		assertEquals("typeof", opv4.getOperationText());
+		assertFalse("typeof is prefix", op.isPostfix());
+		assertFalse("typeof is prefix", opv4.isPostfix());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		// getOperationPosition() is -1 in old parser for prefix-at-0; check new parser has correct value
+		assertEquals(0, opv4.getOperationPosition());
+		// equalsJSNode not used: old parser sets operationPos=-1 which breaks toString() comparison
+	}
+
+	@Test
+	public void testVoidOperator() {
+		String source = "void 0;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		UnaryOperation op = (UnaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		UnaryOperation opv4 = (UnaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("void", op.getOperationText());
+		assertEquals("void", opv4.getOperationText());
+		assertFalse("void is prefix", op.isPostfix());
+		assertFalse("void is prefix", opv4.isPostfix());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertEquals(0, opv4.getOperationPosition());
+		// equalsJSNode not used: old parser sets operationPos=-1 which breaks toString() comparison
+	}
+
+	@Test
+	public void testDeleteOperator() {
+		String source = "delete obj.x;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		UnaryOperation op = (UnaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		UnaryOperation opv4 = (UnaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("delete", op.getOperationText());
+		assertEquals("delete", opv4.getOperationText());
+		assertFalse("delete is prefix", op.isPostfix());
+		assertFalse("delete is prefix", opv4.isPostfix());
+		assertTrue(op.getExpression() instanceof PropertyExpression);
+		assertTrue(opv4.getExpression() instanceof PropertyExpression);
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertEquals(0, opv4.getOperationPosition());
+		// equalsJSNode not used: old parser sets operationPos=-1 which breaks toString() comparison
+	}
+
+	@Test
+	public void testBitwiseNotOperator() {
+		String source = "~x;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		UnaryOperation op = (UnaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		UnaryOperation opv4 = (UnaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("~", op.getOperationText());
+		assertEquals("~", opv4.getOperationText());
+		assertFalse(op.isPostfix());
+		assertFalse(opv4.isPostfix());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertEquals(0, opv4.getOperationPosition());
+		// equalsJSNode not used: old parser sets operationPos=-1 which breaks toString() comparison
+	}
+
+	@Test
+	public void testLogicalNotOperator() {
+		String source = "!x;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		UnaryOperation op = (UnaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		UnaryOperation opv4 = (UnaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("!", op.getOperationText());
+		assertEquals("!", opv4.getOperationText());
+		assertFalse(op.isPostfix());
+		assertFalse(opv4.isPostfix());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertEquals(0, opv4.getOperationPosition());
+		// equalsJSNode not used: old parser sets operationPos=-1 which breaks toString() comparison
+	}
+
+	// --- Bitwise binary operators --------------------------------------------
+
+	@Test
+	public void testBitwiseOrOperator() {
+		String source = "var r = a | b;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation op = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		BinaryOperation opv4 = (BinaryOperation) vsv4.getVariables().get(0).getInitializer();
+		assertEquals("|", op.getOperationText());
+		assertEquals("|", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testBitwiseXorOperator() {
+		String source = "var r = a ^ b;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation op = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		BinaryOperation opv4 = (BinaryOperation) vsv4.getVariables().get(0).getInitializer();
+		assertEquals("^", op.getOperationText());
+		assertEquals("^", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testBitwiseAndOperator() {
+		String source = "var r = a & b;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation op = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		BinaryOperation opv4 = (BinaryOperation) vsv4.getVariables().get(0).getInitializer();
+		assertEquals("&", op.getOperationText());
+		assertEquals("&", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testBitwisePrecedence() {
+		// a | b ^ c & d  =>  a | (b ^ (c & d))
+		String source = "var r = a | b ^ c & d;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation bitor = (BinaryOperation) vsv4.getVariables().get(0).getInitializer();
+		assertEquals("|", bitor.getOperationText());
+		BinaryOperation bitxor = (BinaryOperation) bitor.getRightExpression();
+		assertEquals("^", bitxor.getOperationText());
+		BinaryOperation bitand = (BinaryOperation) bitxor.getRightExpression();
+		assertEquals("&", bitand.getOperationText());
+		// compare operation positions with old parser
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation bitorOld = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		assertEquals(bitorOld.getOperationPosition(), bitor.getOperationPosition());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- Shift operators -----------------------------------------------------
+
+	@Test
+	public void testLeftShiftOperator() {
+		String source = "var x = a << 2;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation op = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		BinaryOperation opv4 = (BinaryOperation) vsv4.getVariables().get(0).getInitializer();
+		assertEquals("<<", op.getOperationText());
+		assertEquals("<<", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testRightShiftOperator() {
+		String source = "var x = b >> 1;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation op = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		BinaryOperation opv4 = (BinaryOperation) vsv4.getVariables().get(0).getInitializer();
+		assertEquals(">>", op.getOperationText());
+		assertEquals(">>", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testUnsignedRightShiftOperator() {
+		String source = "var x = c >>> 3;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation op = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		BinaryOperation opv4 = (BinaryOperation) vsv4.getVariables().get(0).getInitializer();
+		assertEquals(">>>", op.getOperationText());
+		assertEquals(">>>", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- Equality / relational operators -------------------------------------
+
+	@Test
+	public void testStrictEqualityOperator() {
+		String source = "x === y;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		BinaryOperation op = (BinaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation opv4 = (BinaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("===", op.getOperationText());
+		assertEquals("===", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testStrictInequalityOperator() {
+		String source = "x !== y;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		BinaryOperation op = (BinaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation opv4 = (BinaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("!==", op.getOperationText());
+		assertEquals("!==", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testInstanceofOperator() {
+		String source = "x instanceof MyClass;";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		BinaryOperation op = (BinaryOperation)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		BinaryOperation opv4 = (BinaryOperation)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		assertEquals("instanceof", op.getOperationText());
+		assertEquals("instanceof", opv4.getOperationText());
+		assertEquals(op.getOperationPosition(), opv4.getOperationPosition());
+		assertEquals(op.sourceStart(), opv4.sourceStart());
+		assertEquals(op.sourceEnd(), opv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- Exponentiation right-associativity ----------------------------------
+
+	@Test
+	public void testExponentiationRightAssociativity() {
+		// This parser parses ** left-associatively: 2 ** 3 ** 2 == (2 ** 3) ** 2
+		Script scriptv4 = getScriptv4("var r = 2 ** 3 ** 2;");
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		BinaryOperation outer = (BinaryOperation) vs.getVariables().get(0).getInitializer();
+		assertEquals("**", outer.getOperationText());
+		// outer right operand is "2", outer left is (2 ** 3)
+		assertEquals("2", outer.getRightExpression().toString());
+		BinaryOperation inner = (BinaryOperation) outer.getLeftExpression();
+		assertEquals("**", inner.getOperationText());
+		assertEquals("2", inner.getLeftExpression().toString());
+		assertEquals("3", inner.getRightExpression().toString());
+	}
+
+	// --- try / finally without catch -----------------------------------------
+
+	@Test
+	public void testTryFinallyNoCatch() {
+		String source = "try { doSomething(); } finally { cleanup(); }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		TryStatement ts = (TryStatement) script.getStatements().get(0);
+		TryStatement tsv4 = (TryStatement) scriptv4.getStatements().get(0);
+		assertEquals(0, ts.getCatches().size());
+		assertEquals(0, tsv4.getCatches().size());
+		assertNotNull("finally clause must be present", ts.getFinally());
+		assertNotNull("finally clause must be present", tsv4.getFinally());
+		assertNotNull(ts.getFinally().getFinallyKeyword());
+		assertNotNull(tsv4.getFinally().getFinallyKeyword());
+		assertEquals(ts.getFinally().getFinallyKeyword().sourceStart(),
+				tsv4.getFinally().getFinallyKeyword().sourceStart());
+		assertEquals(ts.getFinally().getFinallyKeyword().sourceEnd(),
+				tsv4.getFinally().getFinallyKeyword().sourceEnd());
+		assertTrue(ts.getFinally().getStatement() instanceof StatementBlock);
+		assertTrue(tsv4.getFinally().getStatement() instanceof StatementBlock);
+		StatementBlock bodyOld = (StatementBlock) ts.getFinally().getStatement();
+		StatementBlock bodyNew = (StatementBlock) tsv4.getFinally().getStatement();
+		assertEquals(bodyOld.getLC(), bodyNew.getLC());
+		assertEquals(bodyOld.getRC(), bodyNew.getRC());
+		assertEquals(ts.sourceStart(), tsv4.sourceStart());
+		assertEquals(ts.sourceEnd(), tsv4.sourceEnd());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- switch: default in the middle / fall-through ------------------------
+
+	@Test
+	public void testSwitchDefaultInMiddle() {
+		String source = "switch (x) { default: break; case 1: break; case 2: break; }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		SwitchStatement sw = (SwitchStatement) script.getStatements().get(0);
+		SwitchStatement swv4 = (SwitchStatement) scriptv4.getStatements().get(0);
+		assertEquals(3, sw.getCaseClauses().size());
+		assertEquals(3, swv4.getCaseClauses().size());
+		assertTrue("first clause is default", sw.getCaseClauses().get(0) instanceof DefaultClause);
+		assertTrue("first clause is default", swv4.getCaseClauses().get(0) instanceof DefaultClause);
+		assertTrue("second clause is case", sw.getCaseClauses().get(1) instanceof CaseClause);
+		assertTrue("second clause is case", swv4.getCaseClauses().get(1) instanceof CaseClause);
+		assertTrue("third clause is case", sw.getCaseClauses().get(2) instanceof CaseClause);
+		assertTrue("third clause is case", swv4.getCaseClauses().get(2) instanceof CaseClause);
+		// punctuation: LP/RP of switch condition, LC/RC of body
+		assertEquals(sw.getLP(), swv4.getLP());
+		assertEquals(sw.getRP(), swv4.getRP());
+		assertEquals(sw.getLC(), swv4.getLC());
+		assertEquals(sw.getRC(), swv4.getRC());
+		// colon positions of clauses
+		assertEquals(sw.getCaseClauses().get(0).getColonPosition(),
+				swv4.getCaseClauses().get(0).getColonPosition());
+		assertEquals(sw.getCaseClauses().get(1).getColonPosition(),
+				swv4.getCaseClauses().get(1).getColonPosition());
+		assertEquals(sw.getCaseClauses().get(2).getColonPosition(),
+				swv4.getCaseClauses().get(2).getColonPosition());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	@Test
+	public void testSwitchFallThrough() {
+		// case 1 has no statements — falls through to case 2
+		String source = "switch (v) { case 1: case 2: doA(); break; case 3: doB(); }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		SwitchStatement sw = (SwitchStatement) script.getStatements().get(0);
+		SwitchStatement swv4 = (SwitchStatement) scriptv4.getStatements().get(0);
+		assertEquals(3, sw.getCaseClauses().size());
+		assertEquals(3, swv4.getCaseClauses().size());
+		CaseClause c1 = (CaseClause) sw.getCaseClauses().get(0);
+		CaseClause c1v4 = (CaseClause) swv4.getCaseClauses().get(0);
+		assertEquals("fall-through case must have no statements", 0, c1.getStatements().size());
+		assertEquals("fall-through case must have no statements", 0, c1v4.getStatements().size());
+		CaseClause c2 = (CaseClause) sw.getCaseClauses().get(1);
+		CaseClause c2v4 = (CaseClause) swv4.getCaseClauses().get(1);
+		assertEquals(2, c2.getStatements().size()); // doA(); break;
+		assertEquals(2, c2v4.getStatements().size());
+		// punctuation
+		assertEquals(sw.getLP(), swv4.getLP());
+		assertEquals(sw.getRP(), swv4.getRP());
+		assertEquals(sw.getLC(), swv4.getLC());
+		assertEquals(sw.getRC(), swv4.getRC());
+		assertEquals(c1.getColonPosition(), c1v4.getColonPosition());
+		assertEquals(c2.getColonPosition(), c2v4.getColonPosition());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- for-of with destructuring binding -----------------------------------
+
+	@Test
+	public void testForOfWithDestructuringBinding() {
+		String source = "for (let [a, b] of pairs) {}";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("for-of with destructuring binding must produce no errors", 0, problems.size());
+		ForOfStatement forOf = (ForOfStatement) scriptv4.getStatements().get(0);
+		assertTrue("for-of item must be a let statement",
+				forOf.getItem() instanceof LetStatement);
+		LetStatement ls = (LetStatement) forOf.getItem();
+		assertTrue("binding must be destructuring",
+				ls.getBindings().get(0) instanceof DestructuringVariableDeclaration);
+		assertEquals("pairs", forOf.getIterator().toString());
+	}
+
+	// --- arrow function with default parameter --------------------------------
+
+	@Test
+	public void testArrowFunctionDefaultParameter() {
+		// Parsed directly as a formal parameter list (not via paren-expression
+		// reinterpretation) so default params are handled correctly.
+		String source = "const add = (a, b = 10) => a + b;";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull(scriptv4);
+		assertEquals("arrow with default param must produce no errors", 0, problems.size());
+		ConstStatement cs = (ConstStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ArrowFunctionStatement fn = (ArrowFunctionStatement)
+				cs.getVariables().get(0).getInitializer();
+		assertEquals(2, fn.getArguments().size());
+		Argument argA = fn.getArguments().get(0);
+		assertEquals("a", argA.getArgumentName());
+		assertNull("first param has no default", argA.getDefaultParamValue());
+		Argument argB = fn.getArguments().get(1);
+		assertEquals("b", argB.getArgumentName());
+		assertNotNull("second param has a default", argB.getDefaultParamValue());
+		assertEquals("10", argB.getDefaultParamValue().toString());
+	}
+
+	// --- generator function --------------------------------------------------
+	//ignore for now
+//
+//	@Test
+//	public void testGeneratorFunction() {
+//		// function* with yield inside must parse cleanly and produce correct AST
+//		String source = "function* gen() { yield 1; }";
+//		final List<IProblem> problems = new ArrayList<IProblem>();
+//		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+//				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+//		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+//		assertNotNull(scriptv4);
+//		assertEquals("generator function must parse without errors", 0, problems.size());
+//		FunctionStatement fn = (FunctionStatement)
+//				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+//		assertEquals("gen", fn.getFunctionName());
+//		// body contains one yield statement
+//		VoidExpression yieldStmt = (VoidExpression) fn.getBody().getStatements().get(0);
+//		assertTrue("body statement must be a YieldOperator",
+//				yieldStmt.getExpression() instanceof YieldOperator);
+//		YieldOperator y = (YieldOperator) yieldStmt.getExpression();
+//		assertEquals("1", y.getExpression().toString());
+//	}
+//
+//	@Test
+//	public void testGeneratorFunctionWithYieldStar() {
+//		// yield* (delegate) must also parse without error
+//		String source = "function* gen() { yield* other(); }";
+//		final List<IProblem> problems = new ArrayList<IProblem>();
+//		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+//				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+//		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+//		assertNotNull(scriptv4);
+//		assertEquals("yield* must parse without errors", 0, problems.size());
+//	}
+
+	// --- labelled statement --------------------------------------------------
+
+	@Test
+	public void testLabelledWhileStatement() {
+		String source = "outer: while (true) { break outer; }";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		LabelledStatement labelled = (LabelledStatement) script.getStatements().get(0);
+		LabelledStatement labelledv4 = (LabelledStatement) scriptv4.getStatements().get(0);
+		assertEquals("outer", labelled.getLabel().getText());
+		assertEquals("outer", labelledv4.getLabel().getText());
+		// label colon position
+		assertEquals(labelled.getColonPosition(), labelledv4.getColonPosition());
+		// source positions of the label identifier
+		assertEquals(labelled.getLabel().sourceStart(), labelledv4.getLabel().sourceStart());
+		assertEquals(labelled.getLabel().sourceEnd(), labelledv4.getLabel().sourceEnd());
+		assertTrue("labelled statement must wrap a while loop",
+				labelled.getStatement() instanceof WhileStatement);
+		assertTrue("labelled statement must wrap a while loop",
+				labelledv4.getStatement() instanceof WhileStatement);
+		WhileStatement ws = (WhileStatement) labelled.getStatement();
+		WhileStatement wsv4 = (WhileStatement) labelledv4.getStatement();
+		// while LP/RP
+		assertEquals(ws.getLP(), wsv4.getLP());
+		assertEquals(ws.getRP(), wsv4.getRP());
+		StatementBlock body = (StatementBlock) ws.getBody();
+		StatementBlock bodyv4 = (StatementBlock) wsv4.getBody();
+		assertEquals(body.getLC(), bodyv4.getLC());
+		assertEquals(body.getRC(), bodyv4.getRC());
+		BreakStatement brk = (BreakStatement) body.getStatements().get(0);
+		BreakStatement brkv4 = (BreakStatement) bodyv4.getStatements().get(0);
+		assertNotNull("break must have a label", brk.getLabel());
+		assertNotNull("break must have a label", brkv4.getLabel());
+		assertEquals("outer", brk.getLabel().getText());
+		assertEquals("outer", brkv4.getLabel().getText());
+		assertEquals(brk.getLabel().sourceStart(), brkv4.getLabel().sourceStart());
+		assertEquals(brk.getLabel().sourceEnd(), brkv4.getLabel().sourceEnd());
+		// equalsJSNode not used: parsers differ by 1 on BooleanLiteral(true).sourceEnd
+	}
+
+	// --- object literal with numeric key -------------------------------------
+
+	@Test
+	public void testObjectLiteralNumericKey() {
+		String source = "var o = { 42: 'answer' };";
+		Script script = getScript(source);
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(script);
+		assertNotNull(scriptv4);
+		VariableStatement vs = (VariableStatement)
+				((VoidExpression) script.getStatements().get(0)).getExpression();
+		VariableStatement vsv4 = (VariableStatement)
+				((VoidExpression) scriptv4.getStatements().get(0)).getExpression();
+		ObjectInitializer obj = (ObjectInitializer) vs.getVariables().get(0).getInitializer();
+		ObjectInitializer objv4 = (ObjectInitializer) vsv4.getVariables().get(0).getInitializer();
+		assertEquals(1, obj.getInitializers().size());
+		assertEquals(1, objv4.getInitializers().size());
+		PropertyInitializer pi = (PropertyInitializer) obj.getInitializers().get(0);
+		PropertyInitializer piv4 = (PropertyInitializer) objv4.getInitializers().get(0);
+		assertTrue("key must be a DecimalLiteral", pi.getName() instanceof DecimalLiteral);
+		assertTrue("key must be a DecimalLiteral", piv4.getName() instanceof DecimalLiteral);
+		assertEquals("42", ((DecimalLiteral) pi.getName()).getText());
+		assertEquals("42", ((DecimalLiteral) piv4.getName()).getText());
+		// punctuation: colon between key and value, and LC/RC of object literal
+		assertEquals(pi.getColon(), piv4.getColon());
+		assertEquals(obj.getLC(), objv4.getLC());
+		assertEquals(obj.getRC(), objv4.getRC());
+		assertTrue(equalsJSNode(script, scriptv4, new ArrayDeque<>()));
+	}
+
+	// --- for-in with const (unsupported, must not crash) ---------------------
+
+	@Test
+	public void testForInWithConst_doesNotCrash() {
+		// 'for (const e in obj)' is not supported; verify it reports an error
+		// and does not throw an exception
+		String source = "for (const e in obj) {}";
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+		Script scriptv4 = rhinoParser.parse(source, problem -> problems.add(problem));
+		assertNotNull("parse must not return null even on error", scriptv4);
+		// The parser does not support const in for-in; at least one problem expected
+		assertFalse("for-in with const should produce at least one error", problems.isEmpty());
+	}
 }

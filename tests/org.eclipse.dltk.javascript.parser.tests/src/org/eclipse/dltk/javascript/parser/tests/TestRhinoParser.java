@@ -4505,4 +4505,21 @@ public class TestRhinoParser {
 		// The parser does not support const in for-in; at least one problem expected
 		assertFalse("for-in with const should produce at least one error", problems.isEmpty());
 	}
+	
+	@Test
+	public void testInvalidLHS_in_Assignment() {
+        String source = "for (i=1; i<=12; i++) {\r\n"
+        		+ "				forms.order_line.controller.newRecord();\r\n"
+        		+ "				forms.order_line.order_id = foundset.order_id;\r\n"
+        		+ "				forms.order_line.amount = 20 + i;\r\n"
+        		+ "				forms.order_line.customer_id = 12 + i;\r\n"
+        		+ "				databaseManager.saveData();\r\n"
+        		+ "			}";
+        final List<IProblem> problems = new ArrayList<IProblem>();
+        final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
+                new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
+        rhinoParser.parse(source, problem -> problems.add(problem));
+        assertTrue("parse should not produce errors", problems.isEmpty());
+       
+	}
 }

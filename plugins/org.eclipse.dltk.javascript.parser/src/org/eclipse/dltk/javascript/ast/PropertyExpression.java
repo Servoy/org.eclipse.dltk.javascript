@@ -23,7 +23,7 @@ public class PropertyExpression extends Expression implements Documentable, IsOp
 	private Expression property;
 	private int dot = -1;
 	private Comment documentation;
-	private int optionalChain;
+	private int optionalChain = -1;
 
 	public PropertyExpression(JSNode parent) {
 		super(parent);

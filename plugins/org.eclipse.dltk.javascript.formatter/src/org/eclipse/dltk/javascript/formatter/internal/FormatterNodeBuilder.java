@@ -91,6 +91,9 @@ import org.eclipse.dltk.javascript.ast.ThisExpression;
 import org.eclipse.dltk.javascript.ast.ThrowStatement;
 import org.eclipse.dltk.javascript.ast.TryStatement;
 import org.eclipse.dltk.javascript.ast.UnaryOperation;
+import org.eclipse.dltk.javascript.ast.ComputedPropertyKey;
+import org.eclipse.dltk.javascript.ast.SpreadElement;
+import org.eclipse.dltk.javascript.ast.SpreadProperty;
 import org.eclipse.dltk.javascript.ast.VariableBinding;
 import org.eclipse.dltk.javascript.ast.VariableDeclaration;
 import org.eclipse.dltk.javascript.ast.VariableStatement;
@@ -1578,6 +1581,52 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 						new FinallyBracesConfiguration(document));
 
 				checkedPop(formatterNode, node.sourceEnd());
+			}
+
+			@Override
+			public IFormatterNode visitSpreadElement(SpreadElement node) {
+				FormatterBlockNode formatterNode = new FormatterBlockNode(document);
+				formatterNode.addChild(createEmptyTextNode(document, node.sourceStart()));
+				push(formatterNode);
+				// emit the '...' token with no space after it
+				addChild(createTextNode(document, node.getDotDotDot(),
+						node.getDotDotDot() + 3));
+				skipSpaces(formatterNode, node.getExpression().sourceStart());
+				visit(node.getExpression());
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
+			}
+
+			@Override
+			public IFormatterNode visitSpreadProperty(SpreadProperty node) {
+				FormatterBlockNode formatterNode = new FormatterBlockNode(document);
+				formatterNode.addChild(createEmptyTextNode(document, node.sourceStart()));
+				push(formatterNode);
+				addChild(createTextNode(document, node.getDotDotDot(),
+						node.getDotDotDot() + 3));
+				skipSpaces(formatterNode, node.getExpression().sourceStart());
+				visit(node.getExpression());
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
+			}
+
+			@Override
+			public IFormatterNode visitComputedPropertyKey(ComputedPropertyKey node) {
+				FormatterBlockNode formatterNode = new FormatterBlockNode(document);
+				formatterNode.addChild(createEmptyTextNode(document, node.sourceStart()));
+				push(formatterNode);
+				// emit '[', key expression, ']', ':', value
+				addChild(createTextNode(document, node.getLB(), node.getLB() + 1));
+				skipSpaces(formatterNode, node.getKey().sourceStart());
+				visit(node.getKey());
+				skipSpaces(formatterNode, node.getRB());
+				addChild(createTextNode(document, node.getRB(), node.getRB() + 1));
+				skipSpaces(formatterNode, node.getColon());
+				addChild(createTextNode(document, node.getColon(), node.getColon() + 1));
+				skipSpaces(formatterNode, node.getValue().sourceStart());
+				visit(node.getValue());
+				checkedPop(formatterNode, node.sourceEnd());
+				return formatterNode;
 			}
 
 			@Override

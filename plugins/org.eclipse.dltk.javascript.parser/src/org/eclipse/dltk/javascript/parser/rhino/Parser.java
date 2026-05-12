@@ -344,9 +344,10 @@ public class Parser implements IParser{
 			int line,
 			String lineSource,
 			int lineOffset) {
-		if (compilerEnv.isStrictMode()) {
+		// strict mode is not supported, just add as warnings
+		//if (compilerEnv.isStrictMode()) {
 			addWarning(messageId, messageArg, position, length, line, lineSource, lineOffset);
-		}
+		//}
 	}
 
 	private void addWarning(
@@ -1056,10 +1057,11 @@ public class Parser implements IParser{
 				fnNode.setIsDeclaration(false);
 			}
 
-		} else if (matchToken(Token.MUL, true)
-				&& (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6)) {
-			// ES6 generator function
-			return function(type, true, true);
+		// NO SUPPORT FOR GENERATOR FN IN DLTK
+		//        } else if (matchToken(Token.MUL, true)
+		//                && (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6)) {
+		//            // ES6 generator function
+		//            return function(type, true, true);
 		} else {
 			if (compilerEnv.isAllowMemberExprAsFunctionName()) {
 				// Note that memberExpr can not start with '(' like
@@ -1351,17 +1353,18 @@ public class Parser implements IParser{
 		try {
 			ASTNode pn = statementHelper();
 			if (pn != null) {
-				if (compilerEnv.isStrictMode()) { //TODO && !pn.hasSideEffects()) {
-					int beg = pn.start();
-					beg = Math.max(beg, lineBeginningFor(beg));
-					addStrictWarning(
-							pn instanceof EmptyStatement
-							? "msg.extra.trailing.semi"
-									: "msg.no.side.effects",
-									"",
-									beg,
-									pn.end() - beg);
-				}
+				//we don't have strict mode
+//				if (compilerEnv.isStrictMode()) { //TODO && !pn.hasSideEffects()) {
+//					int beg = pn.start();
+//					beg = Math.max(beg, lineBeginningFor(beg));
+//					addStrictWarning(
+//							pn instanceof EmptyStatement
+//							? "msg.extra.trailing.semi"
+//									: "msg.no.side.effects",
+//									"",
+//									beg,
+//									pn.end() - beg);
+//				}
 				int ntt = peekToken();
 				if (ts.getLineno() - lineno > 2 && prevTokenStart == pn.start() && prevTokenEnd > pn.end()) {
 					//this is to match the end with the old dltk tree when the next token is following multiple newlines
@@ -4882,11 +4885,12 @@ public class Parser implements IParser{
 		}
 	}
 
-	protected void setIsGenerator() {
-		if (insideFunction()) {
-			//            ((FunctionNode) currentScriptOrFn).setIsGenerator();
-		}
-	}
+	//generator not supported in dltk
+//	protected void setIsGenerator() {
+//		if (insideFunction()) {
+//			//            ((FunctionNode) currentScriptOrFn).setIsGenerator();
+//		}
+//	}
 
 	private void checkBadIncDec(UnaryOperation expr) {
 		JSNode op = removeParens(expr.getExpression());

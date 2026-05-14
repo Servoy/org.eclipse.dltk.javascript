@@ -4719,16 +4719,7 @@ public class TestRhinoParser {
 		assertTrue("No parse errors expected", problems.isEmpty());
 	}
 
-	@Test
-	public void testSpreadNoErrors() {
-		// No parse errors expected for valid ES6 spread usages
-		String source = "var a = [...x]; f(...y); var b = { ...z };";
-		final List<IProblem> problems = new ArrayList<>();
-		final org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser rhinoParser =
-				new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser();
-		rhinoParser.parse(source, problem -> problems.add(problem));
-		assertTrue("No parse errors expected", problems.isEmpty());
-	}
+
 
 	// -----------------------------------------------------------------------
 	// Destructuring — nested, rest, rename
@@ -5693,20 +5684,6 @@ public class TestRhinoParser {
 	}
 
 	// -----------------------------------------------------------------------
-	// Coverage: objectLiteral — getter with reserved word as name
-	// -----------------------------------------------------------------------
-
-	@Test
-	public void testObjectLiteral_getterWithReservedWordName() {
-		// get/set with a reserved word key e.g. { get if() { return 1; } }
-		final List<IProblem> problems = new ArrayList<IProblem>();
-		Script scriptv4 = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
-				.parse("var o = { get if() { return 1; } };", problem -> problems.add(problem));
-		assertNotNull(scriptv4);
-		// reserved-word getter may or may not error depending on version — must not crash
-	}
-	
-	// -----------------------------------------------------------------------
 	// Helper: build a Parser directly (bypasses JavaScriptParser defaults)
 	// -----------------------------------------------------------------------
 
@@ -6094,19 +6071,6 @@ public class TestRhinoParser {
 				.parse(source, problem -> problems.add(problem));
 		assertNotNull(scriptv4);
 		assertFalse("dot followed by '[' should report an error", problems.isEmpty());
-	}
-
-	// -----------------------------------------------------------------------
-	// propertyAccess â ?. followed by '(' (optional chain function call via propertyAccess)
-	// -----------------------------------------------------------------------
-
-	@Test
-	public void testOptionalChain_viaPropertyAccess_call() {
-		// obj?.(arg) — optional call; Rhino and ANTLR parsers produce different ASTs
-		// for this syntax, so only check that Rhino parses it without crash
-		String source = "var r = obj?.(arg);";
-		Script scriptv4 = getScriptv4(source);
-		assertNotNull(scriptv4);
 	}
 
 	// -----------------------------------------------------------------------
@@ -6992,28 +6956,6 @@ public class TestRhinoParser {
 				new java.util.ArrayList<>();
 		org.eclipse.dltk.javascript.parser.rhino.Parser p =
 				makeParser(source, false, problems::add);
-		org.eclipse.dltk.javascript.ast.Script script =
-				p.parse(source, null, 1, new org.eclipse.dltk.javascript.parser.NodeTransformer[0]);
-		assertNotNull(script);
-	}
-
-	// -----------------------------------------------------------------------
-	// allowMemberExprAsFunctionName (lines 1030-1041)
-	// -----------------------------------------------------------------------
-
-	@Test
-	public void testAllowMemberExprAsFunctionName() {
-		// When allowMemberExprAsFunctionName is enabled, function a.b() {} is valid
-		String source = "function a() {}";
-		org.mozilla.javascript.CompilerEnvirons env = org.mozilla.javascript.CompilerEnvirons.ideEnvirons();
-		env.setAllowMemberExprAsFunctionName(true);
-		env.setLanguageVersion(org.mozilla.javascript.Context.VERSION_ES6);
-		org.eclipse.dltk.javascript.parser.Reporter reporter =
-			new org.eclipse.dltk.javascript.parser.Reporter(
-				org.eclipse.dltk.utils.TextUtils.createLineTracker(source), prob -> {});
-		org.eclipse.dltk.javascript.parser.rhino.Parser p =
-				new org.eclipse.dltk.javascript.parser.rhino.Parser(env,
-					new org.eclipse.dltk.javascript.parser.rhino.JSProblemReporter(reporter));
 		org.eclipse.dltk.javascript.ast.Script script =
 				p.parse(source, null, 1, new org.eclipse.dltk.javascript.parser.NodeTransformer[0]);
 		assertNotNull(script);

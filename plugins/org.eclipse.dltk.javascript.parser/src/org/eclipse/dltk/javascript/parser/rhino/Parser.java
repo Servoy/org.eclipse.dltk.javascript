@@ -581,11 +581,11 @@ public class Parser implements IParser{
 		return nestingOfFunction != 0;
 	}
 
-	boolean insideFunctionBody() {
+	public boolean insideFunctionBody() {
 		return nestingOfFunction != 0;
 	}
 
-	boolean insideFunctionParams() {
+	public boolean insideFunctionParams() {
 		return nestingOfFunctionParams != 0;
 	}
 

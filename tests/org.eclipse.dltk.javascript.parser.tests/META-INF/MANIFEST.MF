@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.dltk.core.tests,
  org.eclipse.dltk.javascript.parser,
  org.antlr.runtime;bundle-version="[3.0.0,3.0.9)",
- com.google.guava
+ com.google.guava,
+ org.eclipse.dltk.javascript.rhino;bundle-version="[1.9.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: org.eclipse.dltk.javascript.parser.tests

@@ -2837,6 +2837,17 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testArrowRhinoWithLineEndingOnlyThisWithLineFeed() {
+		String source = "()=>this\n";
+		Script scriptv4 = getScriptv4(source);
+		System.err.println(scriptv4);
+		VoidExpression voidExpression = (VoidExpression) scriptv4.getStatements().get(0);
+		ArrowFunctionStatement arrowFunction = (ArrowFunctionStatement) voidExpression.getExpression();
+		Expression thisExpression = ((VoidExpression)arrowFunction.getBody()).getExpression();
+		assertEquals(thisExpression.sourceStart(), 4);
+		assertEquals(thisExpression.sourceEnd(), 8);
+	}
+	@Test
 	public void testArrowRhinoWithLineEndingThisWithProperty() {
 		String source = "()=>this.xs";
 		Script scriptv4 = getScriptv4(source);

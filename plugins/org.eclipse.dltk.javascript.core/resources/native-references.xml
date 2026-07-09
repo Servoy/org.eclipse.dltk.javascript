@@ -407,7 +407,16 @@
       <parameters name="thisArg" kind="OPTIONAL"/>
     </members>
     <members xsi:type="ref:Method" name="sort" description="Sorts the elements of an array. The function will be called with 2 arguments (a,b)">
-      <parameters name="sortByFunction" directType="Function" kind="OPTIONAL"/>
+      <parameters name="sortByFunction" kind="OPTIONAL">
+        <type xsi:type="ref:FunctionType" directType="Number">
+          <parameters name="a" description="The first element for comparison.">
+            <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+          <parameters name="b" description="The second element for comparison.">
+            <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+          </parameters>
+        </type>
+      </parameters>
       <type xsi:type="ref:ArrayType">
         <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
       </type>
@@ -494,12 +503,16 @@
         </type>
     </members>
     <members xsi:type="ref:Method" name="toSorted" description="Returns a new array with the elements sorted in ascending order.">
-        <type xsi:type="ref:ArrayType">
-            <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
-        </type>
-    </members>
-    <members xsi:type="ref:Method" name="toSorted" description="Returns a new array with the elements sorted in ascending order using a comparator function.">
-        <parameters name="comparator" directType="Function"/>
+        <parameters name="comparator" kind="OPTIONAL">
+          <type xsi:type="ref:FunctionType" directType="Number">
+            <parameters name="a" description="The first element for comparison.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </parameters>
+            <parameters name="b" description="The second element for comparison.">
+              <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
+            </parameters>
+          </type>
+        </parameters>
         <type xsi:type="ref:ArrayType">
             <itemType xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
         </type>

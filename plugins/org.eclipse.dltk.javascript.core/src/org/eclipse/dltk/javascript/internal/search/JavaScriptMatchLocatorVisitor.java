@@ -33,6 +33,7 @@ import org.eclipse.dltk.javascript.ast.Argument;
 import org.eclipse.dltk.javascript.ast.Comment;
 import org.eclipse.dltk.javascript.ast.Expression;
 import org.eclipse.dltk.javascript.ast.FunctionStatement;
+import org.eclipse.dltk.javascript.ast.IDestructuringPattern;
 import org.eclipse.dltk.javascript.ast.Identifier;
 import org.eclipse.dltk.javascript.ast.JSDeclaration;
 import org.eclipse.dltk.javascript.ast.JSScope;
@@ -201,6 +202,15 @@ public class JavaScriptMatchLocatorVisitor extends
 
 		Map<String, Argument> arguments = new HashMap<String, Argument>();
 		for (Argument argument : function.getArguments()) {
+			if (argument.getIdentifier() == null) {
+				if (argument.isDestructuring()) {
+					IDestructuringPattern pattern = (IDestructuringPattern) argument.getDestructuringPattern();
+					for (Identifier id : pattern.getIdentifiers()) {
+						arguments.put(id.getName(), argument);
+					}
+				}
+				continue;
+			}
 			arguments.put(argument.getIdentifier().getName(), argument);
 		}
 		for (IParameter parameter : method.getParameters()) {

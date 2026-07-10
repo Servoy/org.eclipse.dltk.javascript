@@ -744,7 +744,11 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 					skipSpaces(parens, arg0.sourceStart());
 				}
 				for (Argument argument : node.getArguments()) {
-					visit(argument.getIdentifier());
+					if (argument.getIdentifier() != null) {
+						visit(argument.getIdentifier());
+					} else if (argument.getDestructuringPattern() != null) {
+						visit(argument.getDestructuringPattern());
+					}
 					if (argument.getCommaPosition() != -1) {
 						int position = argument.getCommaPosition();
 						skipSpacesOnly(parens, position);
@@ -1402,7 +1406,11 @@ public class FormatterNodeBuilder extends AbstractFormatterNodeBuilder {
 					skipSpaces(parens, arg0.sourceStart());
 				}
 				for (Argument argument : node.getArguments()) {
-					visit(argument.getIdentifier());
+					if (argument.getIdentifier() != null) {
+						visit(argument.getIdentifier());
+					} else if (argument.getDestructuringPattern() != null) {
+						visit(argument.getDestructuringPattern());
+					}
 					if (argument.getCommaPosition() != -1) {
 						int position = argument.getCommaPosition();
 						skipSpacesOnly(parens, position);

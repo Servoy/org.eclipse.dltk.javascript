@@ -53,6 +53,7 @@ import org.eclipse.dltk.javascript.ast.ContinueStatement;
 import org.eclipse.dltk.javascript.ast.DecimalLiteral;
 import org.eclipse.dltk.javascript.ast.DefaultXmlNamespaceStatement;
 import org.eclipse.dltk.javascript.ast.DestructuringVariableDeclaration;
+import org.eclipse.dltk.javascript.ast.IDestructuringPattern;
 import org.eclipse.dltk.javascript.ast.DoWhileStatement;
 import org.eclipse.dltk.javascript.ast.EmptyExpression;
 import org.eclipse.dltk.javascript.ast.EmptyStatement;
@@ -1410,6 +1411,30 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 				setTypeImpl(refArg, parameter.getType());
 				refArg.setLocation(parameter.getLocation());
 			}
+			// Declare destructuring identifiers in scope with decomposed types
+			for (int i = 0; i < node.getArguments().size(); i++) {
+				Argument argument = node.getArguments().get(i);
+				if (argument.isDestructuring()) {
+					IDestructuringPattern pattern = (IDestructuringPattern) argument.getDestructuringPattern();
+					IParameter syntheticParam = method.getParameter("_destructured_" + i);
+					IRType paramType = null;
+					if (syntheticParam != null && syntheticParam.getType() != null) {
+						paramType = context.contextualize(syntheticParam.getType());
+					}
+					IRType itemType = paramType != null ? TypeUtil.extractArrayItemType(paramType) : null;
+					for (Identifier id : pattern.getIdentifiers()) {
+						final IValueReference refArg = function.createChild(id.getName());
+						refArg.setKind(ReferenceKind.ARGUMENT);
+						refArg.setLocation(ReferenceLocation.create(getSource(),
+								id.sourceStart(), id.sourceEnd()));
+						if (itemType != null) {
+							refArg.setDeclaredType(itemType);
+						} else if (paramType != null) {
+							refArg.setDeclaredType(paramType);
+						}
+					}
+				}
+			}
 			result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE, function);
 		}
 
@@ -1469,6 +1494,21 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		int counter = 0;
 
 		for (Argument argument : node.getArguments()) {
+			if (argument.getIdentifier() == null) {
+				if (argument.isDestructuring() && functionType != null
+						&& functionType.getParameters().size() > counter) {
+					IRParameter ftParam = functionType.getParameters().get(counter);
+					if (ftParam != null) {
+						IParameter syntheticParam = method.getParameter("_destructured_" + counter);
+						if (syntheticParam != null && syntheticParam.getType() == null) {
+							syntheticParam.setType(getDocSupport().translateTypeName(
+									ftParam.getType().getName(), null, null));
+						}
+					}
+				}
+				counter++;
+				continue;
+			}
 			IParameter parameter = method
 					.getParameter(argument.getIdentifier().getName());
 			if (parameter.getType() == null) {
@@ -1510,6 +1550,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 			}
 		}
 		for (Argument argument : node.getArguments()) {
+			if (argument.getIdentifier() == null) continue;
 			IParameter parameter = method
 					.getParameter(argument.getIdentifier().getName());
 			if (parameter.getType() == null) {
@@ -1524,6 +1565,21 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		IRFunctionType functionType = functionTypes.get(node);
 		int counter = 0;
 		for (Argument argument : node.getArguments()) {
+			if (argument.getIdentifier() == null) {
+				if (argument.isDestructuring() && functionType != null
+						&& functionType.getParameters().size() > counter) {
+					IRParameter ftParam = functionType.getParameters().get(counter);
+					if (ftParam != null) {
+						IParameter syntheticParam = method.getParameter("_destructured_" + counter);
+						if (syntheticParam != null && syntheticParam.getType() == null) {
+							syntheticParam.setType(getDocSupport().translateTypeName(
+									ftParam.getType().getName(), null, null));
+						}
+					}
+				}
+				counter++;
+				continue;
+			}
 			if (argument.getIdentifier().getDocumentation() != null) {
 				JSDocTags tags = JSDocSupport
 						.parse(argument.getIdentifier().getDocumentation());
@@ -3125,6 +3181,30 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		}
 		result.setAttribute(IReferenceAttributes.FUNCTION_SCOPE, function);
 		enterContext(function);
+		// Declare destructuring identifiers in scope with decomposed types
+		for (Argument argument : node.getArguments()) {
+			if (argument.isDestructuring()) {
+				IDestructuringPattern pattern = (IDestructuringPattern) argument.getDestructuringPattern();
+				IRType paramType = null;
+				// Try to get the type from the synthetic parameter
+				IParameter syntheticParam = method.getParameter("_destructured_" + node.getArguments().indexOf(argument));
+				if (syntheticParam != null && syntheticParam.getType() != null) {
+					paramType = context.contextualize(syntheticParam.getType());
+				}
+				IRType itemType = paramType != null ? TypeUtil.extractArrayItemType(paramType) : null;
+				for (Identifier id : pattern.getIdentifiers()) {
+					final IValueReference refArg = function.createChild(id.getName());
+					refArg.setKind(ReferenceKind.ARGUMENT);
+					refArg.setLocation(ReferenceLocation.create(getSource(),
+							id.sourceStart(), id.sourceEnd()));
+					if (itemType != null) {
+						refArg.setDeclaredType(itemType);
+					} else if (paramType != null) {
+						refArg.setDeclaredType(paramType);
+					}
+				}
+			}
+		}
 		Set<IProblemIdentifier> suppressed = null;
 		try {
 			if (reporter != null && !method.getSuppressedWarnings().isEmpty()) {

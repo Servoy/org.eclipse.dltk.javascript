@@ -683,7 +683,11 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 
 		testKeyword(node.getFunctionKeyword());
 		for (Argument argument : node.getArguments()) {
-			visit(argument.getIdentifier());
+			if (argument.getIdentifier() != null) {
+				visit(argument.getIdentifier());
+			} else if (argument.getDestructuringPattern() != null) {
+				visit(argument.getDestructuringPattern());
+			}
 			if (argument.getCommaPosition() != -1) {
 				testChar(',', argument.getCommaPosition());
 			}
@@ -798,7 +802,11 @@ public class ASTVerifier extends ASTVisitor<Boolean> {
 	@Override
 	public Boolean visitArrowFunction(ArrowFunctionStatement node) {
 		for (Argument argument : node.getArguments()) {
-			visit(argument.getIdentifier());
+			if (argument.getIdentifier() != null) {
+				visit(argument.getIdentifier());
+			} else if (argument.getDestructuringPattern() != null) {
+				visit(argument.getDestructuringPattern());
+			}
 			if (argument.getCommaPosition() != -1) {
 				testChar(',', argument.getCommaPosition());
 			}

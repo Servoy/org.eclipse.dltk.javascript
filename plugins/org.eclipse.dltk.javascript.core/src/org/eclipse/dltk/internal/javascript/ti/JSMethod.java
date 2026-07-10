@@ -282,6 +282,19 @@ public class JSMethod extends ArrayList<IParameter> implements IMethod {
 	private void addArguments(List<Argument> arguments,
 			ReferenceSource source) {
 		for (Argument argument : arguments) {
+			if (argument.getIdentifier() == null) {
+				if (argument.getDestructuringPattern() != null) {
+					final IParameter parameter = createParameter();
+					parameter.setName("_destructured_" + getParameters().size());
+					parameter.setLocation(ReferenceLocation.create(source,
+							argument.sourceStart(), argument.sourceEnd()));
+					if (argument.getDefaultParamValue() != null) {
+						parameter.setKind(ParameterKind.OPTIONAL);
+					}
+					getParameters().add(parameter);
+				}
+				continue;
+			}
 			final IParameter parameter = createParameter();
 			parameter.setName(argument.getIdentifier().getName());
 			parameter.setLocation(ReferenceLocation.create(source,

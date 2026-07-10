@@ -408,7 +408,7 @@
     </members>
     <members xsi:type="ref:Method" name="sort" description="Sorts the elements of an array. The function will be called with 2 arguments (a,b)">
       <parameters name="sortByFunction" kind="OPTIONAL">
-        <type xsi:type="ref:FunctionType" directType="Number">
+        <type xsi:type="ref:FunctionType">
           <parameters name="a" description="The first element for comparison.">
             <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
           </parameters>
@@ -504,7 +504,7 @@
     </members>
     <members xsi:type="ref:Method" name="toSorted" description="Returns a new array with the elements sorted in ascending order.">
         <parameters name="comparator" kind="OPTIONAL">
-          <type xsi:type="ref:FunctionType" directType="Number">
+          <type xsi:type="ref:FunctionType">
             <parameters name="a" description="The first element for comparison.">
               <type xsi:type="ref:TypeVariableReference" variable="@ROOT/Array/E"/>
             </parameters>

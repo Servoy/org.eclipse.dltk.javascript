@@ -908,25 +908,27 @@ public class Parser implements IParser{
 				//TODO fnNode.putIntProp(Node.TRAILING_COMMA, 1);
 				break;
 			}
-			//            if (tt == Token.LB || tt == Token.LC) {
-			//                if (hasRestParameter) {
-			//                    // Error: parameter after rest parameter
-			//                    reportError("msg.parm.after.rest", ts.getTokenBeg(), ts.getTokenEnd() - ts.getTokenBeg());
-			//                }
-			//
-			//                Expression expr = destructuringPrimaryExpr();
-			//                markDestructuring(expr);
-			//                fnNode.addParam(expr);
-			//                // Destructuring assignment for parameters: add a dummy
-			//                // parameter name, and add a statement to the body to initialize
-			//                // variables from the destructuring assignment
-			//                if (destructuring == null) {
-			//                    destructuring = new HashMap<>();
-			//                }
-			//                String pname = currentScriptOrFn.getNextTempName();
-			//                defineSymbol(Token.LP, pname, false);
-			//                destructuring.put(pname, expr);
-			//            } else {
+			if (tt == Token.LB || tt == Token.LC) {
+				if (hasRestParameter) {
+					reportError("msg.parm.after.rest", ts.getTokenBeg(), ts.getTokenEnd() - ts.getTokenBeg());
+				}
+				Expression expr = destructuringPrimaryExpr();
+				markDestructuring(expr);
+				Argument argument = new Argument(fnNode);
+				argument.setDestructuringPattern(expr);
+				argument.setStart(expr.start());
+				argument.setEnd(expr.end());
+				fnNode.addArgument(argument);
+				prevArg = argument;
+				if (matchToken(Token.ASSIGN, true)) {
+					if (compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+						argument.setAssignPosition(ts.getTokenBeg());
+						argument.setDefaultParamValue(assignExpr());
+					} else {
+						reportError("msg.default.args");
+					}
+				}
+			} else {
 			boolean wasRest = false;
 			int ellipsisPos = -1;
 			if (tt == Token.DOTDOTDOT) {
@@ -985,7 +987,7 @@ public class Parser implements IParser{
 			} else {
 				//                    fnNode.addParam(makeErrorNode());
 			}
-			//            }
+			}
 			hasComma = matchToken(Token.COMMA, true);
 			commaPos = ts.getTokenBeg();
 		} while (hasComma);
@@ -1216,11 +1218,12 @@ public class Parser implements IParser{
 			Map<String, Node> destructuring,
 			Set<String> paramNames) {
 		if (params instanceof IDestructuringPattern) {
-			//            markDestructuring(params);
-			//            fnNode.addParam(params);
-			//            String pname = currentScriptOrFn.getNextTempName();
-			//            defineSymbol(Token.LP, pname, false);
-			//            destructuring.put(pname, params);
+			markDestructuring((Expression) params);
+			Argument arg = new Argument(fnNode);
+			arg.setDestructuringPattern((Expression) params);
+			arg.setStart(params.start());
+			arg.setEnd(params.end());
+			fnNode.addArgument(arg);
 		} 
 		else if (params instanceof CommaExpression) {
 			for (ASTNode param : ((CommaExpression) params).getItems()) {
@@ -1268,6 +1271,21 @@ public class Parser implements IParser{
 			arg.setEnd(params.end());
 			arg.setDefaultParamValue((Expression) assign.getRightExpression());
 			defineSymbol(Token.LP, ident);
+		}
+		else if (params instanceof BinaryOperation
+				&& "=".equals(((BinaryOperation) params).getOperationText())
+				&& ((BinaryOperation) params).getLeftExpression() instanceof IDestructuringPattern
+				&& compilerEnv.getLanguageVersion() >= Context.VERSION_ES6) {
+			// Default parameter with destructuring pattern: ([a, b] = [1, 2]) => ...
+			BinaryOperation assign = (BinaryOperation) params;
+			Expression pattern = (Expression) assign.getLeftExpression();
+			markDestructuring(pattern);
+			Argument arg = new Argument(fnNode);
+			arg.setDestructuringPattern(pattern);
+			arg.setStart(params.start());
+			arg.setEnd(params.end());
+			arg.setDefaultParamValue((Expression) assign.getRightExpression());
+			fnNode.addArgument(arg);
 		}
 		else {
 			reportError("msg.no.parm", params.start(), params.end() - params.start());

@@ -8,4 +8,12 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/dltk/javascript/parser/rhino/Parser.java" type="org.eclipse.dltk.javascript.parser.rhino.Parser">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.dltk.javascript.parser.rhino.Parser"/>
+                <message_argument value="setIsGenerator()"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>

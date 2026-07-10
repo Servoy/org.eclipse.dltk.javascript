@@ -1,4 +1,4 @@
-﻿package org.eclipse.dltk.javascript.parser.tests;
+package org.eclipse.dltk.javascript.parser.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8367,5 +8367,136 @@ public class TestRhinoParser {
 		assertFalse("expected a parse error for try without block body",
 				problems.isEmpty());
 	}
+
+	// -----------------------------------------------------------------------
+	// Destructuring parameters (SVY-21250)
+	// -----------------------------------------------------------------------
+
+	@Test
+	public void testDestructuringParam_arrayInArrowFunction() {
+		// ([a, b]) => a + b  â array destructuring as the sole arrow-function param
+		String source = "var fn = ([a, b]) => a + b;";
+		final List<IProblem> problems = new ArrayList<>();
+		Script scriptv4 = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
+				.parse(source, p -> problems.add(p));
+		assertNotNull(scriptv4);
+		assertTrue("No parse errors expected for array-destructuring arrow param", problems.isEmpty());
+
+		// var fn = ...
+		VoidExpression stmt = (VoidExpression) scriptv4.getStatements().get(0);
+		VariableStatement varStmt = (VariableStatement) stmt.getExpression();
+		assertEquals(1, varStmt.getVariables().size());
+		assertEquals("fn", varStmt.getVariables().get(0).getVariableName());
+
+		ArrowFunctionStatement fn = (ArrowFunctionStatement) varStmt.getVariables().get(0).getInitializer();
+		assertNotNull("Arrow function must be present", fn);
+		// One destructuring param â the argument list must have exactly one entry
+		assertEquals("Arrow function must have 1 argument (the destructuring pattern)", 1,
+				fn.getArguments().size());
+		// The body is an expression body: a + b
+		assertNotNull("Arrow function body must be present", fn.getBody());
+		assertTrue("Arrow function body must be a VoidExpression (expression body)",
+				fn.getBody() instanceof VoidExpression);
+		assertEquals("a + b", fn.getBody().toString().trim());
+	}
+
+	@Test
+	public void testDestructuringParam_arrayInRegularFunction() {
+		// function f([a, b]) { return a + b; }
+		String source = "function f([a, b]) { return a + b; }";
+		final List<IProblem> problems = new ArrayList<>();
+		Script scriptv4 = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
+				.parse(source, p -> problems.add(p));
+		assertNotNull(scriptv4);
+		assertTrue("No parse errors expected for array-destructuring function param", problems.isEmpty());
+
+		FunctionStatement fn = (FunctionStatement) scriptv4.getStatements().get(0).getChilds().get(0);
+		assertNotNull("FunctionStatement must be present", fn);
+		assertEquals("f", fn.getFunctionName());
+		// One destructuring param â the argument list must have exactly one entry
+		assertEquals("Function must have 1 argument (the destructuring pattern)", 1,
+				fn.getArguments().size());
+		// Body must be present and contain 1 statement (the return)
+		assertNotNull("Function body must be present", fn.getBody());
+		assertEquals("Function body must contain exactly 1 statement", 1,
+				fn.getBody().getStatements().size());
+		assertTrue("Body statement must be a ReturnStatement",
+				fn.getBody().getStatements().get(0) instanceof ReturnStatement);
+	}
+
+	@Test
+	public void testDestructuringParam_objectInRegularFunction() {
+		// function f({a, b}) { return a + b; }
+		String source = "function f({a, b}) { return a + b; }";
+		final List<IProblem> problems = new ArrayList<>();
+		Script scriptv4 = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
+				.parse(source, p -> problems.add(p));
+		assertNotNull(scriptv4);
+		assertTrue("No parse errors expected for object-destructuring function param", problems.isEmpty());
+
+		FunctionStatement fn = (FunctionStatement) scriptv4.getStatements().get(0).getChilds().get(0);
+		assertNotNull(fn);
+		assertEquals("f", fn.getFunctionName());
+		assertEquals("Function must have 1 argument (the object destructuring pattern)", 1,
+				fn.getArguments().size());
+		assertNotNull("Function body must be present", fn.getBody());
+		assertFalse("Function body must not be empty", fn.isEmptyBody());
+	}
+
+	@Test
+	public void testDestructuringParam_mixedWithRegularParams() {
+		// function f(x, [a, b], y) { return x + a + b + y; }
+		// The destructuring param is in the middle â x and y must still be recognised
+		String source = "function f(x, [a, b], y) { return x + a + b + y; }";
+		final List<IProblem> problems = new ArrayList<>();
+		Script scriptv4 = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
+				.parse(source, p -> problems.add(p));
+		assertNotNull(scriptv4);
+		assertTrue("No parse errors expected for mixed destructuring/plain params", problems.isEmpty());
+
+		FunctionStatement fn = (FunctionStatement) scriptv4.getStatements().get(0).getChilds().get(0);
+		assertNotNull(fn);
+		assertEquals("f", fn.getFunctionName());
+		// Three params: x, [a, b], y
+		assertEquals("Function must have 3 arguments", 3, fn.getArguments().size());
+		assertEquals("First param must be 'x'", "x", fn.getArguments().get(0).getArgumentName());
+		// Middle param is a destructuring pattern â no plain identifier name
+		assertNull("Middle (destructuring) param must have no plain argument name",
+				fn.getArguments().get(1).getArgumentName());
+		assertEquals("Last param must be 'y'", "y", fn.getArguments().get(2).getArgumentName());
+	}
+
+	@Test
+	public void testDestructuringParam_realWorldFilterPattern() {
+		// The exact pattern from the Jira ticket: filter(([key, value]) => value !== null)
+		String source = "function f(obj) { return Object.entries(obj).filter(([key, value]) => value !== null); }";
+		final List<IProblem> problems = new ArrayList<>();
+		Script scriptv4 = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
+				.parse(source, p -> problems.add(p));
+		assertNotNull(scriptv4);
+		assertTrue("No parse errors expected for real-world filter destructuring pattern", problems.isEmpty());
+
+		FunctionStatement fn = (FunctionStatement) scriptv4.getStatements().get(0).getChilds().get(0);
+		assertNotNull(fn);
+		assertEquals("f", fn.getFunctionName());
+		assertEquals("Outer function must have 1 plain param (obj)", 1, fn.getArguments().size());
+		assertEquals("obj", fn.getArguments().get(0).getArgumentName());
+		// Body: single return statement
+		assertFalse("Function body must not be empty", fn.isEmptyBody());
+		assertEquals(1, fn.getBody().getStatements().size());
+		assertTrue(fn.getBody().getStatements().get(0) instanceof ReturnStatement);
+
+		// Drill into the filter() call argument â it must be an ArrowFunctionStatement
+		ReturnStatement ret = (ReturnStatement) fn.getBody().getStatements().get(0);
+		// Object.entries(obj).filter(([key, value]) => value !== null)
+		CallExpression filterCall = (CallExpression) ret.getValue();
+		assertEquals("filter() must have 1 argument", 1, filterCall.getArguments().size());
+		assertTrue("filter() argument must be an ArrowFunctionStatement",
+				filterCall.getArguments().get(0) instanceof ArrowFunctionStatement);
+		ArrowFunctionStatement arrow = (ArrowFunctionStatement) filterCall.getArguments().get(0);
+		assertEquals("Arrow must have 1 argument (the [key, value] destructuring)", 1,
+				arrow.getArguments().size());
+	}
+
 
 }

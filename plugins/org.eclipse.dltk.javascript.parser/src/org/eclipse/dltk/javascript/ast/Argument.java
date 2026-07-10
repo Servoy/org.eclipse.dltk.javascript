@@ -20,6 +20,7 @@ public class Argument extends JSNode implements ISourceable {
 	private int ellipsisPosition = -1;
 	private Expression defaultValue;
 	private int assignPosition = -1;
+	private Expression destructuringPattern;
 
 	public Argument(JSNode parent) {
 		super(parent);
@@ -35,6 +36,30 @@ public class Argument extends JSNode implements ISourceable {
 
 	public void setIdentifier(Identifier identifier) {
 		this.identifier = identifier;
+	}
+
+	/**
+	 * Returns the destructuring pattern for this argument, or null if this is a
+	 * plain named argument.
+	 */
+	public Expression getDestructuringPattern() {
+		return destructuringPattern;
+	}
+
+	/**
+	 * Sets a destructuring pattern (array or object literal) as this argument's
+	 * binding target. When set, {@link #getIdentifier()} returns null.
+	 */
+	public void setDestructuringPattern(Expression pattern) {
+		this.destructuringPattern = pattern;
+	}
+
+	/**
+	 * Returns true if this argument uses a destructuring pattern instead of a
+	 * simple identifier.
+	 */
+	public boolean isDestructuring() {
+		return destructuringPattern != null;
 	}
 
 	/**
@@ -66,12 +91,19 @@ public class Argument extends JSNode implements ISourceable {
 
 	@Override
 	public String toSourceString(String indentationString) {
-		String sourceString = identifier.toSourceString(indentationString);
+		String sourceString;
+		if (destructuringPattern != null) {
+			sourceString = destructuringPattern.toSourceString(indentationString);
+		} else if (identifier != null) {
+			sourceString = identifier.toSourceString(indentationString);
+		} else {
+			sourceString = "";
+		}
 		if (ellipsisPosition != -1) {
 			return "..." + sourceString;
 		}
 		if (defaultValue != null) {
-			return sourceString += " = "
+			return sourceString + " = "
 					+ defaultValue.toSourceString(indentationString);
 		}
 		return sourceString;
@@ -79,7 +111,9 @@ public class Argument extends JSNode implements ISourceable {
 
 	@Override
 	public void traverse(ASTVisitor visitor) throws Exception {
-		if (identifier != null) {
+		if (destructuringPattern != null) {
+			destructuringPattern.traverse(visitor);
+		} else if (identifier != null) {
 			identifier.traverse(visitor);
 		}
 		if (defaultValue != null) {

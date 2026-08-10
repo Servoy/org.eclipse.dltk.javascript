@@ -869,6 +869,28 @@
 		</type>
 	  </parameters>
     </members>
+    <members xsi:type="ref:Method" name="replaceAll" directType="String" description="Returns a new string with all matches of a pattern replaced by a replacement. When the pattern is a string, every occurrence is replaced (unlike replace which only replaces the first).">
+      <parameters name="findStringOrRegexp">
+      <type xsi:type="ref:UnionType" >
+		<targets xsi:type="ref:SimpleType" >
+		<target href="proxy:dltk/javascript/typeinfo/type#String"/>
+		</targets>
+		<targets xsi:type="ref:SimpleType" >
+		<target href="proxy:dltk/javascript/typeinfo/type#RegExp"/>
+		</targets>
+		</type>
+	  </parameters>
+      <parameters name="newStringOrFunction">
+       <type xsi:type="ref:UnionType" >
+      	<targets xsi:type="ref:SimpleType" >
+		<target href="proxy:dltk/javascript/typeinfo/type#String"/>
+		</targets>
+		<targets xsi:type="ref:SimpleType" >
+		<target href="proxy:dltk/javascript/typeinfo/type#Function"/>
+		</targets>
+		</type>
+	  </parameters>
+    </members>
     <members xsi:type="ref:Method" name="startsWith" directType="Boolean" description="Determines whether a string begins with the characters of a specified string, returning true or false as appropriate.">
       <parameters name="searchString" directType="String"/>
       <parameters name="position" directType="Number" kind="OPTIONAL"/>

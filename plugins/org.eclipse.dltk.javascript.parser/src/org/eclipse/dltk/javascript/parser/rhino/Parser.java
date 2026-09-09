@@ -3867,10 +3867,17 @@ public class Parser implements IParser{
 			result.setDocumentation(pn.getDocumentation());
 		}
 		else {
-			Comment comment = getAndResetJsDoc();
-			result.setDocumentation(comment);
-			if (ref.getDocumentation() == null && ref instanceof Documentable doc) {
-				doc.setDocumentation(comment);
+			// Only attach a pending JSDoc if it appears before this property
+			// expression in the source. Without a trailing ';' the ASI
+			// look-ahead may have already scanned the JSDoc that belongs to
+			// the next statement into currentJsDocComment; that comment must
+			// not leak onto this property (SVY-21422).
+			if (currentJsDocComment != null && currentJsDocComment.sourceStart() < pn.start()) {
+				Comment comment = getAndResetJsDoc();
+				result.setDocumentation(comment);
+				if (ref.getDocumentation() == null && ref instanceof Documentable doc) {
+					doc.setDocumentation(comment);
+				}
 			}
 		}
 		result.setStart(pn.start());

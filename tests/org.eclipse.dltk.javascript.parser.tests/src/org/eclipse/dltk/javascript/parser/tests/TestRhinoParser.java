@@ -8498,5 +8498,124 @@ public class TestRhinoParser {
 				arrow.getArguments().size());
 	}
 
+	// SVY-21422: a var declaration terminated by ASI (no trailing ';') whose
+	// initializer ends in a property access must not leak its following JSDoc
+	// onto the next declaration. Regression introduced by 4894a137.
+	@Test
+	public void testDoubleJsdoc_missingSemicolon_doesNotLeakToNextVar() {
+		String source = "/**\r\n"
+				+ " * @properties={typeid:35,uuid:\"70CFCBF9-573E-46AF-8216-F99B5CB7D65F\",variableType:-4}\r\n"
+				+ " */\r\n"
+				+ "var pdfBytes = solutionModel.getMedia('blank.pdf').bytes\r\n"
+				+ "\r\n"
+				+ "/**\r\n"
+				+ " * @type {String}\r\n"
+				+ " *\r\n"
+				+ " * @properties={typeid:35,uuid:\"7D4D9708-081F-4BEB-9AF2-654D8618D030\"}\r\n"
+				+ " */\r\n"
+				+ "var _titleName";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertEquals(2, scriptv4.getStatements().size());
+
+		VariableStatement first = (VariableStatement) ((VoidExpression) scriptv4
+				.getStatements().get(0)).getExpression();
+		VariableStatement second = (VariableStatement) ((VoidExpression) scriptv4
+				.getStatements().get(1)).getExpression();
+
+		assertNotNull("first var must keep its own JSDoc", first.getDocumentation());
+		assertTrue("first var doc must be the first block",
+				first.getDocumentation().getText().contains("70CFCBF9-573E-46AF-8216-F99B5CB7D65F"));
+		assertFalse("first var doc must NOT contain the second block (no leak)",
+				first.getDocumentation().getText().contains("7D4D9708-081F-4BEB-9AF2-654D8618D030"));
+
+		assertNotNull("second var must get its own JSDoc", second.getDocumentation());
+		assertTrue("second var doc must be the second block",
+				second.getDocumentation().getText().contains("7D4D9708-081F-4BEB-9AF2-654D8618D030"));
+		assertFalse("second var doc must NOT contain the first block",
+				second.getDocumentation().getText().contains("70CFCBF9-573E-46AF-8216-F99B5CB7D65F"));
+
+		// The property expression that ends the first initializer must not have
+		// captured the second statement's JSDoc.
+		VariableDeclaration firstDecl = first.getVariables().get(0);
+		Expression init = firstDecl.getInitializer();
+		assertTrue(init instanceof PropertyExpression);
+		assertFalse("property expression must not leak the next JSDoc",
+				init.getDocumentation() != null && init.getDocumentation().getText()
+						.contains("7D4D9708-081F-4BEB-9AF2-654D8618D030"));
+	}
+
+	// SVY-21422: the explicit ';' variant already worked; guard against a
+	// regression that would break it.
+	@Test
+	public void testDoubleJsdoc_withSemicolon_stillCorrect() {
+		String source = "/**\r\n"
+				+ " * @properties={typeid:35,uuid:\"70CFCBF9-573E-46AF-8216-F99B5CB7D65F\",variableType:-4}\r\n"
+				+ " */\r\n"
+				+ "var pdfBytes = solutionModel.getMedia('blank.pdf').bytes;\r\n"
+				+ "\r\n"
+				+ "/**\r\n"
+				+ " * @type {String}\r\n"
+				+ " *\r\n"
+				+ " * @properties={typeid:35,uuid:\"7D4D9708-081F-4BEB-9AF2-654D8618D030\"}\r\n"
+				+ " */\r\n"
+				+ "var _titleName;";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertEquals(2, scriptv4.getStatements().size());
+
+		VariableStatement first = (VariableStatement) ((VoidExpression) scriptv4
+				.getStatements().get(0)).getExpression();
+		VariableStatement second = (VariableStatement) ((VoidExpression) scriptv4
+				.getStatements().get(1)).getExpression();
+
+		assertNotNull(first.getDocumentation());
+		assertTrue(first.getDocumentation().getText()
+				.contains("70CFCBF9-573E-46AF-8216-F99B5CB7D65F"));
+		assertFalse(first.getDocumentation().getText()
+				.contains("7D4D9708-081F-4BEB-9AF2-654D8618D030"));
+
+		assertNotNull(second.getDocumentation());
+		assertTrue(second.getDocumentation().getText()
+				.contains("7D4D9708-081F-4BEB-9AF2-654D8618D030"));
+	}
+
+	// SVY-21422: minimal isolation of the property-expression path. The
+	// initializer must end in a property access whose object is NOT itself
+	// Documentable (a call expression), so createPropertyExpression takes the
+	// else-branch that previously leaked the next statement's JSDoc.
+	@Test
+	public void testDoubleJsdoc_singleVarNoSemicolon_propertyAccessInitializer() {
+		String source = "/** FIRSTDOC */\r\n"
+				+ "var x = obj.get().prop\r\n"
+				+ "/** SECONDDOC */\r\n"
+				+ "var y";
+		Script scriptv4 = getScriptv4(source);
+		assertNotNull(scriptv4);
+		assertEquals(2, scriptv4.getStatements().size());
+
+		VariableStatement first = (VariableStatement) ((VoidExpression) scriptv4
+				.getStatements().get(0)).getExpression();
+		VariableStatement second = (VariableStatement) ((VoidExpression) scriptv4
+				.getStatements().get(1)).getExpression();
+
+		assertNotNull(first.getDocumentation());
+		assertTrue(first.getDocumentation().getText().contains("FIRSTDOC"));
+		assertFalse("no leak of SECONDDOC onto first var",
+				first.getDocumentation().getText().contains("SECONDDOC"));
+
+		assertNotNull(second.getDocumentation());
+		assertTrue(second.getDocumentation().getText().contains("SECONDDOC"));
+		assertFalse(second.getDocumentation().getText().contains("FIRSTDOC"));
+
+		// The property-access initializer of the first var must not have
+		// captured the second statement's JSDoc.
+		Expression init = first.getVariables().get(0).getInitializer();
+		assertTrue(init instanceof PropertyExpression);
+		assertFalse("property expression must not leak SECONDDOC",
+				init.getDocumentation() != null
+						&& init.getDocumentation().getText().contains("SECONDDOC"));
+	}
+
 
 }

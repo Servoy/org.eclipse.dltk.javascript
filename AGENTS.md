@@ -45,9 +45,14 @@ This is the **Servoy fork of Eclipse DLTK JavaScript** — an Eclipse-based Java
 
 ## Testing
 
-Run parser tests:
-```
-eclipse-ide_runClassTests(projectName="org.eclipse.dltk.javascript.parser.tests", className="org.eclipse.dltk.javascript.parser.tests.TestRhinoParser")
+> **Note:** the Eclipse MCP tools run **only through Code Mode** — call them from inside the `execute` tool using bracket notation (e.g. `await tools["eclipse-ide"].runJUnitTests({ ... })`), never as a plain `eclipse-ide_*` tool, and never fall back to the built-in `edit`/`write` for workspace files.
+
+Run parser tests (via `execute`):
+```js
+await tools["eclipse-ide"].runJUnitTests({
+  projectName: "org.eclipse.dltk.javascript.parser.tests",
+  className: "org.eclipse.dltk.javascript.parser.tests.TestRhinoParser"
+})
 ```
 
 Test patterns in `TestRhinoParser`:

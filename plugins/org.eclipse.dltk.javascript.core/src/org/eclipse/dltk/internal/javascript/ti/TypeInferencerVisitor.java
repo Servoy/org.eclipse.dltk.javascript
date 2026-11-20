@@ -1225,10 +1225,15 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 
 	@Override
 	public IValueReference visitForEachInStatement(ForEachInStatement node) {
+		final IValueCollection collection = ValueCollectionFactory
+				.createNestedScopeValueCollection(peekContext());
+		enterContext(collection);
+		handleDeclarations(node);
 		IValueReference itemReference = visit(node.getItem());
 		IValueReference iteratorReference = visit(node.getIterator());
 		inferIteratorType(itemReference, iteratorReference);
 		visit(node.getBody());
+		leaveContext();
 		return null;
 	}
 
@@ -1295,6 +1300,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		final IValueCollection collection = ValueCollectionFactory
 				.createNestedScopeValueCollection(peekContext());
 		enterContext(collection);
+		handleDeclarations(node);
 		final IValueReference item = visit(node.getItem());
 		if (item != null) {
 			assign(item, ConstantValue.of(RTypes.STRING));
@@ -1310,6 +1316,7 @@ public class TypeInferencerVisitor extends TypeInferencerVisitorBase {
 		final IValueCollection collection = ValueCollectionFactory
 				.createNestedScopeValueCollection(peekContext());
 		enterContext(collection);
+		handleDeclarations(node);
 		if (node.getInitial() != null)
 			visit(node.getInitial());
 		if (node.getCondition() != null)

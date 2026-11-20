@@ -1979,27 +1979,25 @@ public class Parser implements IParser{
 
 			if (mustMatchToken(Token.RP, "msg.no.paren.for.ctrl", true)) rp = ts.getTokenBeg();
 
-			if (isForIn || isForOf) {
-				if (init instanceof IVariableStatement vs) {
-					// check that there was only one variable given
-					if (vs.getVariables().size() > 1) {
-						reportError("msg.mult.index");
-					}
-					else if (init instanceof LetStatement) {
-						vs.getBindings().forEach(binding -> {
-							binding.getVariableNames().forEach(name -> {
-								// no need to check for duplicates here, was
-								// done in variables(..)
-								blockScopes.peek().add(name, SymbolKind.LET,
-										binding);
-							});
-						});
-					}
+			if (init instanceof IVariableStatement vs) {
+				// only one variable is allowed in for-in/of
+				if ((isForIn || isForOf) && vs.getVariables().size() > 1) {
+					reportError("msg.mult.index");
 				}
-				if (isForOf && isForEach) {
-					reportError("msg.invalid.for.each");
+				else if (init instanceof LetStatement) {
+					vs.getBindings().forEach(binding -> {
+						binding.getVariableNames().forEach(name -> {
+							// no need to check for duplicates here, was
+							// done in variables(..)
+							blockScopes.peek().add(name, SymbolKind.LET, binding);
+						});
+					});
 				}
 			}
+			if (isForOf && isForEach) {
+				reportError("msg.invalid.for.each");
+			}
+
 
 
 			// replace temp scope with the new loop object

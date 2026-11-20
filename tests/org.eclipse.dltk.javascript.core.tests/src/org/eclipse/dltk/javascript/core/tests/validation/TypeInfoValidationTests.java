@@ -4029,4 +4029,12 @@ public void testFunctionCallFromUnion() {
 		assertEquals(problems.toString(), 0, problems.size());
 
 	}
+
+	public void testForLetHeadDeclarations_noAssertionError() {
+		assertTrue("run with -ea", org.eclipse.dltk.internal.javascript.ti.TypeInferencerVisitor.class.desiredAssertionStatus());
+		assertTrue("the ES6 (rhino) parser must be used, the old parser has no let scopes",
+				new org.eclipse.dltk.javascript.parser.JavascriptParserPreferences().useES6Parser());
+		final List<IProblem> problems = validate("function f(){ for (let i = 0; i < 3; i++) { var x = i; } for (let k in {}) { var y = k; } for each (let z in [1,2]) { var w = z; } }");
+		assertEquals(problems.toString(), 0, problems.size());
+	}
 }

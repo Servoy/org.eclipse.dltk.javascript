@@ -55,6 +55,7 @@ public class AllTests {
 		suite.addTestSuite(RTypeTests.class);
 		suite.addTestSuite(CommonSuperTypeFinderTest.class);
 		suite.addTestSuite(TypeInferenceTests.class);
+		suite.addTestSuite(org.eclipse.dltk.javascript.core.tests.typeinference.LetLoopTypeInferenceTests.class);
 		suite.addTestSuite(StructureParserTests.class);
 		suite.addTestSuite(TypeInfoValidationTests.class);
 		suite.addTestSuite(FlowTypeInfoValidationTests.class);

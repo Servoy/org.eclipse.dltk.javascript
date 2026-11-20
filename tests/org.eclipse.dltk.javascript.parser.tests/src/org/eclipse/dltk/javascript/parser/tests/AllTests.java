@@ -22,6 +22,7 @@ public class AllTests {
 				"org.eclipse.dltk.javascript.parser.tests");
 		// $JUnit-BEGIN$
 		suite.addTest(new JUnit4TestAdapter(DeclarationScopeTest.class));
+		suite.addTest(new JUnit4TestAdapter(TestRhinoParser.class));
 		suite.addTestSuite(NewTests.class);
 		suite.addTestSuite(VariableDeclarationTests.class);
 		suite.addTestSuite(ArrayInitializerTests.class);

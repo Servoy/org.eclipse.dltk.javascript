@@ -388,6 +388,50 @@ public class TestRhinoParser {
 	}
 	
 	@Test
+	public void testForLet_declaredOnLoopScope() {
+		Script scriptv4 = getScriptv4("for (let i = 1; i < 3; i++) {}");
+		assertNotNull(scriptv4);
+		ForStatement for_ = (ForStatement) scriptv4.getStatements().get(0);
+		assertEquals("for-head let must be declared on the loop scope", 1, for_.getDeclarations().size());
+		assertEquals(0, scriptv4.getDeclarations().size());
+	}
+
+	@Test
+	public void testForLetMultiple_declaredOnLoopScope() {
+		final List<IProblem> problems = new ArrayList<IProblem>();
+		Script scriptv4 = new org.eclipse.dltk.javascript.parser.rhino.JavaScriptParser()
+				.parse("for (let i = 0, j = 10; i < j; i++) {}", new IProblemReporter() {
+					@Override
+					public void reportProblem(IProblem problem) {
+						problems.add(problem);
+					}
+				});
+		assertNotNull(scriptv4);
+		ForStatement for_ = (ForStatement) scriptv4.getStatements().get(0);
+		assertEquals(2, for_.getDeclarations().size());
+		assertEquals(0, scriptv4.getDeclarations().size());
+		assertEquals("no problem expected: " + problems, 0, problems.size());
+	}
+
+	@Test
+	public void testForLetDestructuring_declaredOnLoopScope() {
+		Script scriptv4 = getScriptv4("for (let [a, b] = [1, 2]; a < b; a++) {}");
+		assertNotNull(scriptv4);
+		ForStatement for_ = (ForStatement) scriptv4.getStatements().get(0);
+		assertEquals(2, for_.getDeclarations().size());
+		assertEquals(0, scriptv4.getDeclarations().size());
+	}
+
+	@Test
+	public void testForVar_notOnLoopScope() {
+		Script scriptv4 = getScriptv4("for (var i = 0; i < 3; i++) {}");
+		assertNotNull(scriptv4);
+		ForStatement for_ = (ForStatement) scriptv4.getStatements().get(0);
+		assertEquals(0, for_.getDeclarations().size());
+		assertEquals(1, scriptv4.getDeclarations().size());
+	}
+
+	@Test
 	public void testFunctionDeclaration() {
 		String source = "function abc(a,b){ a+=1;} "
 				+ "function getHash (value, algorithm) {"
@@ -1730,6 +1774,8 @@ public class TestRhinoParser {
 		ForStatement for_ = (ForStatement) block.getStatements().get(1);
 		StatementBlock forBlock = (StatementBlock) for_.getBody();
 		assertEquals(1, forBlock.getDeclarations().size());	
+		assertEquals("the let in the for head must be declared on the ForStatement", 1,
+				for_.getDeclarations().size());
 		ConstStatement const2 = (ConstStatement) ((VoidExpression)forBlock.getStatements().get(0)).getExpression();
 		assertEquals("x", const2.getVariables().get(0).getIdentifier().getName());
 		assertEquals(const1.getVariables().get(0).getIdentifier().getName(), const2.getVariables().get(0).getIdentifier().getName());

@@ -13,6 +13,7 @@ package org.eclipse.dltk.javascript.core.tests.typeinference;
 
 import static org.eclipse.dltk.javascript.typeinfo.model.TypeInfoModelFactory.eINSTANCE;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -131,6 +132,11 @@ public class ExampleElementResolver implements IElementResolver {
 			return property;
 		}
 		return null;
+	}
+
+	public Set<Member> resolveElements(ITypeInfoContext context, String name) {
+		final Member member = resolveElement(context, name);
+		return member != null ? Collections.singleton(member) : null;
 	}
 
 	private static final boolean ENABLE_LIST_GLOBALS = false;

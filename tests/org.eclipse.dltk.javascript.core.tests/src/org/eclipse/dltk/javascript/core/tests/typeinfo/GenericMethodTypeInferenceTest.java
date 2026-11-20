@@ -11,11 +11,14 @@
  *******************************************************************************/
 package org.eclipse.dltk.javascript.core.tests.typeinfo;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import junit.framework.TestCase;
 
 import org.eclipse.dltk.internal.javascript.ti.TypeSystemImpl;
+import org.eclipse.dltk.javascript.core.Types;
+import org.eclipse.dltk.javascript.typeinfo.IRType;
 import org.eclipse.dltk.javascript.typeinfo.GenericMethodTypeInferencer;
 import org.eclipse.dltk.javascript.typeinfo.GenericMethodTypeInferencer.Capture;
 import org.eclipse.dltk.javascript.typeinfo.ITypeSystem;
@@ -58,7 +61,8 @@ public class GenericMethodTypeInferenceTest extends TestCase {
 				typeSystem, method);
 		final Capture capture = methodTypeInferencer.capture(p.getType(),
 				Collections.singletonList(RTypes.mapOf(RTypes.STRING,
-						RTypes.NUMBER)));
+						RTypes.NUMBER, typeSystem.parameterize(Types.MAP, Arrays
+								.<IRType> asList(RTypes.STRING, RTypes.NUMBER)))));
 		assertTrue(capture.isOK());
 		assertEquals(2, capture.getVariables().size());
 		assertTrue(capture.getVariables().contains(key));
